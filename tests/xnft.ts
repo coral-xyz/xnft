@@ -13,9 +13,17 @@ describe("xnft", () => {
 
   it("Is initialized!", async () => {
 		const name = "my-xnft";
+		const symbol = "xnft";
+		const uri = "https://test.com";
+		const seller_fee_basis_points = 1;
     const tx = await program
 			.methods
-			.createXnft(name)
+			.createXnft(
+				name,
+				symbol,
+				uri,
+				seller_fee_basis_points,
+			)
 			.accounts({
 				metadataProgram,
 			})
