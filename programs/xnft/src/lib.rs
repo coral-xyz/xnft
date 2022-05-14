@@ -121,9 +121,6 @@ pub mod xnft {
     /// This is simply a token metadata update cpi.
     pub fn update_xnft(ctx: Context<UpdateXnft>) -> Result<()> {
         // todo
-        //
-        // cpi: update metadata
-        //
         Ok(())
     }
 

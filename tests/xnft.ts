@@ -2,6 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { Xnft } from "../target/types/xnft";
+import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 
 const metadataProgram = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 
@@ -26,8 +27,15 @@ describe("xnft", () => {
 			)
 			.accounts({
 				metadataProgram,
-			})
-			.rpc();
-    console.log("Your transaction signature", tx);
+			});
+
+		const pubkeys = await tx.pubkeys();
+		await tx.rpc();
+
+		const metadata = await Metadata.fromAccountAddress(
+			program.provider.connection,
+			pubkeys.masterMetadata,
+		);
+    console.log("Your transaction signature", tx, pubkeys, metadata);
   });
 });
