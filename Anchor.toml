@@ -2,7 +2,7 @@
 seeds = true
 
 [programs.localnet]
-xnft = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+xnft = "HAF2RQrAeUth3BZP4nVeQgoxzncwdZBtfqUf8wQ4yvFa"
 
 [registry]
 url = "https://anchor.projectserum.com"
