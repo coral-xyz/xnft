@@ -1,3 +1,4 @@
+import BN from 'bn.js';
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
@@ -12,7 +13,12 @@ describe("xnft", () => {
 
   const program = anchor.workspace.Xnft as Program<Xnft>;
 
-  it("Is initialized!", async () => {
+	let xnft;
+	let install;
+	const installVault = program.provider.publicKey;
+
+  it("creates the xNFT", async () => {
+		const installPrice = new BN(0);
 		const name = "my-xnft";
 		const symbol = "xnft";
 		const uri = "https://test.com";
@@ -24,18 +30,41 @@ describe("xnft", () => {
 				symbol,
 				uri,
 				seller_fee_basis_points,
+				installPrice,
+				installVault,
 			)
 			.accounts({
 				metadataProgram,
 			});
-
-		const pubkeys = await tx.pubkeys();
 		await tx.rpc();
 
-		const metadata = await Metadata.fromAccountAddress(
-			program.provider.connection,
-			pubkeys.masterMetadata,
-		);
-    console.log("Your transaction signature", tx, pubkeys, metadata);
+		const pubkeys = await tx.pubkeys();
+		xnft = pubkeys.xnft;
   });
+
+	it("installs an xNFT into the user's wallet", async () => {
+		const tx = await program
+			.methods
+			.createInstall()
+			.accounts({
+				xnft,
+				installVault,
+			});
+		await tx.rpc();
+
+		const pubkeys = await tx.pubkeys();
+		install = pubkeys.install;
+	});
+
+	it("checks the accounts were created correctly", async () => {
+		const xnftAccount = await program.account.xnft.fetch(xnft);
+		const installAccount = await program.account.install.fetch(install);
+		const metadataAccount = await Metadata.fromAccountAddress(
+			program.provider.connection,
+			installAccount.masterMetadata,
+		);
+		console.log('xnft', xnftAccount);
+		console.log('install', installAccount);
+		console.log('metadata', metadataAccount);
+	});
 });

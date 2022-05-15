@@ -25,6 +25,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-access-control"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -37,6 +38,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-account"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -50,6 +52,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-constant"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "proc-macro2",
@@ -59,6 +62,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-error"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "proc-macro2",
@@ -69,6 +73,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-event"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -80,6 +85,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-interface"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -92,6 +98,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-program"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -103,6 +110,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-state"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -114,6 +122,7 @@ dependencies = [
 [[package]]
 name = "anchor-derive-accounts"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -125,6 +134,7 @@ dependencies = [
 [[package]]
 name = "anchor-lang"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-attribute-access-control",
  "anchor-attribute-account",
@@ -147,6 +157,7 @@ dependencies = [
 [[package]]
 name = "anchor-spl"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anchor-lang",
  "mpl-token-metadata",
@@ -158,6 +169,7 @@ dependencies = [
 [[package]]
 name = "anchor-syn"
 version = "0.24.2"
+source = "git+https://github.com/project-serum/anchor#ef178e5217293f41ba6cfd06803f52dd9b264d35"
 dependencies = [
  "anyhow",
  "bs58 0.3.1",
@@ -727,7 +739,9 @@ dependencies = [
 
 [[package]]
 name = "mpl-token-metadata"
-version = "1.2.10"
+version = "1.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d71fddb77eb409ffee7e4662bc12f0535b5329729e18db6c536c9f8e8a37d39"
 dependencies = [
  "arrayref",
  "borsh",
@@ -1195,20 +1209,19 @@ dependencies = [
 
 [[package]]
 name = "spl-associated-token-account"
-version = "1.0.5"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b013067447a1396303ddfc294f36e3d260a32f8a16c501c295bcdc7de39b490"
+checksum = "393e2240d521c3dd770806bff25c2c00d761ac962be106e14e22dd912007f428"
 dependencies = [
- "borsh",
  "solana-program",
  "spl-token",
 ]
 
 [[package]]
 name = "spl-token"
-version = "3.3.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cc67166ef99d10c18cb5e9c208901e6d8255c6513bb1f877977eba48e6cc4fb"
+checksum = "93bfdd5bd7c869cb565c7d7635c4fafe189b988a0bdef81063cd9585c6b8dc01"
 dependencies = [
  "arrayref",
  "num-derive",

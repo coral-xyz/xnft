@@ -16,8 +16,6 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-#anchor-lang = "0.24.2"
-#anchor-spl = "0.24.2"
-anchor-lang = { path = "/Users/armaniferrante/Documents/code/src/github.com/project-serum/anchor/lang" }
-anchor-spl = { path = "/Users/armaniferrante/Documents/code/src/github.com/project-serum/anchor/spl", features = ["metadata"] }
-mpl-token-metadata = { path = "/Users/armaniferrante/Documents/code/src/github.com/metaplex/metaplex-program-library/token-metadata/program", features = ["no-entrypoint"] }
+anchor-lang = { git = "https://github.com/project-serum/anchor" }
+anchor-spl = { git = "https://github.com/project-serum/anchor", features = ["metadata"] }
+mpl-token-metadata = { version = "1.2.7", features = ["no-entrypoint"] }
