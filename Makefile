@@ -1,6 +1,8 @@
 .PHONY: bootstrap
 
 bootstrap:
+	@echo "installing npm packages"
+	yarn
 	@echo "installing submodules"
 	git submodule init
 	git submodule update

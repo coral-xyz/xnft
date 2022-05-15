@@ -13,58 +13,58 @@ describe("xnft", () => {
 
   const program = anchor.workspace.Xnft as Program<Xnft>;
 
-	let xnft;
-	let install;
-	const installVault = program.provider.publicKey;
+  let xnft;
+  let install;
+  const installVault = program.provider.publicKey;
 
   it("creates the xNFT", async () => {
-		const installPrice = new BN(0);
-		const name = "my-xnft";
-		const symbol = "xnft";
-		const uri = "https://test.com";
-		const seller_fee_basis_points = 1;
+    const installPrice = new BN(0);
+    const name = "my-xnft";
+    const symbol = "xnft";
+    const uri = "https://test.com";
+    const seller_fee_basis_points = 1;
     const tx = await program
-			.methods
-			.createXnft(
-				name,
-				symbol,
-				uri,
-				seller_fee_basis_points,
-				installPrice,
-				installVault,
-			)
-			.accounts({
-				metadataProgram,
-			});
-		await tx.rpc();
+      .methods
+      .createXnft(
+        name,
+        symbol,
+        uri,
+        seller_fee_basis_points,
+        installPrice,
+        installVault,
+      )
+      .accounts({
+        metadataProgram,
+      });
+    await tx.rpc();
 
-		const pubkeys = await tx.pubkeys();
-		xnft = pubkeys.xnft;
+    const pubkeys = await tx.pubkeys();
+    xnft = pubkeys.xnft;
   });
 
-	it("installs an xNFT into the user's wallet", async () => {
-		const tx = await program
-			.methods
-			.createInstall()
-			.accounts({
-				xnft,
-				installVault,
-			});
-		await tx.rpc();
+  it("installs an xNFT into the user's wallet", async () => {
+    const tx = await program
+      .methods
+      .createInstall()
+      .accounts({
+        xnft,
+        installVault,
+      });
+    await tx.rpc();
 
-		const pubkeys = await tx.pubkeys();
-		install = pubkeys.install;
-	});
+    const pubkeys = await tx.pubkeys();
+    install = pubkeys.install;
+  });
 
-	it("checks the accounts were created correctly", async () => {
-		const xnftAccount = await program.account.xnft.fetch(xnft);
-		const installAccount = await program.account.install.fetch(install);
-		const metadataAccount = await Metadata.fromAccountAddress(
-			program.provider.connection,
-			installAccount.masterMetadata,
-		);
-		console.log('xnft', xnftAccount);
-		console.log('install', installAccount);
-		console.log('metadata', metadataAccount);
-	});
+  it("checks the accounts were created correctly", async () => {
+    const xnftAccount = await program.account.xnft.fetch(xnft);
+    const installAccount = await program.account.install.fetch(install);
+    const metadataAccount = await Metadata.fromAccountAddress(
+      program.provider.connection,
+      installAccount.masterMetadata,
+    );
+    console.log('xnft', xnftAccount);
+    console.log('install', installAccount);
+    console.log('metadata', metadataAccount);
+  });
 });
