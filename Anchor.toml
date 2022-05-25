@@ -3,6 +3,8 @@ seeds = true
 
 [programs.localnet]
 xnft = "HAF2RQrAeUth3BZP4nVeQgoxzncwdZBtfqUf8wQ4yvFa"
+[programs.devnet]
+xnft = "HAF2RQrAeUth3BZP4nVeQgoxzncwdZBtfqUf8wQ4yvFa"
 
 [registry]
 url = "https://anchor.projectserum.com"
