@@ -21,7 +21,8 @@ describe("xnft", () => {
     const installPrice = new BN(0);
     const name = "my-xnft";
     const symbol = "xnft";
-    const uri = "https://test.com";
+    const uri =
+      "https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json";
     const seller_fee_basis_points = 1;
     const tx = await program.methods
       .createXnft(name, symbol, uri, seller_fee_basis_points, installPrice, installVault)
