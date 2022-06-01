@@ -4,7 +4,7 @@ use anchor_spl::metadata::{self, CreateMasterEditionV3, CreateMetadataAccountsV2
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::DataV2;
 
-declare_id!("HAF2RQrAeUth3BZP4nVeQgoxzncwdZBtfqUf8wQ4yvFa");
+declare_id!("xnftkTnW8pdgkzyGcF8bb3WCMoBeU4r4d8JbKbv6MhW");
 
 #[program]
 pub mod xnft {
