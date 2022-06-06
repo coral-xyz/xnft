@@ -1,4 +1,4 @@
-import BN from 'bn.js';
+import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
@@ -21,18 +21,11 @@ describe("xnft", () => {
     const installPrice = new BN(0);
     const name = "my-xnft";
     const symbol = "xnft";
-    const uri = "https://test.com";
+    const uri =
+      "https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json";
     const seller_fee_basis_points = 1;
-    const tx = await program
-      .methods
-      .createXnft(
-        name,
-        symbol,
-        uri,
-        seller_fee_basis_points,
-        installPrice,
-        installVault,
-      )
+    const tx = await program.methods
+      .createXnft(name, symbol, uri, seller_fee_basis_points, installPrice, installVault)
       .accounts({
         metadataProgram,
       });
@@ -43,13 +36,10 @@ describe("xnft", () => {
   });
 
   it("installs an xNFT into the user's wallet", async () => {
-    const tx = await program
-      .methods
-      .createInstall()
-      .accounts({
-        xnft,
-        installVault,
-      });
+    const tx = await program.methods.createInstall().accounts({
+      xnft,
+      installVault,
+    });
     await tx.rpc();
 
     const pubkeys = await tx.pubkeys();
@@ -61,10 +51,10 @@ describe("xnft", () => {
     const installAccount = await program.account.install.fetch(install);
     const metadataAccount = await Metadata.fromAccountAddress(
       program.provider.connection,
-      installAccount.masterMetadata,
+      installAccount.masterMetadata
     );
-    console.log('xnft', xnftAccount);
-    console.log('install', installAccount);
-    console.log('metadata', metadataAccount);
+    console.log("xnft", xnftAccount);
+    console.log("install", installAccount);
+    console.log("metadata", metadataAccount);
   });
 });
