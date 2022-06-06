@@ -2,9 +2,7 @@
 seeds = true
 
 [programs.localnet]
-xnft = "GVHsHKTUAutHctJHx9uMA4SVrqP2gxmWBGY3MbjqWeVm"
-[programs.devnet]
-xnft = "GVHsHKTUAutHctJHx9uMA4SVrqP2gxmWBGY3MbjqWeVm"
+xnft = "xnftkTnW8pdgkzyGcF8bb3WCMoBeU4r4d8JbKbv6MhW"
 
 [registry]
 url = "https://anchor.projectserum.com"
