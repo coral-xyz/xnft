@@ -309,6 +309,7 @@ pub struct CreateInstall<'info> {
         seeds = [
             "install".as_bytes(),
             authority.key().as_ref(),
+            xnft.key().as_ref(),
         ],
         bump,
     )]
@@ -357,9 +358,8 @@ pub struct DeleteInstall {
 
 #[account]
 pub struct Xnft {
-    kind: Kind,
-    name: String,
     authority: Pubkey,
+    kind: Kind,
     publisher: Pubkey,
     //
     // Total amount of installs circulating.
@@ -386,6 +386,7 @@ pub struct Xnft {
     bump: u8,
     created_ts: i64,
     updated_ts: i64,
+    name: String,
 }
 
 #[account]
