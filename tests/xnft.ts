@@ -4,6 +4,7 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { Xnft } from "../target/types/xnft";
 import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+import { assert } from "chai";
 
 const metadataProgram = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 
@@ -35,6 +36,11 @@ describe("xnft", () => {
     xnft = pubkeys.xnft;
   });
 
+  it("fetch created xNFT", async () => {
+    const fetchedXnft = await program.account.xnft.fetch(xnft)
+    assert.equal(fetchedXnft.name, "my-xnft")
+  })
+
   it("installs an xNFT into the user's wallet", async () => {
     const tx = await program.methods.createInstall().accounts({
       xnft,
@@ -46,15 +52,30 @@ describe("xnft", () => {
     install = pubkeys.install;
   });
 
-  it("checks the accounts were created correctly", async () => {
-    const xnftAccount = await program.account.xnft.fetch(xnft);
-    const installAccount = await program.account.install.fetch(install);
-    const metadataAccount = await Metadata.fromAccountAddress(
-      program.provider.connection,
-      installAccount.masterMetadata
-    );
-    console.log("xnft", xnftAccount);
-    console.log("install", installAccount);
-    console.log("metadata", metadataAccount);
-  });
+  it("fetch xnfts owned by user", async () => {
+    const ownedxNFTs = await program.account.xnft.all([
+      {
+        memcmp: {
+          offset: 8, // Discriminator
+          bytes: program.provider.publicKey.toBase58()
+        }
+      }
+    ])
+
+    assert.isNotEmpty(ownedxNFTs)
+  })
+
+
+  it("fetch user installed xNFTs", async () => {
+    const installedxNFTs = await program.account.install.all([
+      {
+        memcmp: {
+          offset: 8, // Discriminator
+          bytes: program.provider.publicKey.toBase58()
+        }
+      }
+    ])
+
+    assert.isNotEmpty(installedxNFTs)
+  })
 });
