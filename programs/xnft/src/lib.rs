@@ -359,8 +359,8 @@ pub struct DeleteInstall {
 #[account]
 pub struct Xnft {
     authority: Pubkey,
-    kind: Kind,
     publisher: Pubkey,
+    kind: Kind,
     //
     // Total amount of installs circulating.
     //
@@ -382,10 +382,10 @@ pub struct Xnft {
     //
     // If present, this key must sign off on all installs.
     //
-    install_authority: Option<Pubkey>,
     bump: u8,
     created_ts: i64,
     updated_ts: i64,
+    install_authority: Option<Pubkey>,
     name: String,
 }
 
