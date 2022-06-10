@@ -223,14 +223,14 @@ pub struct CreateXnft<'info> {
     #[account(
         init,
         payer = payer,
-        space = 8 + Xnft::LEN,
+        space = 8 + Xnft2::LEN,
         seeds = [
             "xnft".as_bytes(),
             master_edition.key().as_ref(),
         ],
         bump,
     )]
-    pub xnft: Account<'info, Xnft>,
+    pub xnft: Account<'info, Xnft2>,
     #[account(mut)]
     pub payer: Signer<'info>,
     pub publisher: Signer<'info>,
@@ -297,7 +297,7 @@ pub struct CreateInstall<'info> {
         has_one = install_vault,
         constraint = xnft.install_authority == None,
     )]
-    pub xnft: Account<'info, Xnft>,
+    pub xnft: Account<'info, Xnft2>,
 
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
@@ -324,7 +324,7 @@ pub struct CreateInstall<'info> {
 #[derive(Accounts)]
 pub struct CreateInstallWithAuthority<'info> {
     #[account(mut, constraint = xnft.install_authority == Some(install_authority.key()))]
-    pub xnft: Account<'info, Xnft>,
+    pub xnft: Account<'info, Xnft2>,
 
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
@@ -357,7 +357,7 @@ pub struct DeleteInstall {
 }
 
 #[account]
-pub struct Xnft {
+pub struct Xnft2 {
     authority: Pubkey,
     publisher: Pubkey,
     kind: Kind,
@@ -410,6 +410,6 @@ pub enum Kind {
     Image,
 }
 
-impl Xnft {
+impl Xnft2 {
     pub const LEN: usize = 8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32;
 }
