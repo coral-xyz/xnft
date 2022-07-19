@@ -90,6 +90,10 @@ describe("xnft", () => {
   });
 
   describe("if the authority was to stop installations of their xnft", () => {
+    after(async () => {
+      await program.methods.setSuspended(false).accounts({ xnft }).rpc();
+    });
+
     it("they can suspend the xnft", async () => {
       await program.methods
         .setSuspended(true)
