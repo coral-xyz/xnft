@@ -92,6 +92,7 @@ pub mod xnft {
         xnft.master_metadata = ctx.accounts.master_metadata.key();
         xnft.master_mint = ctx.accounts.master_mint.key();
         xnft.bump = xnft_bump;
+        xnft.suspended = false;
 
         Ok(())
     }
@@ -99,7 +100,7 @@ pub mod xnft {
     /// Updates the code of an xNFT.
     ///
     /// This is simply a token metadata update cpi.
-    pub fn update_xnft(ctx: Context<UpdateXnft>) -> Result<()> {
+    pub fn update_xnft(_ctx: Context<UpdateXnft>) -> Result<()> {
         // todo
         Ok(())
     }
@@ -148,14 +149,21 @@ pub mod xnft {
 
     /// Variant of `create_xnft_installation` where the install authority is
     /// required to sign.
-    pub fn create_install_with_authority(ctx: Context<CreateInstallWithAuthority>) -> Result<()> {
+    pub fn create_install_with_authority(_ctx: Context<CreateInstallWithAuthority>) -> Result<()> {
         // todo
         Ok(())
     }
 
     /// Closes the install account.
-    pub fn delete_install(ctx: Context<DeleteInstall>) -> Result<()> {
+    pub fn delete_install(_ctx: Context<DeleteInstall>) -> Result<()> {
         // todo
+        Ok(())
+    }
+
+    /// Sets the install suspension flag on the xnft.
+    pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
+        let xnft = &mut ctx.accounts.xnft;
+        xnft.suspended = flag;
         Ok(())
     }
 }
@@ -296,6 +304,7 @@ pub struct CreateInstall<'info> {
         mut,
         has_one = install_vault,
         constraint = xnft.install_authority == None,
+        constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
     pub xnft: Account<'info, Xnft2>,
 
@@ -323,7 +332,11 @@ pub struct CreateInstall<'info> {
 
 #[derive(Accounts)]
 pub struct CreateInstallWithAuthority<'info> {
-    #[account(mut, constraint = xnft.install_authority == Some(install_authority.key()))]
+    #[account(
+        mut,
+        constraint = xnft.install_authority == Some(install_authority.key()),
+        constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
+    )]
     pub xnft: Account<'info, Xnft2>,
 
     ////////////////////////////////////////////////////////////////////////////
@@ -354,6 +367,17 @@ pub struct UpdateInstallWithSubscription {
 #[derive(Accounts)]
 pub struct DeleteInstall {
     // todo
+}
+
+#[derive(Accounts)]
+pub struct SetSuspended<'info> {
+    #[account(
+        mut,
+        has_one = authority,
+    )]
+    pub xnft: Account<'info, Xnft2>,
+
+    pub authority: Signer<'info>,
 }
 
 #[account]
@@ -387,6 +411,10 @@ pub struct Xnft2 {
     updated_ts: i64,
     install_authority: Option<Pubkey>,
     name: String,
+    //
+    // Flag to mark xnft as suspending further installs.
+    //
+    suspended: bool,
 }
 
 #[account]
@@ -411,5 +439,12 @@ pub enum Kind {
 }
 
 impl Xnft2 {
-    pub const LEN: usize = 8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32;
+    pub const LEN: usize =
+        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1;
+}
+
+#[error_code]
+pub enum CustomError {
+    #[msg("Attempting to install a currently suspended xNFT")]
+    SuspendedInstallation,
 }
