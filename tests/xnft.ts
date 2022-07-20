@@ -3,10 +3,13 @@ import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { Xnft } from "../target/types/xnft";
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
 import { assert } from "chai";
 
-const metadataProgram = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+const metadataProgram = new PublicKey(
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+);
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe("xnft", () => {
   // Configure the client to use the local cluster.
@@ -26,7 +29,14 @@ describe("xnft", () => {
       "https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json";
     const seller_fee_basis_points = 1;
     const tx = await program.methods
-      .createXnft(name, symbol, uri, seller_fee_basis_points, installPrice, installVault)
+      .createXnft(
+        name,
+        symbol,
+        uri,
+        seller_fee_basis_points,
+        installPrice,
+        installVault
+      )
       .accounts({
         metadataProgram,
       });
@@ -37,15 +47,16 @@ describe("xnft", () => {
   });
 
   it("fetch created xNFT", async () => {
-    const fetchedXnft = await program.account.xnft.fetch(xnft)
-    assert.equal(fetchedXnft.name, "my-xnft")
-  })
+    const fetchedXnft = await program.account.xnft2.fetch(xnft);
+    assert.equal(fetchedXnft.name, "my-xnft");
+  });
 
   it("installs an xNFT into the user's wallet", async () => {
-    const tx = await program.methods.createInstall().accounts({
+    const tx = program.methods.createInstall().accounts({
       xnft,
       installVault,
     });
+
     await tx.rpc();
 
     const pubkeys = await tx.pubkeys();
@@ -53,29 +64,72 @@ describe("xnft", () => {
   });
 
   it("fetch xnfts owned by user", async () => {
-    const ownedxNFTs = await program.account.xnft.all([
+    const ownedxNFTs = await program.account.xnft2.all([
       {
         memcmp: {
           offset: 8, // Discriminator
-          bytes: program.provider.publicKey.toBase58()
-        }
-      }
-    ])
+          bytes: program.provider.publicKey.toBase58(),
+        },
+      },
+    ]);
 
-    assert.isNotEmpty(ownedxNFTs)
-  })
-
+    assert.isNotEmpty(ownedxNFTs);
+  });
 
   it("fetch user installed xNFTs", async () => {
     const installedxNFTs = await program.account.install.all([
       {
         memcmp: {
           offset: 8, // Discriminator
-          bytes: program.provider.publicKey.toBase58()
-        }
-      }
-    ])
+          bytes: program.provider.publicKey.toBase58(),
+        },
+      },
+    ]);
 
-    assert.isNotEmpty(installedxNFTs)
-  })
+    assert.isNotEmpty(installedxNFTs);
+  });
+
+  describe("if the authority was to stop installations of their xnft", () => {
+    after(async () => {
+      await program.methods.setSuspended(false).accounts({ xnft }).rpc();
+    });
+
+    it("they can suspend the xnft", async () => {
+      await program.methods
+        .setSuspended(true)
+        .accounts({
+          xnft,
+        })
+        .rpc();
+
+      const acc = await program.account.xnft2.fetch(xnft);
+      assert.isTrue(acc.suspended);
+    });
+
+    it("this will prevent users from installing", async () => {
+      const installer = anchor.web3.Keypair.generate();
+      await program.provider.connection.requestAirdrop(
+        installer.publicKey,
+        1 * anchor.web3.LAMPORTS_PER_SOL
+      );
+
+      await wait(500);
+
+      try {
+        await program.methods
+          .createInstall()
+          .accounts({
+            xnft,
+            installVault,
+            authority: installer.publicKey,
+          })
+          .signers([installer])
+          .rpc();
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, "SuspendedInstallation");
+      }
+    });
+  });
 });
