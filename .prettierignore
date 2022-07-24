@@ -1,8 +1,9 @@
-
-.anchor
+.anchor/
 .DS_Store
-target
-node_modules
-dist
-build
-test-ledger
+.next/
+build/
+deps/
+dist/
+node_modules/
+target/
+test-ledger/
