@@ -2013,7 +2013,11 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
+<<<<<<< HEAD
 "@solana/web3.js@^1.43.3", "@solana/web3.js@^1.44.0":
+=======
+"@solana/web3.js@^1.43.3", "@solana/web3.js@^1.44.0", "@solana/web3.js@^1.50.0":
+>>>>>>> c37b5c9 (migrate appstore as monorepo)
   version "1.50.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.50.0.tgz#afc01b0fdeb86b571eefd243567a7dc9a281f236"
   integrity sha512-9KCuF3QLHd/dkYlffYPSHPbPFaBKqiwwDqWR+C/z1CZZbQybu+NCydWvwHHqrrlG50wn15L/6zYLb5Tjr6tOkA==
