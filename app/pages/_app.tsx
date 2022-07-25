@@ -25,9 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
         <ContextProvider>
           <div className="bg-zinc-900">
-            <div
-              className="justify-between mx-auto flex min-h-screen max-w-7xl flex-col"
-            >
+            <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-between">
               <div className="pb-10">
                 <Nav />
               </div>

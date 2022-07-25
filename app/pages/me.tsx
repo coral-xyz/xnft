@@ -17,12 +17,11 @@ export default function MyApps() {
       </div>
 
       {/* Installed xNFTs Apps */}
-
       <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-medium tracking-wide text-zinc-50">xNFTs App</h2>
+        <h2 className="text-3xl font-extrabold tracking-wide text-zinc-50">xNFT App</h2>
 
         {installedXNFTs && (
-          <div className="flex  w-full flex-col justify-center">
+          <div className="flex w-full flex-col justify-center">
             <ul
               role="list"
               className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
@@ -70,7 +69,7 @@ export default function MyApps() {
 
       {/* Published xNFTs Apps */}
       <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-medium tracking-wide text-zinc-50">Published xNFT Apps</h2>
+        <h2 className="text-3xl font-extrabold tracking-wide text-zinc-50">Published xNFT Apps</h2>
         {ownedXNFTs && (
           <div className="flex  w-full flex-col justify-center">
             <ul

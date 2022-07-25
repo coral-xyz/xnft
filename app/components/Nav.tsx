@@ -23,9 +23,7 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
-const mainMenu = [
-  { title: 'Backpack', path: '/' },
-];
+const mainMenu = [{ title: 'Backpack', path: '/' }];
 
 function Nav() {
   const { connected, disconnect, publicKey } = useWallet();
