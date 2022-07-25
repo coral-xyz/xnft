@@ -1,23 +1,24 @@
+import type { Dispatch } from 'react';
+import type { UploadDispatchAction, UploadState } from '../reducers/upload';
 import generateMetadata from './generate-nft-metadata';
 
 const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/`;
 
 /**
  * Input Files S3 Uploader
- * @param uploadState
- * @param uploadDispatch
- * @param publicKey
+ * @param {UploadState} state
+ * @param {string} publicKey
  */
-export async function filesS3Uploader(uploadState: any, uploadDispatch: any, publicKey: string) {
+export async function filesS3Uploader(state: UploadState, publicKey: string) {
   const files = [].concat(
-    uploadState.bundle,
-    uploadState.icon
-    // ...uploadState.screenshots
+    state.bundle,
+    state.icon
+    // ...state.screenshots
   );
 
   let count = 0;
   for await (const file of files) {
-    let filePath = `${publicKey}/${uploadState.title}`;
+    let filePath = `${publicKey}/${state.title}`;
 
     if (count === 0) {
       filePath = `${filePath}/bundle/${file.name}`;
@@ -58,10 +59,24 @@ export async function filesS3Uploader(uploadState: any, uploadDispatch: any, pub
   }
 }
 
-export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, publicKey: string) {
+/**
+ * @param {UploadState} state
+ * @param {Dispatch<UploadDispatchAction<'s3UrlMetadata'>>} dispatch
+ * @param {string} publicKey
+ * @returns {Promise<string>}
+ */
+export async function metadataS3Uploader(
+  state: UploadState,
+  dispatch: Dispatch<UploadDispatchAction<'s3UrlMetadata'>>,
+  publicKey: string
+): Promise<string> {
   try {
-    const metadata = generateMetadata(uploadState, uploadDispatch, publicKey);
-    const fileName = `${publicKey}/${uploadState.title}/metadata.json`;
+    const metadata = generateMetadata(
+      state,
+      dispatch as Dispatch<UploadDispatchAction<any>>,
+      publicKey
+    );
+    const fileName = `${publicKey}/${state.title}/metadata.json`;
 
     const resp = await fetch('/api/s3', {
       method: 'POST',
@@ -85,7 +100,7 @@ export async function metadataS3Uploader(uploadState: any, uploadDispatch: any, 
       body: metadata
     });
 
-    uploadDispatch({
+    dispatch({
       type: 'field',
       field: 's3UrlMetadata',
       value: `${BUCKET_URL}${fileName}`

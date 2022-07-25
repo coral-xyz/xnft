@@ -1,7 +1,7 @@
 /**
  * Save cached data in LocalStorage
- * @param key
- * @param value
+ * @param {string} key
+ * @param {any} value
  */
 export function setCache(key: string, value: any) {
   if (typeof window !== 'undefined') {
@@ -11,8 +11,8 @@ export function setCache(key: string, value: any) {
 
 /**
  * Get cached data from LocalStorage
- * @param key
- * @returns
+ * @param {string} key
+ * @returns {any}
  */
 export function getCache(key: string): any {
   if (typeof window !== 'undefined') {

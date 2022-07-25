@@ -20,7 +20,8 @@ export const uploadInitialState = {
   screenshots: {} as FileList,
   s3UrlBundle: '',
   s3UrlIcon: '',
-  s3UrlScreenshots: ''
+  s3UrlScreenshots: '',
+  s3UrlMetadata: ''
 };
 
 export function uploadReducer<K extends keyof UploadState>(
