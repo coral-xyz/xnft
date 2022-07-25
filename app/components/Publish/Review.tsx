@@ -1,5 +1,6 @@
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { memo, useEffect, useState } from 'react';
+import Image from 'next/image';
 import type { UploadState } from '../../reducers/upload';
 
 function Review({ state }: { state: UploadState }) {
@@ -19,7 +20,7 @@ function Review({ state }: { state: UploadState }) {
     <div className="py-10">
       <div className="flex justify-center gap-6 px-52">
         {/* App Icon */}
-        <img className="h-56 w-56 rounded-xl" alt="app-icon" src={icon} />
+        <Image className="h-56 w-56 rounded-xl" alt="app-icon" src={icon} />
 
         <div className="flex flex-col gap-4">
           {/* Title and verification status */}

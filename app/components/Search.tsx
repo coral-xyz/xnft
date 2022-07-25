@@ -55,7 +55,9 @@ export default function Search({ open, setOpen }: SearchProps) {
             >
               <Combobox
                 value={query}
-                onChange={(item: any) => (window.location = item.url || `/app/${item.accounts.publicKey}`)}
+                onChange={(item: any) =>
+                  (window.location = item.url || `/app/${item.accounts.publicKey}`)
+                }
               >
                 <div className="relative">
                   <SearchIcon
