@@ -25,24 +25,6 @@ function classNames(...classes: any) {
 
 const mainMenu = [
   { title: 'Backpack', path: '/' },
-  // {
-  //   title: 'xNFT Library',
-  //   path: '/library'
-  // },
-
-  {
-    title: 'Blog',
-    path: 'https://www.coral.community/post/wtf-are-xnfts'
-  },
-  {
-    title: 'About',
-    path: '/about'
-  }
-  // {
-  //   title: 'For Developers',
-  //   path: '/docs',
-  //   disable: true
-  // }
 ];
 
 function Nav() {
@@ -56,13 +38,13 @@ function Nav() {
       <Disclosure as="nav" className="bg-zinc-900">
         {({ open }) => (
           <>
-            <div className=" mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
+            <div className=" mx-auto max-w-7xl px-5">
               <div className="relative flex h-16 items-center justify-between">
-                <div className="flex items-center gap-4 px-2 lg:px-0">
+                <div className="flex items-center gap-4">
                   {/* Logo */}
                   <Link href="/">
                     <div className="flex">
-                      <Image alt="" src="/logo1.svg" width="120px" height="40px" />
+                      <Image alt="" src="/logo.svg" width="120px" height="40px" />
                     </div>
                   </Link>
                 </div>
