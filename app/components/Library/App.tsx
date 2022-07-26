@@ -17,7 +17,7 @@ function App({ iconUrl, name, description, publicKey, publisher, installVault, m
   return (
     <div className="flex w-full items-center justify-between rounded-md px-5 py-2">
       <Link className="w-10/12" href={appLink}>
-        <div className="flex  gap-3">
+        <div className="flex gap-3">
           <div className="h-10 w-10">
             <Image
               alt="logo"
