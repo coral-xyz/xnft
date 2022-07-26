@@ -30,9 +30,6 @@ const steps = [
 ];
 
 export default function Publish() {
-  // const { connected, publicKey } = useWallet();
-  // const anchorWallet = useAnchorWallet();
-
   const [state, dispatch] = useReducer(uploadReducer, uploadInitialState);
   const [currentStep, setCurrentStep] = useState(0);
 
