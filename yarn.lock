@@ -2013,14 +2013,33 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-<<<<<<< HEAD
 "@solana/web3.js@^1.43.3", "@solana/web3.js@^1.44.0":
-=======
-"@solana/web3.js@^1.43.3", "@solana/web3.js@^1.44.0", "@solana/web3.js@^1.50.0":
->>>>>>> c37b5c9 (migrate appstore as monorepo)
   version "1.50.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.50.0.tgz#afc01b0fdeb86b571eefd243567a7dc9a281f236"
   integrity sha512-9KCuF3QLHd/dkYlffYPSHPbPFaBKqiwwDqWR+C/z1CZZbQybu+NCydWvwHHqrrlG50wn15L/6zYLb5Tjr6tOkA==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@ethersproject/sha2" "^5.5.0"
+    "@solana/buffer-layout" "^4.0.0"
+    bigint-buffer "^1.1.5"
+    bn.js "^5.0.0"
+    borsh "^0.7.0"
+    bs58 "^4.0.1"
+    buffer "6.0.1"
+    fast-stable-stringify "^1.0.0"
+    jayson "^3.4.4"
+    js-sha3 "^0.8.0"
+    node-fetch "2"
+    react-native-url-polyfill "^1.3.0"
+    rpc-websockets "^7.5.0"
+    secp256k1 "^4.0.2"
+    superstruct "^0.14.2"
+    tweetnacl "^1.0.0"
+
+"@solana/web3.js@^1.50.1":
+  version "1.50.1"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.50.1.tgz#dae726a06267d1bcd88b1e3cd8ae44c709302dcf"
+  integrity sha512-1l9N/nS8pJEA2YibNT8wa072718O0/A1eKWE0+pdWC5wDGQgBNxZSLuv7Cq5Dcn46WsZ5J5ZstK89q8J/ZZaQA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@ethersproject/sha2" "^5.5.0"

@@ -1,10 +1,9 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { AnchorProvider, Program } from '@project-serum/anchor';
-import { IDL, Xnft } from '../programs/xnft';
-import BN from 'bn.js';
+import { AnchorProvider, Program, BN } from '@project-serum/anchor';
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
-import fetcher from './fetcher';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
+import fetch from 'isomorphic-unfetch';
+import { IDL, Xnft } from '../programs/xnft';
 
 const connection = new Connection(process.env.NEXT_PUBLIC_CONNECTION);
 
@@ -81,8 +80,9 @@ export async function getAllXNFTs(): Promise<any[]> {
        * Timeout in case there's a broken metadata link
        */
 
-      // @ts-ignore
-      const metadata = await fetcher(metadataAccount.data.uri, { timeout: 3000 });
+      const metadata = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit).then(
+        res => res.json()
+      );
 
       const xnft = {
         accounts: item,
@@ -126,7 +126,9 @@ export async function getXNFT(xnftPk: PublicKey): Promise<any> {
     );
 
     // Find Metadata data
-    const metadata = await fetcher(metadataAccount.data.uri, { timeout: 3000 });
+    const metadata = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit).then(
+      res => res.json()
+    );
 
     const xnft = {
       accounts: {
@@ -179,13 +181,13 @@ export async function installXNFT(
  */
 export async function findXNFTMintPDA(publisher: PublicKey, name: string): Promise<PublicKey> {
   // Mint PDA Address
-  const [mintPdaAddress, mintPdaBumpSeed] = await PublicKey.findProgramAddress(
+  const [mintPdaAddress] = await PublicKey.findProgramAddress(
     [Buffer.from('mint'), new PublicKey(publisher).toBuffer(), Buffer.from(name)],
     new PublicKey(programID)
   );
 
   // Master Edition PDA
-  const [masterEditionPdaAddress, masterEditionPdaBumpSeed] = await PublicKey.findProgramAddress(
+  const [masterEditionPdaAddress] = await PublicKey.findProgramAddress(
     [
       Buffer.from('metadata'),
       new PublicKey(metadataProgram).toBuffer(),
@@ -196,7 +198,7 @@ export async function findXNFTMintPDA(publisher: PublicKey, name: string): Promi
   );
 
   // xnft PDA (needed to install)
-  const [xnftPdaAddress, xnftPdaBumpSeed] = await PublicKey.findProgramAddress(
+  const [xnftPdaAddress] = await PublicKey.findProgramAddress(
     [Buffer.from('xnft'), masterEditionPdaAddress.toBuffer()],
     new PublicKey(programID)
   );

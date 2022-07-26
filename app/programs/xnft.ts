@@ -4,6 +4,17 @@ export type Xnft = {
   instructions: [
     {
       name: 'createXnft';
+      docs: [
+        'Creates all parts of an xNFT instance.',
+        '',
+        '* Master mint (supply 1).',
+        '* Master token.',
+        '* Master metadata PDA associated with the master mint.',
+        '* Master edition PDA associated with the master mint.',
+        '* xNFT PDA associated with the master edition.',
+        '',
+        'Once this is invoked, an xNFT exists and can be "installed" by users.'
+      ];
       accounts: [
         {
           name: 'metadataProgram';
@@ -58,6 +69,7 @@ export type Xnft = {
           name: 'masterMetadata';
           isMut: true;
           isSigner: false;
+          docs: ['metadata program.'];
           pda: {
             seeds: [
               {
@@ -88,6 +100,7 @@ export type Xnft = {
           name: 'masterEdition';
           isMut: true;
           isSigner: false;
+          docs: ['metadata program.'];
           pda: {
             seeds: [
               {
@@ -193,11 +206,18 @@ export type Xnft = {
     },
     {
       name: 'updateXnft';
+      docs: ['Updates the code of an xNFT.', '', 'This is simply a token metadata update cpi.'];
       accounts: [];
       args: [];
     },
     {
       name: 'createInstall';
+      docs: [
+        'Creates an "installation" of an xNFT.',
+        '',
+        'Installation is just a synonym for minting an xNFT edition for a given',
+        'user.'
+      ];
       accounts: [
         {
           name: 'xnft';
@@ -249,6 +269,10 @@ export type Xnft = {
     },
     {
       name: 'createInstallWithAuthority';
+      docs: [
+        'Variant of `create_xnft_installation` where the install authority is',
+        'required to sign.'
+      ];
       accounts: [
         {
           name: 'xnft';
@@ -294,8 +318,31 @@ export type Xnft = {
     },
     {
       name: 'deleteInstall';
+      docs: ['Closes the install account.'];
       accounts: [];
       args: [];
+    },
+    {
+      name: 'setSuspended';
+      docs: ['Sets the install suspension flag on the xnft.'];
+      accounts: [
+        {
+          name: 'xnft';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [
+        {
+          name: 'flag';
+          type: 'bool';
+        }
+      ];
     }
   ];
   accounts: [
@@ -363,6 +410,10 @@ export type Xnft = {
           {
             name: 'name';
             type: 'string';
+          },
+          {
+            name: 'suspended';
+            type: 'bool';
           }
         ];
       };
@@ -408,6 +459,13 @@ export type Xnft = {
       };
     }
   ];
+  errors: [
+    {
+      code: 6000;
+      name: 'SuspendedInstallation';
+      msg: 'Attempting to install a currently suspended xNFT';
+    }
+  ];
 };
 
 export const IDL: Xnft = {
@@ -416,6 +474,17 @@ export const IDL: Xnft = {
   instructions: [
     {
       name: 'createXnft',
+      docs: [
+        'Creates all parts of an xNFT instance.',
+        '',
+        '* Master mint (supply 1).',
+        '* Master token.',
+        '* Master metadata PDA associated with the master mint.',
+        '* Master edition PDA associated with the master mint.',
+        '* xNFT PDA associated with the master edition.',
+        '',
+        'Once this is invoked, an xNFT exists and can be "installed" by users.'
+      ],
       accounts: [
         {
           name: 'metadataProgram',
@@ -470,6 +539,7 @@ export const IDL: Xnft = {
           name: 'masterMetadata',
           isMut: true,
           isSigner: false,
+          docs: ['metadata program.'],
           pda: {
             seeds: [
               {
@@ -500,6 +570,7 @@ export const IDL: Xnft = {
           name: 'masterEdition',
           isMut: true,
           isSigner: false,
+          docs: ['metadata program.'],
           pda: {
             seeds: [
               {
@@ -605,11 +676,18 @@ export const IDL: Xnft = {
     },
     {
       name: 'updateXnft',
+      docs: ['Updates the code of an xNFT.', '', 'This is simply a token metadata update cpi.'],
       accounts: [],
       args: []
     },
     {
       name: 'createInstall',
+      docs: [
+        'Creates an "installation" of an xNFT.',
+        '',
+        'Installation is just a synonym for minting an xNFT edition for a given',
+        'user.'
+      ],
       accounts: [
         {
           name: 'xnft',
@@ -661,6 +739,10 @@ export const IDL: Xnft = {
     },
     {
       name: 'createInstallWithAuthority',
+      docs: [
+        'Variant of `create_xnft_installation` where the install authority is',
+        'required to sign.'
+      ],
       accounts: [
         {
           name: 'xnft',
@@ -706,8 +788,31 @@ export const IDL: Xnft = {
     },
     {
       name: 'deleteInstall',
+      docs: ['Closes the install account.'],
       accounts: [],
       args: []
+    },
+    {
+      name: 'setSuspended',
+      docs: ['Sets the install suspension flag on the xnft.'],
+      accounts: [
+        {
+          name: 'xnft',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true
+        }
+      ],
+      args: [
+        {
+          name: 'flag',
+          type: 'bool'
+        }
+      ]
     }
   ],
   accounts: [
@@ -775,6 +880,10 @@ export const IDL: Xnft = {
           {
             name: 'name',
             type: 'string'
+          },
+          {
+            name: 'suspended',
+            type: 'bool'
           }
         ]
       }
@@ -818,6 +927,13 @@ export const IDL: Xnft = {
           }
         ]
       }
+    }
+  ],
+  errors: [
+    {
+      code: 6000,
+      name: 'SuspendedInstallation',
+      msg: 'Attempting to install a currently suspended xNFT'
     }
   ]
 };
