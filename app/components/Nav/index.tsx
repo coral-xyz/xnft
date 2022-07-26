@@ -1,16 +1,17 @@
 import { Disclosure } from '@headlessui/react';
-import { memo } from 'react';
+import { memo, PropsWithChildren } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ExternalLinkIcon, MenuIcon, XIcon } from '@heroicons/react/solid';
 
 function NavLinks({
   className,
+  children,
   highlightActive
-}: {
+}: PropsWithChildren<{
   className: string;
   highlightActive?: boolean;
-}) {
+}>) {
   return (
     <div className={className}>
       <Link href="https://backpack.app">
@@ -23,6 +24,7 @@ function NavLinks({
           xNFT Library
         </button>
       </Link>
+      {children}
     </div>
   );
 }
@@ -70,7 +72,13 @@ function Nav() {
             </div>
           </div>
           <Disclosure.Panel className="md:hidden lg:hidden">
-            <NavLinks className="flex flex-col gap-1 px-2 pt-2 pb-3" />
+            <NavLinks className="flex flex-col gap-1 px-2 pt-2 pb-3">
+              <Link href="https://docs.xnft.gg">
+                <button className="flex items-center gap-2.5 px-3 py-2">
+                  Docs <ExternalLinkIcon height={14} />
+                </button>
+              </Link>
+            </NavLinks>
           </Disclosure.Panel>
         </div>
       )}
