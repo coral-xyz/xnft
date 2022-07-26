@@ -9,7 +9,16 @@ module.exports = {
       colors: {
         theme: {
           primary: '#F66C5E',
-          accent: '#4F46E5'
+          accent: '#4F46E5',
+          background: {
+            DEFAULT: '#1F2937',
+            light: '#394150',
+            dark: '#111827'
+          },
+          font: {
+            DEFAULT: '#FFFFFF',
+            gray: '#9CA3AF'
+          }
         }
       },
       fontFamily: {

@@ -1,6 +1,6 @@
 import { PhotographIcon } from '@heroicons/react/outline';
 import { type Dispatch, memo } from 'react';
-import type { UploadDispatchAction, UploadState } from '../../reducers/upload';
+import type { UploadDispatchAction, UploadState } from '../../state/reducers/upload';
 import SupplySelect from './SupplySelect';
 
 const numbersOnly = /^\d*$/;

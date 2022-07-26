@@ -1,6 +1,8 @@
+import { PublicKey } from '@solana/web3.js';
 import React from 'react';
+import type { GetStaticPropsContext } from 'next';
 import dynamic from 'next/dynamic';
-import { getAllXNFTs, getXNFT } from '../../utils/xnft-client';
+import { getAllXNFTs, getXNFT } from '../../utils/xnft';
 
 const Tabs = dynamic(() => import('../../components/View/Tabs'));
 const AppBanner = dynamic(() => import('../../components/View/Banner'));
@@ -17,8 +19,8 @@ export async function getStaticPaths() {
   return { paths, fallback: 'blocking' };
 }
 
-export async function getStaticProps(context) {
-  const xnft = await getXNFT(context.params.xnftPK);
+export async function getStaticProps(context: GetStaticPropsContext) {
+  const xnft = await getXNFT(new PublicKey(context.params?.xnftPK));
 
   return {
     props: {

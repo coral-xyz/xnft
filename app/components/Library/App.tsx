@@ -3,7 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import { memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { installXNFT } from '../../utils/xnft-client';
+import { installXNFT } from '../../utils/xnft';
 
 function App({ iconUrl, name, description, publicKey, publisher, installVault, mode }: AppPros) {
   const anchorWallet = useAnchorWallet();
@@ -17,7 +17,7 @@ function App({ iconUrl, name, description, publicKey, publisher, installVault, m
   return (
     <div className="flex w-full items-center justify-between rounded-md px-5 py-2">
       <Link className="w-10/12" href={appLink}>
-        <div className="flex  gap-3">
+        <div className="flex gap-3">
           <div className="h-10 w-10">
             <Image
               alt="logo"

@@ -3,10 +3,10 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { AnchorWalletAdapter, PhantomWalletAdapter } from '@italoacasas/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
-import { FC, ReactNode, useMemo } from 'react';
+import { type FunctionComponent, type ReactNode, useMemo } from 'react';
 import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
 
-const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   const { autoConnect } = useAutoConnect();
 
   let network = null;
@@ -27,7 +27,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-export const ContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const ContextProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   return (
     <AutoConnectProvider>
       <WalletContextProvider>{children}</WalletContextProvider>

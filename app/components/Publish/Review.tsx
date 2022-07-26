@@ -1,7 +1,7 @@
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { memo, useEffect, useState } from 'react';
 import Image from 'next/image';
-import type { UploadState } from '../../reducers/upload';
+import type { UploadState } from '../../state/reducers/upload';
 
 function Review({ state }: { state: UploadState }) {
   const [icon, setIcon] = useState('');

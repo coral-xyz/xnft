@@ -2,7 +2,7 @@
 import { ArrowRightIcon } from '@heroicons/react/solid';
 import dynamic from 'next/dynamic';
 import { useMemo, useReducer, useState } from 'react';
-import { uploadInitialState, uploadReducer } from '../reducers/upload';
+import { uploadInitialState, uploadReducer } from '../state/reducers/upload';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
