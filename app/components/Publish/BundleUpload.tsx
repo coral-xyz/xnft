@@ -1,6 +1,6 @@
 import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
 import { type Dispatch, memo } from 'react';
-import type { UploadDispatchAction, UploadState } from '../../reducers/upload';
+import type { UploadDispatchAction, UploadState } from '../../state/reducers/upload';
 
 function BundleUpload({
   state,

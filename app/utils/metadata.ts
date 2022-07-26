@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import type { UploadDispatchAction, UploadState } from '../reducers/upload';
+import type { UploadDispatchAction, UploadState } from '../state/reducers/upload';
 
 const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
 

@@ -1,6 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
-import { fetchOwnedXNFTs } from '../utils/xnft-client';
+import { getOwnedXNFTs } from '../utils/xnft';
 
 export default function useOwnedXNFTs() {
   const { publicKey } = useWallet();
@@ -8,7 +8,7 @@ export default function useOwnedXNFTs() {
 
   useEffect(() => {
     async function run() {
-      const response = await fetchOwnedXNFTs(publicKey);
+      const response = await getOwnedXNFTs(publicKey);
       setOwnedXNFTs(response);
     }
     if (publicKey) run();

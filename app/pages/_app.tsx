@@ -3,8 +3,8 @@ import type { AppProps } from 'next/app';
 import PlausibleProvider from 'next-plausible';
 import Head from 'next/head';
 import Nav from '../components/Nav';
-import { ContextProvider } from '../context/ContextProvider';
-import CoralFooter from '../components/CoralFooter';
+import { ContextProvider } from '../state/context/ContextProvider';
+import Footer from '../components/Footer';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
         <ContextProvider>
-          <div className="bg-zinc-900">
+          <div className="bg-theme-background">
             <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-between">
               <div className="pb-10">
                 <Nav />
@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               </div>
 
               <div className="items-end pb-8">
-                <CoralFooter />
+                <Footer />
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import type { Dispatch } from 'react';
-import type { UploadDispatchAction, UploadState } from '../reducers/upload';
-import generateMetadata from './generate-nft-metadata';
+import type { UploadDispatchAction, UploadState } from '../state/reducers/upload';
+import generateMetadata from './metadata';
 
 const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/`;
 

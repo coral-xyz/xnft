@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import dynamic from 'next/dynamic';
-import { getAllXNFTs } from '../utils/xnft-client';
+import { getAllXNFTs } from '../utils/xnft';
 
 const App = dynamic(() => import('../components/Library/App'));
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));

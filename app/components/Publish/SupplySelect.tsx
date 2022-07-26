@@ -1,6 +1,6 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { type Dispatch, useState } from 'react';
-import { UploadDispatchAction } from '../../reducers/upload';
+import { UploadDispatchAction } from '../../state/reducers/upload';
 
 export default function SupplySelect({
   value,
