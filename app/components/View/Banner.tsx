@@ -1,8 +1,8 @@
+import { useAnchorWallet } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
 import React, { memo } from 'react';
 import Image from 'next/image';
 import { installXNFT } from '../../utils/xnft-client';
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
 
 function AppBanner({ xnft }: AppBannerProps) {
   const anchorWallet = useAnchorWallet();

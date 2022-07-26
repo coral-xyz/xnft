@@ -16,12 +16,12 @@ const quickActions = [
   { name: 'Publish a new App', icon: FolderAddIcon, url: '/publish', disabled: false }
 ];
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function Search({ open, setOpen }: SearchProps) {
-  const { cachedXNFTs, isLoading } = useCachedXNFTs();
+  const { cachedXNFTs } = useCachedXNFTs();
   const [query, setQuery] = useState('');
 
   return (
@@ -55,7 +55,9 @@ export default function Search({ open, setOpen }: SearchProps) {
             >
               <Combobox
                 value={query}
-                onChange={item => (window.location = item.url || `/app/${item.accounts.publicKey}`)}
+                onChange={(item: any) =>
+                  (window.location = item.url || `/app/${item.accounts.publicKey}`)
+                }
               >
                 <div className="relative">
                   <SearchIcon

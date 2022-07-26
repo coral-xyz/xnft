@@ -1,44 +1,47 @@
+import type { Dispatch } from 'react';
+import type { UploadDispatchAction, UploadState } from '../reducers/upload';
+
 const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
 
 /**
  * Creates NFT metadata
- * @param uploadState
- * @param uploadDispatch
- * @param publicKey
+ * @param {UploadState} state
+ * @param {Dispatch<UploadDispatchAction<'s3UrlBundle' | 's3UrlIcon' | 's3UrlScreenshots'>>} dispatch
+ * @param {string} publicKey
  */
 export default function generateMetadata(
-  uploadState: any,
-  uploadDispatch: any,
+  state: UploadState,
+  dispatch: Dispatch<UploadDispatchAction<'s3UrlBundle' | 's3UrlIcon' | 's3UrlScreenshots'>>,
   publicKey: string
 ): string {
   const metadata = {
-    name: uploadState.title,
-    description: uploadState.description,
-    external_url: uploadState.website,
+    name: state.title,
+    description: state.description,
+    external_url: state.website,
     image: '',
     properties: {
       icon: '',
       bundle: '',
       screenshots: [],
-      twitter: uploadState.twitter,
-      discord: uploadState.discord,
-      website: uploadState.website
+      twitter: state.twitter,
+      discord: state.discord,
+      website: state.website
     }
   };
 
   const files = [].concat(
-    uploadState.bundle,
-    uploadState.icon
-    // ...uploadState.screenshots TODO:fix
+    state.bundle,
+    state.icon
+    // ...state.screenshots TODO:fix
   );
 
-  const uri = `${BUCKET_URL}/${publicKey}/${uploadState.title}`;
+  const uri = `${BUCKET_URL}/${publicKey}/${state.title}`;
   for (let i = 0; i < files.length; i++) {
     if (i === 0) {
       const url = `${uri}/bundle/${files[i].name}`;
 
       metadata.properties.bundle = url;
-      uploadDispatch({
+      dispatch({
         type: 'field',
         field: 's3UrlBundle',
         value: url
@@ -49,7 +52,7 @@ export default function generateMetadata(
       metadata.image = url;
       metadata.properties.icon = url;
 
-      uploadDispatch({
+      dispatch({
         type: 'field',
         field: 's3UrlIcon',
         value: url
@@ -60,7 +63,7 @@ export default function generateMetadata(
       metadata.properties.screenshots.push(url);
 
       // TODO: fix
-      uploadDispatch({
+      dispatch({
         type: 'field',
         field: 's3UrlScreenshots',
         value: url

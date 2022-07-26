@@ -1,10 +1,9 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { AnchorProvider, Program } from '@project-serum/anchor';
-import { IDL, Xnft } from '../programs/xnft';
-import BN from 'bn.js';
+import { AnchorProvider, Program, BN } from '@project-serum/anchor';
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
-import fetcher from './fetcher';
 import { AnchorWallet } from '@solana/wallet-adapter-react';
+import fetch from 'isomorphic-unfetch';
+import { IDL, Xnft } from '../programs/xnft';
 
 const connection = new Connection(process.env.NEXT_PUBLIC_CONNECTION);
 
@@ -14,19 +13,18 @@ const programID = process.env.NEXT_PUBLIC_XNFT_PROGRAMID;
 const metadataProgram = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s';
 
 /**
- * Mint a xNFT
- * @param data
- * @param anchorWallet
- * @param publicKey
- * @param medataUrl
- * @returns xnftPK
+ * @param {{ title: string }} data
+ * @param {AnchorWallet} anchorWallet
+ * @param {PublicKey} publicKey
+ * @param {string} metadataUrl
+ * @returns {string}
  */
 export async function xNFTMint(
-  data: any,
+  data: { title: string },
   anchorWallet: AnchorWallet,
   publicKey: PublicKey,
-  medataUrl: string
-) {
+  metadataUrl: string
+): Promise<string> {
   const provider = new AnchorProvider(connection, anchorWallet, { commitment: 'confirmed' });
   const program = new Program<Xnft>(IDL, programID, provider);
 
@@ -35,26 +33,25 @@ export async function xNFTMint(
   const name = data.title;
   const symbol = data.title.slice(0, 3);
   try {
-    const tx = await program.methods
-      .createXnft(name, symbol, medataUrl, seller_fee_basis_points, installPrice, publicKey)
+    const ix = program.methods
+      .createXnft(name, symbol, metadataUrl, seller_fee_basis_points, installPrice, publicKey)
       .accounts({
         metadataProgram: new PublicKey(metadataProgram)
       });
 
-    await tx.rpc();
+    await ix.rpc();
 
-    // @ts-ignore
-    return tx._accounts.xnft.toBase58();
+    const pks = await ix.pubkeys();
+    return pks.xnft.toBase58();
   } catch (error) {
     throw new Error(error);
   }
 }
 
 /**
- * Get All xNFTs
- * @returns xNFTs
+ * @returns {Promise<any[]>}
  */
-export async function getAllXNFTs(): Promise<Array<any>> {
+export async function getAllXNFTs(): Promise<any[]> {
   const provider = new AnchorProvider(
     connection,
     {
@@ -83,8 +80,9 @@ export async function getAllXNFTs(): Promise<Array<any>> {
        * Timeout in case there's a broken metadata link
        */
 
-      // @ts-ignore
-      const metadata = await fetcher(metadataAccount.data.uri, { timeout: 3000 });
+      const metadata = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit).then(
+        res => res.json()
+      );
 
       const xnft = {
         accounts: item,
@@ -102,9 +100,8 @@ export async function getAllXNFTs(): Promise<Array<any>> {
 }
 
 /**
- * Get xNFT
- * @param xnftPk
- * @returns xNFT
+ * @param {PublicKey} xnftPk
+ * @returns {Promise<any>}
  */
 export async function getXNFT(xnftPk: PublicKey): Promise<any> {
   const provider = new AnchorProvider(
@@ -129,7 +126,9 @@ export async function getXNFT(xnftPk: PublicKey): Promise<any> {
     );
 
     // Find Metadata data
-    const metadata = await fetcher(metadataAccount.data.uri, { timeout: 3000 });
+    const metadata = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit).then(
+      res => res.json()
+    );
 
     const xnft = {
       accounts: {
@@ -147,25 +146,24 @@ export async function getXNFT(xnftPk: PublicKey): Promise<any> {
 }
 
 /**
- * Install xNFT
- * @param anchorWallet
- * @param publisher
- * @param name
- * @param installVault
+ * @param {AnchorWallet} anchorWallet
+ * @param {PublicKey} publisher
+ * @param {string} name
+ * @param {PublicKey} installVault
  */
 export async function installXNFT(
   anchorWallet: AnchorWallet,
   publisher: PublicKey,
   name: string,
   installVault: PublicKey
-): Promise<any> {
+) {
   const provider = new AnchorProvider(connection, anchorWallet, { commitment: 'confirmed' });
   const program = new Program<Xnft>(IDL, programID, provider);
 
   try {
     const xnftPK = await findXNFTMintPDA(publisher, name);
 
-    const tx = await program.methods.createInstall().accounts({
+    const tx = program.methods.createInstall().accounts({
       xnft: xnftPK,
       installVault
     });
@@ -177,20 +175,19 @@ export async function installXNFT(
 }
 
 /**
- * Find xnft pda account
- * @param publisher
- * @param name
- * @returns
+ * @param {PublicKey} publisher
+ * @param {string} name
+ * @returns {Promise<PublicKey>}
  */
 export async function findXNFTMintPDA(publisher: PublicKey, name: string): Promise<PublicKey> {
   // Mint PDA Address
-  const [mintPdaAddress, mintPdaBumpSeed] = await PublicKey.findProgramAddress(
+  const [mintPdaAddress] = await PublicKey.findProgramAddress(
     [Buffer.from('mint'), new PublicKey(publisher).toBuffer(), Buffer.from(name)],
     new PublicKey(programID)
   );
 
   // Master Edition PDA
-  const [masterEditionPdaAddress, masterEditionPdaBumpSeed] = await PublicKey.findProgramAddress(
+  const [masterEditionPdaAddress] = await PublicKey.findProgramAddress(
     [
       Buffer.from('metadata'),
       new PublicKey(metadataProgram).toBuffer(),
@@ -201,7 +198,7 @@ export async function findXNFTMintPDA(publisher: PublicKey, name: string): Promi
   );
 
   // xnft PDA (needed to install)
-  const [xnftPdaAddress, xnftPdaBumpSeed] = await PublicKey.findProgramAddress(
+  const [xnftPdaAddress] = await PublicKey.findProgramAddress(
     [Buffer.from('xnft'), masterEditionPdaAddress.toBuffer()],
     new PublicKey(programID)
   );
@@ -209,6 +206,10 @@ export async function findXNFTMintPDA(publisher: PublicKey, name: string): Promi
   return xnftPdaAddress;
 }
 
+/**
+ * @param {PublicKey} publicKey
+ * @returns {Promise<any>}
+ */
 export async function fetchInstalledXNFTs(publicKey: PublicKey): Promise<any> {
   const provider = new AnchorProvider(
     connection,
@@ -239,6 +240,10 @@ export async function fetchInstalledXNFTs(publicKey: PublicKey): Promise<any> {
   return installedxNFTs;
 }
 
+/**
+ * @param {PublicKey} publicKey
+ * @returns {Promise<any>}
+ */
 export async function fetchOwnedXNFTs(publicKey: PublicKey): Promise<any> {
   const provider = new AnchorProvider(
     connection,

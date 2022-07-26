@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import S3 from 'aws-sdk/clients/s3';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const s3 = new S3({
   region: process.env.NEXT_PUBLIC_AWS_REGION,

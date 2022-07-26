@@ -19,21 +19,18 @@ function MyApp({ Component, pageProps }: AppProps) {
           name="twitter:image"
           content="https://www.backpack.app/_next/image?url=%2Fbrands%2Fbackpack-twitter.png&w=3840&q=75"
         />
-        <title>Backpack</title>
+        <title>xNFT Library</title>
       </Head>
 
-      <PlausibleProvider domain="backpack.app" trackOutboundLinks={true}>
+      <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
         <ContextProvider>
           <div className="bg-zinc-900">
-            <div
-              className="justify-betwee mx-auto flex min-h-screen
-          max-w-7xl flex-col"
-            >
+            <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-between">
               <div className="pb-10">
                 <Nav />
               </div>
 
-              <div className="mb-auto px-5 py-10 md:px-10">
+              <div className="mb-auto px-5 py-10">
                 <Component {...pageProps} />
               </div>
 
