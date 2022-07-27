@@ -8,13 +8,14 @@ type SearchProps = {
 
 const Search: FunctionComponent<SearchProps> = ({ value, onChange }) => {
   return (
-    <div className="hidden items-center justify-center lg:flex">
+    <div className="flex items-center justify-center">
       <label className="relative">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-          <SearchIcon className="text-theme-font-gray" height={16} />
+        <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+          <SearchIcon className="text-[#99A4B4]" height={16} />
         </span>
         <input
-          className="bg-theme-background-light placeholder:text-theme-font-gray w-80 rounded-lg py-2 pr-3 pl-8 font-normal focus:ring-0"
+          className="rounded-lg border-[1px] border-[#393C43] bg-transparent py-3
+            pl-4 pr-9 text-base font-medium text-white outline-none placeholder:text-[#99A4B4] focus:ring-0"
           placeholder="Search"
           value={value}
           onChange={e => onChange(e.currentTarget.value)}

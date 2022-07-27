@@ -14,7 +14,7 @@ type InputProps = {
 };
 
 const Input: FunctionComponent<InputProps> = props => {
-  const classes = `focus:border-theme-primary border-theme-background bg-theme-background
+  const classes = `focus:border-theme-primary border-theme-background bg-[#18181B]
     text-theme-font-gray-light w-full rounded-md text-sm focus:ring-0 ${
       props.className ? props.className : ''
     }`;

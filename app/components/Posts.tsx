@@ -19,7 +19,7 @@ export default function Posts() {
         {articles.map((article, index) => (
           <div
             key={index}
-            className="bg-theme-background-light flex max-w-xl flex-col items-center justify-around
+            className="bg-[#18181B]-light flex max-w-xl flex-col items-center justify-around
               gap-6 rounded-xl py-10 px-10 md:gap-2 lg:flex-row"
           >
             <div className="flex flex-col">

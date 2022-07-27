@@ -33,13 +33,10 @@ function Home({ data }) {
 
       {/*  Apps */}
       <div className="flex flex-col gap-3">
-        <h2 className="text-theme-font text-xl font-bold tracking-wide">xNFT Apps</h2>
+        <h2 className="text-2xl font-extrabold tracking-wide text-white">Popular</h2>
         <ul role="list" className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
           {xnfts.map((xnft, index) => (
-            <li
-              key={index}
-              className="bg-theme-background-light hover:bg-theme-background-dark col-span-1 rounded-lg py-2"
-            >
+            <li key={index} className="col-span-1 rounded-lg bg-[#27272A]">
               <App
                 key={index}
                 iconUrl={xnft.metadata.properties.icon}
