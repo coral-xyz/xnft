@@ -1,7 +1,7 @@
-import { memo } from 'react';
+import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
 
-function Footer() {
+const Footer: FunctionComponent = () => {
   return (
     <div className="flex justify-between px-5">
       <div className="flex flex-col justify-between">
@@ -32,6 +32,6 @@ function Footer() {
       </div>
     </div>
   );
-}
+};
 
 export default memo(Footer);

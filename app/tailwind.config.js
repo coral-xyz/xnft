@@ -17,7 +17,11 @@ module.exports = {
           },
           font: {
             DEFAULT: '#FFFFFF',
-            gray: '#9CA3AF'
+            gray: {
+              DEFAULT: '#9CA3AF',
+              light: '#E5E7EB',
+              dark: '#6B7280'
+            }
           }
         }
       },

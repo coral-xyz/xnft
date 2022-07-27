@@ -1,13 +1,18 @@
 import { BadgeCheckIcon } from '@heroicons/react/solid';
-import { memo, useEffect, useState } from 'react';
+import { type FunctionComponent, memo, useEffect, useState } from 'react';
 import Image from 'next/image';
-import type { UploadState } from '../../state/reducers/upload';
+import type { StepComponentProps } from '../../pages/publish';
 
-function Review({ state }: { state: UploadState }) {
+const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }) => {
   const [icon, setIcon] = useState('');
 
   useEffect(() => {
-    if (Reflect.has(state.icon, 'text')) {
+    setNextEnabled(true);
+  }, [setNextEnabled]);
+
+  useEffect(() => {
+    console.log(state.icon);
+    if ('name' in state.icon) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setIcon(reader.result as string);
@@ -18,9 +23,15 @@ function Review({ state }: { state: UploadState }) {
 
   return (
     <div className="py-10">
-      <div className="flex justify-center gap-6 px-52">
+      <div className="flex justify-center gap-6 md:px-52 lg:px-52">
         {/* App Icon */}
-        <Image className="h-56 w-56 rounded-xl" alt="app-icon" src={icon} />
+        <Image
+          className="h-56 w-56 rounded-xl"
+          alt="app-icon"
+          src={icon}
+          height={224}
+          width={224}
+        />
 
         <div className="flex flex-col gap-4">
           {/* Title and verification status */}
@@ -35,13 +46,13 @@ function Review({ state }: { state: UploadState }) {
           {/* Price */}
           <div>
             <span className="bg-theme-accent rounded-md px-4 py-2 font-medium text-white">
-              {state.price === '0.0' ? 'FREE' : state.price + 'SOL'}
+              {state.price === '0.0' ? 'FREE' : state.price + ' SOL'}
             </span>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default memo(Review);

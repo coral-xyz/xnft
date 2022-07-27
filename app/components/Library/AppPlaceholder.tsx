@@ -1,10 +1,15 @@
-import { memo } from 'react';
+import { type FunctionComponent, memo } from 'react';
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ');
 }
 
-function AppPlaceholder({ blur, animate }: AppPlaceholderProps) {
+type AppPlaceholderProps = {
+  blur: string;
+  animate: boolean;
+};
+
+const AppPlaceholder: FunctionComponent<AppPlaceholderProps> = ({ blur, animate }) => {
   function generatePlaceholder() {
     const component = [];
     for (let i = 0; i < 16; i++) {
@@ -35,11 +40,6 @@ function AppPlaceholder({ blur, animate }: AppPlaceholderProps) {
       {generatePlaceholder()}
     </div>
   );
-}
-
-interface AppPlaceholderProps {
-  blur: string;
-  animate: boolean;
-}
+};
 
 export default memo(AppPlaceholder);

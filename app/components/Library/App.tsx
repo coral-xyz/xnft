@@ -1,11 +1,29 @@
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { memo } from 'react';
+import { FunctionComponent, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { installXNFT } from '../../utils/xnft';
 
-function App({ iconUrl, name, description, publicKey, publisher, installVault, mode }: AppPros) {
+type AppProps = {
+  iconUrl: string;
+  name: string;
+  description: string;
+  publicKey?: string;
+  publisher?: PublicKey;
+  installVault?: PublicKey;
+  mode?: string;
+};
+
+const App: FunctionComponent<AppProps> = ({
+  iconUrl,
+  name,
+  description,
+  publicKey,
+  publisher,
+  installVault,
+  mode
+}) => {
   const anchorWallet = useAnchorWallet();
 
   const appLink = publicKey ? `/app/${publicKey}` : '';
@@ -59,16 +77,6 @@ function App({ iconUrl, name, description, publicKey, publisher, installVault, m
       )}
     </div>
   );
-}
-
-interface AppPros {
-  iconUrl: string;
-  name: string;
-  description: string;
-  publicKey?: string;
-  publisher?: PublicKey;
-  installVault?: PublicKey;
-  mode?: string;
-}
+};
 
 export default memo(App);

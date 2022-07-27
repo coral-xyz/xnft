@@ -1,22 +1,45 @@
 import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
-import { type Dispatch, memo } from 'react';
-import type { UploadDispatchAction, UploadState } from '../../state/reducers/upload';
+import { type ChangeEvent, memo, useCallback, type FunctionComponent } from 'react';
+import type { StepComponentProps } from '../../pages/publish';
 
-function BundleUpload({
+function transformBundleSize(size: number): string {
+  if (size < 1000) {
+    return size.toString();
+  } else if (size < 1000000) {
+    return `${(size / 1000).toFixed(2)} KB`;
+  } else {
+    return `${(size / 1000000).toFixed(2)} MB`;
+  }
+}
+
+const BundleUpload: FunctionComponent<StepComponentProps> = ({
   state,
-  dispatch
-}: {
-  state: UploadState;
-  dispatch: Dispatch<UploadDispatchAction<'bundle'>>;
-}) {
+  dispatch,
+  setNextEnabled
+}) => {
+  const handleUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      console.log(e.target.files[0]);
+
+      dispatch({
+        type: 'file',
+        field: 'bundle',
+        value: e.target.files[0]
+      });
+
+      setNextEnabled(true);
+    },
+    [dispatch, setNextEnabled]
+  );
+
   return (
     <label htmlFor="bundle" className="relative cursor-pointer">
       <div className="mt-1 flex justify-center py-16">
         <div className="space-y-1 text-center">
           {state.bundle.name ? (
-            <DocumentTextIcon height={66} className="mx-auto text-zinc-400" />
+            <DocumentTextIcon height={66} className="text-theme-font-gray mx-auto" />
           ) : (
-            <DocumentAddIcon height={66} className="mx-auto text-zinc-400" />
+            <DocumentAddIcon height={66} className="text-theme-font-gray mx-auto" />
           )}
           <div className="text-sm text-zinc-600">
             <span className="text-sm text-zinc-300">
@@ -29,32 +52,16 @@ function BundleUpload({
               accept=".js"
               type="file"
               className="sr-only hidden"
-              onChange={e =>
-                dispatch({
-                  type: 'file',
-                  field: 'bundle',
-                  value: e.target.files[0]
-                })
-              }
+              onChange={handleUpload}
             />
           </div>
-          <p className="text-sm text-[#4B5563]">
+          <p className="text-theme-font-gray-dark text-sm">
             {state.bundle.size ? transformBundleSize(state.bundle.size) : 'or drag and drop'}
           </p>
         </div>
       </div>
     </label>
   );
-}
-
-function transformBundleSize(size: number): string {
-  if (size < 1000) {
-    return size.toString();
-  } else if (size < 1000000) {
-    return `${(size / 1000).toFixed(2)} KB`;
-  } else {
-    return `${(size / 1000000).toFixed(2)} MB`;
-  }
-}
+};
 
 export default memo(BundleUpload);

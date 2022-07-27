@@ -1,19 +1,18 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import { type Dispatch, useState } from 'react';
-import { UploadDispatchAction } from '../../state/reducers/upload';
+import { type Dispatch, useState, memo, type FunctionComponent } from 'react';
+import type { UploadDispatchAction } from '../../state/reducers/upload';
 
-export default function SupplySelect({
-  value,
-  dispatch
-}: {
+type SupplySelectProps = {
   value: string;
   dispatch: Dispatch<UploadDispatchAction<'supply'>>;
-}) {
+};
+
+const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value, dispatch }) => {
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
   const classes = (checked: boolean, others?: string): string =>
-    ` px-4 py-4 border-2 bg-zinc-900 text-sm cursor-pointer rounded-md text-white ${
-      checked ? 'border-theme-primary' : 'border-zinc-900'
+    ` px-4 py-4 border-2 bg-theme-background text-sm cursor-pointer rounded-md text-theme-font ${
+      checked ? 'border-theme-primary' : 'border-theme-background'
     } ${others ? others : ''}`;
 
   return (
@@ -35,7 +34,8 @@ export default function SupplySelect({
         </div>
         <input
           type="text"
-          className="mt-4 w-full rounded-md border-zinc-600 bg-zinc-900 focus:border-zinc-600 focus:ring-0"
+          className="placeholder:text-theme-font-gray-dark bg-theme-background border-theme-font-gray-dark
+            focus:border-theme-font-gray-dark mt-4 w-full rounded-md focus:ring-0"
           placeholder="0"
           value={value === 'inf' ? '' : value}
           onChange={e => {
@@ -47,4 +47,6 @@ export default function SupplySelect({
       </div>
     </div>
   );
-}
+};
+
+export default memo(SupplySelect);
