@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <Nav />
               </div>
 
-              <div className="mb-auto px-5 py-10">
+              <div className="mb-auto py-10">
                 <Component {...pageProps} />
               </div>
 

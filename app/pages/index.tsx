@@ -1,7 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import { getAllXNFTs } from '../utils/xnft';
 
+const Sidebar = dynamic(() => import('../components/Sidebar'));
 const App = dynamic(() => import('../components/Library/App'));
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
 const Posts = dynamic(() => import('../components/Posts'));
@@ -19,36 +21,36 @@ export async function getStaticProps() {
 }
 
 function Home({ data }) {
+  const [activeMenu, setActiveMenu] = useState(0);
+
   const xnfts = JSON.parse(data);
 
   return (
     <div className="flex flex-col gap-10">
-      {/*  Primary CTA */}
-      <div className="text-theme-font mx-auto flex flex-col gap-3">
-        <h1 className="text-5xl font-extrabold tracking-wide">xNFT Library</h1>
-        <p className="mx-auto w-64 tracking-wide">
-          All your favorites Solana apps, published as executable NFTs.
-        </p>
-      </div>
-
-      {/*  Apps */}
-      <div className="flex flex-col gap-3">
-        <h2 className="text-2xl font-extrabold tracking-wide text-white">Popular</h2>
-        <ul role="list" className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
-          {xnfts.map((xnft, index) => (
-            <li key={index} className="col-span-1 rounded-lg bg-[#27272A]">
-              <App
-                key={index}
-                iconUrl={xnft.metadata.properties.icon}
-                name={xnft.metadata.name}
-                description={xnft.metadata.description}
-                publicKey={xnft.accounts.publicKey}
-                publisher={new PublicKey(xnft.accounts.account.publisher)}
-                installVault={new PublicKey(xnft.accounts.account.installVault)}
-              />
-            </li>
-          ))}
-        </ul>
+      <div className="flex gap-12">
+        <Sidebar className="w-72" active={activeMenu} onClick={setActiveMenu} />
+        {/*  Apps */}
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-extrabold tracking-wide text-white">Popular</h2>
+          <ul
+            role="list"
+            className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-2"
+          >
+            {xnfts.map((xnft, index) => (
+              <li key={index} className="col-span-1 rounded-lg bg-[#27272A]">
+                <App
+                  key={index}
+                  iconUrl={xnft.metadata.properties.icon}
+                  name={xnft.metadata.name}
+                  description={xnft.metadata.description}
+                  publicKey={xnft.accounts.publicKey}
+                  publisher={new PublicKey(xnft.accounts.account.publisher)}
+                  installVault={new PublicKey(xnft.accounts.account.installVault)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <SecondaryCta publishDisable={false} />

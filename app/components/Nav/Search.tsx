@@ -14,8 +14,8 @@ const Search: FunctionComponent<SearchProps> = ({ value, onChange }) => {
           <SearchIcon className="text-[#99A4B4]" height={16} />
         </span>
         <input
-          className="rounded-lg border-[1px] border-[#393C43] bg-transparent py-3
-            pl-4 pr-9 text-base font-medium text-white outline-none placeholder:text-[#99A4B4] focus:ring-0"
+          className="w-64 rounded-lg border-[1px] border-[#393C43] bg-transparent py-3
+            pl-4 pr-9 text-white outline-none placeholder:text-[#99A4B4] focus:ring-0"
           placeholder="Search"
           value={value}
           onChange={e => onChange(e.currentTarget.value)}
