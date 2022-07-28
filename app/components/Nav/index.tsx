@@ -2,6 +2,7 @@ import { type FunctionComponent, memo, useState } from 'react';
 import Link from 'next/link';
 import Search from './Search';
 import { DocsLink } from './Links';
+import { UserCircleIcon } from '@heroicons/react/solid';
 
 const Nav: FunctionComponent = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -20,10 +21,10 @@ const Nav: FunctionComponent = () => {
           <DocsLink />
           <Link href="/">
             <button
-              className="rounded-md bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
+              className="flex items-center gap-3 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
               disabled
             >
-              Connect
+              <UserCircleIcon height={18} /> Connect
             </button>
           </Link>
         </div>
