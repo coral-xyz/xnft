@@ -11,7 +11,7 @@ module.exports = {
           primary: '#F66C5E',
           accent: '#4F46E5',
           background: {
-            DEFAULT: '#1F2937',
+            DEFAULT: '#18181B',
             light: '#394150',
             dark: '#111827'
           },
@@ -20,7 +20,7 @@ module.exports = {
             gray: {
               DEFAULT: '#9CA3AF',
               light: '#E5E7EB',
-              dark: '#6B7280'
+              dark: '#393C43'
             }
           }
         }

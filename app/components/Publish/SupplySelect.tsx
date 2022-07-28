@@ -11,7 +11,7 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value, dispatch })
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
   const classes = (checked: boolean, others?: string): string =>
-    ` px-4 py-4 border-2 bg-theme-background text-sm cursor-pointer rounded-md text-theme-font ${
+    ` px-4 py-4 border-2 bg-[#18181B] text-sm cursor-pointer rounded-md text-theme-font ${
       checked ? 'border-theme-primary' : 'border-theme-background'
     } ${others ? others : ''}`;
 
@@ -34,8 +34,8 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value, dispatch })
         </div>
         <input
           type="text"
-          className="placeholder:text-theme-font-gray-dark bg-theme-background border-theme-font-gray-dark
-            focus:border-theme-font-gray-dark mt-4 w-full rounded-md focus:ring-0"
+          className="placeholder:text-theme-font-gray-dark border-theme-font-gray-dark focus:border-theme-font-gray-dark
+            mt-4 w-full rounded-md bg-[#18181B] focus:ring-0"
           placeholder="0"
           value={value === 'inf' ? '' : value}
           onChange={e => {

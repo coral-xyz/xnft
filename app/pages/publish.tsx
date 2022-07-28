@@ -55,7 +55,7 @@ export default function Publish() {
         </h1>
         <button
           type="button"
-          className="text-theme-font bg-theme-background-light mx-auto inline-flex
+          className="text-theme-font bg-[#18181B]-light mx-auto inline-flex
           w-32 cursor-no-drop items-center rounded-md
           border border-transparent px-4 py-2 font-medium
           tracking-wide shadow-sm"
@@ -76,7 +76,7 @@ export default function Publish() {
             ))}
           </div>
 
-          <div className={`${activeStepComponent.width} bg-theme-background-light rounded-2xl`}>
+          <div className={`${activeStepComponent.width} bg-[#18181B]-light rounded-2xl`}>
             {activeStepComponent.component({ state, dispatch, setNextEnabled })}
           </div>
 

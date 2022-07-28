@@ -24,13 +24,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
         <ContextProvider>
-          <div className="bg-theme-background">
-            <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-between">
-              <div className="pb-10">
+          <div className="bg-[#18181B]">
+            <div className="flex min-h-screen flex-col justify-between py-8 px-12">
+              <div className="border-b-[1px] border-b-[#393C43] pb-8">
                 <Nav />
               </div>
 
-              <div className="mb-auto px-5 py-10">
+              <div className="mb-auto py-10">
                 <Component {...pageProps} />
               </div>
 
