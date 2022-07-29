@@ -10,8 +10,6 @@ export const uploadInitialState = {
   description: '',
   publisher: '',
   website: '',
-  discord: '',
-  twitter: '',
   bundle: {} as File,
   royalties: '',
   price: '',
@@ -20,7 +18,7 @@ export const uploadInitialState = {
   screenshots: {} as FileList,
   s3UrlBundle: '',
   s3UrlIcon: '',
-  s3UrlScreenshots: '',
+  s3UrlScreenshots: [] as string[],
   s3UrlMetadata: ''
 };
 

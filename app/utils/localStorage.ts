@@ -1,5 +1,4 @@
 /**
- * Save cached data in LocalStorage
  * @param {string} key
  * @param {any} value
  */
@@ -10,7 +9,6 @@ export function setCache(key: string, value: any) {
 }
 
 /**
- * Get cached data from LocalStorage
  * @param {string} key
  * @returns {any}
  */

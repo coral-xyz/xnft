@@ -1,75 +1,59 @@
 import type { Dispatch } from 'react';
 import type { UploadDispatchAction, UploadState } from '../state/reducers/upload';
+import { getBundleUrl, getIconUrl, getScreenshotUrl } from './s3';
 
-const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
+export type Metadata = {
+  name: string;
+  description: string;
+  website: string;
+  properties: MetadataProperties;
+};
+
+export type MetadataProperties = {
+  bundle: string;
+  icon: string;
+  screenshots: string[];
+};
 
 /**
- * Creates NFT metadata
  * @param {UploadState} state
  * @param {Dispatch<UploadDispatchAction<'s3UrlBundle' | 's3UrlIcon' | 's3UrlScreenshots'>>} dispatch
  * @param {string} publicKey
+ * @returns {string}
  */
 export default function generateMetadata(
   state: UploadState,
   dispatch: Dispatch<UploadDispatchAction<'s3UrlBundle' | 's3UrlIcon' | 's3UrlScreenshots'>>,
   publicKey: string
 ): string {
-  const metadata = {
+  const metadata: Metadata = {
     name: state.title,
     description: state.description,
-    external_url: state.website,
-    image: '',
+    website: state.website,
     properties: {
-      icon: '',
-      bundle: '',
-      screenshots: [],
-      twitter: state.twitter,
-      discord: state.discord,
-      website: state.website
+      icon: getIconUrl(publicKey, state.title, state.icon.name),
+      bundle: getBundleUrl(publicKey, state.title, state.bundle.name),
+      screenshots: [...state.screenshots].map(s => getScreenshotUrl(publicKey, state.title, s.name))
     }
   };
 
-  const files = [].concat(
-    state.bundle,
-    state.icon
-    // ...state.screenshots TODO:fix
-  );
+  dispatch({
+    type: 'field',
+    field: 's3UrlBundle',
+    value: metadata.properties.bundle
+  });
 
-  const uri = `${BUCKET_URL}/${publicKey}/${state.title}`;
-  for (let i = 0; i < files.length; i++) {
-    if (i === 0) {
-      const url = `${uri}/bundle/${files[i].name}`;
+  dispatch({
+    type: 'field',
+    field: 's3UrlIcon',
+    value: metadata.properties.icon
+  });
 
-      metadata.properties.bundle = url;
-      dispatch({
-        type: 'field',
-        field: 's3UrlBundle',
-        value: url
-      });
-    } else if (i === 1) {
-      const url = `${uri}/icon/${files[i].name}`;
-
-      metadata.image = url;
-      metadata.properties.icon = url;
-
-      dispatch({
-        type: 'field',
-        field: 's3UrlIcon',
-        value: url
-      });
-    } else {
-      const url = `${uri}/bundle/${files[i].name}`;
-
-      metadata.properties.screenshots.push(url);
-
-      // TODO: fix
-      dispatch({
-        type: 'field',
-        field: 's3UrlScreenshots',
-        value: url
-      });
-    }
-  }
+  dispatch({
+    type: 'field',
+    field: 's3UrlScreenshots',
+    value: metadata.properties.screenshots
+  });
 
   return JSON.stringify(metadata);
 }
