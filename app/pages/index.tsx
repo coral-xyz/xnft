@@ -54,7 +54,7 @@ const Home: NextPage<{ data: any }> = ({ data }) => {
             </ul>
           </div>
 
-          <SecondaryCta publishDisable={false} />
+          <SecondaryCta />
         </div>
       </div>
     </div>

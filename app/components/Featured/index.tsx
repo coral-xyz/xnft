@@ -1,6 +1,6 @@
+import { DownloadIcon } from '@heroicons/react/solid';
 import { FunctionComponent } from 'react';
 import Image from 'next/image';
-import { DownloadIcon } from '@heroicons/react/outline';
 
 type FeaturedProps = {
   app: any;
@@ -24,7 +24,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({ app, className }) => {
 
         <div className="flex gap-4 text-sm font-medium">
           <button className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]">
-            Free <DownloadIcon height={14} />
+            Free <DownloadIcon height={16} />
           </button>
           <button className="rounded-md bg-[#52525B] py-2 px-4 text-[#D4D4D8]">Explore</button>
         </div>

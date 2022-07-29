@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function ({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
@@ -48,5 +48,3 @@ function MyApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
-
-export default MyApp;

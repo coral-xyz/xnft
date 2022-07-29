@@ -1,6 +1,6 @@
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { DownloadIcon } from '@heroicons/react/outline';
+import { DownloadIcon } from '@heroicons/react/solid';
 import { FunctionComponent, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -54,7 +54,7 @@ const App: FunctionComponent<AppProps> = ({
         className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs font-medium tracking-wide text-[#374151] text-white"
         onClick={() => install()}
       >
-        Free <DownloadIcon height={14} />
+        Free <DownloadIcon height={16} />
       </button>
     </div>
   );

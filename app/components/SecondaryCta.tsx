@@ -1,55 +1,36 @@
 import Link from 'next/link';
-import { memo } from 'react';
+import { type FunctionComponent, memo } from 'react';
 
-function SecondaryCta({ publishDisable }: SecondaryCtaProps) {
+const SecondaryCta: FunctionComponent = () => {
   return (
     <div>
-      <h2 className="text-center text-3xl font-extrabold tracking-tight text-zinc-900 sm:text-4xl">
-        <span className="block font-extrabold text-zinc-50">App Developer?</span>
-        <span className="block font-extrabold text-teal-500">
-          Publish your app as an executable xNFT App.
-        </span>
-        <span className="block text-lg text-zinc-400">(Devs, Discord coming soon.)</span>
+      <h2 className="text-center text-3xl font-extrabold font-extrabold tracking-tight sm:text-4xl">
+        <span className="block text-[#F9FAFB]">Developer?</span>
+        <span className="block text-[#14B8A6]">Publish your app as an executable xNFT.</span>
       </h2>
       <div className="mt-8 flex justify-center">
         <div className="inline-flex rounded-md shadow">
-          {publishDisable ? (
-            <div className="inline-flex">
-              <a
-                className="inline-flex cursor-not-allowed items-center justify-center rounded-md
-                 border border-transparent bg-teal-600 px-5 py-3 text-base font-medium text-zinc-50
-                  hover:bg-teal-700"
-              >
-                Get started
-              </a>
-            </div>
-          ) : (
-            <Link
-              href="/publish"
-              className="inline-flex items-center justify-center rounded-md border
-                 border-transparent bg-teal-600 px-5 py-3 text-base font-medium text-zinc-50
-                  hover:bg-teal-700"
-            >
-              Get started
-            </Link>
-          )}
+          <Link
+            href="/publish"
+            className="inline-flex items-center justify-center rounded-md border
+              border-transparent bg-[#14B8A6] px-5 py-3 text-base font-medium text-white"
+          >
+            Get started
+          </Link>
         </div>
         <div className="ml-3 inline-flex">
-          <a
-            className="inline-flex cursor-not-allowed items-center justify-center rounded-md
-                border border-transparent bg-teal-100 px-5 py-3 text-base font-medium text-teal-700
-                hover:bg-teal-200"
+          <Link
+            href="https://docs.xnft.gg"
+            target="_blank"
+            className="inline-flex items-center justify-center rounded-md border
+              border-transparent bg-white px-5 py-3 text-base font-medium text-[#14B8A6]"
           >
             Docs
-          </a>
+          </Link>
         </div>
       </div>
     </div>
   );
-}
-
-interface SecondaryCtaProps {
-  publishDisable: boolean;
-}
+};
 
 export default memo(SecondaryCta);
