@@ -37,10 +37,7 @@ const Home: NextPage<{ data: any }> = ({ data }) => {
 
           <div className="flex flex-col gap-7 pb-14">
             <h2 className="text-2xl font-extrabold tracking-wide text-white">Popular</h2>
-            <ul
-              role="list"
-              className="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2 lg:grid-cols-2"
-            >
+            <ul role="list" className="grid grid-cols-1 grid-cols-2 gap-y-4 gap-x-4">
               {xnfts.map((xnft, index) => (
                 <li key={index} className="col-span-1 rounded-lg bg-[#27272A]">
                   <App

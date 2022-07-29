@@ -12,6 +12,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"
+        />
         <meta name="twitter:description" content="Built on coralOS, the xNFT operating system." />
         <meta name="twitter:title" content="Backpack - A home for your xNFT apps" />
         <meta name="twitter:card" content="summary_large_image" />
