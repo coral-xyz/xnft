@@ -20,7 +20,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({ app, className }) => {
           height={400}
           width={400}
         />
-        <div className="flex flex-col pr-14 tracking-wide">
+        <div className="flex flex-col py-12 pr-10 tracking-wide">
           <h3 className="pb-2 font-medium text-[#99A4B4]">Featured</h3>
           <h1 className="pb-6 text-6xl font-bold text-white">{app.metadata.name}</h1>
           <h3 className="pb-8 font-medium text-white">{app.metadata.description}</h3>

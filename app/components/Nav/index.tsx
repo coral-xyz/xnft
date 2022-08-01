@@ -1,15 +1,16 @@
 import {
   ChevronDownIcon,
   ClipboardCopyIcon,
+  CodeIcon,
   LogoutIcon,
   UserCircleIcon
 } from '@heroicons/react/solid';
 import { Menu, Transition } from '@headlessui/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { type FunctionComponent, memo, useState, Fragment } from 'react';
+import { type FunctionComponent, memo, Fragment } from 'react';
 import Link from 'next/link';
-import Search from './Search';
+// import Search from './Search';
 import { DocsLink, DownloadBackpackLink } from './Links';
 
 function truncatePublicKey(pk: string): string {
@@ -56,6 +57,19 @@ const ConnectedMenu: FunctionComponent = () => {
         <Menu.Items className="absolute right-0 mt-2 origin-top-right rounded-lg bg-[#27272A] p-1 text-sm text-white shadow-lg">
           <Menu.Item>
             {({ active }) => (
+              <Link href="/me">
+                <button
+                  className={`${
+                    active ? 'bg-[#52525B]' : ''
+                  } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
+                >
+                  <CodeIcon height={14} /> My xNFTs
+                </button>
+              </Link>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
               <button
                 className={`${
                   active ? 'bg-[#52525B]' : ''
@@ -86,7 +100,7 @@ const ConnectedMenu: FunctionComponent = () => {
 
 const Nav: FunctionComponent = () => {
   const { connected } = useWallet();
-  const [searchValue, setSearchValue] = useState('');
+  // const [searchValue, setSearchValue] = useState('');
 
   return (
     <div className="tracking-wide">
@@ -95,7 +109,7 @@ const Nav: FunctionComponent = () => {
           <Link href="/">
             <h1 className="text-3xl font-bold text-white">xNFT Library</h1>
           </Link>
-          <Search value={searchValue} onChange={setSearchValue} />
+          {/* <Search value={searchValue} onChange={setSearchValue} /> */}
         </div>
 
         <div className="flex items-center justify-end gap-3">

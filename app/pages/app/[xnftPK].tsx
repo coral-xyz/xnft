@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React from 'react';
-import type { GetStaticPropsContext } from 'next';
+import type { GetStaticPropsContext, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { getAllXNFTs, getXNFT } from '../../utils/xnft';
 
@@ -30,7 +29,7 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   };
 }
 
-export default function App({ data }) {
+const AppPage: NextPage<{ data: any }> = ({ data }) => {
   const xnft = JSON.parse(data);
 
   return (
@@ -39,4 +38,6 @@ export default function App({ data }) {
       <Tabs xnft={xnft} />
     </>
   );
-}
+};
+
+export default AppPage;

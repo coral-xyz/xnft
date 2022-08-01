@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from '@heroicons/react/solid';
+import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { type Dispatch, useMemo, useReducer, useState, type SetStateAction } from 'react';
 import {
@@ -36,7 +37,7 @@ const steps = [
   }
 ];
 
-export default function Publish() {
+const PublishPage: NextPage = () => {
   const [state, dispatch] = useReducer(uploadReducer, uploadInitialState);
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
@@ -97,4 +98,6 @@ export default function Publish() {
       </div>
     </div>
   );
-}
+};
+
+export default PublishPage;

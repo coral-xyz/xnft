@@ -19,25 +19,23 @@ export async function getStaticProps() {
   };
 }
 
-const Home: NextPage<{ data: string }> = ({ data }) => {
+const HomePage: NextPage<{ data: string }> = ({ data }) => {
   const xnftList: SerializedXnftWithMetadata[] = JSON.parse(data);
   const [activeMenu, setActiveMenu] = useState(0);
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="grid grid-cols-4 gap-12">
-        {/* Sidebar Menu */}
-        <Sidebar active={activeMenu} onClick={setActiveMenu} />
+    <div className="grid grid-cols-4 gap-12">
+      {/* Sidebar Menu */}
+      <Sidebar active={activeMenu} onClick={setActiveMenu} />
 
-        {/* Main Content */}
-        <div className="col-span-3 flex flex-col gap-12">
-          <Featured app={xnftList[0]} />
-          <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
-          <SecondaryCta />
-        </div>
+      {/* Main Content */}
+      <div className="col-span-3 flex flex-col gap-12">
+        <Featured app={xnftList[0]} />
+        <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
+        <SecondaryCta />
       </div>
     </div>
   );
 };
 
-export default Home;
+export default HomePage;
