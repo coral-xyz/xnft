@@ -2,7 +2,7 @@ import { DownloadIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { findXNFTMintPDA } from '../../utils/xnft';
+import { install } from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
 import { useProgram } from '../../state/hooks/solana';
 
@@ -91,15 +91,7 @@ const App: FunctionComponent<AppProps> = ({ publicKey, metadata, featured }) => 
   const handleInstall = useCallback(async () => {
     try {
       const { installVault, name, publisher } = await program.account.xnft2.fetch(publicKey);
-      const xnft = await findXNFTMintPDA(publisher, name);
-
-      await program.methods
-        .createInstall()
-        .accounts({
-          xnft,
-          installVault
-        })
-        .rpc();
+      await install(program, name, publisher, installVault);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }

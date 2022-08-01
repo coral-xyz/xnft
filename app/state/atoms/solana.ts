@@ -3,7 +3,7 @@ import type { AnchorWallet } from '@solana/wallet-adapter-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { atom, selector } from 'recoil';
 import { IDL, type Xnft } from '../../programs/xnft';
-import { programId } from '../../utils/xnft';
+import { XNFT_PROGRAM_ID } from '../../utils/xnft';
 
 const defaultWallet = {
   publicKey: PublicKey.default,
@@ -33,6 +33,6 @@ export const program = atom<Program<Xnft>>({
   key: 'xnftProgram',
   default: selector({
     key: 'xnftProgramDefault',
-    get: ({ get }) => new Program(IDL, programId, get(provider))
+    get: ({ get }) => new Program(IDL, XNFT_PROGRAM_ID, get(provider))
   })
 });

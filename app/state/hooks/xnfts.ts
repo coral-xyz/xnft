@@ -2,8 +2,8 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useEffect, useState } from 'react';
 import { getCache } from '../../utils/localStorage';
 import {
-  getInstalledXNFTs,
-  getOwnedXNFTs,
+  getInstalled,
+  getOwned,
   type SerializedXnftWithMetadata,
   type XnftWithMetadata
 } from '../../utils/xnft';
@@ -30,7 +30,7 @@ export function useInstalledXNFTs() {
   useEffect(() => {
     async function run() {
       try {
-        const response = await getInstalledXNFTs(publicKey);
+        const response = await getInstalled(publicKey);
         setInstalledXNFTs(response);
       } catch (err) {
         console.error(`useInstalledXNFTs: ${err}`);
@@ -49,7 +49,7 @@ export function useOwnedXNFTs() {
   useEffect(() => {
     async function run() {
       try {
-        const response = await getOwnedXNFTs(publicKey);
+        const response = await getOwned(publicKey);
         setOwnedXNFTs(response);
       } catch (err) {
         console.error(`useOwnedXNFTs: ${err}`);

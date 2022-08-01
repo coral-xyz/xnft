@@ -1,21 +1,21 @@
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
-import { installXNFT, type XnftWithMetadata } from '../../utils/xnft';
+import { install, type XnftWithMetadata } from '../../utils/xnft';
+import { useProgram } from '../../state/hooks/solana';
 
 type AppBannerProps = {
   xnft: XnftWithMetadata;
 };
 
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
-  const anchorWallet = useAnchorWallet();
+  const program = useProgram();
 
-  async function install() {
-    await installXNFT(
-      anchorWallet,
-      new PublicKey(xnft.account.publisher),
+  async function handleInstall() {
+    await install(
+      program,
       xnft.metadata.name,
+      new PublicKey(xnft.account.publisher),
       new PublicKey(xnft.account.installVault)
     );
   }
@@ -39,7 +39,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
             className="inline-flex w-fit items-center rounded-md border border-transparent
             bg-indigo-600 px-3 py-2 text-sm font-medium leading-4 text-indigo-50
             hover:bg-indigo-500"
-            onClick={() => install()}
+            onClick={handleInstall}
           >
             Free
           </button>

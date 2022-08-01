@@ -1,12 +1,11 @@
 import { ArrowRightIcon } from '@heroicons/react/solid';
-import { BN } from '@project-serum/anchor';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import { uploadDetails } from '../state/atoms/publish';
 import { useProgram } from '../state/hooks/solana';
-import { metadataProgram } from '../utils/xnft';
+import { mint } from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -45,19 +44,7 @@ const PublishPage: NextPage = () => {
   const handleNextClicked = useCallback(async () => {
     if (currentStep === steps.length - 1) {
       try {
-        await program.methods // FIXME:
-          .createXnft(
-            details.title,
-            details.title.slice(0, 3).toUpperCase(),
-            '',
-            1,
-            new BN(details.price),
-            program.provider.publicKey!
-          )
-          .accounts({
-            metadataProgram
-          })
-          .rpc();
+        await mint(program, details);
       } catch (err) {
         console.error(`handleNextClicked: ${err}`);
       }
