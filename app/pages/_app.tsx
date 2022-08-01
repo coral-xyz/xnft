@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+
 import type { AppProps } from 'next/app';
 import PlausibleProvider from 'next-plausible';
 import Head from 'next/head';

@@ -1,10 +1,73 @@
-import { UserCircleIcon } from '@heroicons/react/solid';
-import { type FunctionComponent, memo, useState } from 'react';
+import { ChevronDownIcon, LogoutIcon, UserCircleIcon } from '@heroicons/react/solid';
+import { Menu, Transition } from '@headlessui/react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { type FunctionComponent, memo, useState, Fragment } from 'react';
 import Link from 'next/link';
 import Search from './Search';
 import { DocsLink, DownloadBackpackLink } from './Links';
 
+function truncatePublicKey(pk: string): string {
+  return `${pk.slice(0, 5)}...${pk.slice(-5)}`;
+}
+
+const DisconnectedMenu: FunctionComponent = () => {
+  const { setVisible } = useWalletModal();
+
+  return (
+    <>
+      <DownloadBackpackLink />
+      <button
+        className="flex items-center gap-3 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
+        onClick={() => setVisible(true)}
+      >
+        <UserCircleIcon height={18} /> Connect
+      </button>
+    </>
+  );
+};
+
+const ConnectedMenu: FunctionComponent = () => {
+  const { disconnect, publicKey } = useWallet();
+
+  return (
+    <Menu as="div" className="relative inline-block">
+      <Menu.Button
+        className="flex items-center gap-3 rounded-3xl bg-[#27272A]
+          px-4 py-3 font-medium tracking-wide text-[#FAFAFA]"
+      >
+        {truncatePublicKey(publicKey.toBase58())} <ChevronDownIcon height={20} />
+      </Menu.Button>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="absolute right-0 mt-2 origin-top-right rounded-md bg-[#27272A] p-1 text-sm text-white shadow-lg">
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? 'bg-[#52525B]' : ''
+                } flex items-center gap-3 rounded-md px-3 py-2`}
+                onClick={() => disconnect()}
+              >
+                <LogoutIcon height={14} /> Disconnect
+              </button>
+            )}
+          </Menu.Item>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+};
+
 const Nav: FunctionComponent = () => {
+  const { connected } = useWallet();
   const [searchValue, setSearchValue] = useState('');
 
   return (
@@ -19,15 +82,7 @@ const Nav: FunctionComponent = () => {
 
         <div className="flex items-center justify-end gap-3">
           <DocsLink />
-          <DownloadBackpackLink />
-          <Link href="/">
-            <button
-              className="flex items-center gap-3 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
-              disabled
-            >
-              <UserCircleIcon height={18} /> Connect
-            </button>
-          </Link>
+          {connected ? <ConnectedMenu /> : <DisconnectedMenu />}
         </div>
       </div>
     </div>

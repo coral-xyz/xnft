@@ -19,7 +19,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
     if (checks.every(x => x.length > 0)) {
       setNextEnabled(true);
     }
-  }, [state]);
+  }, [state, setNextEnabled]);
 
   return (
     <div className="flex flex-col gap-4 px-16 py-14">
