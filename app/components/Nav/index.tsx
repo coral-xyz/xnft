@@ -1,4 +1,9 @@
-import { ChevronDownIcon, LogoutIcon, UserCircleIcon } from '@heroicons/react/solid';
+import {
+  ChevronDownIcon,
+  ClipboardCopyIcon,
+  LogoutIcon,
+  UserCircleIcon
+} from '@heroicons/react/solid';
 import { Menu, Transition } from '@headlessui/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -36,7 +41,8 @@ const ConnectedMenu: FunctionComponent = () => {
         className="flex items-center gap-3 rounded-3xl bg-[#27272A]
           px-4 py-3 font-medium tracking-wide text-[#FAFAFA]"
       >
-        {truncatePublicKey(publicKey.toBase58())} <ChevronDownIcon height={20} />
+        <UserCircleIcon height={20} /> {truncatePublicKey(publicKey.toBase58())}{' '}
+        <ChevronDownIcon height={20} />
       </Menu.Button>
       <Transition
         as={Fragment}
@@ -47,13 +53,25 @@ const ConnectedMenu: FunctionComponent = () => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 mt-2 origin-top-right rounded-md bg-[#27272A] p-1 text-sm text-white shadow-lg">
+        <Menu.Items className="absolute right-0 mt-2 origin-top-right rounded-lg bg-[#27272A] p-1 text-sm text-white shadow-lg">
           <Menu.Item>
             {({ active }) => (
               <button
                 className={`${
                   active ? 'bg-[#52525B]' : ''
-                } flex items-center gap-3 rounded-md px-3 py-2`}
+                } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
+                onClick={() => navigator.clipboard.writeText(publicKey.toBase58())}
+              >
+                <ClipboardCopyIcon height={14} /> Copy Address
+              </button>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active ? 'bg-[#52525B]' : ''
+                } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
                 onClick={() => disconnect()}
               >
                 <LogoutIcon height={14} /> Disconnect

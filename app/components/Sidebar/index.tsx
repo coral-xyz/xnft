@@ -34,14 +34,14 @@ const Sidebar: FunctionComponent<SidebarProps> = props => {
           <div
             key={item.name}
             className={`flex cursor-pointer items-center gap-3 rounded-2xl py-2.5 px-3 font-medium ${
-              props.active === idx ? 'bg-[#FC9870] bg-opacity-20' : 'bg-transparent'
+              props.active === idx ? 'bg-[#F97316] bg-opacity-20' : 'bg-transparent'
             }`}
             onClick={() => props.onClick(idx)}
           >
-            <span className={props.active === idx ? 'text-[#FC9870]' : 'text-[#99A4B4]'}>
+            <span className={props.active === idx ? 'text-[#F97316]' : 'text-[#99A4B4]'}>
               {item.icon}
             </span>
-            <span className={props.active === idx ? 'text-[#FC9870]' : 'text-[#FAFAFA]'}>
+            <span className={props.active === idx ? 'text-[#F97316]' : 'text-[#FAFAFA]'}>
               {item.name}
             </span>
           </div>
