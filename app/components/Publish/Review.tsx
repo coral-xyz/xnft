@@ -11,7 +11,6 @@ const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }
   }, [setNextEnabled]);
 
   useEffect(() => {
-    console.log(state.icon);
     if ('name' in state.icon) {
       const reader = new FileReader();
       reader.onloadend = () => {

@@ -22,19 +22,16 @@ const steps = [
   {
     title: 'Upload files',
     component: (props: StepComponentProps) => <BundleUpload {...props} />,
-    width: 'max-w-[528px]',
     nextButtonText: 'Next'
   },
   {
     title: 'Details',
     component: (props: StepComponentProps) => <Details {...props} />,
-    width: 'max-w-[528px]',
     nextButtonText: 'Next'
   },
   {
     title: 'Review & mint',
     component: (props: StepComponentProps) => <Review {...props} />,
-    width: 'w-full',
     nextButtonText: 'Mint'
   }
 ];
@@ -47,51 +44,54 @@ export default function Publish() {
   const activeStepComponent = useMemo(() => steps[currentStep], [currentStep]);
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Header */}
-      <div className="flex flex-col gap-5">
-        <h1 className="text-theme-font text-center text-3xl font-bold leading-tight">
-          Publish your app as an executable NFT
-        </h1>
-        <button
-          type="button"
-          className="text-theme-font bg-[#18181B]-light mx-auto inline-flex
-          w-32 cursor-no-drop items-center rounded-md
-          border border-transparent px-4 py-2 font-medium
-          tracking-wide shadow-sm"
-        >
-          Learn more
-        </button>
+    <div className="flex justify-center">
+      <div className={currentStep === steps.length - 1 ? '' : 'inline-block'}>
+        <div className="flex flex-col items-center gap-5">
+          <h1 className="text-center text-3xl font-bold leading-tight text-white">
+            Publish your code as an executable xNFT
+          </h1>
+          <button
+            type="button"
+            className="mx-auto inline-flex w-32 cursor-no-drop
+          items-center rounded-md border border-transparent
+          bg-[#3F3F46] px-4 py-2 font-medium tracking-wide
+          text-white shadow-sm"
+          >
+            Learn more
+          </button>
 
-        {/* Active form step */}
-        <div className="flex flex-col gap-2 px-4">
-          <div className="text-theme-font mt-12 mb-4 flex justify-center gap-8">
-            {steps.map((s, idx) => (
-              <div
-                key={s.title}
-                className={`w-28 text-center ${currentStep >= idx ? 'text-theme-primary' : ''}`}
+          {/* Active form step */}
+          <div className="flex w-full flex-col gap-2 px-4">
+            <div className="mt-12 mb-4 flex w-full justify-center gap-8">
+              {steps.map((s, idx) => (
+                <div
+                  key={s.title}
+                  className={`w-full text-center ${
+                    currentStep >= idx ? 'text-[#F66C5E]' : 'text-white'
+                  }`}
+                >
+                  {s.title}
+                </div>
+              ))}
+            </div>
+
+            <div className={`rounded-2xl bg-[#27272A]`}>
+              {activeStepComponent.component({ state, dispatch, setNextEnabled })}
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                className="mt-12 w-24 rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
+                onClick={() => {
+                  setCurrentStep(curr => curr + 1);
+                  setNextEnabled(false);
+                }}
+                disabled={!nextEnabled}
               >
-                {s.title}
-              </div>
-            ))}
-          </div>
-
-          <div className={`${activeStepComponent.width} bg-[#18181B]-light rounded-2xl`}>
-            {activeStepComponent.component({ state, dispatch, setNextEnabled })}
-          </div>
-
-          <div className="flex justify-center">
-            <button
-              className="bg-theme-accent text-theme-font mt-12 w-24 rounded-md px-4 py-2 disabled:opacity-50"
-              onClick={() => {
-                setCurrentStep(curr => curr + 1);
-                setNextEnabled(false);
-              }}
-              disabled={!nextEnabled}
-            >
-              <span className="inline-block pr-2">{activeStepComponent.nextButtonText}</span>
-              <ArrowRightIcon className="inline-block w-4" />
-            </button>
+                <span className="inline-block pr-2">{activeStepComponent.nextButtonText}</span>
+                <ArrowRightIcon className="inline-block w-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
