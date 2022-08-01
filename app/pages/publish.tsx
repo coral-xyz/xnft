@@ -1,7 +1,12 @@
 import { ArrowRightIcon } from '@heroicons/react/solid';
+import { BN } from '@project-serum/anchor';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { type Dispatch, useMemo, useState, type SetStateAction } from 'react';
+import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
+import { uploadDetails } from '../state/atoms/publish';
+import { useProgram } from '../state/hooks/solana';
+import { metadataProgram } from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -30,10 +35,37 @@ const steps = [
 ];
 
 const PublishPage: NextPage = () => {
+  const program = useProgram();
+  const details = useRecoilValue(uploadDetails);
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
 
   const activeStepComponent = useMemo(() => steps[currentStep], [currentStep]);
+
+  const handleNextClicked = useCallback(async () => {
+    if (currentStep === steps.length - 1) {
+      try {
+        await program.methods // FIXME:
+          .createXnft(
+            details.title,
+            details.title.slice(0, 3).toUpperCase(),
+            '',
+            1,
+            new BN(details.price),
+            program.provider.publicKey!
+          )
+          .accounts({
+            metadataProgram
+          })
+          .rpc();
+      } catch (err) {
+        console.error(`handleNextClicked: ${err}`);
+      }
+    } else {
+      setCurrentStep(curr => curr + 1);
+      setNextEnabled(false);
+    }
+  }, [details, currentStep, program]);
 
   return (
     <div className="flex justify-center">
@@ -74,10 +106,7 @@ const PublishPage: NextPage = () => {
             <div className="flex justify-center">
               <button
                 className="mt-12 w-24 rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
-                onClick={() => {
-                  setCurrentStep(curr => curr + 1);
-                  setNextEnabled(false);
-                }}
+                onClick={handleNextClicked}
                 disabled={!nextEnabled}
               >
                 <span className="inline-block pr-2">{activeStepComponent.nextButtonText}</span>
