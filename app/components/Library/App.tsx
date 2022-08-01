@@ -1,7 +1,7 @@
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { DownloadIcon } from '@heroicons/react/solid';
-import { FunctionComponent, memo } from 'react';
+import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { installXNFT } from '../../utils/xnft';
@@ -10,9 +10,9 @@ type AppProps = {
   iconUrl: string;
   name: string;
   description: string;
-  publicKey?: PublicKey;
-  publisher: PublicKey;
-  installVault?: PublicKey;
+  publicKey?: string;
+  publisher: string;
+  installVault?: string;
 };
 
 const App: FunctionComponent<AppProps> = ({
@@ -28,7 +28,7 @@ const App: FunctionComponent<AppProps> = ({
   const appLink = publicKey ? `/app/${publicKey}` : '';
 
   async function install() {
-    await installXNFT(anchorWallet, publisher, name, installVault);
+    await installXNFT(anchorWallet, new PublicKey(publisher), name, new PublicKey(installVault));
   }
 
   return (
@@ -51,7 +51,8 @@ const App: FunctionComponent<AppProps> = ({
         </div>
       </Link>
       <button
-        className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs font-medium tracking-wide text-[#374151] text-white"
+        className="flex items-center gap-2.5 rounded bg-white py-2 px-3
+          text-xs font-medium tracking-wide text-[#374151] text-white"
         onClick={() => install()}
       >
         Free <DownloadIcon height={16} />

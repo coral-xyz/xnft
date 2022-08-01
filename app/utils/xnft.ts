@@ -13,10 +13,13 @@ const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x
 
 export type Xnft = IdlAccounts<IDLType>['xnft2'];
 
-export type StringifiedPublicKeys<T> = { [K in keyof T]: T[K] extends PublicKey ? string : T[K] };
-
-export type SerializedXnft = {
-  [K in keyof Xnft]: Xnft[K] extends PublicKey | BN ? string : Xnft[K];
+export type SerializedXnftWithMetadata = {
+  account: { [K in keyof Xnft]: Xnft[K] extends PublicKey | BN ? string : Xnft[K] };
+  publicKey: string;
+  metadataAccount: {
+    [K in keyof MplMetadata]: MplMetadata[K] extends PublicKey ? string : MplMetadata[K];
+  };
+  metadata: Metadata;
 };
 
 export type XnftWithMetadata = {

@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
-import { getAllXNFTs } from '../utils/xnft';
+import { useState } from 'react';
+import { getAllXNFTs, type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
 
 const Sidebar = dynamic(() => import('../components/Sidebar'));
 const Featured = dynamic(() => import('../components/Featured'));
@@ -9,7 +9,7 @@ const CategoryPreview = dynamic(() => import('../components/Library/CategoryPrev
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
 
 export async function getStaticProps() {
-  const xnfts = await getAllXNFTs();
+  const xnfts: XnftWithMetadata[] = await getAllXNFTs();
 
   return {
     props: {
@@ -20,12 +20,8 @@ export async function getStaticProps() {
 }
 
 const Home: NextPage<{ data: string }> = ({ data }) => {
-  const xnftList = JSON.parse(data);
+  const xnftList: SerializedXnftWithMetadata[] = JSON.parse(data);
   const [activeMenu, setActiveMenu] = useState(0);
-
-  useEffect(() => {
-    console.log(xnftList);
-  }, []);
 
   return (
     <div className="flex flex-col gap-10">

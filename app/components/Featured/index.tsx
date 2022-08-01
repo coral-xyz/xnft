@@ -1,11 +1,11 @@
 import { DownloadIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
-import type { XnftWithMetadata } from '../../utils/xnft';
+import type { SerializedXnftWithMetadata } from '../../utils/xnft';
 import Link from 'next/link';
 
 type FeaturedProps = {
-  app: XnftWithMetadata;
+  app: SerializedXnftWithMetadata;
   className?: string;
 };
 

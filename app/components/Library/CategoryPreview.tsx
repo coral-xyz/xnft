@@ -1,12 +1,11 @@
-import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo } from 'react';
-import type { XnftWithMetadata } from '../../utils/xnft';
+import type { SerializedXnftWithMetadata } from '../../utils/xnft';
 import App from './App';
 
 type PreviewProps = {
   className?: string;
   title: string;
-  xnfts: XnftWithMetadata[];
+  xnfts: SerializedXnftWithMetadata[];
 };
 
 const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xnfts }) => {
@@ -21,8 +20,8 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
             name={xnft.metadata.name}
             description={xnft.metadata.description}
             publicKey={xnft.publicKey}
-            publisher={new PublicKey(xnft.account.publisher)}
-            installVault={new PublicKey(xnft.account.installVault)}
+            publisher={xnft.account.publisher}
+            installVault={xnft.account.installVault}
           />
         ))}
       </div>
