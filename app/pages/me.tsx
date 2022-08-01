@@ -38,7 +38,6 @@ export default function MyApps() {
                     publicKey={item.accounts.publicKey}
                     publisher={new PublicKey(item.accounts.account.publisher)}
                     installVault={new PublicKey(item.accounts.account.installVault)}
-                    mode="installed"
                   />
                 </li>
               ))}
@@ -88,7 +87,6 @@ export default function MyApps() {
                     publicKey={item.accounts.publicKey}
                     publisher={new PublicKey(item.accounts.account.publisher)}
                     installVault={new PublicKey(item.accounts.account.installVault)}
-                    mode="owned"
                   />
                 </li>
               ))}

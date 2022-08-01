@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
   const paths = data.map(xnft => {
     return {
-      params: { xnftPK: xnft.accounts.publicKey.toBase58() }
+      params: { xnftPK: xnft.publicKey.toBase58() }
     };
   });
 

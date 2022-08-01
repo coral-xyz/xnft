@@ -1,14 +1,6 @@
-import S3 from 'aws-sdk/clients/s3';
 import type { Dispatch } from 'react';
 import type { UploadDispatchAction, UploadState } from '../state/reducers/upload';
 import generateMetadata from './metadata';
-
-export const s3Client = new S3({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
-  accessKeyId: process.env.AWS_KEY,
-  secretAccessKey: process.env.AWS_SECRET,
-  signatureVersion: 'v4'
-});
 
 const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/`;
 
