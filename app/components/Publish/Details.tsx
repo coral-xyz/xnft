@@ -1,12 +1,16 @@
 import { PhotographIcon } from '@heroicons/react/outline';
 import { memo, useEffect, type FunctionComponent } from 'react';
+import { useRecoilState } from 'recoil';
 import type { StepComponentProps } from '../../pages/publish';
+import { uploadDetails } from '../../state/atoms/publish';
 import SupplySelect from './SupplySelect';
 import Input from './Input';
 
 const numbersOnly = /^\d*$/;
 
-const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNextEnabled }) => {
+const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
+  const [state, setState] = useRecoilState(uploadDetails);
+
   useEffect(() => {
     const checks = [
       state.title,
@@ -33,7 +37,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
           type="text"
           name="title"
           value={state.title}
-          onChange={val => dispatch({ type: 'field', field: 'title', value: val })}
+          onChange={val => setState(prev => ({ ...prev, title: val }))}
           required
         />
       </div>
@@ -48,13 +52,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
           name="description"
           rows={5}
           value={state.description}
-          onChange={val =>
-            dispatch({
-              type: 'field',
-              field: 'description',
-              value: val
-            })
-          }
+          onChange={val => setState(prev => ({ ...prev, description: val }))}
           area
           required
         />
@@ -70,13 +68,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
           type="text"
           name="publisher"
           value={state.publisher}
-          onChange={val =>
-            dispatch({
-              type: 'field',
-              field: 'publisher',
-              value: val
-            })
-          }
+          onChange={val => setState(prev => ({ ...prev, publisher: val }))}
           required
         />
       </div>
@@ -91,13 +83,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
           type="url"
           name="website"
           value={state.website}
-          onChange={val =>
-            dispatch({
-              type: 'field',
-              field: 'website',
-              value: val
-            })
-          }
+          onChange={val => setState(prev => ({ ...prev, website: val }))}
         />
       </div>
 
@@ -106,7 +92,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
         <label htmlFor="supply" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           How many editions would you like to mint?
         </label>
-        <SupplySelect value={state.supply} dispatch={dispatch} />
+        <SupplySelect value={state.supply} />
       </div>
 
       {/* Price */}
@@ -127,11 +113,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
             value={state.price}
             onChange={val => {
               if (numbersOnly.test(val)) {
-                dispatch({
-                  type: 'field',
-                  field: 'price',
-                  value: val
-                });
+                setState(prev => ({ ...prev, price: val }));
               }
             }}
           />
@@ -156,11 +138,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
             value={state.royalties}
             onChange={val => {
               if (numbersOnly.test(val)) {
-                dispatch({
-                  type: 'field',
-                  field: 'royalties',
-                  value: val
-                });
+                setState(prev => ({ ...prev, royalties: val }));
               }
             }}
           />
@@ -197,13 +175,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
                   type="file"
                   accept="image/*"
                   className="sr-only hidden"
-                  onChange={e =>
-                    dispatch({
-                      type: 'file',
-                      field: 'icon',
-                      value: e.target.files[0]
-                    })
-                  }
+                  onChange={e => setState(prev => ({ ...prev, icon: e.currentTarget.files[0] }))}
                 />
               </div>
               <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
@@ -233,11 +205,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, dispatch, setNe
                   accept="image/*"
                   className="sr-only hidden"
                   onChange={e =>
-                    dispatch({
-                      type: 'file',
-                      field: 'screenshots',
-                      value: e.target.files
-                    })
+                    setState(prev => ({ ...prev, screenshots: e.currentTarget.files }))
                   }
                 />
               </div>

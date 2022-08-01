@@ -1,21 +1,13 @@
 import { ArrowRightIcon } from '@heroicons/react/solid';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { type Dispatch, useMemo, useReducer, useState, type SetStateAction } from 'react';
-import {
-  type UploadDispatchAction,
-  uploadInitialState,
-  uploadReducer,
-  type UploadState
-} from '../state/reducers/upload';
+import { type Dispatch, useMemo, useState, type SetStateAction } from 'react';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
 export type StepComponentProps = {
-  state: UploadState;
-  dispatch: Dispatch<UploadDispatchAction<any>>;
   setNextEnabled: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -38,7 +30,6 @@ const steps = [
 ];
 
 const PublishPage: NextPage = () => {
-  const [state, dispatch] = useReducer(uploadReducer, uploadInitialState);
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
 
@@ -77,7 +68,7 @@ const PublishPage: NextPage = () => {
             </div>
 
             <div className={`rounded-2xl bg-[#27272A]`}>
-              {activeStepComponent.component({ state, dispatch, setNextEnabled })}
+              {activeStepComponent.component({ setNextEnabled })}
             </div>
 
             <div className="flex justify-center">

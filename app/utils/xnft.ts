@@ -8,7 +8,7 @@ import type { Metadata } from './metadata';
 
 const connection = new Connection(process.env.NEXT_PUBLIC_CONNECTION);
 
-const programId = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
+export const programId = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
 const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 
 export type Xnft = IdlAccounts<IDLType>['xnft2'];

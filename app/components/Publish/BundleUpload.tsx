@@ -1,6 +1,8 @@
 import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
 import { type ChangeEvent, memo, useCallback, type FunctionComponent } from 'react';
+import { useRecoilState } from 'recoil';
 import type { StepComponentProps } from '../../pages/publish';
+import { uploadDetails } from '../../state/atoms/publish';
 
 function transformBundleSize(size: number): string {
   if (size < 1000) {
@@ -12,24 +14,15 @@ function transformBundleSize(size: number): string {
   }
 }
 
-const BundleUpload: FunctionComponent<StepComponentProps> = ({
-  state,
-  dispatch,
-  setNextEnabled
-}) => {
+const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
+  const [state, setState] = useRecoilState(uploadDetails);
+
   const handleUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      console.log(e.target.files[0]);
-
-      dispatch({
-        type: 'file',
-        field: 'bundle',
-        value: e.target.files[0]
-      });
-
+      setState(prev => ({ ...prev, bundle: e.currentTarget.files[0] }));
       setNextEnabled(true);
     },
-    [dispatch, setNextEnabled]
+    [setState, setNextEnabled]
   );
 
   return (

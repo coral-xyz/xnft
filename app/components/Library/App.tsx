@@ -1,11 +1,10 @@
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
 import { DownloadIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getXNFT, installXNFT } from '../../utils/xnft';
+import { findXNFTMintPDA } from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
+import { useProgram } from '../../state/hooks/solana';
 
 type FeaturedProps = {
   metadata: Metadata;
@@ -87,21 +86,24 @@ type AppProps = {
 
 const App: FunctionComponent<AppProps> = ({ publicKey, metadata, featured }) => {
   const appLink = publicKey ? `/app/${publicKey}` : '';
-  const anchorWallet = useAnchorWallet();
+  const program = useProgram();
 
   const handleInstall = useCallback(async () => {
     try {
-      const account = await getXNFT(new PublicKey(publicKey));
-      await installXNFT(
-        anchorWallet,
-        account.account.publisher,
-        account.account.name,
-        account.account.installVault
-      );
+      const { installVault, name, publisher } = await program.account.xnft2.fetch(publicKey);
+      const xnft = await findXNFTMintPDA(publisher, name);
+
+      await program.methods
+        .createInstall()
+        .accounts({
+          xnft,
+          installVault
+        })
+        .rpc();
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [anchorWallet, publicKey]);
+  }, [publicKey, program]);
 
   return featured ? (
     <Featured metadata={metadata} link={appLink} onInstallClick={handleInstall} />

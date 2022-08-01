@@ -1,13 +1,14 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import { type Dispatch, useState, memo, type FunctionComponent } from 'react';
-import type { UploadDispatchAction } from '../../state/reducers/upload';
+import { useState, memo, type FunctionComponent } from 'react';
+import { useRecoilState } from 'recoil';
+import { uploadDetails } from '../../state/atoms/publish';
 
 type SupplySelectProps = {
   value: string;
-  dispatch: Dispatch<UploadDispatchAction<'supply'>>;
 };
 
-const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value, dispatch }) => {
+const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
+  const [_, setState] = useRecoilState(uploadDetails);
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
   const classes = (checked: boolean, others?: string): string =>
@@ -21,7 +22,7 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value, dispatch })
         className={classes(selected === 'unlimited', 'flex')}
         onClick={() => {
           setSelected('unlimited');
-          dispatch({ type: 'field', field: 'supply', value: 'inf' });
+          setState(prev => ({ ...prev, supply: 'inf' }));
         }}
       >
         <span className="flex-1 font-medium">Unlimited Supply</span>
@@ -40,7 +41,7 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value, dispatch })
           value={value === 'inf' ? '' : value}
           onChange={e => {
             if (/^\d*$/.test(e.currentTarget.value)) {
-              dispatch({ type: 'field', field: 'supply', value: e.currentTarget.value });
+              setState(prev => ({ ...prev, supply: e.currentTarget.value }));
             }
           }}
         />

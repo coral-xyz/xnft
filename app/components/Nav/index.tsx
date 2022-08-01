@@ -6,11 +6,13 @@ import {
   UserCircleIcon
 } from '@heroicons/react/solid';
 import { Menu, Transition } from '@headlessui/react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { type FunctionComponent, memo, Fragment } from 'react';
+import { type FunctionComponent, memo, Fragment, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import Link from 'next/link';
 // import Search from './Search';
+import { wallet } from '../../state/atoms/solana';
 import { DocsLink, DownloadBackpackLink } from './Links';
 
 function truncatePublicKey(pk: string): string {
@@ -100,7 +102,15 @@ const ConnectedMenu: FunctionComponent = () => {
 
 const Nav: FunctionComponent = () => {
   const { connected } = useWallet();
+  const anchorWallet = useAnchorWallet();
+  const [_, setWallet] = useRecoilState(wallet);
   // const [searchValue, setSearchValue] = useState('');
+
+  useEffect(() => {
+    if (connected) {
+      setWallet(anchorWallet);
+    }
+  }, [anchorWallet, connected, setWallet]);
 
   return (
     <div className="tracking-wide">

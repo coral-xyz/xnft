@@ -6,6 +6,7 @@ import Head from 'next/head';
 import Nav from '../components/Nav';
 import { ContextProvider } from '../state/context/ContextProvider';
 import Footer from '../components/Footer';
+import { RecoilRoot } from 'recoil';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -27,25 +28,27 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>xNFT Library</title>
       </Head>
 
-      <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
-        <ContextProvider>
-          <div className="bg-[#18181B]">
-            <div className="flex min-h-screen flex-col justify-between py-8 px-12">
-              <div className="border-b-[1px] border-b-[#393C43] pb-8">
-                <Nav />
-              </div>
+      <RecoilRoot>
+        <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
+          <ContextProvider>
+            <div className="bg-[#18181B]">
+              <div className="flex min-h-screen flex-col justify-between py-8 px-12">
+                <div className="border-b-[1px] border-b-[#393C43] pb-8">
+                  <Nav />
+                </div>
 
-              <div className="mb-auto py-10">
-                <Component {...pageProps} />
-              </div>
+                <div className="mb-auto py-10">
+                  <Component {...pageProps} />
+                </div>
 
-              <div className="items-end pb-8">
-                <Footer />
+                <div className="items-end pb-8">
+                  <Footer />
+                </div>
               </div>
             </div>
-          </div>
-        </ContextProvider>
-      </PlausibleProvider>
+          </ContextProvider>
+        </PlausibleProvider>
+      </RecoilRoot>
     </>
   );
 }

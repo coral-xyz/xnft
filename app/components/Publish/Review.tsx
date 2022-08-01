@@ -1,9 +1,12 @@
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo, useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import Image from 'next/image';
 import type { StepComponentProps } from '../../pages/publish';
+import { uploadDetails } from '../../state/atoms/publish';
 
-const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }) => {
+const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
+  const state = useRecoilValue(uploadDetails);
   const [icon, setIcon] = useState('');
 
   useEffect(() => {

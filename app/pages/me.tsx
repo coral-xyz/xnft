@@ -3,8 +3,7 @@ import { type FunctionComponent, useState, type ReactNode } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import useInstalledXNFTs from '../hooks/useInstalledXNFTs';
-import useOwnedXNFTs from '../hooks/useOwnedXNFTs';
+import { useInstalledXNFTs, useOwnedXNFTs } from '../state/hooks/xnfts';
 import App from '../components/Library/App';
 
 const Sidebar = dynamic(() => import('../components/Sidebar'));
@@ -67,19 +66,12 @@ const MePage: NextPage = () => {
                   role="list"
                   className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
                 >
-                  {installedXNFTs.map((item, index) => (
+                  {installedXNFTs.map((item, idx) => (
                     <li
-                      key={index}
+                      key={idx}
                       className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
                     >
-                      <App
-                        iconUrl={item.metadata.properties.icon}
-                        name={item.metadata.name}
-                        description={item.metadata.description}
-                        publicKey={item.publicKey.toBase58()}
-                        publisher={item.account.publisher.toBase58()}
-                        installVault={item.account.installVault.toBase58()}
-                      />
+                      <App publicKey={item.publicKey.toBase58()} metadata={item.metadata} />
                     </li>
                   ))}
                 </ul>
@@ -104,19 +96,12 @@ const MePage: NextPage = () => {
                 role="list"
                 className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
               >
-                {ownedXNFTs.map((item, index) => (
+                {ownedXNFTs.map((item, idx) => (
                   <li
-                    key={index}
+                    key={idx}
                     className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
                   >
-                    <App
-                      iconUrl={item.metadata.properties.icon}
-                      name={item.metadata.name}
-                      description={item.metadata.description}
-                      publicKey={item.publicKey.toBase58()}
-                      publisher={item.account.publisher.toBase58()}
-                      installVault={item.account.installVault.toBase58()}
-                    />
+                    <App publicKey={item.publicKey.toBase58()} metadata={item.metadata} />
                   </li>
                 ))}
               </ul>
