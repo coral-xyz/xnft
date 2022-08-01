@@ -1,23 +1,29 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { AnchorProvider, Program, type IdlAccounts } from '@project-serum/anchor';
-import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+import { AnchorProvider, BN, Program, type IdlAccounts } from '@project-serum/anchor';
+import { Metadata as MplMetadata } from '@metaplex-foundation/mpl-token-metadata';
 import type { AnchorWallet } from '@solana/wallet-adapter-react';
 import fetch from 'isomorphic-unfetch';
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
+import type { Metadata } from './metadata';
 
 const connection = new Connection(process.env.NEXT_PUBLIC_CONNECTION);
 
-const programId = process.env.NEXT_PUBLIC_XNFT_PROGRAMID;
-const metadataProgram = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s';
+const programId = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
+const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 
 export type Xnft = IdlAccounts<IDLType>['xnft2'];
+
+export type StringifiedPublicKeys<T> = { [K in keyof T]: T[K] extends PublicKey ? string : T[K] };
+
+export type SerializedXnft = {
+  [K in keyof Xnft]: Xnft[K] extends PublicKey | BN ? string : Xnft[K];
+};
+
 export type XnftWithMetadata = {
-  accounts: {
-    account: Xnft;
-    publicKey: PublicKey;
-  };
-  metadataAccount: Metadata;
-  metadata: any;
+  account: Xnft;
+  publicKey: PublicKey;
+  metadataAccount: MplMetadata;
+  metadata: Metadata;
 };
 
 /**
@@ -36,15 +42,14 @@ export async function getAllXNFTs(): Promise<XnftWithMetadata[]> {
   );
 
   const program = new Program(IDL, programId, provider);
+  const data = await program.account.xnft2.all();
 
   const response: XnftWithMetadata[] = [];
-
-  const data = await program.account.xnft2.all();
 
   for await (const item of data) {
     try {
       // Find metadata account data
-      const metadataAccount = await Metadata.fromAccountAddress(
+      const metadataAccount = await MplMetadata.fromAccountAddress(
         program.provider.connection,
         item.account.masterMetadata
       );
@@ -53,17 +58,15 @@ export async function getAllXNFTs(): Promise<XnftWithMetadata[]> {
        * Timeout in case there's a broken metadata link
        */
 
-      const metadata = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit).then(
-        res => res.json()
-      );
+      const res = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit);
+      const metadata = await res.json();
 
-      const xnft = {
-        accounts: item,
+      response.push({
+        account: item.account as any,
+        publicKey: item.publicKey,
         metadataAccount,
         metadata
-      };
-
-      response.push(xnft as any);
+      });
     } catch (error) {
       console.error('Error requesting xnfts', error);
     }
@@ -94,26 +97,21 @@ export async function getXNFT(xnftPk: PublicKey): Promise<XnftWithMetadata> {
     const account = await program.account.xnft2.fetch(xnftPk);
 
     // Find metadata account data
-    const metadataAccount = await Metadata.fromAccountAddress(
+    const metadataAccount = await MplMetadata.fromAccountAddress(
       program.provider.connection,
       account.masterMetadata
     );
 
     // Find Metadata data
-    const metadata = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit).then(
-      res => res.json()
-    );
+    const res = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit);
+    const metadata = await res.json();
 
-    const xnft = {
-      accounts: {
-        publicKey: xnftPk,
-        account
-      },
+    return {
+      account: account as any,
+      publicKey: xnftPk,
       metadataAccount,
       metadata
     };
-
-    return xnft as any;
   } catch (error) {
     console.error('Error finding xNFT', error);
   }
@@ -138,12 +136,13 @@ export async function installXNFT(
   try {
     const xnftPK = await findXNFTMintPDA(publisher, name);
 
-    const tx = program.methods.createInstall().accounts({
-      xnft: xnftPK,
-      installVault
-    });
-
-    await tx.rpc();
+    await program.methods
+      .createInstall()
+      .accounts({
+        xnft: xnftPK,
+        installVault
+      })
+      .rpc();
   } catch (error) {
     console.error('Error installing xNFT', error);
   }
@@ -158,25 +157,25 @@ export async function installXNFT(
 export async function findXNFTMintPDA(publisher: PublicKey, name: string): Promise<PublicKey> {
   // Mint PDA Address
   const [mintPdaAddress] = await PublicKey.findProgramAddress(
-    [Buffer.from('mint'), new PublicKey(publisher).toBuffer(), Buffer.from(name)],
-    new PublicKey(programId)
+    [Buffer.from('mint'), publisher.toBytes(), Buffer.from(name)],
+    programId
   );
 
   // Master Edition PDA
   const [masterEditionPdaAddress] = await PublicKey.findProgramAddress(
     [
       Buffer.from('metadata'),
-      new PublicKey(metadataProgram).toBuffer(),
-      mintPdaAddress.toBuffer(),
+      metadataProgram.toBytes(),
+      mintPdaAddress.toBytes(),
       Buffer.from('edition')
     ],
-    new PublicKey(metadataProgram)
+    metadataProgram
   );
 
   // xnft PDA (needed to install)
   const [xnftPdaAddress] = await PublicKey.findProgramAddress(
-    [Buffer.from('xnft'), masterEditionPdaAddress.toBuffer()],
-    new PublicKey(programId)
+    [Buffer.from('xnft'), masterEditionPdaAddress.toBytes()],
+    programId
   );
 
   return xnftPdaAddress;
@@ -197,6 +196,7 @@ export async function getInstalledXNFTs(publicKey: PublicKey): Promise<XnftWithM
     },
     { commitment: 'processed', skipPreflight: true }
   );
+
   const program = new Program(IDL, programId, provider);
 
   const response = await program.account.install.all([
@@ -209,6 +209,7 @@ export async function getInstalledXNFTs(publicKey: PublicKey): Promise<XnftWithM
   ]);
 
   const installedxNFTs: XnftWithMetadata[] = [];
+
   for await (const item of response) {
     const data = await getXNFT(item.account.xnft);
     installedxNFTs.push(data);
@@ -232,6 +233,7 @@ export async function getOwnedXNFTs(publicKey: PublicKey): Promise<XnftWithMetad
     },
     { commitment: 'processed', skipPreflight: true }
   );
+
   const program = new Program(IDL, programId, provider);
 
   const response = await program.account.xnft2.all([
@@ -243,7 +245,8 @@ export async function getOwnedXNFTs(publicKey: PublicKey): Promise<XnftWithMetad
     }
   ]);
 
-  let ownedxNFTs: XnftWithMetadata[] = [];
+  const ownedxNFTs: XnftWithMetadata[] = [];
+
   for await (const item of response) {
     const data = await getXNFT(item.publicKey);
     ownedxNFTs.push(data);

@@ -1,5 +1,12 @@
+import S3 from 'aws-sdk/clients/s3';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { s3Client } from '../../utils/s3';
+
+const client = new S3({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  accessKeyId: process.env.AWS_KEY,
+  secretAccessKey: process.env.AWS_SECRET,
+  signatureVersion: 'v4'
+});
 
 export const config = {
   api: {
@@ -28,7 +35,7 @@ export default async (
       ContentType: type
     };
 
-    const url = await s3Client.getSignedUrlPromise('putObject', params);
+    const url = await client.getSignedUrlPromise('putObject', params);
 
     res.status(200).json({ url });
   } catch (err) {

@@ -1,18 +1,22 @@
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import React, { memo } from 'react';
+import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
-import { installXNFT } from '../../utils/xnft';
+import { installXNFT, type XnftWithMetadata } from '../../utils/xnft';
 
-function AppBanner({ xnft }: AppBannerProps) {
+type AppBannerProps = {
+  xnft: XnftWithMetadata;
+};
+
+const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const anchorWallet = useAnchorWallet();
 
   async function install() {
     await installXNFT(
       anchorWallet,
-      new PublicKey(xnft.accounts.account.publisher),
+      new PublicKey(xnft.account.publisher),
       xnft.metadata.name,
-      new PublicKey(xnft.accounts.account.installVault)
+      new PublicKey(xnft.account.installVault)
     );
   }
 
@@ -43,10 +47,6 @@ function AppBanner({ xnft }: AppBannerProps) {
       </div>
     </>
   );
-}
-
-interface AppBannerProps {
-  xnft: any;
-}
+};
 
 export default memo(AppBanner);

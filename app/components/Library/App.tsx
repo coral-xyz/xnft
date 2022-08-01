@@ -10,7 +10,7 @@ type AppProps = {
   iconUrl: string;
   name: string;
   description: string;
-  publicKey?: string;
+  publicKey?: PublicKey;
   publisher: PublicKey;
   installVault?: PublicKey;
 };
@@ -19,8 +19,8 @@ const App: FunctionComponent<AppProps> = ({
   iconUrl,
   name,
   description,
-  publicKey,
   publisher,
+  publicKey,
   installVault
 }) => {
   const anchorWallet = useAnchorWallet();
@@ -32,7 +32,7 @@ const App: FunctionComponent<AppProps> = ({
   }
 
   return (
-    <div className="flex w-full items-center justify-between rounded-md p-4">
+    <div className="flex w-full items-center justify-between rounded-lg bg-[#27272A] p-4">
       <Link className="w-10/12" href={appLink}>
         <div className="flex items-center gap-4">
           <Image
