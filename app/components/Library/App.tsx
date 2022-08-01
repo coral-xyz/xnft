@@ -1,63 +1,112 @@
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { DownloadIcon } from '@heroicons/react/solid';
-import { type FunctionComponent, memo } from 'react';
+import { type FunctionComponent, memo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { installXNFT } from '../../utils/xnft';
+import { getXNFT, installXNFT } from '../../utils/xnft';
+import type { Metadata } from '../../utils/metadata';
 
-type AppProps = {
-  iconUrl: string;
-  name: string;
-  description: string;
-  publicKey?: string;
-  publisher: string;
-  installVault?: string;
+type FeaturedProps = {
+  metadata: Metadata;
+  link: string;
+  onInstallClick: () => void;
 };
 
-const App: FunctionComponent<AppProps> = ({
-  iconUrl,
-  name,
-  description,
-  publisher,
-  publicKey,
-  installVault
-}) => {
-  const anchorWallet = useAnchorWallet();
+const Featured: FunctionComponent<FeaturedProps> = ({ metadata, link, onInstallClick }) => {
+  return (
+    <div className="flex items-center gap-14 rounded-2xl bg-[#27272A]">
+      <Image
+        className="rounded-l-2xl"
+        alt="app-icon"
+        src={metadata.properties.icon}
+        blurDataURL="/brands/aurory.jpg" //TODO: fix me
+        placeholder="blur"
+        height={400}
+        width={400}
+      />
+      <div className="flex flex-col py-12 pr-10 tracking-wide">
+        <h3 className="pb-2 font-medium text-[#99A4B4]">Featured</h3>
+        <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
+        <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
 
-  const appLink = publicKey ? `/app/${publicKey}` : '';
+        <div className="flex gap-4 text-sm font-medium">
+          <button
+            className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]"
+            onClick={onInstallClick}
+          >
+            Free <DownloadIcon height={16} />
+          </button>
+          <Link href={link}>
+            <button className="rounded-md bg-[#52525B] py-2 px-4 text-[#D4D4D8]">Explore</button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-  async function install() {
-    await installXNFT(anchorWallet, new PublicKey(publisher), name, new PublicKey(installVault));
-  }
+type ListingProps = FeaturedProps;
 
+const Listing: FunctionComponent<ListingProps> = ({ metadata, link, onInstallClick }) => {
   return (
     <div className="flex w-full items-center justify-between rounded-lg bg-[#27272A] p-4">
-      <Link className="w-10/12" href={appLink}>
+      <Link className="w-10/12" href={link}>
         <div className="flex items-center gap-4">
           <Image
-            alt="logo"
-            src={iconUrl}
+            className="rounded-2xl"
+            alt="app-icon"
+            src={metadata.properties.icon}
             blurDataURL="/brands/aurory.jpg" //TODO: fix me
             placeholder="blur"
             width={64}
             height={64}
           />
-
           <div>
-            <div className="text-lg font-bold tracking-wide text-white">{name}</div>
-            <div className="text-sm tracking-wide text-[#FAFAFA]">{description}</div>
+            <div className="text-lg font-bold tracking-wide text-white">{metadata.name}</div>
+            <div className="text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
           </div>
         </div>
       </Link>
       <button
         className="flex items-center gap-2.5 rounded bg-white py-2 px-3
           text-xs font-medium tracking-wide text-[#374151] text-white"
-        onClick={() => install()}
+        onClick={onInstallClick}
       >
         Free <DownloadIcon height={16} />
       </button>
     </div>
+  );
+};
+
+type AppProps = {
+  publicKey: string;
+  metadata: Metadata;
+  featured?: boolean;
+};
+
+const App: FunctionComponent<AppProps> = ({ publicKey, metadata, featured }) => {
+  const appLink = publicKey ? `/app/${publicKey}` : '';
+  const anchorWallet = useAnchorWallet();
+
+  const handleInstall = useCallback(async () => {
+    try {
+      const account = await getXNFT(new PublicKey(publicKey));
+      await installXNFT(
+        anchorWallet,
+        account.account.publisher,
+        account.account.name,
+        account.account.installVault
+      );
+    } catch (err) {
+      console.error(`handleInstall: ${err}`);
+    }
+  }, [anchorWallet, publicKey]);
+
+  return featured ? (
+    <Featured metadata={metadata} link={appLink} onInstallClick={handleInstall} />
+  ) : (
+    <Listing metadata={metadata} link={appLink} onInstallClick={handleInstall} />
   );
 };
 

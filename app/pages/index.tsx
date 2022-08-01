@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { getAllXNFTs, type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
 
 const Sidebar = dynamic(() => import('../components/Sidebar'));
-const Featured = dynamic(() => import('../components/Featured'));
+const App = dynamic(() => import('../components/Library/App'));
 const CategoryPreview = dynamic(() => import('../components/Library/CategoryPreview'));
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
 
@@ -30,7 +30,7 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
 
       {/* Main Content */}
       <div className="col-span-3 flex flex-col gap-12">
-        <Featured app={xnftList[0]} />
+        <App publicKey={xnftList[0].publicKey} metadata={xnftList[0].metadata} featured />
         <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
         <SecondaryCta />
       </div>

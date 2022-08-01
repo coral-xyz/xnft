@@ -14,15 +14,7 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
       <h2 className="text-2xl font-extrabold tracking-wide text-white">{title}</h2>
       <div className="grid grid-cols-2 gap-x-4 gap-y-4">
         {xnfts.map((xnft, idx) => (
-          <App
-            key={idx}
-            iconUrl={xnft.metadata.properties.icon}
-            name={xnft.metadata.name}
-            description={xnft.metadata.description}
-            publicKey={xnft.publicKey}
-            publisher={xnft.account.publisher}
-            installVault={xnft.account.installVault}
-          />
+          <App key={idx} publicKey={xnft.publicKey} metadata={xnft.metadata} />
         ))}
       </div>
     </div>
