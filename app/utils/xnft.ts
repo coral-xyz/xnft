@@ -40,6 +40,13 @@ const anonymousProgram: Program<IDLType> = new Program(
 );
 
 export default abstract class xNFT {
+  /**
+   * Call the `create_xnft` instruction on the program to mint.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {UploadState} details
+   * @memberof xNFT
+   */
   static async create(program: Program<IDLType>, details: UploadState) {
     await program.methods
       .createXnft(
@@ -54,6 +61,13 @@ export default abstract class xNFT {
       .rpc();
   }
 
+  /**
+   * Fetches a single xNFT program account by public key and its metadata.
+   * @static
+   * @param {PublicKey} pubkey
+   * @returns {Promise<XnftWithMetadata>}
+   * @memberof xNFT
+   */
   static async get(pubkey: PublicKey): Promise<XnftWithMetadata> {
     const account = await anonymousProgram.account.xnft2.fetch(pubkey);
 
@@ -73,6 +87,12 @@ export default abstract class xNFT {
     };
   }
 
+  /**
+   * Fetches all xNFT program accounts with their metadata.
+   * @static
+   * @returns {Promise<XnftWithMetadata[]>}
+   * @memberof xNFT
+   */
   static async getAll(): Promise<XnftWithMetadata[]> {
     const xnfts = await anonymousProgram.account.xnft2.all();
 
@@ -101,6 +121,14 @@ export default abstract class xNFT {
     return response;
   }
 
+  /**
+   * Gets all xNFT program accounts that are installed by the argued
+   * public key wallet and their metadata.
+   * @static
+   * @param {PublicKey} pubkey
+   * @returns {Promise<XnftWithMetadata[]>}
+   * @memberof xNFT
+   */
   static async getInstalled(pubkey: PublicKey): Promise<XnftWithMetadata[]> {
     const response = await anonymousProgram.account.install.all([
       {
@@ -121,6 +149,14 @@ export default abstract class xNFT {
     return installed;
   }
 
+  /**
+   * Gets all xNFT program accounts that are owned or published by the
+   * argued public key and their metadata.
+   * @static
+   * @param {PublicKey} pubkey
+   * @returns {Promise<XnftWithMetadata[]>}
+   * @memberof xNFT
+   */
   static async getOwned(pubkey: PublicKey): Promise<XnftWithMetadata[]> {
     const response = await anonymousProgram.account.xnft2.all([
       {
@@ -141,13 +177,23 @@ export default abstract class xNFT {
     return owned;
   }
 
+  /**
+   * Calls the `create_install` program instruction to create an xNFT
+   * installation for the wallet assigned to the argued program's provider.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {string} name
+   * @param {PublicKey} publisher
+   * @param {PublicKey} installVault
+   * @memberof xNFT
+   */
   static async install(
     program: Program<IDLType>,
     name: string,
     publisher: PublicKey,
     installVault: PublicKey
   ) {
-    const xnft = await findXNFTMintPDA(name, publisher);
+    const xnft = await findXnftMintPDA(name, publisher);
     await program.methods
       .createInstall()
       .accounts({
@@ -159,11 +205,12 @@ export default abstract class xNFT {
 }
 
 /**
+ * Derive the mint PDA for the associated xNFT.
  * @param {string} name
  * @param {PublicKey} publisher
  * @returns {Promise<PublicKey>}
  */
-async function findXNFTMintPDA(name: string, publisher: PublicKey): Promise<PublicKey> {
+async function findXnftMintPDA(name: string, publisher: PublicKey): Promise<PublicKey> {
   // Mint PDA Address
   const [mintPdaAddress] = await PublicKey.findProgramAddress(
     [Buffer.from('mint'), publisher.toBytes(), Buffer.from(name)],

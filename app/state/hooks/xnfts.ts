@@ -27,40 +27,40 @@ export function useOwnedXnfts(): XnftWithMetadata[] {
   return useRecoilValue(ownedXnfts);
 }
 
-// export function useInstalledXNFTs() {
+// export function useInstalledXnfts() {
 //   const { publicKey } = useWallet();
-//   const [installedXNFTs, setInstalledXNFTs] = useState<XnftWithMetadata[]>([]);
+//   const [installed, setInstalled] = useState<XnftWithMetadata[]>([]);
 
 //   useEffect(() => {
 //     async function run() {
 //       try {
-//         const response = await getInstalledXnfts(publicKey);
-//         setInstalledXNFTs(response);
+//         const response = await xNFT.getInstalled(publicKey);
+//         setInstalled(response);
 //       } catch (err) {
-//         console.error(`useInstalledXNFTs: ${err}`);
+//         console.error(`useInstalledXnfts: ${err}`);
 //       }
 //     }
 //     if (publicKey) run();
 //   }, [publicKey]);
 
-//   return { installedXNFTs };
+//   return installed;
 // }
 
-// export function useOwnedXNFTs() {
+// export function useOwnedXnfts() {
 //   const { publicKey } = useWallet();
-//   const [ownedXNFTs, setOwnedXNFTs] = useState<XnftWithMetadata[]>([]);
+//   const [owned, setOwned] = useState<XnftWithMetadata[]>([]);
 
 //   useEffect(() => {
 //     async function run() {
 //       try {
-//         const response = await getOwnedXnfts(publicKey);
-//         setOwnedXNFTs(response);
+//         const response = await xNFT.getOwned(publicKey);
+//         setOwned(response);
 //       } catch (err) {
-//         console.error(`useOwnedXNFTs: ${err}`);
+//         console.error(`useOwnedXnfts: ${err}`);
 //       }
 //     }
 //     if (publicKey) run();
 //   }, [publicKey]);
 
-//   return { ownedXNFTs };
+//   return owned;
 // }

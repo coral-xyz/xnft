@@ -11,28 +11,22 @@ const defaultWallet = {
   signTransaction: undefined
 };
 
-export const wallet = atom<AnchorWallet>({
-  key: 'anchorWallet',
+export const connectedWallet = atom<AnchorWallet>({
+  key: 'connectedWallet',
   default: undefined
 });
 
-export const provider = atom<AnchorProvider>({
-  key: 'anchorProvider',
-  default: selector({
-    key: 'anchorProviderDefault',
-    get: ({ get }) =>
-      new AnchorProvider(
-        new Connection('https://api.devnet.solana.com', { commitment: 'processed' }),
-        get(wallet) ?? defaultWallet,
-        { commitment: 'processed' }
-      ) // FIXME:
-  })
+export const provider = selector<AnchorProvider>({
+  key: 'anchorProviderDefault',
+  get: ({ get }) =>
+    new AnchorProvider(
+      new Connection('https://api.devnet.solana.com', { commitment: 'processed' }),
+      get(connectedWallet) ?? defaultWallet,
+      { commitment: 'processed' }
+    ) // FIXME:
 });
 
-export const program = atom<Program<Xnft>>({
-  key: 'xnftProgram',
-  default: selector({
-    key: 'xnftProgramDefault',
-    get: ({ get }) => new Program(IDL, XNFT_PROGRAM_ID, get(provider))
-  })
+export const program = selector<Program<Xnft>>({
+  key: 'xnftProgramDefault',
+  get: ({ get }) => new Program(IDL, XNFT_PROGRAM_ID, get(provider))
 });

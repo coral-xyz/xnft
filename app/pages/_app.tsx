@@ -1,12 +1,12 @@
 import '../styles/globals.css';
 
+import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import PlausibleProvider from 'next-plausible';
 import Head from 'next/head';
 import Nav from '../components/Nav';
 import { ContextProvider } from '../state/context/ContextProvider';
 import Footer from '../components/Footer';
-import { RecoilRoot } from 'recoil';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 

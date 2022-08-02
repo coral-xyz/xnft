@@ -1,25 +1,19 @@
-import { atom, selector } from 'recoil';
+import { selector } from 'recoil';
 import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
-import { wallet } from './solana';
+import { connectedWallet } from './solana';
 
-export const installedXnfts = atom<XnftWithMetadata[]>({
+export const installedXnfts = selector<XnftWithMetadata[]>({
   key: 'installedXnfts',
-  default: selector({
-    key: 'installedXnftsDefault',
-    get: async ({ get }) => {
-      const walletValue = get(wallet);
-      return walletValue ? xNFT.getInstalled(walletValue.publicKey) : [];
-    }
-  })
+  get: ({ get }) => {
+    const walletValue = get(connectedWallet);
+    return walletValue ? xNFT.getInstalled(walletValue.publicKey) : [];
+  }
 });
 
-export const ownedXnfts = atom<XnftWithMetadata[]>({
+export const ownedXnfts = selector<XnftWithMetadata[]>({
   key: 'ownedXnfts',
-  default: selector({
-    key: 'ownedXnftsDefault',
-    get: async ({ get }) => {
-      const walletValue = get(wallet);
-      return walletValue ? xNFT.getOwned(walletValue.publicKey) : [];
-    }
-  })
+  get: ({ get }) => {
+    const walletValue = get(connectedWallet);
+    return walletValue ? xNFT.getOwned(walletValue.publicKey) : [];
+  }
 });

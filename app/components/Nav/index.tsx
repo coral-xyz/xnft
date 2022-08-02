@@ -12,7 +12,7 @@ import { type FunctionComponent, memo, Fragment, useEffect, useCallback } from '
 import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { wallet } from '../../state/atoms/solana';
+import { connectedWallet } from '../../state/atoms/solana';
 // import Search from './Search';
 import { DocsLink, DownloadBackpackLink } from './Links';
 
@@ -109,24 +109,24 @@ const Nav: FunctionComponent = () => {
   const router = useRouter();
   const { connected, disconnect } = useWallet();
   const anchorWallet = useAnchorWallet();
-  const setWallet = useSetRecoilState(wallet);
-  const resetWallet = useResetRecoilState(wallet);
+  const setWallet = useSetRecoilState(connectedWallet);
+  const resetWallet = useResetRecoilState(connectedWallet);
   // const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
     if (connected) {
       setWallet(anchorWallet);
+    } else {
+      resetWallet();
     }
-  }, [anchorWallet, connected, setWallet]);
+  }, [anchorWallet, connected, setWallet, resetWallet]);
 
   const handleDisconnect = useCallback(async () => {
     if (router.pathname !== '/') {
       await router.push('/');
     }
-
     await disconnect();
-    resetWallet();
-  }, [disconnect, router, resetWallet]);
+  }, [disconnect, router]);
 
   return (
     <div className="tracking-wide">
