@@ -53,7 +53,7 @@ const MePage: NextPage = () => {
 
           {/* Installed xNFTs Apps */}
           <div className="flex flex-col gap-8">
-            <h2 className="text-3xl font-extrabold tracking-wide text-white">Installed</h2>
+            <h2 className="text-3xl font-extrabold tracking-wide text-white">Downloaded</h2>
             {installed.length === 0 ? (
               <Placeholder
                 buttonHref="/"

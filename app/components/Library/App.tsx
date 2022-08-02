@@ -1,12 +1,12 @@
 import { DownloadIcon } from '@heroicons/react/solid';
 import { BN } from '@project-serum/anchor';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { type FunctionComponent, memo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import xNFT from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
 import { useProgram } from '../../state/hooks/solana';
-import { useWallet } from '@solana/wallet-adapter-react';
 
 type FeaturedProps = {
   allowInstall?: boolean;
@@ -29,8 +29,6 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         className="rounded-l-2xl"
         alt="app-icon"
         src={metadata.properties.icon}
-        blurDataURL="/brands/aurory.jpg" //TODO: fix me
-        placeholder="blur"
         height={400}
         width={400}
       />
@@ -38,7 +36,6 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <h3 className="pb-2 font-medium text-[#99A4B4]">Featured</h3>
         <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
         <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
-
         <div className="flex gap-4 text-sm font-medium">
           <button
             className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]"
@@ -73,8 +70,6 @@ const Listing: FunctionComponent<ListingProps> = ({
             className="rounded-2xl"
             alt="app-icon"
             src={metadata.properties.icon}
-            blurDataURL="/brands/aurory.jpg" //TODO: fix me
-            placeholder="blur"
             width={64}
             height={64}
           />

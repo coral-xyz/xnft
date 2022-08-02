@@ -32,10 +32,10 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
       {/* Main Content */}
       <div className="col-span-3 flex flex-col gap-12">
         <App
+          featured
           publicKey={xnftList[0].publicKey}
           price={new BN(xnftList[0].account.installPrice)}
           metadata={xnftList[0].metadata}
-          featured
         />
         <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
         <SecondaryCta />

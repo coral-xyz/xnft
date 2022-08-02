@@ -28,10 +28,6 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse<{ url: string } | { message: string }>
 ) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
   try {
     const { name, type } = req.body as RequestBody;
 
@@ -48,6 +44,6 @@ export default async (
     res.status(200).json({ url });
   } catch (err) {
     console.log(err);
-    res.status(400).json({ message: err });
+    res.status(500).json({ message: err });
   }
 };

@@ -22,9 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       status: 'pending'
     });
 
-    return res.end();
+    res.end();
   } catch (err) {
     console.error('Error subscribing:', err);
-    return res.status(500).send('Error subscribing email');
+    res.status(500).send('Error subscribing email');
   }
 }

@@ -1,5 +1,6 @@
 import { CashIcon, PhotographIcon, PuzzleIcon, StarIcon } from '@heroicons/react/outline';
 import { DownloadIcon } from '@heroicons/react/solid';
+import { Transition } from '@headlessui/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { type FunctionComponent, memo, useState } from 'react';
 
@@ -67,7 +68,18 @@ const Sidebar: FunctionComponent<SidebarProps> = props => {
           </div>
         ))}
       </div>
-      {connected && <AppUpdates />}
+      <Transition
+        appear
+        show={connected}
+        enter="transition ease-in-out duration-500"
+        enterFrom="opacity-0 -translate-x-full"
+        enterTo="opacity-100 translate-x-0"
+        leave="transition ease-in-out duration-300"
+        leaveFrom="opacity-100 translate-x-0"
+        leaveTo="opacity-0 -translate-x-full"
+      >
+        <AppUpdates />
+      </Transition>
     </div>
   );
 };
