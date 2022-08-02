@@ -8,9 +8,10 @@ import {
 import { Menu, Transition } from '@headlessui/react';
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { type FunctionComponent, memo, Fragment, useEffect } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { type FunctionComponent, memo, Fragment, useEffect, useCallback } from 'react';
+import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { wallet } from '../../state/atoms/solana';
 // import Search from './Search';
 import { DocsLink, DownloadBackpackLink } from './Links';
@@ -35,8 +36,12 @@ const DisconnectedMenu: FunctionComponent = () => {
   );
 };
 
-const ConnectedMenu: FunctionComponent = () => {
-  const { disconnect, publicKey } = useWallet();
+type ConnectedMenuProps = {
+  onDisconnect: () => void;
+};
+
+const ConnectedMenu: FunctionComponent<ConnectedMenuProps> = ({ onDisconnect }) => {
+  const { publicKey } = useWallet();
 
   return (
     <Menu as="div" className="relative inline-block">
@@ -88,7 +93,7 @@ const ConnectedMenu: FunctionComponent = () => {
                 className={`${
                   active ? 'bg-[#52525B]' : ''
                 } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
-                onClick={() => disconnect()}
+                onClick={onDisconnect}
               >
                 <LogoutIcon height={14} /> Disconnect
               </button>
@@ -101,9 +106,11 @@ const ConnectedMenu: FunctionComponent = () => {
 };
 
 const Nav: FunctionComponent = () => {
-  const { connected } = useWallet();
+  const router = useRouter();
+  const { connected, disconnect } = useWallet();
   const anchorWallet = useAnchorWallet();
   const setWallet = useSetRecoilState(wallet);
+  const resetWallet = useResetRecoilState(wallet);
   // const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
@@ -111,6 +118,15 @@ const Nav: FunctionComponent = () => {
       setWallet(anchorWallet);
     }
   }, [anchorWallet, connected, setWallet]);
+
+  const handleDisconnect = useCallback(async () => {
+    if (router.pathname !== '/') {
+      await router.push('/');
+    }
+
+    await disconnect();
+    resetWallet();
+  }, [disconnect, router, resetWallet]);
 
   return (
     <div className="tracking-wide">
@@ -124,7 +140,7 @@ const Nav: FunctionComponent = () => {
 
         <div className="flex items-center justify-end gap-3">
           <DocsLink />
-          {connected ? <ConnectedMenu /> : <DisconnectedMenu />}
+          {connected ? <ConnectedMenu onDisconnect={handleDisconnect} /> : <DisconnectedMenu />}
         </div>
       </div>
     </div>
