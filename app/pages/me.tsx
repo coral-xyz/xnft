@@ -1,4 +1,5 @@
 import { PencilAltIcon, ViewGridAddIcon } from '@heroicons/react/outline';
+import { BN } from '@project-serum/anchor';
 import { type FunctionComponent, useState, type ReactNode } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -71,7 +72,11 @@ const MePage: NextPage = () => {
                       key={idx}
                       className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
                     >
-                      <App publicKey={item.publicKey.toBase58()} metadata={item.metadata} />
+                      <App
+                        publicKey={item.publicKey.toBase58()}
+                        price={new BN(item.account.installPrice)}
+                        metadata={item.metadata}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -101,7 +106,11 @@ const MePage: NextPage = () => {
                     key={idx}
                     className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
                   >
-                    <App publicKey={item.publicKey.toBase58()} metadata={item.metadata} />
+                    <App
+                      publicKey={item.publicKey.toBase58()}
+                      price={new BN(item.account.installPrice)}
+                      metadata={item.metadata}
+                    />
                   </li>
                 ))}
               </ul>

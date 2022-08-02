@@ -3,6 +3,7 @@ import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
 import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 import { useProgram } from '../../state/hooks/solana';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 type AppBannerProps = {
   xnft: XnftWithMetadata;
@@ -10,6 +11,7 @@ type AppBannerProps = {
 
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();
+  const { connected } = useWallet();
 
   async function handleInstall() {
     await xNFT.install(
@@ -37,9 +39,9 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
           <button
             type="button"
             className="inline-flex w-fit items-center rounded-md border border-transparent
-            bg-indigo-600 px-3 py-2 text-sm font-medium leading-4 text-indigo-50
-            hover:bg-indigo-500"
+              bg-indigo-600 px-3 py-2 text-sm font-medium leading-4 text-white"
             onClick={handleInstall}
+            disabled={!connected}
           >
             Free
           </button>

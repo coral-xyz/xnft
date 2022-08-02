@@ -1,3 +1,4 @@
+import { BN } from '@project-serum/anchor';
 import { type FunctionComponent, memo } from 'react';
 import type { SerializedXnftWithMetadata } from '../../utils/xnft';
 import App from './App';
@@ -14,7 +15,12 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
       <h2 className="text-2xl font-extrabold tracking-wide text-white">{title}</h2>
       <div className="grid grid-cols-2 gap-x-4 gap-y-4">
         {xnfts.map((xnft, idx) => (
-          <App key={idx} publicKey={xnft.publicKey} metadata={xnft.metadata} />
+          <App
+            key={idx}
+            publicKey={xnft.publicKey}
+            price={new BN(xnft.account.installPrice)}
+            metadata={xnft.metadata}
+          />
         ))}
       </div>
     </div>

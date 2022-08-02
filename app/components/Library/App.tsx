@@ -1,18 +1,28 @@
 import { DownloadIcon } from '@heroicons/react/solid';
+import { BN } from '@project-serum/anchor';
 import { type FunctionComponent, memo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import xNFT from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
 import { useProgram } from '../../state/hooks/solana';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 type FeaturedProps = {
+  allowInstall?: boolean;
+  price: BN;
   metadata: Metadata;
   link: string;
   onInstallClick: () => void;
 };
 
-const Featured: FunctionComponent<FeaturedProps> = ({ metadata, link, onInstallClick }) => {
+const Featured: FunctionComponent<FeaturedProps> = ({
+  allowInstall,
+  price,
+  metadata,
+  link,
+  onInstallClick
+}) => {
   return (
     <div className="flex items-center gap-14 rounded-2xl bg-[#27272A]">
       <Image
@@ -33,8 +43,9 @@ const Featured: FunctionComponent<FeaturedProps> = ({ metadata, link, onInstallC
           <button
             className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]"
             onClick={onInstallClick}
+            disabled={!allowInstall}
           >
-            Free <DownloadIcon height={16} />
+            {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
           </button>
           <Link href={link}>
             <button className="rounded-md bg-[#52525B] py-2 px-4 text-[#D4D4D8]">Explore</button>
@@ -47,7 +58,13 @@ const Featured: FunctionComponent<FeaturedProps> = ({ metadata, link, onInstallC
 
 type ListingProps = FeaturedProps;
 
-const Listing: FunctionComponent<ListingProps> = ({ metadata, link, onInstallClick }) => {
+const Listing: FunctionComponent<ListingProps> = ({
+  allowInstall,
+  price,
+  metadata,
+  link,
+  onInstallClick
+}) => {
   return (
     <div className="flex w-full items-center justify-between rounded-lg bg-[#27272A] p-4">
       <Link className="w-10/12" href={link}>
@@ -68,11 +85,12 @@ const Listing: FunctionComponent<ListingProps> = ({ metadata, link, onInstallCli
         </div>
       </Link>
       <button
-        className="flex items-center gap-2.5 rounded bg-white py-2 px-3
-          text-xs font-medium tracking-wide text-[#374151] text-white"
+        className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs
+          font-medium tracking-wide text-[#374151] text-white"
         onClick={onInstallClick}
+        disabled={!allowInstall}
       >
-        Free <DownloadIcon height={16} />
+        {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
       </button>
     </div>
   );
@@ -80,12 +98,15 @@ const Listing: FunctionComponent<ListingProps> = ({ metadata, link, onInstallCli
 
 type AppProps = {
   publicKey: string;
+  price: BN;
   metadata: Metadata;
   featured?: boolean;
 };
 
-const App: FunctionComponent<AppProps> = ({ publicKey, metadata, featured }) => {
+const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured }) => {
   const appLink = publicKey ? `/app/${publicKey}` : '';
+
+  const { connected } = useWallet();
   const program = useProgram();
 
   const handleInstall = useCallback(async () => {
@@ -95,12 +116,12 @@ const App: FunctionComponent<AppProps> = ({ publicKey, metadata, featured }) => 
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [publicKey, program]);
+  }, [connected, publicKey, program]);
 
   return featured ? (
-    <Featured metadata={metadata} link={appLink} onInstallClick={handleInstall} />
+    <Featured price={price} metadata={metadata} link={appLink} onInstallClick={handleInstall} />
   ) : (
-    <Listing metadata={metadata} link={appLink} onInstallClick={handleInstall} />
+    <Listing price={price} metadata={metadata} link={appLink} onInstallClick={handleInstall} />
   );
 };
 
