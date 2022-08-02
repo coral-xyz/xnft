@@ -10,7 +10,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
-import { type FunctionComponent, useEffect, useState, Fragment } from 'react';
+import { type FunctionComponent, useEffect, useState } from 'react';
 import { DownloadBackpackLink } from './Links';
 
 /**
@@ -43,7 +43,7 @@ export const DisconnectedMenu: FunctionComponent = () => {
         <DownloadBackpackLink />
       </Transition>
       <button
-        className="flex items-center gap-3 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
+        className="flex items-center gap-2 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
         onClick={() => setVisible(true)}
       >
         <UserCircleIcon height={18} /> Connect
@@ -62,14 +62,13 @@ export const ConnectedMenu: FunctionComponent<ConnectedMenuProps> = ({ onDisconn
   return (
     <Menu as="div" className="relative inline-block">
       <Menu.Button
-        className="flex items-center gap-3 rounded-3xl bg-[#27272A]
+        className="flex items-center gap-2 rounded-3xl bg-[#27272A]
           px-4 py-3 font-medium tracking-wide text-[#FAFAFA]"
       >
         <UserCircleIcon height={20} /> {truncatePublicKey(publicKey.toBase58())}{' '}
         <ChevronDownIcon height={20} />
       </Menu.Button>
       <Transition
-        as={Fragment}
         enter="transition ease-out duration-100"
         enterFrom="transform opacity-0 scale-95"
         enterTo="transform opacity-100 scale-100"

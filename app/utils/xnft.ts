@@ -1,5 +1,11 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { AnchorProvider, BN, Program, type IdlAccounts } from '@project-serum/anchor';
+import {
+  AnchorProvider,
+  BN,
+  Program,
+  ProgramAccount,
+  type IdlAccounts
+} from '@project-serum/anchor';
 import {
   Metadata as MplMetadata,
   PROGRAM_ID as METADATA_PROGRAM_ID
@@ -9,10 +15,13 @@ import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { Metadata } from './metadata';
 import type { UploadState } from '../state/atoms/publish';
 
-export type Xnft = IdlAccounts<IDLType>['xnft2'];
+export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
+export type InstallAccount = IdlAccounts<IDLType>['install'];
 
 export type SerializedXnftWithMetadata = {
-  account: { [K in keyof Xnft]: Xnft[K] extends PublicKey | BN ? string : Xnft[K] };
+  account: {
+    [K in keyof XnftAccount]: XnftAccount[K] extends PublicKey | BN ? string : XnftAccount[K];
+  };
   publicKey: string;
   metadataAccount: {
     [K in keyof MplMetadata]: MplMetadata[K] extends PublicKey ? string : MplMetadata[K];
@@ -21,7 +30,7 @@ export type SerializedXnftWithMetadata = {
 };
 
 export type XnftWithMetadata = {
-  account: Xnft;
+  account: XnftAccount;
   publicKey: PublicKey;
   metadataAccount: MplMetadata;
   metadata: Metadata;
@@ -70,21 +79,7 @@ export default abstract class xNFT {
    */
   static async get(pubkey: PublicKey): Promise<XnftWithMetadata> {
     const account = await anonymousProgram.account.xnft2.fetch(pubkey);
-
-    const metadataAccount = await MplMetadata.fromAccountAddress(
-      anonymousProgram.provider.connection,
-      account.masterMetadata
-    );
-
-    const res = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit);
-    const metadata = await res.json();
-
-    return {
-      account: account as any,
-      publicKey: pubkey,
-      metadataAccount,
-      metadata
-    };
+    return transformWithMetadata(pubkey, account as any);
   }
 
   /**
@@ -97,22 +92,11 @@ export default abstract class xNFT {
     const xnfts = await anonymousProgram.account.xnft2.all();
 
     const response: XnftWithMetadata[] = [];
+
     for await (const x of xnfts) {
       try {
-        const metadataAccount = await MplMetadata.fromAccountAddress(
-          anonymousProgram.provider.connection,
-          x.account.masterMetadata
-        );
-
-        const res = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit);
-        const metadata = await res.json();
-
-        response.push({
-          account: x.account as any,
-          publicKey: x.publicKey,
-          metadataAccount,
-          metadata
-        });
+        const data = await transformWithMetadata(x.publicKey, x.account as any);
+        response.push(data);
       } catch (error) {
         console.error(`failed to fetch metadata for ${x.publicKey.toBase58()}`, error);
       }
@@ -130,7 +114,7 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getInstalled(pubkey: PublicKey): Promise<XnftWithMetadata[]> {
-    const response = await anonymousProgram.account.install.all([
+    const response: ProgramAccount<InstallAccount>[] = await anonymousProgram.account.install.all([
       {
         memcmp: {
           offset: 8,
@@ -158,19 +142,19 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getOwned(pubkey: PublicKey): Promise<XnftWithMetadata[]> {
-    const response = await anonymousProgram.account.xnft2.all([
+    const response: ProgramAccount<XnftAccount>[] = (await anonymousProgram.account.xnft2.all([
       {
         memcmp: {
           offset: 8,
           bytes: pubkey.toBase58()
         }
       }
-    ]);
+    ])) as any;
 
     const owned: XnftWithMetadata[] = [];
 
     for await (const item of response) {
-      const data = await xNFT.get(item.publicKey);
+      const data = await transformWithMetadata(item.publicKey, item.account as any);
       owned.push(data);
     }
 
@@ -202,6 +186,26 @@ export default abstract class xNFT {
       })
       .rpc();
   }
+}
+
+async function transformWithMetadata(
+  publicKey: PublicKey,
+  xnft: XnftAccount
+): Promise<XnftWithMetadata> {
+  const metadataAccount = await MplMetadata.fromAccountAddress(
+    anonymousProgram.provider.connection,
+    xnft.masterMetadata
+  );
+
+  const res = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit);
+  const metadata = await res.json();
+
+  return {
+    publicKey,
+    account: xnft,
+    metadataAccount,
+    metadata
+  };
 }
 
 /**

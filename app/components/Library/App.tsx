@@ -116,12 +116,24 @@ const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [connected, publicKey, program]);
+  }, [publicKey, program]);
 
   return featured ? (
-    <Featured price={price} metadata={metadata} link={appLink} onInstallClick={handleInstall} />
+    <Featured
+      allowInstall={connected}
+      price={price}
+      metadata={metadata}
+      link={appLink}
+      onInstallClick={handleInstall}
+    />
   ) : (
-    <Listing price={price} metadata={metadata} link={appLink} onInstallClick={handleInstall} />
+    <Listing
+      allowInstall={connected}
+      price={price}
+      metadata={metadata}
+      link={appLink}
+      onInstallClick={handleInstall}
+    />
   );
 };
 
