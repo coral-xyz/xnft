@@ -3,7 +3,7 @@ import { type FunctionComponent, useState, type ReactNode } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useInstalledXNFTs, useOwnedXNFTs } from '../state/hooks/xnfts';
+import { useInstalledXnfts, useOwnedXnfts } from '../state/hooks/xnfts';
 import App from '../components/Library/App';
 
 const Sidebar = dynamic(() => import('../components/Sidebar'));
@@ -36,8 +36,8 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
 };
 
 const MePage: NextPage = () => {
-  const { installedXNFTs } = useInstalledXNFTs();
-  const { ownedXNFTs } = useOwnedXNFTs();
+  const installed = useInstalledXnfts();
+  const owned = useOwnedXnfts();
   const [activeMenu, setActiveMenu] = useState(0);
 
   return (
@@ -53,7 +53,7 @@ const MePage: NextPage = () => {
           {/* Installed xNFTs Apps */}
           <div className="flex flex-col gap-8">
             <h2 className="text-3xl font-extrabold tracking-wide text-white">Installed</h2>
-            {installedXNFTs.length === 0 ? (
+            {installed.length === 0 ? (
               <Placeholder
                 buttonHref="/"
                 buttonText="Browse the Library"
@@ -66,7 +66,7 @@ const MePage: NextPage = () => {
                   role="list"
                   className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
                 >
-                  {installedXNFTs.map((item, idx) => (
+                  {installed.map((item, idx) => (
                     <li
                       key={idx}
                       className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
@@ -83,7 +83,7 @@ const MePage: NextPage = () => {
         {/* Published xNFTs Apps */}
         <div className="flex flex-col gap-8">
           <h2 className="text-3xl font-extrabold tracking-wide text-white">Published</h2>
-          {ownedXNFTs.length === 0 ? (
+          {owned.length === 0 ? (
             <Placeholder
               buttonHref="/publish"
               buttonText="Publish new xNFT"
@@ -96,7 +96,7 @@ const MePage: NextPage = () => {
                 role="list"
                 className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
               >
-                {ownedXNFTs.map((item, idx) => (
+                {owned.map((item, idx) => (
                   <li
                     key={idx}
                     className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"

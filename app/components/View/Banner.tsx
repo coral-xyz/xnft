@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
-import { install, type XnftWithMetadata } from '../../utils/xnft';
+import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 import { useProgram } from '../../state/hooks/solana';
 
 type AppBannerProps = {
@@ -12,7 +12,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();
 
   async function handleInstall() {
-    await install(
+    await xNFT.install(
       program,
       xnft.metadata.name,
       new PublicKey(xnft.account.publisher),

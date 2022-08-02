@@ -5,7 +5,7 @@ import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } fr
 import { useRecoilValue } from 'recoil';
 import { uploadDetails } from '../state/atoms/publish';
 import { useProgram } from '../state/hooks/solana';
-import { mint } from '../utils/xnft';
+import xNFT from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -44,7 +44,7 @@ const PublishPage: NextPage = () => {
   const handleNextClicked = useCallback(async () => {
     if (currentStep === steps.length - 1) {
       try {
-        await mint(program, details);
+        await xNFT.create(program, details);
       } catch (err) {
         console.error(`handleNextClicked: ${err}`);
       }
@@ -71,7 +71,6 @@ const PublishPage: NextPage = () => {
             Learn more
           </button>
 
-          {/* Active form step */}
           <div className="flex w-full flex-col gap-2 px-4">
             <div className="mt-12 mb-4 flex w-full justify-center gap-8">
               {steps.map((s, idx) => (

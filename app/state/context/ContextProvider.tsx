@@ -1,7 +1,7 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { BackpackWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { BackpackWalletAdapter, PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import { type FunctionComponent, type ReactNode, useMemo } from 'react';
 import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
@@ -15,8 +15,7 @@ const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ chi
   if (process.env.NETWORK_ENV === 'mainnet') network = WalletAdapterNetwork.Mainnet;
 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-
-  const wallets = useMemo(() => [new BackpackWalletAdapter()], []);
+  const wallets = useMemo(() => [new BackpackWalletAdapter(), new PhantomWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>

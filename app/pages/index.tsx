@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { getAll, type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
+import xNFT, { type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
 
 const Sidebar = dynamic(() => import('../components/Sidebar'));
 const App = dynamic(() => import('../components/Library/App'));
@@ -9,7 +9,7 @@ const CategoryPreview = dynamic(() => import('../components/Library/CategoryPrev
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
 
 export async function getStaticProps() {
-  const xnfts: XnftWithMetadata[] = await getAll();
+  const xnfts: XnftWithMetadata[] = await xNFT.getAll();
 
   return {
     props: {
