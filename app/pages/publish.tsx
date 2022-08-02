@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from '@heroicons/react/solid';
+import { ArrowRightIcon, CloudUploadIcon } from '@heroicons/react/solid';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } from 'react';
@@ -19,17 +19,20 @@ const steps = [
   {
     title: 'Upload files',
     component: (props: StepComponentProps) => <BundleUpload {...props} />,
-    nextButtonText: 'Next'
+    nextButtonText: 'Next',
+    nextButtonIcon: <ArrowRightIcon className="inline-block w-4" />
   },
   {
     title: 'Details',
     component: (props: StepComponentProps) => <Details {...props} />,
-    nextButtonText: 'Next'
+    nextButtonText: 'Next',
+    nextButtonIcon: <ArrowRightIcon className="inline-block w-4" />
   },
   {
     title: 'Review & mint',
     component: (props: StepComponentProps) => <Review {...props} />,
-    nextButtonText: 'Mint'
+    nextButtonText: 'Upload & Mint',
+    nextButtonIcon: <CloudUploadIcon className="inline-block w-4" />
   }
 ];
 
@@ -91,12 +94,12 @@ const PublishPage: NextPage = () => {
 
             <div className="flex justify-center">
               <button
-                className="mt-12 w-24 rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
+                className="mt-12 flex items-center rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
                 onClick={handleNextClicked}
                 disabled={!nextEnabled}
               >
                 <span className="inline-block pr-2">{activeStepComponent.nextButtonText}</span>
-                <ArrowRightIcon className="inline-block w-4" />
+                {activeStepComponent.nextButtonIcon}
               </button>
             </div>
           </div>

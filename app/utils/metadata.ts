@@ -15,6 +15,8 @@ export type MetadataProperties = {
 };
 
 /**
+ * Creates the xNFT metadata JSON object to be uploaded to storage.
+ * @exports
  * @param {string} publicKey
  * @param {UploadState} state
  * @returns {Metadata}

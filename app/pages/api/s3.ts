@@ -1,11 +1,13 @@
-import S3 from 'aws-sdk/clients/s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-const client = new S3({
+const client = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
-  accessKeyId: process.env.AWS_KEY,
-  secretAccessKey: process.env.AWS_SECRET,
-  signatureVersion: 'v4'
+  credentials: {
+    accessKeyId: process.env.AWS_KEY,
+    secretAccessKey: process.env.AWS_SECRET
+  }
 });
 
 export const config = {
@@ -14,6 +16,11 @@ export const config = {
       sizeLimit: '2mb' // TODO: using limit to show a warning
     }
   }
+};
+
+type RequestBody = {
+  name: string;
+  type: string;
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -26,16 +33,17 @@ export default async (
   }
 
   try {
-    const { name, type } = req.body;
+    const { name, type } = req.body as RequestBody;
 
-    const params = {
-      Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET,
-      Key: name,
-      Expires: 600,
-      ContentType: type
-    };
-
-    const url = await client.getSignedUrlPromise('putObject', params);
+    const url = await getSignedUrl(
+      client,
+      new PutObjectCommand({
+        Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET,
+        Key: name,
+        ContentType: type
+      }),
+      { expiresIn: 600 }
+    );
 
     res.status(200).json({ url });
   } catch (err) {
