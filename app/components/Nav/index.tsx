@@ -8,7 +8,7 @@ import {
 import { Menu, Transition } from '@headlessui/react';
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import { type FunctionComponent, memo, Fragment, useEffect, useCallback } from 'react';
+import { type FunctionComponent, memo, Fragment, useEffect, useCallback, useState } from 'react';
 import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -22,10 +22,24 @@ function truncatePublicKey(pk: string): string {
 
 const DisconnectedMenu: FunctionComponent = () => {
   const { setVisible } = useWalletModal();
+  const [installed, setInstalled] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setInstalled(Object.hasOwn(window, 'backpack'));
+    }, 500);
+  }, []);
 
   return (
     <>
-      <DownloadBackpackLink />
+      <Transition
+        show={!installed}
+        enter="transition-all ease-in-out duration-500"
+        enterFrom="transform opacity-0"
+        enterTo="transform opacity-100"
+      >
+        <DownloadBackpackLink />
+      </Transition>
       <button
         className="flex items-center gap-3 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
         onClick={() => setVisible(true)}
