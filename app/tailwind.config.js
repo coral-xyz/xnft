@@ -6,25 +6,6 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
-      colors: {
-        theme: {
-          primary: '#F66C5E',
-          accent: '#4F46E5',
-          background: {
-            DEFAULT: '#18181B',
-            light: '#394150',
-            dark: '#111827'
-          },
-          font: {
-            DEFAULT: '#FFFFFF',
-            gray: {
-              DEFAULT: '#9CA3AF',
-              light: '#E5E7EB',
-              dark: '#393C43'
-            }
-          }
-        }
-      },
       fontFamily: {
         sans: ['Inter', ...defaultTheme.fontFamily.sans]
       }

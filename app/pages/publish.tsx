@@ -2,8 +2,6 @@ import { ArrowRightIcon, CloudUploadIcon } from '@heroicons/react/solid';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } from 'react';
-import { useRecoilValue } from 'recoil';
-import { uploadDetails } from '../state/atoms/publish';
 import { useProgram } from '../state/hooks/solana';
 import xNFT from '../utils/xnft';
 
@@ -12,6 +10,8 @@ const Details = dynamic(() => import('../components/Publish/Details'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
 export type StepComponentProps = {
+  state: UploadState;
+  setState: Dispatch<SetStateAction<UploadState>>;
   setNextEnabled: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -36,18 +36,33 @@ const steps = [
   }
 ];
 
+const defaultUploadState = {
+  title: '',
+  description: '',
+  publisher: '',
+  website: '',
+  bundle: {} as File,
+  royalties: '',
+  price: '',
+  supply: 'inf',
+  icon: {} as File,
+  screenshots: {} as FileList
+};
+
+export type UploadState = typeof defaultUploadState;
+
 const PublishPage: NextPage = () => {
   const program = useProgram();
-  const details = useRecoilValue(uploadDetails);
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
+  const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
 
   const activeStepComponent = useMemo(() => steps[currentStep], [currentStep]);
 
   const handleNextClicked = useCallback(async () => {
     if (currentStep === steps.length - 1) {
       try {
-        await xNFT.create(program, details);
+        await xNFT.create(program, uploadState);
       } catch (err) {
         console.error(`handleNextClicked: ${err}`);
       }
@@ -55,7 +70,7 @@ const PublishPage: NextPage = () => {
       setCurrentStep(curr => curr + 1);
       setNextEnabled(false);
     }
-  }, [details, currentStep, program]);
+  }, [uploadState, currentStep, program]);
 
   return (
     <div className="flex justify-center">
@@ -67,9 +82,9 @@ const PublishPage: NextPage = () => {
           <button
             type="button"
             className="mx-auto inline-flex w-32 cursor-no-drop
-          items-center rounded-md border border-transparent
-          bg-[#3F3F46] px-4 py-2 font-medium tracking-wide
-          text-white shadow-sm"
+              items-center rounded-md border border-transparent
+              bg-[#3F3F46] px-4 py-2 font-medium tracking-wide
+              text-white shadow-sm"
           >
             Learn more
           </button>
@@ -89,7 +104,11 @@ const PublishPage: NextPage = () => {
             </div>
 
             <div className={`rounded-2xl bg-[#27272A]`}>
-              {activeStepComponent.component({ setNextEnabled })}
+              {activeStepComponent.component({
+                state: uploadState,
+                setState: setUploadState,
+                setNextEnabled
+              })}
             </div>
 
             <div className="flex justify-center">

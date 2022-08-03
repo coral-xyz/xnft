@@ -12,8 +12,9 @@ import {
 } from '@metaplex-foundation/mpl-token-metadata';
 import fetch from 'isomorphic-unfetch';
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
+import type { UploadState } from '../pages/publish';
 import type { Metadata } from './metadata';
-import type { UploadState } from '../state/atoms/publish';
+import { getMetadataUrl } from './s3';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
@@ -57,16 +58,17 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async create(program: Program<IDLType>, details: UploadState) {
+    const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
     await program.methods
       .createXnft(
         details.title,
         details.title.slice(0, 3).toUpperCase(),
-        '',
-        1,
+        getMetadataUrl(xnft),
+        parseInt(details.royalties) * 100,
         new BN(details.price),
         program.provider.publicKey!
       )
-      .accounts({ metadataProgram: METADATA_PROGRAM_ID })
+      .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
       .rpc();
   }
 
@@ -177,7 +179,7 @@ export default abstract class xNFT {
     publisher: PublicKey,
     installVault: PublicKey
   ) {
-    const xnft = await findXnftMintPDA(name, publisher);
+    const xnft = await deriveXnftAddress(name, publisher);
     await program.methods
       .createInstall()
       .accounts({
@@ -209,14 +211,14 @@ async function transformWithMetadata(
 }
 
 /**
- * Derive the mint PDA for the associated xNFT.
+ * Derive the PDA of the associated xNFT program account.
  * @param {string} name
  * @param {PublicKey} publisher
  * @returns {Promise<PublicKey>}
  */
-async function findXnftMintPDA(name: string, publisher: PublicKey): Promise<PublicKey> {
+async function deriveXnftAddress(name: string, publisher: PublicKey): Promise<PublicKey> {
   // Mint PDA Address
-  const [mintPdaAddress] = await PublicKey.findProgramAddress(
+  const [masterMint] = await PublicKey.findProgramAddress(
     [Buffer.from('mint'), publisher.toBytes(), Buffer.from(name)],
     XNFT_PROGRAM_ID
   );
@@ -226,7 +228,7 @@ async function findXnftMintPDA(name: string, publisher: PublicKey): Promise<Publ
     [
       Buffer.from('metadata'),
       METADATA_PROGRAM_ID.toBytes(),
-      mintPdaAddress.toBytes(),
+      masterMint.toBytes(),
       Buffer.from('edition')
     ],
     METADATA_PROGRAM_ID

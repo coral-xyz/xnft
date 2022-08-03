@@ -1,12 +1,9 @@
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import Image from 'next/image';
 import type { StepComponentProps } from '../../pages/publish';
-import { uploadDetails } from '../../state/atoms/publish';
 
-const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
-  const state = useRecoilValue(uploadDetails);
+const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }) => {
   const [icon, setIcon] = useState('');
 
   useEffect(() => {
@@ -47,7 +44,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
           {/* Price */}
           <div>
-            <span className="bg-theme-accent rounded-md px-4 py-2 font-medium text-white">
+            <span className="rounded-md bg-[#4F46E5] px-4 py-2 font-medium text-white">
               {state.price === '0.0' ? 'FREE' : state.price + ' SOL'}
             </span>
           </div>

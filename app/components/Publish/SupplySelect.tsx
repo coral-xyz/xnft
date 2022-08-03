@@ -1,19 +1,32 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import { useState, memo, type FunctionComponent } from 'react';
-import { useRecoilState } from 'recoil';
-import { uploadDetails } from '../../state/atoms/publish';
+import {
+  type KeyboardEvent,
+  type FunctionComponent,
+  type Dispatch,
+  type SetStateAction,
+  useState,
+  memo
+} from 'react';
+import type { UploadState } from '../../pages/publish';
+
+function blockSpecialNumericals(e: KeyboardEvent) {
+  if (['+', '-', 'e', '.'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
 
 type SupplySelectProps = {
+  inputClasses?: string;
+  setState: Dispatch<SetStateAction<UploadState>>;
   value: string;
 };
 
-const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
-  const [_, setState] = useRecoilState(uploadDetails);
+const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, setState, value }) => {
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
   const classes = (checked: boolean, others?: string): string =>
-    ` px-4 py-4 border-2 bg-[#18181B] text-sm cursor-pointer rounded-md text-theme-font ${
-      checked ? 'border-theme-primary' : 'border-theme-background'
+    ` px-4 py-4 border-2 bg-[#18181B] text-sm cursor-pointer rounded-md text-white ${
+      checked ? 'border-[#F66C5E]' : 'border-[#18181B]'
     } ${others ? others : ''}`;
 
   return (
@@ -26,24 +39,22 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
         }}
       >
         <span className="flex-1 font-medium">Unlimited Supply</span>
-        {selected === 'unlimited' && <CheckCircleIcon className="text-theme-primary h-5" />}
+        {selected === 'unlimited' && <CheckCircleIcon className="h-5 text-[#F66C5E]" />}
       </div>
       <div className={classes(selected === 'fixed')} onClick={() => setSelected('fixed')}>
         <div className="flex">
           <span className="flex-1 font-medium">Fixed Supply</span>
-          {selected === 'fixed' && <CheckCircleIcon className="text-theme-primary h-5" />}
+          {selected === 'fixed' && <CheckCircleIcon className="h-5 text-[#F66C5E]" />}
         </div>
         <input
-          type="text"
-          className="placeholder:text-theme-font-gray-dark border-theme-font-gray-dark focus:border-theme-font-gray-dark
-            mt-4 w-full rounded-md bg-[#18181B] focus:ring-0"
+          id="supply"
+          name="supply"
+          type="number"
+          className={inputClasses}
           placeholder="0"
           value={value === 'inf' ? '' : value}
-          onChange={e => {
-            if (/^\d*$/.test(e.currentTarget.value)) {
-              setState(prev => ({ ...prev, supply: e.currentTarget.value }));
-            }
-          }}
+          onKeyDown={blockSpecialNumericals}
+          onChange={e => setState(prev => ({ ...prev, supply: e.target.value }))}
         />
       </div>
     </div>

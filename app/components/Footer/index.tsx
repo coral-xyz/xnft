@@ -5,9 +5,9 @@ const Footer: FunctionComponent = () => {
   return (
     <div className="flex justify-between px-5">
       <div className="flex flex-col justify-between">
-        <p className="text-theme-font-gray">
+        <p className="text-[#9CA3AF]">
           Built by{' '}
-          <a className="text-theme-font" href="https://coral.community">
+          <a className="text-white" href="https://coral.community">
             Coral
           </a>
         </p>

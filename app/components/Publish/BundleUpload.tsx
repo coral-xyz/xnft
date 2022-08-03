@@ -1,8 +1,6 @@
 import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
 import { type ChangeEvent, memo, useCallback, type FunctionComponent } from 'react';
-import { useRecoilState } from 'recoil';
 import type { StepComponentProps } from '../../pages/publish';
-import { uploadDetails } from '../../state/atoms/publish';
 
 function transformBundleSize(size: number): string {
   if (size < 1000) {
@@ -14,9 +12,11 @@ function transformBundleSize(size: number): string {
   }
 }
 
-const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
-  const [state, setState] = useRecoilState(uploadDetails);
-
+const BundleUpload: FunctionComponent<StepComponentProps> = ({
+  state,
+  setState,
+  setNextEnabled
+}) => {
   const handleUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setState(prev => ({ ...prev, bundle: e.currentTarget.files[0] }));
@@ -30,9 +30,9 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
       <div className="mt-1 flex justify-center py-16">
         <div className="space-y-1 text-center">
           {state.bundle.name ? (
-            <DocumentTextIcon height={66} className="text-theme-font-gray mx-auto" />
+            <DocumentTextIcon height={66} className="mx-auto text-[#9CA3AF]" />
           ) : (
-            <DocumentAddIcon height={66} className="text-theme-font-gray mx-auto" />
+            <DocumentAddIcon height={66} className="mx-auto text-[#9CA3AF]" />
           )}
           <div className="text-sm text-zinc-600">
             <span className="text-sm text-zinc-300">
@@ -48,7 +48,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
               onChange={handleUpload}
             />
           </div>
-          <p className="text-theme-font-gray-dark text-sm">
+          <p className="text-sm text-[#393C43]">
             {state.bundle.size ? transformBundleSize(state.bundle.size) : 'or drag and drop'}
           </p>
         </div>

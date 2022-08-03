@@ -1,26 +1,32 @@
 import { PhotographIcon } from '@heroicons/react/outline';
-import { memo, useEffect, type FunctionComponent } from 'react';
-import { useRecoilState } from 'recoil';
+import { type KeyboardEvent, memo, useEffect, type FunctionComponent } from 'react';
 import type { StepComponentProps } from '../../pages/publish';
-import { uploadDetails } from '../../state/atoms/publish';
 import SupplySelect from './SupplySelect';
-import Input from './Input';
 
-const numbersOnly = /^\d*$/;
+const inputClasses = `focus:border-[#F66C5E] border-[#18181B] bg-[#18181B]
+  text-[#E5E7EB] w-full rounded-md text-sm focus:ring-0 placeholder:text-[#393C43]`;
 
-const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
-  const [state, setState] = useRecoilState(uploadDetails);
+function blockSpecialNumericals(e: KeyboardEvent) {
+  if (['+', '-', 'e'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
 
+const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNextEnabled }) => {
   useEffect(() => {
     const checks = [
       state.title,
       state.description,
+      state.publisher,
+      state.website,
+      state.supply,
       state.price,
       state.royalties,
-      state.icon.name ?? ''
+      state.icon.name ?? '',
+      state.screenshots
     ];
 
-    if (checks.every(x => x.length > 0)) {
+    if (checks.every(x => x.length > 0) && parseFloat(state.royalties) <= 100) {
       setNextEnabled(true);
     }
   }, [state, setNextEnabled]);
@@ -32,13 +38,14 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="title" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Title
         </label>
-        <Input
-          id="title"
-          type="text"
-          name="title"
-          value={state.title}
-          onChange={val => setState(prev => ({ ...prev, title: val }))}
+        <input
           required
+          id="title"
+          name="title"
+          className={inputClasses}
+          type="text"
+          value={state.title}
+          onChange={e => setState(prev => ({ ...prev, title: e.target.value }))}
         />
       </div>
 
@@ -47,14 +54,13 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="description" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Description
         </label>
-        <Input
+        <textarea
           id="description"
           name="description"
+          className={`${inputClasses} resize-none`}
           rows={5}
           value={state.description}
-          onChange={val => setState(prev => ({ ...prev, description: val }))}
-          area
-          required
+          onChange={e => setState(prev => ({ ...prev, description: e.target.value }))}
         />
       </div>
 
@@ -63,13 +69,15 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="publisher" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Publisher
         </label>
-        <Input
-          id="publisher"
-          type="text"
-          name="publisher"
-          value={state.publisher}
-          onChange={val => setState(prev => ({ ...prev, publisher: val }))}
+        <input
           required
+          id="publisher"
+          name="publisher"
+          className={inputClasses}
+          type="text"
+          placeholder="3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3"
+          value={state.publisher}
+          onChange={e => setState(prev => ({ ...prev, publisher: e.target.value }))}
         />
       </div>
 
@@ -78,12 +86,14 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="website" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Publisher&apos;s website
         </label>
-        <Input
+        <input
           id="website"
-          type="url"
           name="website"
+          className={inputClasses}
+          type="url"
+          placeholder="https://example.com"
           value={state.website}
-          onChange={val => setState(prev => ({ ...prev, website: val }))}
+          onChange={e => setState(prev => ({ ...prev, website: e.target.value }))}
         />
       </div>
 
@@ -92,7 +102,11 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="supply" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           How many editions would you like to mint?
         </label>
-        <SupplySelect value={state.supply} />
+        <SupplySelect
+          inputClasses={`${inputClasses.replace('border-[#18181B]', 'border-[#393C43]')} mt-4`}
+          setState={setState}
+          value={state.supply}
+        />
       </div>
 
       {/* Price */}
@@ -104,18 +118,16 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-sm text-[#393C43]">
             SOL
           </span>
-          <Input
+          <input
+            required
             id="price"
-            type="text"
             name="price"
-            className="pr-12 text-right placeholder:text-[#393C43]"
+            type="number"
+            className={`${inputClasses} pr-12 text-right`}
             placeholder="0"
             value={state.price}
-            onChange={val => {
-              if (numbersOnly.test(val)) {
-                setState(prev => ({ ...prev, price: val }));
-              }
-            }}
+            onKeyDown={blockSpecialNumericals}
+            onChange={e => setState(prev => ({ ...prev, price: e.target.value }))}
           />
         </label>
       </div>
@@ -129,18 +141,16 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-sm text-[#393C43]">
             %
           </span>
-          <Input
+          <input
+            required
             id="royalties"
-            type="text"
             name="royalties"
-            className="pr-7 text-right placeholder:text-[#393C43]"
+            type="number"
+            className={`${inputClasses} pr-7 text-right`}
             placeholder="0"
             value={state.royalties}
-            onChange={val => {
-              if (numbersOnly.test(val)) {
-                setState(prev => ({ ...prev, royalties: val }));
-              }
-            }}
+            onKeyDown={blockSpecialNumericals}
+            onChange={e => setState(prev => ({ ...prev, royalties: e.target.value }))}
           />
         </label>
         <div className="max-w-sm">
@@ -175,7 +185,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
                   type="file"
                   accept="image/*"
                   className="sr-only hidden"
-                  onChange={e => setState(prev => ({ ...prev, icon: e.currentTarget.files[0] }))}
+                  onChange={e => setState(prev => ({ ...prev, icon: e.target.files[0] }))}
                 />
               </div>
               <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
@@ -204,9 +214,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
                   type="file"
                   accept="image/*"
                   className="sr-only hidden"
-                  onChange={e =>
-                    setState(prev => ({ ...prev, screenshots: e.currentTarget.files }))
-                  }
+                  onChange={e => setState(prev => ({ ...prev, screenshots: e.target.files }))}
                 />
               </div>
               <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
