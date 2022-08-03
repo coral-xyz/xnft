@@ -12,6 +12,10 @@ function blockSpecialNumericals(e: KeyboardEvent) {
   }
 }
 
+function getNameList(screenshots: File[]): string {
+  return screenshots.map(s => s.name).join(', ');
+}
+
 const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNextEnabled }) => {
   useEffect(() => {
     const checks = [
@@ -205,10 +209,17 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
               <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
-                  <span className="text-[#F66C5E]">Upload a file</span> or drag and drop
+                  {state.screenshots.length > 0 ? (
+                    getNameList([...state.screenshots])
+                  ) : (
+                    <>
+                      <span className="text-[#F66C5E]">Upload a file(s)</span> or drag and drop
+                    </>
+                  )}
                 </span>
                 <input
                   required
+                  multiple
                   id="screenshots"
                   name="screenshots"
                   type="file"
