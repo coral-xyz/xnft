@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import type { UploadState } from '../state/atoms/publish';
+import type { UploadState } from '../pages/publish';
 import { getBundleUrl, getIconUrl, getScreenshotUrl } from './s3';
 
 export type Metadata = {
@@ -35,7 +35,7 @@ export const generateMetadata = (xnft: PublicKey, state: UploadState): Metadata 
   properties: {
     bundle: getBundleUrl(xnft, state.bundle.name),
     icon: getIconUrl(xnft, state.icon.name),
-    screenshots: [...state.screenshots].map(s => getScreenshotUrl(xnft, s.name)),
+    screenshots: state.screenshots.map(s => getScreenshotUrl(xnft, s.name)),
     twitter: '', // TODO:
     discord: '' // TODO:
   }

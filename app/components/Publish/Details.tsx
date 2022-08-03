@@ -1,5 +1,6 @@
 import { PhotographIcon } from '@heroicons/react/outline';
 import { type KeyboardEvent, memo, useEffect, type FunctionComponent } from 'react';
+import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
 import SupplySelect from './SupplySelect';
 
@@ -17,6 +18,21 @@ function getNameList(screenshots: File[]): string {
 }
 
 const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNextEnabled }) => {
+  const iconDrop = useDropzone({ accept: { 'image/*': [] }, maxFiles: 1 });
+  const ssDrop = useDropzone({ accept: { 'image/*': [] }, multiple: true });
+
+  useEffect(() => {
+    if (iconDrop.acceptedFiles.length > 0) {
+      setState(prev => ({ ...prev, icon: iconDrop.acceptedFiles[0] }));
+    }
+  }, [iconDrop.acceptedFiles, setState]);
+
+  useEffect(() => {
+    if (ssDrop.acceptedFiles.length > 0) {
+      setState(prev => ({ ...prev, screenshots: ssDrop.acceptedFiles }));
+    }
+  }, [ssDrop.acceptedFiles, setState]);
+
   useEffect(() => {
     const checks = [
       state.title,
@@ -170,7 +186,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
         <label htmlFor="icon" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           App Icon
         </label>
-        <label htmlFor="icon" className="relative cursor-pointer">
+        <label
+          {...iconDrop.getRootProps({ htmlFor: 'icon', className: 'relative cursor-pointer' })}
+        >
           <div className="mt-1 flex justify-center rounded-md border-2 border-[#393C43] px-6 pt-5 pb-6">
             <div className="space-y-1 text-center">
               <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
@@ -182,15 +200,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
                     </>
                   )}
                 </span>
-                <input
-                  required
-                  id="icon"
-                  name="icon"
-                  type="file"
-                  accept="image/*"
-                  className="sr-only hidden"
-                  onChange={e => setState(prev => ({ ...prev, icon: e.target.files[0] }))}
-                />
+                <input {...iconDrop.getInputProps({ className: 'sr-only hidden' })} />
               </div>
               <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
             </div>
@@ -203,30 +213,23 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
         <label htmlFor="screenshots" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Screenshots
         </label>
-        <label htmlFor="screenshots" className="relative cursor-pointer">
+        <label
+          {...ssDrop.getRootProps({ htmlFor: 'screenshots', className: 'relative cursor-pointer' })}
+        >
           <div className="mt-1 flex justify-center rounded-md border-2 border-[#393C43] px-6 pt-5 pb-6">
             <div className="space-y-1 text-center">
               <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
                   {state.screenshots.length > 0 ? (
-                    getNameList([...state.screenshots])
+                    getNameList(state.screenshots)
                   ) : (
                     <>
                       <span className="text-[#F66C5E]">Upload a file(s)</span> or drag and drop
                     </>
                   )}
                 </span>
-                <input
-                  required
-                  multiple
-                  id="screenshots"
-                  name="screenshots"
-                  type="file"
-                  accept="image/*"
-                  className="sr-only hidden"
-                  onChange={e => setState(prev => ({ ...prev, screenshots: e.target.files }))}
-                />
+                <input {...ssDrop.getInputProps({ className: 'sr-only hidden' })} />
               </div>
               <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
             </div>

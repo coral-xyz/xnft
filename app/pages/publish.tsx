@@ -46,7 +46,7 @@ const defaultUploadState = {
   price: '',
   supply: 'inf',
   icon: {} as File,
-  screenshots: {} as FileList
+  screenshots: [] as File[]
 };
 
 export type UploadState = typeof defaultUploadState;

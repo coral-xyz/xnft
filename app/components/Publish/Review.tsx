@@ -41,7 +41,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }
 
       <div className="flex justify-center px-10 pt-5">
         <ul className="flex list-none gap-5 overflow-x-scroll">
-          {[...state.screenshots].map((s, idx) => (
+          {state.screenshots.map((s, idx) => (
             <li key={idx}>
               <Image
                 className="rounded-xl"
