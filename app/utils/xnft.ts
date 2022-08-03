@@ -55,9 +55,10 @@ export default abstract class xNFT {
    * @static
    * @param {Program<IDLType>} program
    * @param {UploadState} details
+   * @returns {Promise<PublicKey>}
    * @memberof xNFT
    */
-  static async create(program: Program<IDLType>, details: UploadState) {
+  static async create(program: Program<IDLType>, details: UploadState): Promise<PublicKey> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
     await program.methods
       .createXnft(
@@ -70,6 +71,7 @@ export default abstract class xNFT {
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
       .rpc();
+    return xnft;
   }
 
   /**
@@ -199,7 +201,14 @@ async function transformWithMetadata(
     xnft.masterMetadata
   );
 
-  const res = await fetch(metadataAccount.data.uri, { timeout: 3000 } as RequestInit);
+  const uri = xnft.name.startsWith('Sample')
+    ? 'https://xnfts-dev.s3.us-west-2.amazonaws.com/Adn3ukJZmxJWj6D32wMGsKYMtJ3U7LqCMuSpHbSMbuFf/metadata.json'
+    : metadataAccount.data.uri;
+
+  // FIXME:
+  const res = await fetch(uri, {
+    timeout: 3000
+  } as RequestInit);
   const metadata = await res.json();
 
   return {

@@ -25,14 +25,17 @@ const Featured: FunctionComponent<FeaturedProps> = ({
 }) => {
   return (
     <div className="flex items-center gap-14 rounded-2xl bg-[#27272A]">
-      <Image
-        className="rounded-l-2xl"
-        alt="app-icon"
-        src={metadata.properties.icon}
-        height={400}
-        width={400}
-      />
-      <div className="flex flex-col py-12 pr-10 tracking-wide">
+      <div className="flex items-center">
+        <Image
+          className="rounded-l-2xl"
+          alt="app-icon"
+          src={metadata.properties.icon}
+          height={400}
+          width={400}
+          layout="fixed"
+        />
+      </div>
+      <div className="flex min-w-0 flex-col py-12 pr-10 tracking-wide">
         <h3 className="pb-2 font-medium text-[#99A4B4]">Featured</h3>
         <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
         <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
@@ -63,31 +66,32 @@ const Listing: FunctionComponent<ListingProps> = ({
   onInstallClick
 }) => {
   return (
-    <div className="flex w-full items-center justify-between rounded-lg bg-[#27272A] p-4">
-      <Link className="w-10/12" href={link}>
-        <div className="flex items-center gap-4">
-          <Image
-            className="rounded-2xl"
-            alt="app-icon"
-            src={metadata.properties.icon}
-            width={64}
-            height={64}
-          />
-          <div>
-            <div className="text-lg font-bold tracking-wide text-white">{metadata.name}</div>
-            <div className="text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
-          </div>
-        </div>
-      </Link>
-      <button
-        className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs
-          font-medium tracking-wide text-[#374151] text-white"
-        onClick={onInstallClick}
-        disabled={!allowInstall}
-      >
-        {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
-      </button>
-    </div>
+    <Link href={link} className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">
+      <div className="flex items-center">
+        <Image
+          className="rounded-lg"
+          alt="app-icon"
+          src={metadata.properties.icon}
+          width={64}
+          height={64}
+          layout="fixed"
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-lg font-bold tracking-wide text-white">{metadata.name}</div>
+        <div className="truncate text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
+      </div>
+      <div className="my-auto">
+        <button
+          className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs
+            font-medium tracking-wide text-[#374151] text-white"
+          onClick={onInstallClick}
+          disabled={!allowInstall}
+        >
+          {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
+        </button>
+      </div>
+    </Link>
   );
 };
 

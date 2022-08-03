@@ -1,8 +1,9 @@
-import { ArrowRightIcon, CloudUploadIcon } from '@heroicons/react/solid';
+import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } from 'react';
 import { useProgram } from '../state/hooks/solana';
+import { uploadFiles, uploadMetadata } from '../utils/s3';
 import xNFT from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
@@ -32,7 +33,7 @@ const steps = [
     title: 'Review & mint',
     component: (props: StepComponentProps) => <Review {...props} />,
     nextButtonText: 'Upload & Mint',
-    nextButtonIcon: <CloudUploadIcon className="inline-block w-4" />
+    nextButtonIcon: <SparklesIcon className="inline-block w-4" />
   }
 ];
 
@@ -62,9 +63,11 @@ const PublishPage: NextPage = () => {
   const handleNextClicked = useCallback(async () => {
     if (currentStep === steps.length - 1) {
       try {
-        await xNFT.create(program, uploadState);
+        const xnft = await xNFT.create(program, uploadState);
+        await uploadFiles(xnft, uploadState);
+        await uploadMetadata(xnft, uploadState);
       } catch (err) {
-        console.error(`handleNextClicked: ${err}`);
+        console.error(`handleNextClicked: ${JSON.stringify(err)}`);
       }
     } else {
       setCurrentStep(curr => curr + 1);

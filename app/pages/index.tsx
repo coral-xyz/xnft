@@ -25,19 +25,23 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
   const [activeMenu, setActiveMenu] = useState(0);
 
   return (
-    <div className="grid grid-cols-4 gap-12">
+    <div className="grid grid-cols-5 gap-12">
       {/* Sidebar Menu */}
       <Sidebar active={activeMenu} onClick={setActiveMenu} />
 
       {/* Main Content */}
-      <div className="col-span-3 flex flex-col gap-12">
-        <App
-          featured
-          publicKey={xnftList[0].publicKey}
-          price={new BN(xnftList[0].account.installPrice)}
-          metadata={xnftList[0].metadata}
-        />
-        <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
+      <div className="col-span-4 flex flex-col gap-12">
+        {xnftList.length > 0 && (
+          <>
+            <App
+              featured
+              publicKey={xnftList[0].publicKey}
+              price={new BN(xnftList[0].account.installPrice)}
+              metadata={xnftList[0].metadata}
+            />
+            <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
+          </>
+        )}
         <SecondaryCta />
       </div>
     </div>

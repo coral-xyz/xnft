@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import type { UploadState } from '../pages/publish';
 import { generateMetadata } from './metadata';
 
-const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/`;
+const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
 
 const getBucketUrl = (xnft: PublicKey): string => `${BUCKET_URL}/${xnft.toBase58()}`;
 
