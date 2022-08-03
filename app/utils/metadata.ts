@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import type { UploadState } from '../state/atoms/publish';
+import type { UploadState } from '../pages/publish';
 import { getBundleUrl, getIconUrl, getScreenshotUrl } from './s3';
 
 export type Metadata = {
