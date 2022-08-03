@@ -4,6 +4,7 @@ import {
   ClipboardCopyIcon,
   CodeIcon,
   LogoutIcon,
+  SparklesIcon,
   UserCircleIcon
 } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -102,6 +103,19 @@ const ConnectedMenuItems: FunctionComponent<ConnectedMenuItemsProps> = ({
               } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
             >
               <CodeIcon height={14} /> My xNFTs
+            </button>
+          </Link>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <Link href="/publish">
+            <button
+              className={`${
+                active ? 'bg-[#52525B]' : ''
+              } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
+            >
+              <SparklesIcon height={14} /> Publish New xNFT
             </button>
           </Link>
         )}
