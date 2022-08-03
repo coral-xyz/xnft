@@ -28,7 +28,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({
       setState(prev => ({ ...prev, bundle: acceptedFiles[0] }));
       setNextEnabled(true);
     }
-  }, [acceptedFiles]);
+  }, [acceptedFiles, setState, setNextEnabled]);
 
   return (
     <label {...getRootProps({ htmlFor: 'bundle', className: 'relative cursor-pointer' })}>
@@ -43,11 +43,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({
             <span className="text-sm text-zinc-300">
               {state.bundle.name ?? 'Upload a bundle.js file'}
             </span>
-            <input
-              {...getInputProps({
-                className: 'sr-only hidden'
-              })}
-            />
+            <input {...getInputProps({ className: 'sr-only hidden' })} />
           </div>
           <p className="text-sm text-[#393C43]">
             {state.bundle.size ? transformBundleSize(state.bundle.size) : 'or drag and drop'}
