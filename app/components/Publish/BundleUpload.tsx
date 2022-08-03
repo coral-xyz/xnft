@@ -19,7 +19,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({
 }) => {
   const handleUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setState(prev => ({ ...prev, bundle: e.currentTarget.files[0] }));
+      setState(prev => ({ ...prev, bundle: e.target.files[0] }));
       setNextEnabled(true);
     },
     [setState, setNextEnabled]

@@ -1,33 +1,21 @@
 import { BadgeCheckIcon } from '@heroicons/react/solid';
-import { type FunctionComponent, memo, useEffect, useState } from 'react';
+import { type FunctionComponent, memo, useEffect } from 'react';
 import Image from 'next/image';
 import type { StepComponentProps } from '../../pages/publish';
 
 const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }) => {
-  const [icon, setIcon] = useState('');
-
   useEffect(() => {
     setNextEnabled(true);
   }, [setNextEnabled]);
 
-  useEffect(() => {
-    if ('name' in state.icon) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setIcon(reader.result as string);
-      };
-      reader.readAsDataURL(state.icon);
-    }
-  }, [state.icon]);
-
   return (
-    <div className="py-10">
-      <div className="flex justify-center gap-6 md:px-52 lg:px-52">
+    <div className="flex max-w-6xl flex-col gap-5 divide-y divide-[#393C43] py-10">
+      <div className="flex justify-center gap-6 px-52">
         {/* App Icon */}
         <Image
-          className="h-56 w-56 rounded-xl"
+          className="rounded-xl"
           alt="app-icon"
-          src={icon}
+          src={URL.createObjectURL(state.icon)}
           height={224}
           width={224}
         />
@@ -49,6 +37,23 @@ const Review: FunctionComponent<StepComponentProps> = ({ state, setNextEnabled }
             </span>
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-center px-10 pt-5">
+        <ul className="flex list-none gap-5 overflow-x-scroll">
+          {[...state.screenshots].map((s, idx) => (
+            <li key={idx}>
+              <Image
+                className="rounded-xl"
+                alt={`screenshot-${idx}`}
+                src={URL.createObjectURL(s)}
+                height={479}
+                width={300}
+                layout="fixed"
+              />
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
