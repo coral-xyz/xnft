@@ -1,8 +1,17 @@
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
+import { PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { type Dispatch, useMemo, useState, type SetStateAction, useCallback } from 'react';
-import { useProgram } from '../state/hooks/solana';
+import {
+  type Dispatch,
+  useMemo,
+  useState,
+  type SetStateAction,
+  useCallback,
+  useEffect
+} from 'react';
+import { useRecoilValue } from 'recoil';
+import { programState } from '../state/atoms/solana';
 import { uploadFiles, uploadMetadata } from '../utils/s3';
 import xNFT from '../utils/xnft';
 
@@ -53,12 +62,18 @@ const defaultUploadState = {
 export type UploadState = typeof defaultUploadState;
 
 const PublishPage: NextPage = () => {
-  const { program } = useProgram();
+  const program = useRecoilValue(programState);
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
 
   const activeStepComponent = useMemo(() => steps[currentStep], [currentStep]);
+
+  useEffect(() => {
+    if (!program.provider.publicKey?.equals(PublicKey.default)) {
+      setUploadState(prev => ({ ...prev, publisher: program.provider.publicKey.toBase58() }));
+    }
+  }, [program]);
 
   const handleNextClicked = useCallback(async () => {
     if (currentStep === steps.length - 1) {

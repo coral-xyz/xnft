@@ -2,15 +2,16 @@ import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
 import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
-import { useProgram } from '../../state/hooks/solana';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useRecoilValue } from 'recoil';
+import { programState } from '../../state/atoms/solana';
 
 type AppBannerProps = {
   xnft: XnftWithMetadata;
 };
 
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
-  const program = useProgram();
+  const program = useRecoilValue(programState);
   const { connected } = useWallet();
 
   async function handleInstall() {
