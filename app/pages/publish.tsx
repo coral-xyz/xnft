@@ -53,7 +53,7 @@ const defaultUploadState = {
 export type UploadState = typeof defaultUploadState;
 
 const PublishPage: NextPage = () => {
-  const program = useProgram();
+  const { program } = useProgram();
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
@@ -67,7 +67,7 @@ const PublishPage: NextPage = () => {
         await uploadFiles(xnft, uploadState);
         await uploadMetadata(xnft, uploadState);
       } catch (err) {
-        console.error(`handleNextClicked: ${JSON.stringify(err)}`);
+        console.error(`handleNextClicked: ${err}`);
       }
     } else {
       setCurrentStep(curr => curr + 1);

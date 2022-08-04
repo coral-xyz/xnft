@@ -8,7 +8,7 @@ const inputClasses = `focus:border-[#F66C5E] border-[#18181B] bg-[#18181B]
   text-[#E5E7EB] w-full rounded-md text-sm focus:ring-0 placeholder:text-[#393C43]`;
 
 function blockSpecialNumericals(e: KeyboardEvent) {
-  if (['+', '-', 'e'].includes(e.key)) {
+  if (['+', '-', 'e', '.'].includes(e.key)) {
     e.preventDefault();
   }
 }
