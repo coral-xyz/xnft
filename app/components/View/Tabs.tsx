@@ -106,7 +106,7 @@ const ViewTabs: FunctionComponent<ViewTabsProps> = ({ xnft }) => {
               className="flex items-center gap-1 font-medium
                text-zinc-100"
             >
-              {new Date(parseInt(xnft.account.updatedTs)).toUTCString()}
+              {new Date(parseInt(xnft.account.updatedTs, 16) * 1000).toUTCString()}
             </span>
           </div>
 
