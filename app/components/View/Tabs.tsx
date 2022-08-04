@@ -1,5 +1,6 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline';
-import { memo, useState } from 'react';
+import { type FunctionComponent, memo, useState } from 'react';
+import type { SerializedXnftWithMetadata } from '../../utils/xnft';
 
 const tabs = [{ name: 'Information' }, { name: 'Screenshots' }];
 
@@ -7,7 +8,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-function ViewTabs({ xnft }: ViewTabsProps) {
+interface ViewTabsProps {
+  xnft: SerializedXnftWithMetadata;
+}
+
+const ViewTabs: FunctionComponent<ViewTabsProps> = ({ xnft }) => {
   const [selectedTab, setSelectedTab] = useState<string>('Information');
 
   return (
@@ -38,11 +43,11 @@ function ViewTabs({ xnft }: ViewTabsProps) {
           className="mx-auto mt-5 flex h-full max-w-2xl flex-col gap-4 rounded-xl
           bg-zinc-800 p-4"
         >
-          {xnft.metadata.properties.website && (
+          {xnft.metadata.external_url && (
             <div className="flex flex-col gap-1">
               <span className="text-sm text-zinc-400">Website</span>
               <a
-                href={xnft.metadata.properties.website}
+                href={xnft.metadata.external_url}
                 target="_blank"
                 className="flex cursor-pointer items-center gap-1 font-medium text-zinc-100
                 text-zinc-100 hover:text-sky-500"
@@ -92,7 +97,7 @@ function ViewTabs({ xnft }: ViewTabsProps) {
               className="flex items-center gap-1 font-medium
               text-zinc-100"
             >
-              &#8734;
+              &#8734; {/* TODO: */}
             </span>
           </div>
           <div className="flex flex-col">
@@ -124,10 +129,6 @@ function ViewTabs({ xnft }: ViewTabsProps) {
       )}
     </div>
   );
-}
-
-interface ViewTabsProps {
-  xnft: any;
-}
+};
 
 export default memo(ViewTabs);

@@ -26,7 +26,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
     <>
       <div className="mx-auto mb-10 grid max-w-2xl grid-cols-4 gap-10">
         <Image
-          className="col-span-1"
+          className="col-span-1 rounded-xl"
           src={xnft.metadata.properties.icon}
           alt=""
           width="200px"

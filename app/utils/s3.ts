@@ -2,20 +2,18 @@ import { PublicKey } from '@solana/web3.js';
 import type { UploadState } from '../pages/publish';
 import { generateMetadata } from './metadata';
 
-const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
+export const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
 
-const getBucketUrl = (xnft: PublicKey): string => `${BUCKET_URL}/${xnft.toBase58()}`;
+export const getMetadataPath = (xnft: PublicKey): string => `${xnft.toBase58()}/metadata.json`;
 
-export const getMetadataUrl = (xnft: PublicKey): string => `${getBucketUrl(xnft)}/metadata.json`;
+export const getBundlePath = (xnft: PublicKey, name: string): string =>
+  `${xnft.toBase58()}/bundle/${name}`;
 
-export const getBundleUrl = (xnft: PublicKey, name: string): string =>
-  `${getBucketUrl(xnft)}/bundle/${name}`;
+export const getIconPath = (xnft: PublicKey, name: string): string =>
+  `${xnft.toBase58()}/icon/${name}`;
 
-export const getIconUrl = (xnft: PublicKey, name: string): string =>
-  `${getBucketUrl(xnft)}/icon/${name}`;
-
-export const getScreenshotUrl = (xnft: PublicKey, name: string): string =>
-  `${getBucketUrl(xnft)}/screenshots/${name}`;
+export const getScreenshotPath = (xnft: PublicKey, name: string): string =>
+  `${xnft.toBase58()}/screenshots/${name}`;
 
 /**
  * Uploads the xNFT files to the appropriate S3 bucket and path.
@@ -36,10 +34,10 @@ export async function uploadFiles(xnft: PublicKey, state: UploadState) {
         body: JSON.stringify({
           name:
             idx === 0
-              ? getBundleUrl(xnft, f.name)
+              ? getBundlePath(xnft, f.name)
               : idx === 1
-              ? getIconUrl(xnft, f.name)
-              : getScreenshotUrl(xnft, f.name),
+              ? getIconPath(xnft, f.name)
+              : getScreenshotPath(xnft, f.name),
           type: f.type
         })
       });
@@ -67,7 +65,7 @@ export async function uploadFiles(xnft: PublicKey, state: UploadState) {
  */
 export async function uploadMetadata(xnft: PublicKey, state: UploadState): Promise<string> {
   const metadata = generateMetadata(xnft, state);
-  const fileName = `${xnft}/${state.title}/metadata.json`;
+  const fileName = getMetadataPath(xnft);
 
   const resp = await fetch('/api/s3', {
     method: 'POST',
@@ -91,5 +89,5 @@ export async function uploadMetadata(xnft: PublicKey, state: UploadState): Promi
     body: JSON.stringify(metadata)
   });
 
-  return `${BUCKET_URL}${fileName}`;
+  return `${BUCKET_URL}/${fileName}`;
 }

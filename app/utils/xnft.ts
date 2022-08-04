@@ -3,7 +3,7 @@ import {
   AnchorProvider,
   BN,
   Program,
-  ProgramAccount,
+  type ProgramAccount,
   type IdlAccounts
 } from '@project-serum/anchor';
 import {
@@ -14,7 +14,7 @@ import fetch from 'isomorphic-unfetch';
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { UploadState } from '../pages/publish';
 import type { Metadata } from './metadata';
-import { getMetadataUrl } from './s3';
+import { BUCKET_URL, getMetadataPath } from './s3';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
@@ -64,7 +64,7 @@ export default abstract class xNFT {
       .createXnft(
         details.title,
         details.title.slice(0, 3).toUpperCase(),
-        getMetadataUrl(xnft),
+        `${BUCKET_URL}/${getMetadataPath(xnft)}`,
         parseInt(details.royalties) * 100,
         new BN(details.price),
         program.provider.publicKey!

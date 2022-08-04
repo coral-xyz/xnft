@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import type { UploadState } from '../pages/publish';
-import { getBundleUrl, getIconUrl, getScreenshotUrl } from './s3';
+import { BUCKET_URL, getBundlePath, getIconPath, getScreenshotPath } from './s3';
 
 export type Metadata = {
   name: string;
@@ -30,12 +30,12 @@ export const generateMetadata = (xnft: PublicKey, state: UploadState): Metadata 
   name: state.title,
   symbol: state.title.slice(0, 3).toUpperCase(),
   description: state.description,
-  image: getIconUrl(xnft, state.icon.name),
+  image: `${BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
   external_url: state.website,
   properties: {
-    bundle: getBundleUrl(xnft, state.bundle.name),
-    icon: getIconUrl(xnft, state.icon.name),
-    screenshots: state.screenshots.map(s => getScreenshotUrl(xnft, s.name)),
+    bundle: `${BUCKET_URL}/${getBundlePath(xnft, state.bundle.name)}`,
+    icon: `${BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
+    screenshots: state.screenshots.map(s => `${BUCKET_URL}/${getScreenshotPath(xnft, s.name)}`),
     twitter: '', // TODO:
     discord: '' // TODO:
   }
