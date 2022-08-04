@@ -18,8 +18,8 @@ function getNameList(screenshots: File[]): string {
 }
 
 const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNextEnabled }) => {
-  const iconDrop = useDropzone({ accept: { 'image/*': [] }, maxFiles: 1 });
-  const ssDrop = useDropzone({ accept: { 'image/*': [] }, multiple: true });
+  const iconDrop = useDropzone({ accept: { 'image/*': ['.png', '.jpg', '.jpeg'] }, maxFiles: 1 });
+  const ssDrop = useDropzone({ accept: { 'image/*': ['.png', '.jpg', '.jpeg'] }, multiple: true });
 
   useEffect(() => {
     if (iconDrop.acceptedFiles.length > 0) {

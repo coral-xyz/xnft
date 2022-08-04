@@ -35,7 +35,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
           layout="fixed"
         />
       </div>
-      <div className="flex min-w-0 flex-col py-12 pr-10 tracking-wide">
+      <div className="flex min-w-0 flex-col pr-10 tracking-wide">
         <h3 className="pb-2 font-medium text-[#99A4B4]">Featured</h3>
         <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
         <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
@@ -66,8 +66,8 @@ const Listing: FunctionComponent<ListingProps> = ({
   onInstallClick
 }) => {
   return (
-    <Link href={link} className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">
-      <div className="flex items-center">
+    <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">
+      <Link href={link} className="flex items-center">
         <Image
           className="rounded-lg"
           alt="app-icon"
@@ -76,7 +76,7 @@ const Listing: FunctionComponent<ListingProps> = ({
           height={64}
           layout="fixed"
         />
-      </div>
+      </Link>
       <div className="min-w-0 flex-1">
         <div className="text-lg font-bold tracking-wide text-white">{metadata.name}</div>
         <div className="truncate text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
@@ -91,7 +91,7 @@ const Listing: FunctionComponent<ListingProps> = ({
           {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
         </button>
       </div>
-    </Link>
+    </div>
   );
 };
 

@@ -30,7 +30,7 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
       <Sidebar active={activeMenu} onClick={setActiveMenu} />
 
       {/* Main Content */}
-      <div className="col-span-4 flex flex-col gap-12">
+      <div className="col-span-5 flex flex-col gap-12 lg:col-span-4">
         {xnftList.length > 0 && (
           <>
             <App

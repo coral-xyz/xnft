@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Footer: FunctionComponent = () => {
   return (
-    <div className="flex justify-between px-5">
+    <footer className="flex justify-between px-5">
       <div className="flex flex-col justify-between">
         <p className="text-[#9CA3AF]">
           Built by{' '}
@@ -30,7 +30,7 @@ const Footer: FunctionComponent = () => {
           <Image alt="icon-github" src="/brands/github.png" width="20px" height="20px" />
         </a>
       </div>
-    </div>
+    </footer>
   );
 };
 

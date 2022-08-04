@@ -1,5 +1,5 @@
-import { memo, useState } from 'react';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
+import { memo, useState } from 'react';
 
 const tabs = [{ name: 'Information' }, { name: 'Screenshots' }];
 

@@ -24,15 +24,17 @@ const menuItems = [
 ];
 
 const AppUpdates: FunctionComponent = () => {
-  const [updates, _setUpdates] = useState(0); // FIXME:
+  const [updates, _setUpdates] = useState(0); // TODO:
 
   return (
-    <div className="mt-4 flex flex-col gap-1 rounded-2xl bg-[#27272A] p-2">
-      <div className="flex cursor-pointer items-center gap-3 rounded-2xl bg-[#27272A] py-2.5 px-3 font-medium text-[#99A4B4]">
-        <span className="text-[#99A4B4]">
-          <DownloadIcon height={14} />
+    <div className="mt-4 cursor-pointer rounded-2xl bg-[#27272A] p-2">
+      <div className="flex items-center justify-between py-2.5 px-3 font-medium">
+        <span className="flex items-center gap-3">
+          <span className="text-[#99A4B4]">
+            <DownloadIcon height={18} />
+          </span>
+          <span className="text-[#FAFAFA]">Updates</span>
         </span>
-        <span className="flex-1 text-[#FAFAFA]">Updates</span>
         <span className="rounded-full bg-[#3F3F46] px-2 text-[#FAFAFA]">{updates}</span>
       </div>
     </div>

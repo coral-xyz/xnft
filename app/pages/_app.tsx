@@ -37,9 +37,9 @@ export default function App({ Component, pageProps }: AppProps) {
                   <Nav />
                 </div>
 
-                <div className="mb-auto py-10">
+                <section className="mb-auto py-10">
                   <Component {...pageProps} />
-                </div>
+                </section>
 
                 <div className="items-end pb-8">
                   <Footer />

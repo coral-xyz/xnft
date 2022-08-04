@@ -32,7 +32,7 @@ const Nav: FunctionComponent = () => {
   }, [disconnect, router]);
 
   return (
-    <div className="tracking-wide">
+    <nav className="tracking-wide">
       <div className="flex items-center">
         <div className="flex flex-1 items-center gap-36">
           <Link href="/">
@@ -46,7 +46,7 @@ const Nav: FunctionComponent = () => {
           {connected ? <ConnectedMenu onDisconnect={handleDisconnect} /> : <DisconnectedMenu />}
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 
