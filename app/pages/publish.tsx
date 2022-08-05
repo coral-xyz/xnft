@@ -1,4 +1,9 @@
-import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
+import {
+  ArrowRightIcon,
+  CheckCircleIcon,
+  EmojiSadIcon,
+  SparklesIcon
+} from '@heroicons/react/solid';
 import { PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
@@ -10,12 +15,14 @@ import {
   useCallback,
   useEffect
 } from 'react';
+import { HashLoader } from 'react-spinners';
 import { useProgram } from '../state/hooks/solana';
 import { uploadFiles, uploadMetadata } from '../utils/s3';
 import xNFT from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
+const Modal = dynamic(() => import('../components/Modal'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
 export type StepComponentProps = {
@@ -24,7 +31,7 @@ export type StepComponentProps = {
   setNextEnabled: Dispatch<SetStateAction<boolean>>;
 };
 
-const steps = [
+const inputSteps = [
   {
     title: 'Upload files',
     component: (props: StepComponentProps) => <BundleUpload {...props} />,
@@ -44,6 +51,29 @@ const steps = [
     nextButtonIcon: <SparklesIcon className="inline-block w-4" />
   }
 ];
+
+const uploadSteps = {
+  ix: {
+    text: 'Processing instruction',
+    icon: <HashLoader color="#F66C5E" size={30} />
+  },
+  files: {
+    text: 'Uploading image files',
+    icon: <HashLoader color="#F66C5E" size={30} />
+  },
+  metadata: {
+    text: 'Uploading metadata file',
+    icon: <HashLoader color="#F66C5E" size={30} />
+  },
+  success: {
+    text: 'Publish complete!',
+    icon: <CheckCircleIcon className="text-[#F66C5E]" height={50} />
+  },
+  error: {
+    text: 'Something went wrong!',
+    icon: <EmojiSadIcon className="text-[#F66C5E]" height={50} />
+  }
+};
 
 const defaultUploadState = {
   title: '',
@@ -65,8 +95,11 @@ const PublishPage: NextPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
+  const [modalOpen, setModalOpen] = useState(true);
+  const [processingStep, setProcessingStep] = useState<keyof typeof uploadSteps>('ix');
+  const [processError, setProcessError] = useState<Error>(undefined);
 
-  const activeStepComponent = useMemo(() => steps[currentStep], [currentStep]);
+  const activeStepComponent = useMemo(() => inputSteps[currentStep], [currentStep]);
 
   useEffect(() => {
     if (!program.provider.publicKey?.equals(PublicKey.default)) {
@@ -74,13 +107,24 @@ const PublishPage: NextPage = () => {
     }
   }, [program]);
 
+  const handleModalClose = useCallback(() => setModalOpen(false), []);
+
   const handleNextClicked = useCallback(async () => {
-    if (currentStep === steps.length - 1) {
+    if (currentStep === inputSteps.length - 1) {
+      setModalOpen(true);
+
       try {
         const xnft = await xNFT.create(program, uploadState);
+
+        setProcessingStep('files');
         await uploadFiles(xnft, uploadState);
+
+        setProcessingStep('metadata');
         await uploadMetadata(xnft, uploadState);
+
+        setProcessingStep('success');
       } catch (err) {
+        setProcessError(err);
         console.error(`handleNextClicked: ${err}`);
       }
     } else {
@@ -90,58 +134,69 @@ const PublishPage: NextPage = () => {
   }, [uploadState, currentStep, program]);
 
   return (
-    <div className="flex justify-center">
-      <div className={currentStep === steps.length - 1 ? '' : 'inline-block'}>
-        <div className="flex flex-col items-center gap-5">
-          <h1 className="text-center text-3xl font-bold leading-tight text-white">
-            Publish your code as an executable xNFT
-          </h1>
-          <button
-            type="button"
-            className="mx-auto inline-flex w-32 cursor-no-drop
-              items-center rounded-md border border-transparent
-              bg-[#3F3F46] px-4 py-2 font-medium tracking-wide
-              text-white shadow-sm"
-          >
-            Learn more
-          </button>
+    <>
+      <div className="flex justify-center">
+        <div className={currentStep === inputSteps.length - 1 ? '' : 'inline-block'}>
+          <div className="flex flex-col items-center gap-5">
+            <h1 className="text-center text-3xl font-bold leading-tight text-white">
+              Publish your code as an executable xNFT
+            </h1>
+            <button
+              type="button"
+              className="mx-auto inline-flex w-32 cursor-no-drop
+                items-center rounded-md border border-transparent
+                bg-[#3F3F46] px-4 py-2 font-medium tracking-wide
+                text-white shadow-sm"
+            >
+              Learn more
+            </button>
 
-          <div className="flex w-full flex-col gap-2 px-4">
-            <div className="mt-12 mb-4 flex w-full justify-center gap-8">
-              {steps.map((s, idx) => (
-                <div
-                  key={s.title}
-                  className={`w-full text-center ${
-                    currentStep >= idx ? 'text-[#F66C5E]' : 'text-white'
-                  }`}
+            <div className="flex w-full flex-col gap-2 px-4">
+              <div className="mt-12 mb-4 flex w-full justify-center gap-8">
+                {inputSteps.map((s, idx) => (
+                  <div
+                    key={s.title}
+                    className={`w-full text-center ${
+                      currentStep >= idx ? 'text-[#F66C5E]' : 'text-white'
+                    }`}
+                  >
+                    {s.title}
+                  </div>
+                ))}
+              </div>
+
+              <div className={`rounded-2xl bg-[#27272A]`}>
+                {activeStepComponent.component({
+                  state: uploadState,
+                  setState: setUploadState,
+                  setNextEnabled
+                })}
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  className="mt-12 flex items-center rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
+                  onClick={handleNextClicked}
+                  disabled={!nextEnabled}
                 >
-                  {s.title}
-                </div>
-              ))}
-            </div>
-
-            <div className={`rounded-2xl bg-[#27272A]`}>
-              {activeStepComponent.component({
-                state: uploadState,
-                setState: setUploadState,
-                setNextEnabled
-              })}
-            </div>
-
-            <div className="flex justify-center">
-              <button
-                className="mt-12 flex items-center rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
-                onClick={handleNextClicked}
-                disabled={!nextEnabled}
-              >
-                <span className="inline-block pr-2">{activeStepComponent.nextButtonText}</span>
-                {activeStepComponent.nextButtonIcon}
-              </button>
+                  <span className="inline-block pr-2">{activeStepComponent.nextButtonText}</span>
+                  {activeStepComponent.nextButtonIcon}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <Modal open={modalOpen} onClose={handleModalClose}>
+        <section className="flex flex-col items-center justify-center gap-6 py-8">
+          {uploadSteps[processingStep].icon}
+          <span className="font-medium tracking-wide">{uploadSteps[processingStep].text}</span>
+          {processingStep === 'error' && (
+            <span className="text-sm text-[#99A4B4]">{processError.message}</span>
+          )}
+        </section>
+      </Modal>
+    </>
   );
 };
 

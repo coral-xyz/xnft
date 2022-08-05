@@ -3,7 +3,7 @@ import { Fragment, type FunctionComponent, memo, type ReactNode, useMemo } from 
 
 type ModalProps = {
   children: ReactNode;
-  title: string;
+  title?: ReactNode;
   open: boolean;
   onClose: () => void;
   width?: number;
@@ -42,12 +42,14 @@ const Modal: FunctionComponent<ModalProps> = props => {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className={`max-w-md w-${w} rounded-2xl bg-[#27272A] p-6 shadow-xl`}>
-                <Dialog.Title
-                  as="h1"
-                  className="mb-6 text-xl font-semibold tracking-wide text-white"
-                >
-                  {props.title}
-                </Dialog.Title>
+                {props.title && (
+                  <Dialog.Title
+                    as="h3"
+                    className="mb-6 text-xl font-semibold tracking-wide text-white"
+                  >
+                    {props.title}
+                  </Dialog.Title>
+                )}
                 {props.children}
               </Dialog.Panel>
             </Transition.Child>
