@@ -4,16 +4,15 @@ import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { BN } from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
-import { useRecoilValue } from 'recoil';
 import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
-import { programState } from '../../state/atoms/solana';
+import { useProgram } from '../../state/hooks/solana';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;
 };
 
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
-  const program = useRecoilValue(programState);
+  const program = useProgram();
   const { connected } = useWallet();
 
   const price = useMemo(() => new BN(xnft.account.installPrice), [xnft.account.installPrice]);

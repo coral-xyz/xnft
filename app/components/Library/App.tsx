@@ -2,12 +2,11 @@ import { DownloadIcon } from '@heroicons/react/solid';
 import { BN } from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { type FunctionComponent, memo, useCallback } from 'react';
-import { useRecoilValue } from 'recoil';
 import Image from 'next/image';
 import Link from 'next/link';
 import xNFT from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
-import { programState } from '../../state/atoms/solana';
+import { useProgram } from '../../state/hooks/solana';
 
 type FeaturedProps = {
   allowInstall?: boolean;
@@ -107,7 +106,7 @@ const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured
   const appLink = publicKey ? `/app/${publicKey}` : '';
 
   const { connected } = useWallet();
-  const program = useRecoilValue(programState);
+  const program = useProgram();
 
   const handleInstall = useCallback(async () => {
     try {

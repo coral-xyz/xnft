@@ -2,14 +2,13 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { BackpackWalletAdapter, PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { type FunctionComponent, type ReactNode, useMemo } from 'react';
-import { useRecoilValue } from 'recoil';
-import { connectionUrl } from '../atoms/solana';
 import { useAutoConnect } from '../context/AutoConnectProvider';
+import { useConnectionUrl } from '../hooks/solana';
 import { AutoConnectProvider } from './AutoConnectProvider';
 
 const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   const { autoConnect } = useAutoConnect();
-  const endpoint = useRecoilValue(connectionUrl);
+  const [endpoint] = useConnectionUrl();
 
   const wallets = useMemo(() => [new BackpackWalletAdapter(), new PhantomWalletAdapter()], []);
 

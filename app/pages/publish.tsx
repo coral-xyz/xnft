@@ -10,8 +10,7 @@ import {
   useCallback,
   useEffect
 } from 'react';
-import { useRecoilValue } from 'recoil';
-import { programState } from '../state/atoms/solana';
+import { useProgram } from '../state/hooks/solana';
 import { uploadFiles, uploadMetadata } from '../utils/s3';
 import xNFT from '../utils/xnft';
 
@@ -62,7 +61,7 @@ const defaultUploadState = {
 export type UploadState = typeof defaultUploadState;
 
 const PublishPage: NextPage = () => {
-  const program = useRecoilValue(programState);
+  const program = useProgram();
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
