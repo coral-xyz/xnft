@@ -1,10 +1,9 @@
 import { BN } from '@project-serum/anchor';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
 import xNFT, { type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
+import Layout from '../components/Layout';
 
-const Sidebar = dynamic(() => import('../components/Sidebar'));
 const App = dynamic(() => import('../components/Library/App'));
 const CategoryPreview = dynamic(() => import('../components/Library/CategoryPreview'));
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
@@ -22,29 +21,22 @@ export async function getStaticProps() {
 
 const HomePage: NextPage<{ data: string }> = ({ data }) => {
   const xnftList: SerializedXnftWithMetadata[] = JSON.parse(data);
-  const [activeMenu, setActiveMenu] = useState(0);
 
   return (
-    <div className="grid grid-cols-5 gap-12">
-      {/* Sidebar Menu */}
-      <Sidebar active={activeMenu} onClick={setActiveMenu} />
-
-      {/* Main Content */}
-      <div className="col-span-5 flex flex-col gap-12 lg:col-span-4">
-        {xnftList.length > 0 && (
-          <>
-            <App
-              featured
-              publicKey={xnftList[0].publicKey}
-              price={new BN(xnftList[0].account.installPrice)}
-              metadata={xnftList[0].metadata}
-            />
-            <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
-          </>
-        )}
-        <SecondaryCta />
-      </div>
-    </div>
+    <Layout contentClassName="flex flex-col gap-12">
+      {xnftList.length > 0 && (
+        <>
+          <App
+            featured
+            publicKey={xnftList[0].publicKey}
+            price={new BN(xnftList[0].account.installPrice)}
+            metadata={xnftList[0].metadata}
+          />
+          <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
+        </>
+      )}
+      <SecondaryCta />
+    </Layout>
   );
 };
 

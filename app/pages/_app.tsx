@@ -31,21 +31,21 @@ export default function App({ Component, pageProps }: AppProps) {
       <RecoilRoot>
         <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
           <ContextProvider>
-            <div className="bg-[#18181B]">
+            <main className="bg-[#18181B]">
               <div className="flex min-h-screen flex-col justify-between py-8 px-12">
-                <div className="border-b-[1px] border-b-[#393C43] pb-8">
+                <section className="border-b-[1px] border-b-[#393C43] pb-8">
                   <Nav />
-                </div>
+                </section>
 
                 <section className="mb-auto py-10">
                   <Component {...pageProps} />
                 </section>
 
-                <div className="items-end pb-8">
+                <section className="items-end pb-8">
                   <Footer />
-                </div>
+                </section>
               </div>
-            </div>
+            </main>
           </ContextProvider>
         </PlausibleProvider>
       </RecoilRoot>

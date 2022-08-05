@@ -1,10 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
 import type { GetStaticPropsContext, NextPage } from 'next';
 import dynamic from 'next/dynamic';
+import Layout from '../../components/Layout';
 import xNFT from '../../utils/xnft';
 
-const Tabs = dynamic(() => import('../../components/View/Tabs'));
-const AppBanner = dynamic(() => import('../../components/View/Banner'));
+const Tabs = dynamic(() => import('../../components/AppView/Tabs'));
+const Banner = dynamic(() => import('../../components/AppView/Banner'));
 
 export async function getStaticPaths() {
   const data = await xNFT.getAll();
@@ -33,10 +34,10 @@ const AppPage: NextPage<{ data: any }> = ({ data }) => {
   const xnft = JSON.parse(data);
 
   return (
-    <>
-      <AppBanner xnft={xnft} />
+    <Layout>
+      <Banner xnft={xnft} />
       <Tabs xnft={xnft} />
-    </>
+    </Layout>
   );
 };
 
