@@ -57,7 +57,7 @@ const Sidebar: FunctionComponent<SidebarProps> = props => {
           <div
             key={item.name}
             className={`flex items-center gap-3 overflow-auto rounded-2xl py-2.5 px-3 font-medium ${
-              props.active === idx ? 'bg-[#F97316] bg-opacity-20' : 'bg-transparent'
+              props.active === idx ? 'bg-[#F97316]/20' : 'bg-transparent'
             }`}
             // onClick={() => props.onClick(idx)}
           >
