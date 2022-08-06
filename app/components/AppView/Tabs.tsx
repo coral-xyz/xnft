@@ -147,7 +147,7 @@ const Tabs: FunctionComponent<TabsProps> = ({ xnft }) => {
               className={classNames(
                 selectedTab === tab.name
                   ? 'border-[#FC9870] text-[#FC9870]'
-                  : 'border-transparent text-[#99A4B4] hover:text-[#99A4B4]',
+                  : 'border-transparent text-[#99A4B4]',
                 'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ' +
                   'disabled:text-[#393C43] disabled:hover:cursor-not-allowed'
               )}
