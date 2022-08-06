@@ -21,7 +21,7 @@ import {
 import { HashLoader } from 'react-spinners';
 import { useProgram } from '../state/hooks/solana';
 import { uploadFiles, uploadMetadata } from '../utils/s3';
-import xNFT from '../utils/xnft';
+import xNFT, { XNFT_TAG_OPTIONS } from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -84,6 +84,7 @@ const defaultUploadState = {
   publisher: '',
   website: '',
   bundle: {} as File,
+  tag: 'None' as typeof XNFT_TAG_OPTIONS[number],
   royalties: '',
   price: '',
   supply: 'inf',

@@ -39,6 +39,8 @@ export type XnftWithMetadata = {
 
 export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
 
+export const XNFT_TAG_OPTIONS = IDL.types[1].type.variants.map(v => v.name);
+
 const anonymousProgram: Program<IDLType> = new Program(
   IDL,
   XNFT_PROGRAM_ID,
@@ -64,6 +66,7 @@ export default abstract class xNFT {
       .createXnft(
         details.title,
         details.title.slice(0, 3).toUpperCase(),
+        { [details.tag.toLowerCase()]: {} },
         `${BUCKET_URL}/${getMetadataPath(xnft)}`,
         parseInt(details.royalties) * 100,
         new BN(details.price),

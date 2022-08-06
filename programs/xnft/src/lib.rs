@@ -23,6 +23,7 @@ pub mod xnft {
         ctx: Context<CreateXnft>,
         name: String,
         symbol: String,
+        tag: Tag,
         uri: String,
         seller_fee_basis_points: u16,
         install_price: u64,
@@ -93,6 +94,7 @@ pub mod xnft {
         xnft.master_mint = ctx.accounts.master_mint.key();
         xnft.bump = xnft_bump;
         xnft.suspended = false;
+        xnft.tag = tag;
 
         Ok(())
     }
@@ -415,6 +417,7 @@ pub struct Xnft2 {
     // Flag to mark xnft as suspending further installs.
     //
     suspended: bool,
+    tag: Tag,
 }
 
 #[account]
@@ -429,7 +432,7 @@ pub struct Install {
 }
 
 impl Install {
-    pub const LEN: usize = 8 + 32 + 32 + 8 + 8 + 32;
+    pub const LEN: usize = 8 + 32 + 32 + 8 + 8 + 32; // TODO:FIXME: needs to be recalculated
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
@@ -438,9 +441,17 @@ pub enum Kind {
     Image,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub enum Tag {
+    Defi,
+    Game,
+    Nft,
+    None,
+}
+
 impl Xnft2 {
     pub const LEN: usize =
-        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1;
+        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1 + 1; // TODO:FIXME: needs to be recalculated
 }
 
 #[error_code]
