@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
 import { assert } from 'chai';
-import { Xnft } from '../target/types/xnft';
+import { IDL, Xnft } from '../target/types/xnft';
 
 const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 

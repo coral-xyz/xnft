@@ -432,7 +432,7 @@ pub struct Install {
 }
 
 impl Install {
-    pub const LEN: usize = 8 + 32 + 32 + 8 + 8 + 32;
+    pub const LEN: usize = 8 + 32 + 32 + 8 + 8 + 32; // TODO:FIXME: needs to be recalculated
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
@@ -446,6 +446,7 @@ pub enum Tag {
     Defi,
     Game,
     Nft,
+    None,
 }
 
 impl Xnft2 {

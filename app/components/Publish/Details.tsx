@@ -2,6 +2,7 @@ import { PhotographIcon } from '@heroicons/react/outline';
 import { type KeyboardEvent, memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
+import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import SupplySelect from './SupplySelect';
 
 const inputClasses = `focus:border-[#F66C5E] border-[#18181B] bg-[#18181B]
@@ -38,6 +39,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
       state.title,
       state.description,
       state.publisher,
+      state.tag,
       state.website,
       state.supply,
       state.price,
@@ -99,6 +101,29 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
           value={state.publisher}
           onChange={e => setState(prev => ({ ...prev, publisher: e.target.value }))}
         />
+      </div>
+
+      {/* Tag */}
+      <div>
+        <label htmlFor="tag" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+          Tag
+        </label>
+        <select
+          required
+          id="tag"
+          name="tag"
+          className={inputClasses}
+          value={state.tag}
+          onChange={e =>
+            setState(prev => ({ ...prev, tag: e.target.value as typeof XNFT_TAG_OPTIONS[number] }))
+          }
+        >
+          {XNFT_TAG_OPTIONS.map((o, idx) => (
+            <option key={idx} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Website */}
