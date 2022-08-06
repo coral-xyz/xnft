@@ -14,25 +14,27 @@ describe('xnft', () => {
 
   const program = anchor.workspace.Xnft as Program<Xnft>;
 
-  let xnft;
-  let install;
+  let xnft: PublicKey;
+  let install: PublicKey;
   const installVault = program.provider.publicKey;
 
   it('creates the xNFT', async () => {
     const installPrice = new anchor.BN(0);
     const name = 'my-xnft';
     const symbol = 'xnft';
+    const tag = { defi: {} };
     const uri =
       'https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json';
     const seller_fee_basis_points = 1;
-    const tx = await program.methods
-      .createXnft(name, symbol, uri, seller_fee_basis_points, installPrice, installVault)
+    const tx = program.methods
+      .createXnft(name, symbol, tag, uri, seller_fee_basis_points, installPrice, installVault)
       .accounts({
         metadataProgram
       });
-    await tx.rpc();
 
+    await tx.rpc();
     const pubkeys = await tx.pubkeys();
+
     xnft = pubkeys.xnft;
   });
 
