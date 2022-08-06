@@ -7,6 +7,8 @@ import {
 import { PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {
   type Dispatch,
   useMemo,
@@ -91,13 +93,15 @@ const defaultUploadState = {
 export type UploadState = typeof defaultUploadState;
 
 const PublishPage: NextPage = () => {
+  const router = useRouter();
   const program = useProgram();
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
-  const [modalOpen, setModalOpen] = useState(true);
   const [processingStep, setProcessingStep] = useState<keyof typeof uploadSteps>('ix');
   const [processError, setProcessError] = useState<Error>(undefined);
+  const [newPubkey, setNewPubkey] = useState(PublicKey.default);
 
   const activeStepComponent = useMemo(() => inputSteps[currentStep], [currentStep]);
 
@@ -115,6 +119,7 @@ const PublishPage: NextPage = () => {
 
       try {
         const xnft = await xNFT.create(program, uploadState);
+        setNewPubkey(xnft);
 
         setProcessingStep('files');
         await uploadFiles(xnft, uploadState);
@@ -192,7 +197,25 @@ const PublishPage: NextPage = () => {
           {uploadSteps[processingStep].icon}
           <span className="font-medium tracking-wide">{uploadSteps[processingStep].text}</span>
           {processingStep === 'error' && (
-            <span className="text-sm text-[#99A4B4]">{processError.message}</span>
+            <>
+              <span className="text-sm text-[#99A4B4]">{processError.message}</span>
+              <button
+                className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
+                onClick={() => router.reload()}
+              >
+                Retry
+              </button>
+            </>
+          )}
+          {processingStep === 'success' && (
+            <div className="flex gap-4">
+              <Link href="/">
+                <button className="rounded-md bg-[#3F3F46] px-4 py-2 text-white">Home</button>
+              </Link>
+              <Link href={`/app/${newPubkey.toBase58()}`}>
+                <button className="rounded-md bg-[#4F46E5] px-4 py-2 text-white">View</button>
+              </Link>
+            </div>
           )}
         </section>
       </Modal>
