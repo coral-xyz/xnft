@@ -24,7 +24,7 @@ export const programState = atom<Program<Xnft>>({
     get: ({ get }) => {
       const wallet = get(anchorWalletState);
       const provider = new AnchorProvider(
-        new Connection(get(connectionUrl), { commitment: 'processed' }),
+        new Connection(get(connectionUrl), { commitment: 'confirmed' }),
         wallet ?? {
           publicKey: PublicKey.default,
           signTransaction: undefined,

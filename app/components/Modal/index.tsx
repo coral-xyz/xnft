@@ -31,7 +31,7 @@ const Modal: FunctionComponent<ModalProps> = props => {
         </Transition.Child>
 
         <section className="fixed inset-0">
-          <div className="flex min-h-full items-center justify-center text-white">
+          <div className="-mt-24 flex min-h-full items-center justify-center text-white">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"

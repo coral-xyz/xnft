@@ -4,6 +4,7 @@ import {
   EmojiSadIcon,
   SparklesIcon
 } from '@heroicons/react/solid';
+import { WalletSignTransactionError } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
@@ -129,7 +130,12 @@ const PublishPage: NextPage = () => {
 
         setProcessingStep('success');
       } catch (err) {
-        setProcessError(err);
+        if (err instanceof WalletSignTransactionError) {
+          setModalOpen(false);
+        } else {
+          setProcessingStep('error');
+          setProcessError(err);
+        }
         console.error(`handleNextClicked: ${err}`);
       }
     } else {
