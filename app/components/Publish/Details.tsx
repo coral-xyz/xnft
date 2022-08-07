@@ -2,6 +2,7 @@ import { PhotographIcon } from '@heroicons/react/outline';
 import { type KeyboardEvent, memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
+import { usePublish } from '../../state/hooks/xnfts';
 import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import SupplySelect from './SupplySelect';
 
@@ -18,40 +19,41 @@ function getNameList(screenshots: File[]): string {
   return screenshots.map(s => s.name).join(', ');
 }
 
-const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNextEnabled }) => {
+const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
+  const [publishState, setPublishState] = usePublish();
   const iconDrop = useDropzone({ accept: { 'image/*': ['.png', '.jpg', '.jpeg'] }, maxFiles: 1 });
   const ssDrop = useDropzone({ accept: { 'image/*': ['.png', '.jpg', '.jpeg'] }, multiple: true });
 
   useEffect(() => {
     if (iconDrop.acceptedFiles.length > 0) {
-      setState(prev => ({ ...prev, icon: iconDrop.acceptedFiles[0] }));
+      setPublishState(prev => ({ ...prev, icon: iconDrop.acceptedFiles[0] }));
     }
-  }, [iconDrop.acceptedFiles, setState]);
+  }, [iconDrop.acceptedFiles, setPublishState]);
 
   useEffect(() => {
     if (ssDrop.acceptedFiles.length > 0) {
-      setState(prev => ({ ...prev, screenshots: ssDrop.acceptedFiles }));
+      setPublishState(prev => ({ ...prev, screenshots: ssDrop.acceptedFiles }));
     }
-  }, [ssDrop.acceptedFiles, setState]);
+  }, [ssDrop.acceptedFiles, setPublishState]);
 
   useEffect(() => {
     const checks = [
-      state.title,
-      state.description,
-      state.publisher,
-      state.tag,
-      state.website,
-      state.supply,
-      state.price,
-      state.royalties,
-      state.icon.name ?? '',
-      state.screenshots
+      publishState.title,
+      publishState.description,
+      publishState.publisher,
+      publishState.tag,
+      publishState.website,
+      publishState.supply,
+      publishState.price,
+      publishState.royalties,
+      publishState.icon.name ?? '',
+      publishState.screenshots
     ];
 
-    if (checks.every(x => x.length > 0) && parseFloat(state.royalties) <= 100) {
+    if (checks.every(x => x.length > 0) && parseFloat(publishState.royalties) <= 100) {
       setNextEnabled(true);
     }
-  }, [state, setNextEnabled]);
+  }, [publishState, setNextEnabled]);
 
   return (
     <div className="flex flex-col gap-4 px-16 py-14">
@@ -66,8 +68,8 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
           name="title"
           className={inputClasses}
           type="text"
-          value={state.title}
-          onChange={e => setState(prev => ({ ...prev, title: e.target.value }))}
+          value={publishState.title}
+          onChange={e => setPublishState(prev => ({ ...prev, title: e.target.value }))}
         />
       </div>
 
@@ -81,8 +83,8 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
           name="description"
           className={`${inputClasses} resize-none`}
           rows={5}
-          value={state.description}
-          onChange={e => setState(prev => ({ ...prev, description: e.target.value }))}
+          value={publishState.description}
+          onChange={e => setPublishState(prev => ({ ...prev, description: e.target.value }))}
         />
       </div>
 
@@ -98,8 +100,8 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
           className={inputClasses}
           type="text"
           placeholder="3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3"
-          value={state.publisher}
-          onChange={e => setState(prev => ({ ...prev, publisher: e.target.value }))}
+          value={publishState.publisher}
+          onChange={e => setPublishState(prev => ({ ...prev, publisher: e.target.value }))}
         />
       </div>
 
@@ -113,9 +115,12 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
           id="tag"
           name="tag"
           className={inputClasses}
-          value={state.tag}
+          value={publishState.tag}
           onChange={e =>
-            setState(prev => ({ ...prev, tag: e.target.value as typeof XNFT_TAG_OPTIONS[number] }))
+            setPublishState(prev => ({
+              ...prev,
+              tag: e.target.value as typeof XNFT_TAG_OPTIONS[number]
+            }))
           }
         >
           {XNFT_TAG_OPTIONS.map((o, idx) => (
@@ -137,8 +142,8 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
           className={inputClasses}
           type="url"
           placeholder="https://example.com"
-          value={state.website}
-          onChange={e => setState(prev => ({ ...prev, website: e.target.value }))}
+          value={publishState.website}
+          onChange={e => setPublishState(prev => ({ ...prev, website: e.target.value }))}
         />
       </div>
 
@@ -149,8 +154,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
         </label>
         <SupplySelect
           inputClasses={`${inputClasses.replace('border-[#18181B]', 'border-[#393C43]')} mt-4`}
-          setState={setState}
-          value={state.supply}
+          value={publishState.supply}
         />
       </div>
 
@@ -170,9 +174,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
             type="number"
             className={`${inputClasses} pr-12 text-right`}
             placeholder="0"
-            value={state.price}
+            value={publishState.price}
             onKeyDown={blockSpecialNumericals}
-            onChange={e => setState(prev => ({ ...prev, price: e.target.value }))}
+            onChange={e => setPublishState(prev => ({ ...prev, price: e.target.value }))}
           />
         </label>
       </div>
@@ -193,9 +197,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
             type="number"
             className={`${inputClasses} pr-7 text-right`}
             placeholder="0"
-            value={state.royalties}
+            value={publishState.royalties}
             onKeyDown={blockSpecialNumericals}
-            onChange={e => setState(prev => ({ ...prev, royalties: e.target.value }))}
+            onChange={e => setPublishState(prev => ({ ...prev, royalties: e.target.value }))}
           />
         </label>
         <div className="max-w-sm">
@@ -219,7 +223,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
               <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
-                  {state.icon.name ?? (
+                  {publishState.icon.name ?? (
                     <>
                       <span className="text-[#F66C5E]">Upload a file</span> or drag and drop
                     </>
@@ -246,8 +250,8 @@ const Details: FunctionComponent<StepComponentProps> = ({ state, setState, setNe
               <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
-                  {state.screenshots.length > 0 ? (
-                    getNameList(state.screenshots)
+                  {publishState.screenshots.length > 0 ? (
+                    getNameList(publishState.screenshots)
                   ) : (
                     <>
                       <span className="text-[#F66C5E]">Upload a file(s)</span> or drag and drop

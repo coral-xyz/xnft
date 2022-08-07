@@ -1,13 +1,6 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import {
-  type KeyboardEvent,
-  type FunctionComponent,
-  type Dispatch,
-  type SetStateAction,
-  useState,
-  memo
-} from 'react';
-import type { UploadState } from '../../pages/publish';
+import { type KeyboardEvent, type FunctionComponent, useState, memo } from 'react';
+import { usePublish } from '../../state/hooks/xnfts';
 
 function blockSpecialNumericals(e: KeyboardEvent) {
   if (['+', '-', 'e', '.'].includes(e.key)) {
@@ -17,11 +10,11 @@ function blockSpecialNumericals(e: KeyboardEvent) {
 
 type SupplySelectProps = {
   inputClasses?: string;
-  setState: Dispatch<SetStateAction<UploadState>>;
   value: string;
 };
 
-const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, setState, value }) => {
+const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, value }) => {
+  const [_, setPublishState] = usePublish();
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
   const classes = (checked: boolean, others?: string): string =>
@@ -35,7 +28,7 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, setS
         className={classes(selected === 'unlimited', 'flex')}
         onClick={() => {
           setSelected('unlimited');
-          setState(prev => ({ ...prev, supply: 'inf' }));
+          setPublishState(prev => ({ ...prev, supply: 'inf' }));
         }}
       >
         <span className="flex-1 font-medium">Unlimited Supply</span>
@@ -54,7 +47,7 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, setS
           placeholder="0"
           value={value === 'inf' ? '' : value}
           onKeyDown={blockSpecialNumericals}
-          onChange={e => setState(prev => ({ ...prev, supply: e.target.value }))}
+          onChange={e => setPublishState(prev => ({ ...prev, supply: e.target.value }))}
         />
       </div>
     </div>

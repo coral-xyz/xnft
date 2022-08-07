@@ -19,9 +19,12 @@ import {
   useEffect
 } from 'react';
 import { HashLoader } from 'react-spinners';
+import { useResetRecoilState } from 'recoil';
+import { publishState as publishStateAtom } from '../state/atoms/publish';
 import { useProgram } from '../state/hooks/solana';
+import { usePublish } from '../state/hooks/xnfts';
 import { uploadFiles, uploadMetadata } from '../utils/s3';
-import xNFT, { XNFT_TAG_OPTIONS } from '../utils/xnft';
+import xNFT from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -29,8 +32,6 @@ const Modal = dynamic(() => import('../components/Modal'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
 export type StepComponentProps = {
-  state: UploadState;
-  setState: Dispatch<SetStateAction<UploadState>>;
   setNextEnabled: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -78,29 +79,14 @@ const uploadSteps = {
   }
 };
 
-const defaultUploadState = {
-  title: '',
-  description: '',
-  publisher: '',
-  website: '',
-  bundle: {} as File,
-  tag: 'None' as typeof XNFT_TAG_OPTIONS[number],
-  royalties: '',
-  price: '',
-  supply: 'inf',
-  icon: {} as File,
-  screenshots: [] as File[]
-};
-
-export type UploadState = typeof defaultUploadState;
-
 const PublishPage: NextPage = () => {
   const router = useRouter();
   const program = useProgram();
+  const [publishState, setPublishState] = usePublish();
+  const resetPublishState = useResetRecoilState(publishStateAtom);
   const [currentStep, setCurrentStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [uploadState, setUploadState] = useState<UploadState>(defaultUploadState);
   const [processingStep, setProcessingStep] = useState<keyof typeof uploadSteps>('ix');
   const [processError, setProcessError] = useState<Error>(undefined);
   const [newPubkey, setNewPubkey] = useState(PublicKey.default);
@@ -108,10 +94,18 @@ const PublishPage: NextPage = () => {
   const activeStepComponent = useMemo(() => inputSteps[currentStep], [currentStep]);
 
   useEffect(() => {
+    router.events.on('routeChangeStart', resetPublishState);
+    return () => {
+      router.events.off('routeChangeStart', resetPublishState);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetPublishState]);
+
+  useEffect(() => {
     if (!program.provider.publicKey?.equals(PublicKey.default)) {
-      setUploadState(prev => ({ ...prev, publisher: program.provider.publicKey.toBase58() }));
+      setPublishState(prev => ({ ...prev, publisher: program.provider.publicKey.toBase58() }));
     }
-  }, [program]);
+  }, [program, setPublishState]);
 
   const handleModalClose = useCallback(() => setModalOpen(false), []);
 
@@ -120,14 +114,14 @@ const PublishPage: NextPage = () => {
       setModalOpen(true);
 
       try {
-        const xnft = await xNFT.create(program, uploadState);
+        const xnft = await xNFT.create(program, publishState);
         setNewPubkey(xnft);
 
         setProcessingStep('files');
-        await uploadFiles(xnft, uploadState);
+        await uploadFiles(xnft, publishState);
 
         setProcessingStep('metadata');
-        await uploadMetadata(xnft, uploadState);
+        await uploadMetadata(xnft, publishState);
 
         setProcessingStep('success');
       } catch (err) {
@@ -143,7 +137,7 @@ const PublishPage: NextPage = () => {
       setCurrentStep(curr => curr + 1);
       setNextEnabled(false);
     }
-  }, [uploadState, currentStep, program]);
+  }, [publishState, currentStep, program]);
 
   return (
     <>
@@ -178,11 +172,7 @@ const PublishPage: NextPage = () => {
               </div>
 
               <div className={`rounded-2xl bg-[#27272A]`}>
-                {activeStepComponent.component({
-                  state: uploadState,
-                  setState: setUploadState,
-                  setNextEnabled
-                })}
+                {activeStepComponent.component({ setNextEnabled })}
               </div>
 
               <div className="flex justify-center">
