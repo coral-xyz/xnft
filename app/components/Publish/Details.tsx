@@ -9,8 +9,11 @@ import SupplySelect from './SupplySelect';
 const inputClasses = `focus:border-[#F66C5E] border-[#18181B] bg-[#18181B]
   text-[#E5E7EB] w-full rounded-md text-sm focus:ring-0 placeholder:text-[#393C43]`;
 
+const priceRx = /^\d*(\.\d{0,5})?$/;
+const royaltyRx = /^\d*(\.\d{0,2})?$/;
+
 function blockSpecialNumericals(e: KeyboardEvent) {
-  if (['+', '-', 'e', '.'].includes(e.key)) {
+  if (['+', '-', 'e'].includes(e.key)) {
     e.preventDefault();
   }
 }
@@ -176,7 +179,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
             placeholder="0"
             value={publishState.price}
             onKeyDown={blockSpecialNumericals}
-            onChange={e => setPublishState(prev => ({ ...prev, price: e.target.value }))}
+            onChange={e => {
+              if (priceRx.test(e.target.value))
+                setPublishState(prev => ({ ...prev, price: e.target.value }));
+            }}
           />
         </label>
       </div>
@@ -195,11 +201,15 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
             id="royalties"
             name="royalties"
             type="number"
+            pattern="^\d*(\.\d{0,2})?$"
             className={`${inputClasses} pr-7 text-right`}
             placeholder="0"
             value={publishState.royalties}
             onKeyDown={blockSpecialNumericals}
-            onChange={e => setPublishState(prev => ({ ...prev, royalties: e.target.value }))}
+            onChange={e => {
+              if (royaltyRx.test(e.target.value))
+                setPublishState(prev => ({ ...prev, royalties: e.target.value }));
+            }}
           />
         </label>
         <div className="max-w-sm">

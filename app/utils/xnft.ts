@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import {
   AnchorProvider,
   BN,
@@ -12,7 +12,7 @@ import {
 } from '@metaplex-foundation/mpl-token-metadata';
 import fetch from 'isomorphic-unfetch';
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
-import type { UploadState } from '../pages/publish';
+import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
 import { BUCKET_URL, getMetadataPath } from './s3';
 
@@ -56,11 +56,11 @@ export default abstract class xNFT {
    * Call the `create_xnft` instruction on the program to mint.
    * @static
    * @param {Program<IDLType>} program
-   * @param {UploadState} details
+   * @param {PublishState} details
    * @returns {Promise<PublicKey>}
    * @memberof xNFT
    */
-  static async create(program: Program<IDLType>, details: UploadState): Promise<PublicKey> {
+  static async create(program: Program<IDLType>, details: PublishState): Promise<PublicKey> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
     await program.methods
       .createXnft(
@@ -68,8 +68,8 @@ export default abstract class xNFT {
         details.title.slice(0, 3).toUpperCase(),
         { [details.tag.toLowerCase()]: {} },
         `${BUCKET_URL}/${getMetadataPath(xnft)}`,
-        parseInt(details.royalties) * 100,
-        new BN(details.price),
+        parseFloat(details.royalties) * 100,
+        new BN(parseFloat(details.price) * LAMPORTS_PER_SOL),
         program.provider.publicKey!
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
