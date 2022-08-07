@@ -2,7 +2,7 @@ import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo, useEffect } from 'react';
 import Image from 'next/image';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish } from '../../state/hooks/xnfts';
+import { usePublish } from '../../state/atoms/publish';
 
 const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   const [publishState] = usePublish();

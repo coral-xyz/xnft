@@ -5,7 +5,7 @@ import { BN } from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
-import { useProgram } from '../../state/hooks/solana';
+import { useProgram } from '../../state/atoms/program';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;

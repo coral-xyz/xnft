@@ -1,6 +1,6 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { type KeyboardEvent, type FunctionComponent, useState, memo } from 'react';
-import { usePublish } from '../../state/hooks/xnfts';
+import { usePublish } from '../../state/atoms/publish';
 
 function blockSpecialNumericals(e: KeyboardEvent) {
   if (['+', '-', 'e', '.'].includes(e.key)) {

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import xNFT from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
-import { useProgram } from '../../state/hooks/solana';
+import { useProgram } from '../../state/atoms/program';
 
 type FeaturedProps = {
   allowInstall?: boolean;

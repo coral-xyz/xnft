@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
 import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 
 export type PublishState = typeof defaultPublishState;
@@ -17,7 +17,19 @@ const defaultPublishState = {
   screenshots: [] as File[]
 };
 
+/**
+ * State to track the inputted values for a new xNFT during the publish flow.
+ */
 export const publishState = atom<PublishState>({
   key: 'publishState',
   default: defaultPublishState
 });
+
+/**
+ * Custom hook to use and mutate the publish input atom state.
+ * @export
+ * @returns {[PublishState, SetterOrUpdater<PublishState>]}
+ */
+export function usePublish(): [PublishState, SetterOrUpdater<PublishState>] {
+  return useRecoilState(publishState);
+}

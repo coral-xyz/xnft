@@ -2,7 +2,7 @@ import { PhotographIcon } from '@heroicons/react/outline';
 import { type KeyboardEvent, memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish } from '../../state/hooks/xnfts';
+import { usePublish } from '../../state/atoms/publish';
 import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import SupplySelect from './SupplySelect';
 

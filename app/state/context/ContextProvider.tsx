@@ -3,7 +3,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { BackpackWalletAdapter, PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { type FunctionComponent, type ReactNode, useMemo } from 'react';
 import { useAutoConnect } from '../context/AutoConnectProvider';
-import { useConnectionUrl } from '../hooks/solana';
+import { useConnectionUrl } from '../atoms/solana';
 import { AutoConnectProvider } from './AutoConnectProvider';
 
 const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {

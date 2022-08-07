@@ -2,7 +2,7 @@ import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
 import { memo, type FunctionComponent, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish } from '../../state/hooks/xnfts';
+import { usePublish } from '../../state/atoms/publish';
 
 function transformBundleSize(size: number): string {
   if (size < 1000) {
