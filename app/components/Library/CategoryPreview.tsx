@@ -1,4 +1,3 @@
-import { BN } from '@project-serum/anchor';
 import { type FunctionComponent, memo } from 'react';
 import type { SerializedXnftWithMetadata } from '../../utils/xnft';
 import App from './App';
@@ -18,7 +17,7 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
           <App
             key={idx}
             publicKey={xnft.publicKey}
-            price={new BN(xnft.account.installPrice)}
+            price={parseInt(xnft.account.installPrice, 16)}
             metadata={xnft.metadata}
           />
         ))}

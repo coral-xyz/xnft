@@ -1,10 +1,8 @@
 import { AnchorProvider, Program } from '@project-serum/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { useEffect, useState } from 'react';
 import { atom, selector, useRecoilValue } from 'recoil';
 import { IDL, type Xnft } from '../../programs/xnft';
-import { getCache } from '../../utils/localStorage';
-import { type SerializedXnftWithMetadata, XNFT_PROGRAM_ID } from '../../utils/xnft';
+import { XNFT_PROGRAM_ID } from '../../utils/xnft';
 import { anchorWalletState, connectionUrl } from './solana';
 
 /**
@@ -41,27 +39,4 @@ export const programState = atom<Program<Xnft>>({
  */
 export function useProgram(): Program<Xnft> {
   return useRecoilValue(programState);
-}
-
-/**
- * Custom hook to get the xNFTs that are cached in local storage.
- * @export
- * @returns {{ isLoading: boolean; cachedXNFTs: SerializedXnftWithMetadata[] }}
- */
-export function useCachedXNFTs(): {
-  isLoading: boolean;
-  cachedXNFTs: SerializedXnftWithMetadata[];
-} {
-  const [cachedXNFTs, setCachedXNFTs] = useState<SerializedXnftWithMetadata[]>([]);
-
-  useEffect(() => {
-    if (cachedXNFTs.length === 0) {
-      setCachedXNFTs(getCache('xnfts'));
-    }
-  }, []);
-
-  return {
-    isLoading: cachedXNFTs.length === 0,
-    cachedXNFTs: cachedXNFTs
-  };
 }

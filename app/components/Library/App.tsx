@@ -1,27 +1,30 @@
 import { DownloadIcon } from '@heroicons/react/solid';
-import { BN } from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { type FunctionComponent, memo, useCallback } from 'react';
+import { type FunctionComponent, memo, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import xNFT from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
 import { useProgram } from '../../state/atoms/program';
+import { useInstalledXnfts } from '../../state/atoms/xnft';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 type FeaturedProps = {
-  allowInstall?: boolean;
-  price: BN;
+  connected?: boolean;
+  installed: boolean;
+  price: number;
   metadata: Metadata;
   link: string;
-  onInstallClick: () => void;
+  onButtonClick: () => void;
 };
 
 const Featured: FunctionComponent<FeaturedProps> = ({
-  allowInstall,
+  connected,
+  installed,
   price,
   metadata,
   link,
-  onInstallClick
+  onButtonClick
 }) => {
   return (
     <div className="flex items-center gap-14 rounded-2xl bg-[#27272A]">
@@ -42,10 +45,11 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <div className="flex gap-4 text-sm font-medium">
           <button
             className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]"
-            onClick={onInstallClick}
-            disabled={!allowInstall}
+            onClick={onButtonClick}
+            disabled={!connected}
           >
-            {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
+            {installed ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`}
+            {!installed && <DownloadIcon height={16} />}
           </button>
           <Link href={link}>
             <button className="rounded-md bg-[#52525B] py-2 px-4 text-[#D4D4D8]">Explore</button>
@@ -59,11 +63,12 @@ const Featured: FunctionComponent<FeaturedProps> = ({
 type ListingProps = FeaturedProps;
 
 const Listing: FunctionComponent<ListingProps> = ({
-  allowInstall,
+  connected,
+  installed,
   price,
   metadata,
   link,
-  onInstallClick
+  onButtonClick
 }) => {
   return (
     <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">
@@ -83,12 +88,12 @@ const Listing: FunctionComponent<ListingProps> = ({
       </div>
       <div className="my-auto">
         <button
-          className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs
-            font-medium tracking-wide text-[#374151] text-white"
-          onClick={onInstallClick}
-          disabled={!allowInstall}
+          className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs font-medium tracking-wide text-[#374151]"
+          onClick={onButtonClick}
+          disabled={!connected}
         >
-          {price.isZero() ? 'Free' : `${price.toNumber()} SOL`} <DownloadIcon height={16} />
+          {installed ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`}
+          {!installed && <DownloadIcon height={16} />}
         </button>
       </div>
     </div>
@@ -97,7 +102,7 @@ const Listing: FunctionComponent<ListingProps> = ({
 
 type AppProps = {
   publicKey: string;
-  price: BN;
+  price: number;
   metadata: Metadata;
   featured?: boolean;
 };
@@ -107,11 +112,22 @@ const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured
 
   const { connected } = useWallet();
   const program = useProgram();
+  const installed = useInstalledXnfts();
+
+  const isInstalled = useMemo(
+    () => installed.find(i => i.publicKey.toBase58() === publicKey) !== undefined,
+    [installed, publicKey]
+  );
+
+  const handleOpenApp = useCallback(() => {
+    // TODO:
+  }, []);
 
   const handleInstall = useCallback(async () => {
     try {
-      const { installVault, name, publisher } = await program.account.xnft2.fetch(publicKey);
-      await xNFT.install(program, name, publisher, installVault);
+      const x = await program.account.xnft2.fetch(publicKey);
+      console.log(x.totalInstalls.toNumber());
+      await xNFT.install(program, x.name, x.publisher, x.installVault);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
@@ -119,19 +135,21 @@ const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured
 
   return featured ? (
     <Featured
-      allowInstall={connected}
+      connected={connected}
+      installed={isInstalled}
       price={price}
       metadata={metadata}
       link={appLink}
-      onInstallClick={handleInstall}
+      onButtonClick={isInstalled ? handleOpenApp : handleInstall}
     />
   ) : (
     <Listing
-      allowInstall={connected}
+      connected={connected}
+      installed={isInstalled}
       price={price}
       metadata={metadata}
       link={appLink}
-      onInstallClick={handleInstall}
+      onButtonClick={isInstalled ? handleOpenApp : handleInstall}
     />
   );
 };

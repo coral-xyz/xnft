@@ -1,11 +1,11 @@
-import { PublicKey } from '@solana/web3.js';
-import { type FunctionComponent, memo, useMemo } from 'react';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { type FunctionComponent, memo, useMemo, useCallback } from 'react';
 import { BadgeCheckIcon } from '@heroicons/react/solid';
-import { BN } from '@project-serum/anchor';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
+import { useInstalledXnfts } from '../../state/atoms/xnft';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;
@@ -14,17 +14,30 @@ type AppBannerProps = {
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();
   const { connected } = useWallet();
+  const installed = useInstalledXnfts();
 
-  const price = useMemo(() => new BN(xnft.account.installPrice), [xnft.account.installPrice]);
+  const isInstalled = useMemo(
+    () => installed.find(i => i.publicKey.toBase58() === xnft.publicKey) !== undefined,
+    [installed, xnft]
+  );
+  const price = useMemo(() => parseInt(xnft.account.installPrice, 16), [xnft.account.installPrice]);
 
-  async function handleInstall() {
-    await xNFT.install(
-      program,
-      xnft.metadata.name,
-      new PublicKey(xnft.account.publisher),
-      new PublicKey(xnft.account.installVault)
-    );
-  }
+  const handleOpenApp = useCallback(() => {
+    // TODO:
+  }, []);
+
+  const handleInstall = useCallback(async () => {
+    try {
+      await xNFT.install(
+        program,
+        xnft.metadata.name,
+        new PublicKey(xnft.account.publisher),
+        new PublicKey(xnft.account.installVault)
+      );
+    } catch (err) {
+      console.error(`handleInstall: ${err}`);
+    }
+  }, [program, xnft]);
 
   return (
     <section className="flex gap-6">
@@ -49,10 +62,10 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
         </div>
         <button
           className="rounded-md bg-[#4F46E5] px-4 py-2.5 font-medium tracking-wide text-white"
-          onClick={handleInstall}
+          onClick={isInstalled ? handleOpenApp : handleInstall}
           disabled={!connected}
         >
-          {price.isZero() ? 'Free' : `${price.toNumber()} SOL`}
+          {isInstalled ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`}
         </button>
       </div>
     </section>

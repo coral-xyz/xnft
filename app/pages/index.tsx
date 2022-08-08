@@ -1,4 +1,3 @@
-import { BN } from '@project-serum/anchor';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import xNFT, { type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
@@ -29,7 +28,7 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
           <App
             featured
             publicKey={xnftList[0].publicKey}
-            price={new BN(xnftList[0].account.installPrice)}
+            price={parseInt(xnftList[0].account.installPrice, 16)}
             metadata={xnftList[0].metadata}
           />
           <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
