@@ -36,12 +36,13 @@ const Featured: FunctionComponent<FeaturedProps> = ({
           height={400}
           width={400}
           layout="fixed"
+          priority
         />
       </div>
       <div className="flex min-w-0 flex-col pr-10 tracking-wide">
-        <h3 className="pb-2 font-medium text-[#99A4B4]">Featured</h3>
+        <h4 className="pb-2 font-medium text-[#99A4B4]">Featured</h4>
         <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
-        <h4 className="pb-8 font-medium text-white">{metadata.description}</h4>
+        <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
         <div className="flex gap-4 text-sm font-medium">
           <button
             className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]"

@@ -2,9 +2,19 @@
   "name": "xNFT Library",
   "short_name": "xNFT",
   "start_url": "/",
-  "display": "alone",
+  "display": "standalone",
   "background_color": "#18181B",
   "theme_color": "#18181B",
-  "orientation": "portrait-primary",
-  "icons": []
+  "icons": [
+    {
+      "src": "/coral.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/coral.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
 }
