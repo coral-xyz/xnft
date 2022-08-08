@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import type { UploadState } from '../pages/publish';
+import type { PublishState } from '../state/atoms/publish';
 import { generateMetadata } from './metadata';
 
 export const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
@@ -20,9 +20,9 @@ export const getScreenshotPath = (xnft: PublicKey, name: string): string =>
  * Includes bundle source, icon image, and submitted screenshots.
  * @exports
  * @param {PublicKey} xnft
- * @param {UploadState} state
+ * @param {PublishState} state
  */
-export async function uploadFiles(xnft: PublicKey, state: UploadState) {
+export async function uploadFiles(xnft: PublicKey, state: PublishState) {
   const files = [state.bundle, state.icon, ...state.screenshots];
   await Promise.all(
     files.map(async (f, idx) => {
@@ -60,10 +60,10 @@ export async function uploadFiles(xnft: PublicKey, state: UploadState) {
  * Uploads the metadata JSON file to S3 for the argued xNFT public key.
  * @exports
  * @param {PublicKey} xnft
- * @param {UploadState} state
+ * @param {PublishState} state
  * @returns {Promise<string>}
  */
-export async function uploadMetadata(xnft: PublicKey, state: UploadState): Promise<string> {
+export async function uploadMetadata(xnft: PublicKey, state: PublishState): Promise<string> {
   const metadata = generateMetadata(xnft, state);
   const fileName = getMetadataPath(xnft);
 

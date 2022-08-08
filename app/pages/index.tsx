@@ -14,7 +14,7 @@ export async function getStaticProps() {
     props: {
       data: JSON.stringify(xnfts)
     },
-    revalidate: 25
+    revalidate: 30
   };
 }
 

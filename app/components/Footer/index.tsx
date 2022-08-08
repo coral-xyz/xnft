@@ -19,7 +19,7 @@ const Footer: FunctionComponent = () => {
           target="_blank"
           rel="noreferrer"
         >
-          <Image alt="twitter-icon" src="/brands/twitter.png" width="20px" height="20px" />
+          <Image alt="twitter-icon" src="/brands/twitter.png" height={20} width={20} />
         </a>
         <a
           href="https://github.com/coral-xyz"
@@ -27,7 +27,7 @@ const Footer: FunctionComponent = () => {
           target="_blank"
           rel="noreferrer"
         >
-          <Image alt="icon-github" src="/brands/github.png" width="20px" height="20px" />
+          <Image alt="icon-github" src="/brands/github.png" height={20} width={20} />
         </a>
       </div>
     </footer>

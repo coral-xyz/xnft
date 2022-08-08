@@ -1,0 +1,10 @@
+{
+  "name": "xNFT Library",
+  "short_name": "xNFT",
+  "start_url": "/",
+  "display": "alone",
+  "background_color": "#18181B",
+  "theme_color": "#18181B",
+  "orientation": "portrait-primary",
+  "icons": []
+}

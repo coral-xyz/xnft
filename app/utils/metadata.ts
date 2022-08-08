@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import type { UploadState } from '../pages/publish';
+import type { PublishState } from '../state/atoms/publish';
 import { BUCKET_URL, getBundlePath, getIconPath, getScreenshotPath } from './s3';
 
 export type Metadata = {
@@ -23,10 +23,10 @@ export type MetadataProperties = {
  * Creates the xNFT metadata JSON object to be uploaded to storage.
  * @exports
  * @param {PublicKey} xnft
- * @param {UploadState} state
+ * @param {PublishState} state
  * @returns {Metadata}
  */
-export const generateMetadata = (xnft: PublicKey, state: UploadState): Metadata => ({
+export const generateMetadata = (xnft: PublicKey, state: PublishState): Metadata => ({
   name: state.title,
   symbol: state.title.slice(0, 3).toUpperCase(),
   description: state.description,
