@@ -124,4 +124,18 @@ describe('xnft', () => {
       }
     });
   });
+
+  describe('the authority of an xnft can update the properties', () => {
+    it('by using the `update_xnft` instruction', async () => {
+      await program.methods
+        .updateXnft({ installVault: null, price: null, tag: { nft: {} } } as any)
+        .accounts({ xnft })
+        .rpc();
+    });
+
+    it('and it will change the xnft program account', async () => {
+      const x = await program.account.xnft2.fetch(xnft);
+      assert.deepEqual(x.tag, { nft: {} });
+    });
+  });
 });

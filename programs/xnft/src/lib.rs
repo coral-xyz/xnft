@@ -102,8 +102,21 @@ pub mod xnft {
     /// Updates the code of an xNFT.
     ///
     /// This is simply a token metadata update cpi.
-    pub fn update_xnft(_ctx: Context<UpdateXnft>) -> Result<()> {
-        // todo
+    pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
+        let xnft = &mut ctx.accounts.xnft;
+
+        if let Some(vault) = updates.install_vault {
+            xnft.install_vault = vault;
+        }
+
+        if let Some(price) = updates.price {
+            xnft.install_price = price;
+        }
+
+        if let Some(t) = updates.tag {
+            xnft.tag = t;
+        }
+
         Ok(())
     }
 
@@ -296,8 +309,14 @@ impl<'info> CreateXnft<'info> {
 }
 
 #[derive(Accounts)]
-pub struct UpdateXnft {
-    // todo
+pub struct UpdateXnft<'info> {
+    #[account(
+        mut,
+        has_one = authority,
+    )]
+    pub xnft: Account<'info, Xnft2>,
+
+    pub authority: Signer<'info>,
 }
 
 #[derive(Accounts)]
@@ -362,11 +381,6 @@ pub struct CreateInstallWithAuthority<'info> {
 }
 
 #[derive(Accounts)]
-pub struct UpdateInstallWithSubscription {
-    // todo
-}
-
-#[derive(Accounts)]
 pub struct DeleteInstall {
     // todo
 }
@@ -420,6 +434,11 @@ pub struct Xnft2 {
     tag: Tag,
 }
 
+impl Xnft2 {
+    pub const LEN: usize =
+        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1 + 1; // TODO:FIXME: needs to be recalculated
+}
+
 #[account]
 pub struct Install {
     authority: Pubkey,
@@ -449,9 +468,11 @@ pub enum Tag {
     None,
 }
 
-impl Xnft2 {
-    pub const LEN: usize =
-        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1 + 1; // TODO:FIXME: needs to be recalculated
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct UpdateParams {
+    install_vault: Option<Pubkey>,
+    price: Option<u64>,
+    tag: Option<Tag>,
 }
 
 #[error_code]
