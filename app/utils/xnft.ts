@@ -62,14 +62,19 @@ export default abstract class xNFT {
    */
   static async create(program: Program<IDLType>, details: PublishState): Promise<PublicKey> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
+
+    const uri = `${BUCKET_URL}/${getMetadataPath(xnft)}`;
+    const sellerFeeBasis = parseFloat(details.royalties) * 100;
+    const price = new BN(parseFloat(details.price) * LAMPORTS_PER_SOL);
+
     await program.methods
       .createXnft(
         details.title,
-        details.title.slice(0, 3).toUpperCase(),
+        '',
         { [details.tag.toLowerCase()]: {} },
-        `${BUCKET_URL}/${getMetadataPath(xnft)}`,
-        parseFloat(details.royalties) * 100,
-        new BN(parseFloat(details.price) * LAMPORTS_PER_SOL),
+        uri,
+        sellerFeeBasis,
+        price,
         program.provider.publicKey!
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
