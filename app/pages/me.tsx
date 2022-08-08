@@ -1,12 +1,9 @@
 import { PencilAltIcon, ViewGridAddIcon } from '@heroicons/react/outline';
-import { BN } from '@project-serum/anchor';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { type FunctionComponent, useState, type ReactNode, useEffect } from 'react';
+import { type FunctionComponent, type ReactNode } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-// import { useInstalledXnfts, useOwnedXnfts } from '../state/hooks/xnfts';
-import xNFT, { XnftWithMetadata } from '../utils/xnft';
+import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
 
 const App = dynamic(() => import('../components/Library/App'));
@@ -39,19 +36,8 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
 };
 
 const MePage: NextPage = () => {
-  // FIXME:
-  // const installed = useInstalledXnfts();
-  // const owned = useOwnedXnfts();
-  const { connected, publicKey } = useWallet();
-  const [installed, setInstalled] = useState<XnftWithMetadata[]>([]);
-  const [owned, setOwned] = useState<XnftWithMetadata[]>([]);
-
-  useEffect(() => {
-    if (connected) {
-      xNFT.getInstalled(publicKey).then(setInstalled).catch(console.error);
-      xNFT.getOwned(publicKey).then(setOwned).catch(console.error);
-    }
-  }, [connected, publicKey]);
+  const { installed } = useInstalledXnftsLoadable();
+  const { owned } = useOwnedXnftsLoadable();
 
   return (
     <Layout contentClassName="flex flex-col gap-20">
@@ -83,7 +69,7 @@ const MePage: NextPage = () => {
                   >
                     <App
                       publicKey={item.publicKey.toBase58()}
-                      price={new BN(item.account.installPrice)}
+                      price={item.account.installPrice.toNumber()}
                       metadata={item.metadata}
                     />
                   </li>
@@ -114,7 +100,7 @@ const MePage: NextPage = () => {
                 <li key={idx}>
                   <App
                     publicKey={item.publicKey.toBase58()}
-                    price={new BN(item.account.installPrice)}
+                    price={item.account.installPrice.toNumber()}
                     metadata={item.metadata}
                   />
                 </li>

@@ -19,6 +19,7 @@ const defaultPublishState = {
 
 /**
  * State to track the inputted values for a new xNFT during the publish flow.
+ * @export
  */
 export const publishState = atom<PublishState>({
   key: 'publishState',

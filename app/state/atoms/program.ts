@@ -8,6 +8,7 @@ import { anchorWalletState, connectionUrl } from './solana';
 /**
  * Program instance to be derived by the calculated connection URL
  * and the connected wallet.
+ * @export
  */
 export const programState = atom<Program<Xnft>>({
   key: 'program',

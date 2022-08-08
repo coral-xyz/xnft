@@ -1,12 +1,12 @@
 import { DownloadIcon } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { type FunctionComponent, memo, useCallback, useMemo } from 'react';
+import { type FunctionComponent, memo, useCallback, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import xNFT from '../../utils/xnft';
+import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
 import { useProgram } from '../../state/atoms/program';
-import { useInstalledXnfts } from '../../state/atoms/xnft';
+import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 type FeaturedProps = {
@@ -112,12 +112,18 @@ const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured
 
   const { connected } = useWallet();
   const program = useProgram();
-  const installed = useInstalledXnfts();
+  const { installed, err } = useInstalledXnftsLoadable();
+  const [isInstalled, setIsInstalled] = useState(false);
 
-  const isInstalled = useMemo(
-    () => installed.find(i => i.publicKey.toBase58() === publicKey) !== undefined,
-    [installed, publicKey]
-  );
+  useEffect(() => {
+    if (!err) {
+      setIsInstalled(
+        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === publicKey) !== undefined
+      );
+    } else {
+      console.error(err);
+    }
+  }, [installed, err, publicKey]);
 
   const handleOpenApp = useCallback(() => {
     // TODO:

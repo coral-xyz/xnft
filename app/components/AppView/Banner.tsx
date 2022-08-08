@@ -1,11 +1,11 @@
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { type FunctionComponent, memo, useMemo, useCallback } from 'react';
+import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
-import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
+import xNFT, { type XnftWithMetadata, type SerializedXnftWithMetadata } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
-import { useInstalledXnfts } from '../../state/atoms/xnft';
+import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;
@@ -14,12 +14,20 @@ type AppBannerProps = {
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();
   const { connected } = useWallet();
-  const installed = useInstalledXnfts();
+  const { installed, err } = useInstalledXnftsLoadable();
+  const [isInstalled, setIsInstalled] = useState(false);
 
-  const isInstalled = useMemo(
-    () => installed.find(i => i.publicKey.toBase58() === xnft.publicKey) !== undefined,
-    [installed, xnft]
-  );
+  useEffect(() => {
+    if (!err) {
+      setIsInstalled(
+        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === xnft.publicKey) !==
+          undefined
+      );
+    } else {
+      console.error(err);
+    }
+  }, [installed, err, xnft]);
+
   const price = useMemo(() => parseInt(xnft.account.installPrice, 16), [xnft.account.installPrice]);
 
   const handleOpenApp = useCallback(() => {

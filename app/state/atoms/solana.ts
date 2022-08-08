@@ -3,6 +3,7 @@ import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
 
 /**
  * RPC connection URL state.
+ * @export
  */
 export const connectionUrl = atom<string>({
   key: 'connectionUrl',
@@ -20,6 +21,7 @@ export function useConnectionUrl(): [string, SetterOrUpdater<string>] {
 
 /**
  * Connected `AnchorWallet` state.
+ * @export
  */
 export const anchorWalletState = atom<AnchorWallet>({
   key: 'anchorWallet',
