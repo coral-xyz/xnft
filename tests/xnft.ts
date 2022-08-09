@@ -1,8 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
+import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import { assert } from 'chai';
-import { IDL, Xnft } from '../target/types/xnft';
+import { Xnft } from '../target/types/xnft';
 
 const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 
@@ -122,6 +123,29 @@ describe('xnft', () => {
         const e = err as anchor.AnchorError;
         assert.strictEqual(e.error.errorCode.code, 'SuspendedInstallation');
       }
+    });
+  });
+
+  describe('the authority of an xnft can update the properties', () => {
+    it('by using the `update_xnft` instruction', async () => {
+      const x = await program.account.xnft2.fetch(xnft);
+      await program.methods
+        .updateXnft({
+          installVault: null,
+          price: null,
+          tag: { nft: {} } as never,
+          uri: 'https://backpack.app'
+        })
+        .accounts({ xnft, masterMetadata: x.masterMetadata, metadataProgram })
+        .rpc();
+    });
+
+    it('and it will change the xnft program account', async () => {
+      const x = await program.account.xnft2.fetch(xnft);
+      assert.deepEqual(x.tag, { nft: {} });
+
+      const m = await Metadata.fromAccountAddress(program.provider.connection, x.masterMetadata);
+      assert.equal('https://backpack.app', m.data.uri.replace(/\0/g, ''));
     });
   });
 });

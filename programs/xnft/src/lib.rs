@@ -1,8 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{self, system_instruction};
-use anchor_spl::metadata::{self, CreateMasterEditionV3, CreateMetadataAccountsV2, Metadata};
+use anchor_spl::metadata::{
+    self, CreateMasterEditionV3, CreateMetadataAccountsV2, Metadata, UpdateMetadataAccountsV2,
+};
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::DataV2;
+use mpl_token_metadata::state::{DataV2, TokenMetadataAccount};
 
 declare_id!("xnftkTnW8pdgkzyGcF8bb3WCMoBeU4r4d8JbKbv6MhW");
 
@@ -47,6 +49,7 @@ pub mod xnft {
         // Create metadata.
         //
         let is_mutable = true;
+        let authority_is_signer = true;
         metadata::create_metadata_accounts_v2(
             ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
                 "xnft".as_bytes(),
@@ -63,6 +66,7 @@ pub mod xnft {
                 uses: None,       //
             },
             is_mutable,
+            authority_is_signer,
         )?;
 
         //
@@ -102,8 +106,48 @@ pub mod xnft {
     /// Updates the code of an xNFT.
     ///
     /// This is simply a token metadata update cpi.
-    pub fn update_xnft(_ctx: Context<UpdateXnft>) -> Result<()> {
-        // todo
+    pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
+        let metadata = ctx.accounts.master_metadata.to_account_info().clone();
+
+        if let Some(u) = updates.uri {
+            let md: mpl_token_metadata::state::Metadata =
+                mpl_token_metadata::state::Metadata::from_account_info(&metadata)?;
+
+            metadata::update_metadata_accounts_v2(
+                ctx.accounts.update_metadata_accounts_ctx().with_signer(&[&[
+                    "xnft".as_bytes(),
+                    ctx.accounts.xnft.master_edition.as_ref(),
+                    &[ctx.accounts.xnft.bump],
+                ]]),
+                None,
+                Some(DataV2 {
+                    name: ctx.accounts.xnft.name.clone(),
+                    symbol: md.data.symbol,
+                    uri: u,
+                    seller_fee_basis_points: md.data.seller_fee_basis_points,
+                    creators: None,   // todo
+                    collection: None, // todo
+                    uses: None,       //
+                }),
+                None,
+                None,
+            )?;
+        }
+
+        let xnft = &mut ctx.accounts.xnft;
+
+        if let Some(vault) = updates.install_vault {
+            xnft.install_vault = vault;
+        }
+
+        if let Some(price) = updates.price {
+            xnft.install_price = price;
+        }
+
+        if let Some(t) = updates.tag {
+            xnft.tag = t;
+        }
+
         Ok(())
     }
 
@@ -296,8 +340,33 @@ impl<'info> CreateXnft<'info> {
 }
 
 #[derive(Accounts)]
-pub struct UpdateXnft {
-    // todo
+pub struct UpdateXnft<'info> {
+    #[account(
+        mut,
+        has_one = authority,
+        has_one = master_metadata,
+    )]
+    pub xnft: Account<'info, Xnft2>,
+
+    /// CHECK: validated with the `has_one` on xnft account.
+    #[account(mut)]
+    pub master_metadata: UncheckedAccount<'info>,
+
+    pub authority: Signer<'info>,
+    pub metadata_program: Program<'info, Metadata>,
+}
+
+impl<'info> UpdateXnft<'info> {
+    pub fn update_metadata_accounts_ctx(
+        &self,
+    ) -> CpiContext<'_, '_, '_, 'info, UpdateMetadataAccountsV2<'info>> {
+        let program = self.metadata_program.to_account_info();
+        let accounts = UpdateMetadataAccountsV2 {
+            metadata: self.master_metadata.to_account_info(),
+            update_authority: self.xnft.to_account_info(),
+        };
+        CpiContext::new(program, accounts)
+    }
 }
 
 #[derive(Accounts)]
@@ -362,11 +431,6 @@ pub struct CreateInstallWithAuthority<'info> {
 }
 
 #[derive(Accounts)]
-pub struct UpdateInstallWithSubscription {
-    // todo
-}
-
-#[derive(Accounts)]
 pub struct DeleteInstall {
     // todo
 }
@@ -420,6 +484,11 @@ pub struct Xnft2 {
     tag: Tag,
 }
 
+impl Xnft2 {
+    pub const LEN: usize =
+        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1 + 1; // TODO:FIXME: needs to be recalculated
+}
+
 #[account]
 pub struct Install {
     authority: Pubkey,
@@ -449,9 +518,12 @@ pub enum Tag {
     None,
 }
 
-impl Xnft2 {
-    pub const LEN: usize =
-        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1 + 1; // TODO:FIXME: needs to be recalculated
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct UpdateParams {
+    install_vault: Option<Pubkey>,
+    price: Option<u64>,
+    tag: Option<Tag>,
+    uri: Option<String>,
 }
 
 #[error_code]
