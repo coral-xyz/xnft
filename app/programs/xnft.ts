@@ -221,8 +221,36 @@ export type Xnft = {
         "",
         "This is simply a token metadata update cpi."
       ],
-      "accounts": [],
-      "args": []
+      "accounts": [
+        {
+          "name": "xnft",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "masterMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "updates",
+          "type": {
+            "defined": "UpdateParams"
+          }
+        }
+      ]
     },
     {
       "name": "createInstall",
@@ -468,6 +496,40 @@ export type Xnft = {
     }
   ],
   "types": [
+    {
+      "name": "UpdateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "installVault",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "price",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "tag",
+            "type": {
+              "option": {
+                "defined": "Tag"
+              }
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "option": "string"
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "Kind",
       "type": {
@@ -735,8 +797,36 @@ export const IDL: Xnft = {
         "",
         "This is simply a token metadata update cpi."
       ],
-      "accounts": [],
-      "args": []
+      "accounts": [
+        {
+          "name": "xnft",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "masterMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "metadataProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "updates",
+          "type": {
+            "defined": "UpdateParams"
+          }
+        }
+      ]
     },
     {
       "name": "createInstall",
@@ -982,6 +1072,40 @@ export const IDL: Xnft = {
     }
   ],
   "types": [
+    {
+      "name": "UpdateParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "installVault",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "price",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "tag",
+            "type": {
+              "option": {
+                "defined": "Tag"
+              }
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "option": "string"
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "Kind",
       "type": {

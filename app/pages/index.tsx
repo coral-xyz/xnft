@@ -27,9 +27,10 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
         <>
           <App
             featured
-            publicKey={xnftList[0].publicKey}
-            price={parseInt(xnftList[0].account.installPrice, 16)}
+            installVault={xnftList[0].account.installVault}
             metadata={xnftList[0].metadata}
+            price={parseInt(xnftList[0].account.installPrice, 16)}
+            xnft={xnftList[0].publicKey}
           />
           <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
         </>

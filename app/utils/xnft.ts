@@ -4,7 +4,8 @@ import {
   BN,
   Program,
   type ProgramAccount,
-  type IdlAccounts
+  type IdlAccounts,
+  type IdlTypes
 } from '@project-serum/anchor';
 import {
   Metadata as MplMetadata,
@@ -16,12 +17,20 @@ import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
 import { BUCKET_URL, getMetadataPath } from './s3';
 
+export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
+
+export const XNFT_TAG_OPTIONS = IDL.types[2].type.variants.map(v => v.name);
+
 export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
 
 export type SerializedXnftWithMetadata = {
   account: {
-    [K in keyof XnftAccount]: XnftAccount[K] extends PublicKey | BN ? string : XnftAccount[K];
+    [K in keyof XnftAccount]: XnftAccount[K] extends never
+      ? never
+      : XnftAccount[K] extends PublicKey | BN
+      ? string
+      : XnftAccount[K];
   };
   publicKey: string;
   metadataAccount: {
@@ -37,9 +46,7 @@ export type XnftWithMetadata = {
   metadata: Metadata;
 };
 
-export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
-
-export const XNFT_TAG_OPTIONS = IDL.types[1].type.variants.map(v => v.name);
+export type UpdateParams = IdlTypes<IDLType>['UpdateParams'];
 
 const anonymousProgram: Program<IDLType> = new Program(
   IDL,
@@ -177,24 +184,39 @@ export default abstract class xNFT {
    * installation for the wallet assigned to the argued program's provider.
    * @static
    * @param {Program<IDLType>} program
-   * @param {string} name
-   * @param {PublicKey} publisher
+   * @param {PublicKey} xnft
    * @param {PublicKey} installVault
    * @memberof xNFT
    */
-  static async install(
-    program: Program<IDLType>,
-    name: string,
-    publisher: PublicKey,
-    installVault: PublicKey
-  ) {
-    const xnft = await deriveXnftAddress(name, publisher);
+  static async install(program: Program<IDLType>, xnft: PublicKey, installVault: PublicKey) {
     await program.methods
       .createInstall()
       .accounts({
         xnft,
         installVault
       })
+      .rpc();
+  }
+
+  /**
+   * Calls the `update_xnft` program instruction to allow users to mutate
+   * the properties and metadata of their xNFTs.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {PublicKey} xnft
+   * @param {PublicKey} metadata
+   * @param {UpdateParams} params
+   * @memberof xNFT
+   */
+  static async update(
+    program: Program<IDLType>,
+    xnft: PublicKey,
+    metadata: PublicKey,
+    params: UpdateParams
+  ) {
+    await program.methods
+      .updateXnft(params)
+      .accounts({ xnft, masterMetadata: metadata, metadataProgram: METADATA_PROGRAM_ID })
       .rpc();
   }
 }

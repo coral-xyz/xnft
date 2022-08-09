@@ -1,4 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -44,7 +45,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
         <div className="flex gap-4 text-sm font-medium">
           <AppPrimaryButton
-            featured
+            large
             disabled={!connected}
             installed={installed}
             price={price}
@@ -98,14 +99,15 @@ const Listing: FunctionComponent<ListingProps> = ({
 };
 
 type AppProps = {
-  publicKey: string;
-  price: number;
-  metadata: Metadata;
   featured?: boolean;
+  installVault: string;
+  metadata: Metadata;
+  price: number;
+  xnft: string;
 };
 
-const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured }) => {
-  const appLink = publicKey ? `/app/${publicKey}` : '';
+const App: FunctionComponent<AppProps> = ({ featured, installVault, metadata, price, xnft }) => {
+  const appLink = xnft ? `/app/${xnft}` : '';
 
   const { connected } = useWallet();
   const program = useProgram();
@@ -115,26 +117,25 @@ const App: FunctionComponent<AppProps> = ({ publicKey, price, metadata, featured
   useEffect(() => {
     if (!err) {
       setIsInstalled(
-        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === publicKey) !== undefined
+        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === xnft) !== undefined
       );
     } else {
       console.error(err);
     }
-  }, [installed, err, publicKey]);
+  }, [installed, err, xnft]);
 
   const handleOpenApp = useCallback(() => {
     // TODO:
-  }, []);
+    alert(`OPEN ${xnft}`);
+  }, [xnft]);
 
   const handleInstall = useCallback(async () => {
     try {
-      const x = await program.account.xnft2.fetch(publicKey);
-      console.log(x.totalInstalls.toNumber());
-      await xNFT.install(program, x.name, x.publisher, x.installVault);
+      await xNFT.install(program, new PublicKey(xnft), new PublicKey(installVault));
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [publicKey, program]);
+  }, [installVault, program, xnft]);
 
   return featured ? (
     <Featured

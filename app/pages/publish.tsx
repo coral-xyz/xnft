@@ -69,9 +69,9 @@ const PublishPage: NextPage = () => {
    * publishing input flow when the route changes.
    */
   useEffect(() => {
-    router.events.on('routeChangeStart', resetPublishState);
+    router.events.on('routeChangeComplete', resetPublishState);
     return () => {
-      router.events.off('routeChangeStart', resetPublishState);
+      router.events.off('routeChangeComplete', resetPublishState);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetPublishState]);

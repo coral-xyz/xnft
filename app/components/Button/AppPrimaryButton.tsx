@@ -5,8 +5,8 @@ import { type FunctionComponent, memo, useMemo } from 'react';
 type AppPrimaryButtonProps = {
   className?: string;
   disabled?: boolean;
-  featured?: boolean;
   installed?: boolean;
+  large?: boolean;
   onClick: () => void;
   price: number;
 };
@@ -14,8 +14,8 @@ type AppPrimaryButtonProps = {
 const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
   className,
   disabled,
-  featured,
   installed,
+  large,
   onClick,
   price
 }) => {
@@ -25,8 +25,8 @@ const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
   );
 
   const classes = useMemo(
-    () => (featured ? 'px-4 rounded-md' : 'px-3 rounded text-xs font-medium tracking-wide'),
-    [featured]
+    () => (large ? 'px-4 rounded-md' : 'px-3 rounded text-xs font-medium tracking-wide'),
+    [large]
   );
 
   return (

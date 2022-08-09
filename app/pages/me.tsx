@@ -68,9 +68,10 @@ const MePage: NextPage = () => {
                     className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
                   >
                     <App
-                      publicKey={item.publicKey.toBase58()}
-                      price={item.account.installPrice.toNumber()}
+                      installVault={item.account.installVault.toBase58()}
                       metadata={item.metadata}
+                      price={item.account.installPrice.toNumber()}
+                      xnft={item.publicKey.toBase58()}
                     />
                   </li>
                 ))}
@@ -99,9 +100,10 @@ const MePage: NextPage = () => {
               {owned.map((item, idx) => (
                 <li key={idx}>
                   <App
-                    publicKey={item.publicKey.toBase58()}
-                    price={item.account.installPrice.toNumber()}
+                    installVault={item.account.installVault.toBase58()}
                     metadata={item.metadata}
+                    price={item.account.installPrice.toNumber()}
+                    xnft={item.publicKey.toBase58()}
                   />
                 </li>
               ))}
