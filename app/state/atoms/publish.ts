@@ -3,6 +3,9 @@ import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 
 export type PublishState = typeof defaultPublishState;
 
+export const priceRx = /^\d*(\.\d{0,5})?$/;
+export const royaltyRx = /^\d*(\.\d{0,2})?$/;
+
 const defaultPublishState = {
   title: '',
   description: '',

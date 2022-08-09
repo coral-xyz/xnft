@@ -25,13 +25,7 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
     <Layout contentClassName="flex flex-col gap-12">
       {xnftList.length > 0 && (
         <>
-          <App
-            featured
-            installVault={xnftList[0].account.installVault}
-            metadata={xnftList[0].metadata}
-            price={parseInt(xnftList[0].account.installPrice, 16)}
-            xnft={xnftList[0].publicKey}
-          />
+          <App featured price={parseInt(xnftList[0].account.installPrice, 16)} xnft={xnftList[0]} />
           <CategoryPreview className="pb-14" title="Popular" xnfts={xnftList} />
         </>
       )}

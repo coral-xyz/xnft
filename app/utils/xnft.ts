@@ -184,18 +184,35 @@ export default abstract class xNFT {
    * installation for the wallet assigned to the argued program's provider.
    * @static
    * @param {Program<IDLType>} program
-   * @param {PublicKey} xnft
-   * @param {PublicKey} installVault
+   * @param {(XnftWithMetadata | SerializedXnftWithMetadata)} xnft
    * @memberof xNFT
    */
-  static async install(program: Program<IDLType>, xnft: PublicKey, installVault: PublicKey) {
+  static async install(
+    program: Program<IDLType>,
+    xnft: XnftWithMetadata | SerializedXnftWithMetadata
+  ) {
     await program.methods
       .createInstall()
       .accounts({
-        xnft,
-        installVault
+        xnft: new PublicKey(xnft.publicKey),
+        installVault: new PublicKey(xnft.account.installVault)
       })
       .rpc();
+  }
+
+  /**
+   * Returns the select option valid name for the argued tag enum object.
+   * @static
+   * @param {Partial<{ [T: string]: {} }>} t
+   * @returns {string}
+   * @memberof xNFT
+   */
+  static tagName(t: Partial<{ [T: string]: {} }>): string {
+    for (const o of XNFT_TAG_OPTIONS) {
+      if (Object.hasOwn(t, o.toLowerCase())) {
+        return o;
+      }
+    }
   }
 
   /**

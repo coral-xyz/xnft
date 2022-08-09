@@ -12,7 +12,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   }, [setNextEnabled]);
 
   return (
-    <div className="flex max-w-6xl flex-col gap-5 divide-y divide-[#393C43] py-10">
+    <section className="flex max-w-6xl flex-col gap-5 divide-y divide-[#393C43] py-10">
       <div className="flex justify-center gap-6 px-52">
         {/* App Icon */}
         <Image
@@ -58,7 +58,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           ))}
         </ul>
       </div>
-    </div>
+    </section>
   );
 };
 

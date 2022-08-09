@@ -550,6 +550,9 @@ export type Xnft = {
         "kind": "enum",
         "variants": [
           {
+            "name": "None"
+          },
+          {
             "name": "Defi"
           },
           {
@@ -557,9 +560,6 @@ export type Xnft = {
           },
           {
             "name": "Nft"
-          },
-          {
-            "name": "None"
           }
         ]
       }
@@ -1126,6 +1126,9 @@ export const IDL: Xnft = {
         "kind": "enum",
         "variants": [
           {
+            "name": "None"
+          },
+          {
             "name": "Defi"
           },
           {
@@ -1133,9 +1136,6 @@ export const IDL: Xnft = {
           },
           {
             "name": "Nft"
-          },
-          {
-            "name": "None"
           }
         ]
       }

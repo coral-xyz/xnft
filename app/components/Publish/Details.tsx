@@ -3,16 +3,13 @@ import dynamic from 'next/dynamic';
 import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish } from '../../state/atoms/publish';
+import { priceRx, royaltyRx, usePublish } from '../../state/atoms/publish';
 import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import { inputClasses } from '../Inputs/Input';
 
 const Input = dynamic(() => import('../Inputs/Input'));
 const InputWIthSuffix = dynamic(() => import('../Inputs/InputWIthSuffix'));
 const SupplySelect = dynamic(() => import('./SupplySelect'));
-
-const priceRx = /^\d*(\.\d{0,5})?$/;
-const royaltyRx = /^\d*(\.\d{0,2})?$/;
 
 function getNameList(screenshots: File[]): string {
   return screenshots.map(s => s.name).join(', ');
@@ -55,7 +52,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   }, [publishState, setNextEnabled]);
 
   return (
-    <div className="flex flex-col gap-4 px-16 py-14">
+    <section className="flex flex-col gap-4 px-16 py-14">
       {/* Title */}
       <div>
         <label htmlFor="title" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
@@ -93,6 +90,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           id="publisher"
           name="publisher"
           type="text"
+          spellCheck={false}
           placeholder="3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3"
           value={publishState.publisher}
           onChange={e => setPublishState(prev => ({ ...prev, publisher: e.target.value }))}
@@ -253,7 +251,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           </div>
         </label>
       </div>
-    </div>
+    </section>
   );
 };
 

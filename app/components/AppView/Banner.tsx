@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -37,12 +36,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
 
   const handleInstall = useCallback(async () => {
     try {
-      await xNFT.install(
-        program,
-        xnft.metadata.name,
-        new PublicKey(xnft.account.publisher),
-        new PublicKey(xnft.account.installVault)
-      );
+      await xNFT.install(program, xnft);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }

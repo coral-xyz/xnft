@@ -1,9 +1,8 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { type FunctionComponent, memo, useCallback, useState, useEffect } from 'react';
+import { type FunctionComponent, memo, useCallback, useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
-import type { Metadata } from '../../utils/metadata';
+import xNFT, { type SerializedXnftWithMetadata, type XnftWithMetadata } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 
@@ -13,27 +12,19 @@ const Profile = dynamic(() => import('./Profile'));
 
 type AppProps = {
   featured?: boolean;
-  installVault: string;
-  metadata: Metadata;
   price: number;
   profile?: boolean;
-  xnft: string;
+  xnft: XnftWithMetadata | SerializedXnftWithMetadata;
 };
 
-const App: FunctionComponent<AppProps> = ({
-  featured,
-  installVault,
-  metadata,
-  price,
-  profile,
-  xnft
-}) => {
-  const appLink = xnft ? `/app/${xnft}` : '';
-
+const App: FunctionComponent<AppProps> = ({ featured, price, profile, xnft }) => {
   const { connected } = useWallet();
   const program = useProgram();
   const { installed, err } = useInstalledXnftsLoadable();
   const [isInstalled, setIsInstalled] = useState(false);
+
+  const pubkey = useMemo(() => new PublicKey(xnft.publicKey), [xnft]);
+  const appLink = useMemo(() => `/app/${pubkey.toBase58()}`, [pubkey]);
 
   /**
    * Effect hook to mark whether the public key of the prop provided
@@ -42,12 +33,13 @@ const App: FunctionComponent<AppProps> = ({
   useEffect(() => {
     if (!err) {
       setIsInstalled(
-        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === xnft) !== undefined
+        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === pubkey.toBase58()) !==
+          undefined
       );
     } else {
       console.error(err);
     }
-  }, [installed, err, xnft]);
+  }, [installed, err, pubkey]);
 
   /**
    * Memoized function for opening the xNFT app in Backpack if
@@ -55,7 +47,7 @@ const App: FunctionComponent<AppProps> = ({
    */
   const handleOpenApp = useCallback(() => {
     // TODO:
-    alert(`OPEN ${xnft}`);
+    alert(`OPEN ${pubkey.toBase58()}`);
   }, [xnft]);
 
   /**
@@ -64,29 +56,29 @@ const App: FunctionComponent<AppProps> = ({
    */
   const handleInstall = useCallback(async () => {
     try {
-      await xNFT.install(program, new PublicKey(xnft), new PublicKey(installVault));
+      await xNFT.install(program, xnft);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [installVault, program, xnft]);
+  }, [program, xnft]);
 
   return featured ? (
     <Featured
       connected={connected}
       installed={isInstalled}
       price={price}
-      metadata={metadata}
+      metadata={xnft.metadata}
       link={appLink}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
     />
   ) : profile ? (
-    <Profile link={appLink} metadata={metadata} onOpen={handleOpenApp} />
+    <Profile link={appLink} onOpen={handleOpenApp} xnft={xnft as XnftWithMetadata} />
   ) : (
     <Listing
       connected={connected}
       installed={isInstalled}
       price={price}
-      metadata={metadata}
+      metadata={xnft.metadata}
       link={appLink}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
     />

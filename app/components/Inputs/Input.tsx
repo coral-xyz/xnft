@@ -8,7 +8,7 @@ import {
 } from 'react';
 
 export const inputClasses = `w-full rounded-md border-[#18181B] bg-[#18181B] text-sm text-[#E5E7EB]
-  placeholder:text-[#393C43] focus:border-[#F66C5E] focus:ring-0`;
+  placeholder:text-[#393C43] focus:border-[#F66C5E] focus:ring-0 mt-1`;
 
 export type InputProps = {
   className?: string;
@@ -18,6 +18,7 @@ export type InputProps = {
   name?: string;
   placeholder?: string;
   rows?: number;
+  spellCheck?: boolean;
   type?: HTMLInputTypeAttribute;
   value: string | number;
 };
@@ -30,6 +31,7 @@ const Input: FunctionComponent<InputProps> = ({
   name,
   placeholder,
   rows,
+  spellCheck,
   type,
   value
 }) => {
@@ -47,6 +49,7 @@ const Input: FunctionComponent<InputProps> = ({
       className={`${inputClasses} resize-none ${className ?? ''}`}
       id={id}
       name={name}
+      spellCheck={spellCheck}
       rows={rows}
       value={value}
       onKeyDown={forbiddenChars ? blockForbiddenChars : undefined}
@@ -57,6 +60,7 @@ const Input: FunctionComponent<InputProps> = ({
       className={`${inputClasses} ${className ?? ''}`}
       id={id}
       name={name}
+      spellCheck={spellCheck}
       type={type}
       placeholder={placeholder}
       value={value}

@@ -1,12 +1,14 @@
 import { PencilAltIcon, ViewGridAddIcon } from '@heroicons/react/outline';
-import { type FunctionComponent, type ReactNode } from 'react';
+import { useCallback, type FunctionComponent, type ReactNode } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
+import { useEditModal } from '../state/atoms/edit';
 
 const App = dynamic(() => import('../components/App'));
+const EditModal = dynamic(() => import('../components/Modal/EditModal'));
 
 type PlaceholderProps = {
   buttonIcon: ReactNode;
@@ -38,78 +40,76 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
 const MePage: NextPage = () => {
   const { installed } = useInstalledXnftsLoadable();
   const { owned } = useOwnedXnftsLoadable();
+  const [editXnft, setEditingXnft] = useEditModal();
+
+  /**
+   * Memoized function to close the modal when the user clicks.
+   */
+  const handleModalClose = useCallback(() => setEditingXnft(undefined), [setEditingXnft]);
 
   return (
-    <Layout contentClassName="flex flex-col gap-20">
-      <section className="flex flex-col">
-        <div className="pt-6 pb-20 text-center text-white">
-          <h1 className="text-6xl font-extrabold tracking-wide">My xNFTs</h1>
-        </div>
+    <>
+      <Layout contentClassName="flex flex-col gap-20">
+        <section className="flex flex-col">
+          <div className="pt-6 pb-20 text-center text-white">
+            <h1 className="text-6xl font-extrabold tracking-wide">My xNFTs</h1>
+          </div>
 
-        {/* Installed xNFTs Apps */}
-        <div className="flex flex-col gap-8">
-          <h2 className="text-3xl font-extrabold tracking-wide text-white">Downloaded</h2>
-          {installed.length === 0 ? (
+          {/* Installed xNFTs Apps */}
+          <div className="flex flex-col gap-8">
+            <h2 className="text-3xl font-extrabold tracking-wide text-white">Downloaded</h2>
+            {installed.length === 0 ? (
+              <Placeholder
+                buttonHref="/"
+                buttonText="Browse the Library"
+                buttonIcon={<ViewGridAddIcon className="h-6 w-6" />}
+                subtitle="Find xNFTs in the decentralized library."
+              />
+            ) : (
+              <div className="flex w-full flex-col justify-center">
+                <ul
+                  role="list"
+                  className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                  {installed.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
+                    >
+                      <App profile price={item.account.installPrice.toNumber()} xnft={item} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Published xNFTs Apps */}
+        <section className="flex flex-col gap-8">
+          <h2 className="text-3xl font-extrabold tracking-wide text-white">Published</h2>
+          {owned.length === 0 ? (
             <Placeholder
-              buttonHref="/"
-              buttonText="Browse the Library"
-              buttonIcon={<ViewGridAddIcon className="h-6 w-6" />}
-              subtitle="Find xNFTs in the decentralized library."
+              buttonHref="/publish"
+              buttonText="Publish new xNFT"
+              buttonIcon={<PencilAltIcon className="h-6 w-6" />}
+              subtitle="Get started by publishing your app on the decentralized xNFT library."
             />
           ) : (
             <div className="flex w-full flex-col justify-center">
-              <ul
-                role="list"
-                className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
-              >
-                {installed.map((item, idx) => (
-                  <li
-                    key={idx}
-                    className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
-                  >
-                    <App
-                      installVault={item.account.installVault.toBase58()}
-                      metadata={item.metadata}
-                      price={item.account.installPrice.toNumber()}
-                      xnft={item.publicKey.toBase58()}
-                    />
+              <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
+                {owned.map((item, idx) => (
+                  <li key={idx}>
+                    <App profile price={item.account.installPrice.toNumber()} xnft={item} />
                   </li>
                 ))}
               </ul>
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Published xNFTs Apps */}
-      <section className="flex flex-col gap-8">
-        <h2 className="text-3xl font-extrabold tracking-wide text-white">Published</h2>
-        {owned.length === 0 ? (
-          <Placeholder
-            buttonHref="/publish"
-            buttonText="Publish new xNFT"
-            buttonIcon={<PencilAltIcon className="h-6 w-6" />}
-            subtitle="Get started by publishing your app on the decentralized xNFT library."
-          />
-        ) : (
-          <div className="flex w-full flex-col justify-center">
-            <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
-              {owned.map((item, idx) => (
-                <li key={idx}>
-                  <App
-                    profile
-                    installVault={item.account.installVault.toBase58()}
-                    metadata={item.metadata}
-                    price={item.account.installPrice.toNumber()}
-                    xnft={item.publicKey.toBase58()}
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </section>
-    </Layout>
+        </section>
+      </Layout>
+      <EditModal open={editXnft !== undefined} onClose={handleModalClose} xnft={editXnft} />
+    </>
   );
 };
 

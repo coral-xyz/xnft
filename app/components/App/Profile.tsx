@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { type FunctionComponent, memo, type ReactNode } from 'react';
-import { Metadata } from '../../utils/metadata';
+import { type FunctionComponent, memo, type ReactNode, useCallback } from 'react';
+import { useEditModal } from '../../state/atoms/edit';
+import type { XnftWithMetadata } from '../../utils/xnft';
 
 type MetaButtonProps = {
   children?: ReactNode;
@@ -22,12 +23,16 @@ const MetaButton: FunctionComponent<MetaButtonProps> = ({ children, onClick }) =
 
 type ProfileProps = {
   link: string;
-  metadata: Metadata;
   onOpen: () => void;
+  xnft: XnftWithMetadata;
 };
 
-const Profile: FunctionComponent<ProfileProps> = ({ link, metadata, onOpen }) => {
+const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, xnft }) => {
   const router = useRouter();
+  const [_, setEditXnft] = useEditModal();
+
+  const handleClickDetails = useCallback(() => router.push(link), [link, router]);
+  const handleClickEdit = useCallback(() => setEditXnft(xnft), [setEditXnft]);
 
   return (
     <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">
@@ -35,19 +40,21 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, metadata, onOpen }) =>
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={metadata.properties.icon}
+          src={xnft.metadata.properties.icon}
           height={64}
           width={64}
           layout="fixed"
         />
       </Link>
       <div className="pt-2">
-        <div className="text-lg font-bold tracking-wide text-white">{metadata.name}</div>
-        <div className="truncate text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
+        <div className="text-lg font-bold tracking-wide text-white">{xnft.metadata.name}</div>
+        <div className="truncate text-sm tracking-wide text-[#FAFAFA]">
+          {xnft.metadata.description}
+        </div>
         <div className="mt-4 flex gap-3">
           <MetaButton onClick={onOpen}>Open</MetaButton>
-          <MetaButton onClick={() => router.push(link)}>Details</MetaButton> {/* FIXME: */}
-          <MetaButton onClick={() => {}}>Edit</MetaButton>
+          <MetaButton onClick={handleClickDetails}>Details</MetaButton> {/* FIXME: */}
+          <MetaButton onClick={handleClickEdit}>Edit</MetaButton>
         </div>
       </div>
     </div>

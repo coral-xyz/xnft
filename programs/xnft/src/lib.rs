@@ -512,10 +512,10 @@ pub enum Kind {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub enum Tag {
+    None,
     Defi,
     Game,
     Nft,
-    None,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize)]

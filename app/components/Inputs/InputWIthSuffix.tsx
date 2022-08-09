@@ -8,7 +8,7 @@ type InputWithSuffixProps = InputProps & {
 const InputWithSuffix: FunctionComponent<InputWithSuffixProps> = ({ suffix, ...rest }) => {
   return (
     <label className="relative block">
-      <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-sm text-[#393C43]">
+      <span className="absolute inset-y-0 right-0 mt-1 flex items-center pr-2 text-sm text-[#393C43]">
         {suffix}
       </span>
       <Input {...rest} />
