@@ -102,7 +102,6 @@ export default abstract class xNFT {
    */
   static async getAll(): Promise<XnftWithMetadata[]> {
     const xnfts = await anonymousProgram.account.xnft2.all();
-
     const response: XnftWithMetadata[] = [];
 
     for await (const x of xnfts) {
@@ -209,13 +208,7 @@ async function transformWithMetadata(
     xnft.masterMetadata
   );
 
-  // FIXME: remove once new program is deploy
-  const uri = xnft.name.startsWith('Sample')
-    ? 'https://xnfts-dev.s3.us-west-2.amazonaws.com/Adn3ukJZmxJWj6D32wMGsKYMtJ3U7LqCMuSpHbSMbuFf/metadata.json'
-    : metadataAccount.data.uri;
-
-  // FIXME:
-  const res = await fetch(uri, {
+  const res = await fetch(metadataAccount.data.uri, {
     timeout: 3000
   } as RequestInit);
   const metadata = await res.json();

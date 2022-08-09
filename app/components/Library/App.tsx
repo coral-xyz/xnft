@@ -1,4 +1,3 @@
-import { DownloadIcon } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { type FunctionComponent, memo, useCallback, useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -7,7 +6,7 @@ import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 import type { Metadata } from '../../utils/metadata';
 import { useProgram } from '../../state/atoms/program';
 import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import AppPrimaryButton from '../Button/AppPrimaryButton';
 
 type FeaturedProps = {
   connected?: boolean;
@@ -44,14 +43,13 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
         <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
         <div className="flex gap-4 text-sm font-medium">
-          <button
-            className="flex items-center gap-2.5 rounded-md bg-white py-2 px-4 text-[#374151]"
-            onClick={onButtonClick}
+          <AppPrimaryButton
+            featured
             disabled={!connected}
-          >
-            {installed ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`}
-            {!installed && <DownloadIcon height={16} />}
-          </button>
+            installed={installed}
+            price={price}
+            onClick={onButtonClick}
+          />
           <Link href={link}>
             <button className="rounded-md bg-[#52525B] py-2 px-4 text-[#D4D4D8]">Explore</button>
           </Link>
@@ -88,14 +86,12 @@ const Listing: FunctionComponent<ListingProps> = ({
         <div className="truncate text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
       </div>
       <div className="my-auto">
-        <button
-          className="flex items-center gap-2.5 rounded bg-white py-2 px-3 text-xs font-medium tracking-wide text-[#374151]"
-          onClick={onButtonClick}
+        <AppPrimaryButton
           disabled={!connected}
-        >
-          {installed ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`}
-          {!installed && <DownloadIcon height={16} />}
-        </button>
+          installed={installed}
+          price={price}
+          onClick={onButtonClick}
+        />
       </div>
     </div>
   );

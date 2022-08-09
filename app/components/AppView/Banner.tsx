@@ -1,4 +1,4 @@
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -6,6 +6,7 @@ import Image from 'next/image';
 import xNFT, { type XnftWithMetadata, type SerializedXnftWithMetadata } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import AppPrimaryButton from '../Button/AppPrimaryButton';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;
@@ -68,13 +69,13 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}
         </div>
-        <button
-          className="rounded-md bg-[#4F46E5] px-4 py-2.5 font-medium tracking-wide text-white"
-          onClick={isInstalled ? handleOpenApp : handleInstall}
+        <AppPrimaryButton
+          className="bg-[#4F46E5] text-white"
           disabled={!connected}
-        >
-          {isInstalled ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`}
-        </button>
+          installed={isInstalled}
+          price={price}
+          onClick={isInstalled ? handleOpenApp : handleInstall}
+        />
       </div>
     </section>
   );
