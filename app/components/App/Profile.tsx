@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { type FunctionComponent, memo, type ReactNode, useCallback } from 'react';
-import { useEditModal } from '../../state/atoms/edit';
+import { useXnftFocus } from '../../state/atoms/edit';
 import type { XnftWithMetadata } from '../../utils/xnft';
 
 type MetaButtonProps = {
@@ -29,10 +29,10 @@ type ProfileProps = {
 
 const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, xnft }) => {
   const router = useRouter();
-  const [_, setEditXnft] = useEditModal();
+  const [_, setFocused] = useXnftFocus();
 
   const handleClickDetails = useCallback(() => router.push(link), [link, router]);
-  const handleClickEdit = useCallback(() => setEditXnft(xnft), [setEditXnft]);
+  const handleClickEdit = useCallback(() => setFocused(xnft), [setFocused, xnft]);
 
   return (
     <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">

@@ -1,8 +1,8 @@
 import { PencilAltIcon } from '@heroicons/react/solid';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { type FunctionComponent, memo, useState, useMemo } from 'react';
+import { type FunctionComponent, memo, useMemo } from 'react';
+import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
 import { priceRx } from '../../state/atoms/publish';
-import xNFT, { XNFT_TAG_OPTIONS, type XnftWithMetadata } from '../../utils/xnft';
+import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import Modal from './Base';
@@ -10,16 +10,11 @@ import Modal from './Base';
 type EditModalProps = {
   onClose: () => void;
   open: boolean;
-  xnft: XnftWithMetadata;
 };
 
-const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open, xnft }) => {
-  const [edits, setEdits] = useState({
-    installVault: xnft.account.installVault.toBase58(),
-    price: (xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL).toString(),
-    tag: xNFT.tagName(xnft?.account.tag || ''),
-    uri: xnft.metadataAccount.data.uri
-  });
+const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
+  const [xnft] = useXnftFocus();
+  const [edits, setEdits] = useXnftEdits();
 
   /**
    * Memoized option elements for each valid xNFT tag enum variant.
@@ -61,8 +56,9 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open, xnft }) =
             value={edits.price}
             forbiddenChars={['+', '-', 'e']}
             onChange={e => {
-              if (priceRx.test(e.target.value))
+              if (priceRx.test(e.target.value)) {
                 setEdits(prev => ({ ...prev, price: e.target.value }));
+              }
             }}
           />
         </div>

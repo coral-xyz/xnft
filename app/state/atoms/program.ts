@@ -3,7 +3,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { atom, selector, useRecoilValue } from 'recoil';
 import { IDL, type Xnft } from '../../programs/xnft';
 import { XNFT_PROGRAM_ID } from '../../utils/xnft';
-import { anchorWalletState, connectionUrl } from './solana';
+import { anchorWalletState, connectionUrlState } from './solana';
 
 /**
  * Program instance to be derived by the calculated connection URL
@@ -19,7 +19,7 @@ export const programState = atom<Program<Xnft>>({
     get: ({ get }) => {
       const wallet = get(anchorWalletState);
       const provider = new AnchorProvider(
-        new Connection(get(connectionUrl), { commitment: 'confirmed' }),
+        new Connection(get(connectionUrlState), { commitment: 'confirmed' }),
         wallet ?? {
           publicKey: PublicKey.default,
           signTransaction: undefined,

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
-import { useEditModal } from '../state/atoms/edit';
+import { useXnftFocus } from '../state/atoms/edit';
 
 const App = dynamic(() => import('../components/App'));
 const EditModal = dynamic(() => import('../components/Modal/EditModal'));
@@ -40,12 +40,12 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
 const MePage: NextPage = () => {
   const { installed } = useInstalledXnftsLoadable();
   const { owned } = useOwnedXnftsLoadable();
-  const [editXnft, setEditingXnft] = useEditModal();
+  const [focused, setFocused] = useXnftFocus();
 
   /**
    * Memoized function to close the modal when the user clicks.
    */
-  const handleModalClose = useCallback(() => setEditingXnft(undefined), [setEditingXnft]);
+  const handleModalClose = useCallback(() => setFocused(undefined), [setFocused]);
 
   return (
     <>
@@ -108,7 +108,7 @@ const MePage: NextPage = () => {
           )}
         </section>
       </Layout>
-      <EditModal open={editXnft !== undefined} onClose={handleModalClose} xnft={editXnft} />
+      <EditModal open={focused !== undefined} onClose={handleModalClose} />
     </>
   );
 };

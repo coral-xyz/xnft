@@ -48,7 +48,7 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, xnft }) =>
   const handleOpenApp = useCallback(() => {
     // TODO:
     alert(`OPEN ${pubkey.toBase58()}`);
-  }, [xnft]);
+  }, [pubkey]);
 
   /**
    * Memoized function for processing the `create_install` instruction

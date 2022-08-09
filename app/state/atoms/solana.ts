@@ -5,7 +5,7 @@ import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
  * RPC connection URL state.
  * @export
  */
-export const connectionUrl = atom<string>({
+export const connectionUrlState = atom<string>({
   key: 'connectionUrl',
   default: process.env.NEXT_PUBLIC_CONNECTION
 });
@@ -16,7 +16,7 @@ export const connectionUrl = atom<string>({
  * @returns {[string, SetterOrUpdater<string>]}
  */
 export function useConnectionUrl(): [string, SetterOrUpdater<string>] {
-  return useRecoilState(connectionUrl);
+  return useRecoilState(connectionUrlState);
 }
 
 /**
