@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
 
-const App = dynamic(() => import('../components/Library/App'));
+const App = dynamic(() => import('../components/App'));
 
 type PlaceholderProps = {
   buttonIcon: ReactNode;
@@ -93,13 +93,11 @@ const MePage: NextPage = () => {
           />
         ) : (
           <div className="flex w-full flex-col justify-center">
-            <ul
-              role="list"
-              className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
-            >
+            <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
               {owned.map((item, idx) => (
                 <li key={idx}>
                   <App
+                    profile
                     installVault={item.account.installVault.toBase58()}
                     metadata={item.metadata}
                     price={item.account.installPrice.toNumber()}

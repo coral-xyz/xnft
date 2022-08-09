@@ -1,6 +1,6 @@
 import { type FunctionComponent, memo } from 'react';
 import type { SerializedXnftWithMetadata } from '../../utils/xnft';
-import App from './App';
+import App from '../App';
 
 type PreviewProps = {
   className?: string;

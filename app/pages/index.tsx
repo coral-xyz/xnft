@@ -3,8 +3,8 @@ import dynamic from 'next/dynamic';
 import xNFT, { type SerializedXnftWithMetadata, type XnftWithMetadata } from '../utils/xnft';
 import Layout from '../components/Layout';
 
-const App = dynamic(() => import('../components/Library/App'));
-const CategoryPreview = dynamic(() => import('../components/Library/CategoryPreview'));
+const App = dynamic(() => import('../components/App'));
+const CategoryPreview = dynamic(() => import('../components/Category/CategoryPreview'));
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
 
 export async function getStaticProps() {
