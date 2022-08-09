@@ -1,22 +1,18 @@
 import { PhotographIcon } from '@heroicons/react/outline';
-import { type KeyboardEvent, memo, useEffect, type FunctionComponent } from 'react';
+import dynamic from 'next/dynamic';
+import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
 import { usePublish } from '../../state/atoms/publish';
 import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
-import SupplySelect from './SupplySelect';
+import { inputClasses } from '../Inputs/Input';
 
-const inputClasses = `focus:border-[#F66C5E] border-[#18181B] bg-[#18181B]
-  text-[#E5E7EB] w-full rounded-md text-sm focus:ring-0 placeholder:text-[#393C43]`;
+const Input = dynamic(() => import('../Inputs/Input'));
+const InputWIthSuffix = dynamic(() => import('../Inputs/InputWIthSuffix'));
+const SupplySelect = dynamic(() => import('./SupplySelect'));
 
 const priceRx = /^\d*(\.\d{0,5})?$/;
 const royaltyRx = /^\d*(\.\d{0,2})?$/;
-
-function blockSpecialNumericals(e: KeyboardEvent) {
-  if (['+', '-', 'e'].includes(e.key)) {
-    e.preventDefault();
-  }
-}
 
 function getNameList(screenshots: File[]): string {
   return screenshots.map(s => s.name).join(', ');
@@ -53,7 +49,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
       publishState.screenshots
     ];
 
-    if (checks.every(x => x.length > 0) && parseFloat(publishState.royalties) <= 100) {
+    if (checks.every(x => x.length > 0)) {
       setNextEnabled(true);
     }
   }, [publishState, setNextEnabled]);
@@ -65,11 +61,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="title" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Title
         </label>
-        <input
-          required
+        <Input
           id="title"
           name="title"
-          className={inputClasses}
           type="text"
           value={publishState.title}
           onChange={e => setPublishState(prev => ({ ...prev, title: e.target.value }))}
@@ -81,10 +75,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="description" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Description
         </label>
-        <textarea
+        <Input
           id="description"
           name="description"
-          className={`${inputClasses} resize-none`}
           rows={5}
           value={publishState.description}
           onChange={e => setPublishState(prev => ({ ...prev, description: e.target.value }))}
@@ -96,11 +89,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="publisher" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Publisher
         </label>
-        <input
-          required
+        <Input
           id="publisher"
           name="publisher"
-          className={inputClasses}
           type="text"
           placeholder="3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3"
           value={publishState.publisher}
@@ -114,7 +105,6 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           Tag
         </label>
         <select
-          required
           id="tag"
           name="tag"
           className={inputClasses}
@@ -139,10 +129,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="website" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Publisher&apos;s website
         </label>
-        <input
+        <Input
           id="website"
           name="website"
-          className={inputClasses}
           type="url"
           placeholder="https://example.com"
           value={publishState.website}
@@ -155,10 +144,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="supply" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           How many editions would you like to mint?
         </label>
-        <SupplySelect
-          inputClasses={`${inputClasses.replace('border-[#18181B]', 'border-[#393C43]')} mt-4`}
-          value={publishState.supply}
-        />
+        <SupplySelect value={publishState.supply} />
       </div>
 
       {/* Price */}
@@ -166,25 +152,20 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="price" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Price
         </label>
-        <label className="relative block">
-          <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-sm text-[#393C43]">
-            SOL
-          </span>
-          <input
-            required
-            id="price"
-            name="price"
-            type="number"
-            className={`${inputClasses} pr-12 text-right`}
-            placeholder="0"
-            value={publishState.price}
-            onKeyDown={blockSpecialNumericals}
-            onChange={e => {
-              if (priceRx.test(e.target.value))
-                setPublishState(prev => ({ ...prev, price: e.target.value }));
-            }}
-          />
-        </label>
+        <InputWIthSuffix
+          id="price"
+          name="price"
+          type="number"
+          className="pr-12 text-right"
+          suffix="SOL"
+          placeholder="0"
+          value={publishState.price}
+          forbiddenChars={['+', '-', 'e']}
+          onChange={e => {
+            if (priceRx.test(e.target.value))
+              setPublishState(prev => ({ ...prev, price: e.target.value }));
+          }}
+        />
       </div>
 
       {/* Royalties */}
@@ -192,26 +173,23 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <label htmlFor="royalties" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
           Royalties
         </label>
-        <label className="relative block">
-          <span className="absolute inset-y-0 right-0 flex items-center pr-2 text-sm text-[#393C43]">
-            %
-          </span>
-          <input
-            required
-            id="royalties"
-            name="royalties"
-            type="number"
-            pattern="^\d*(\.\d{0,2})?$"
-            className={`${inputClasses} pr-7 text-right`}
-            placeholder="0"
-            value={publishState.royalties}
-            onKeyDown={blockSpecialNumericals}
-            onChange={e => {
-              if (royaltyRx.test(e.target.value))
-                setPublishState(prev => ({ ...prev, royalties: e.target.value }));
-            }}
-          />
-        </label>
+        <InputWIthSuffix
+          id="royalties"
+          name="royalties"
+          type="number"
+          className="pr-7 text-right"
+          suffix="%"
+          placeholder="0"
+          value={publishState.royalties}
+          forbiddenChars={['+', '-', 'e']}
+          onChange={e => {
+            if (
+              royaltyRx.test(e.target.value) &&
+              (parseFloat(e.target.value) <= 100 || e.target.value === '')
+            )
+              setPublishState(prev => ({ ...prev, royalties: e.target.value }));
+          }}
+        />
         <div className="max-w-sm">
           <span className="text-sm text-[#9CA3AF]">
             Royalties are payments earned on every secondary sale and are paid to the mint address

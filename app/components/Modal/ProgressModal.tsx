@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { type FunctionComponent, memo } from 'react';
 import { HashLoader } from 'react-spinners';
-import Modal from '../Modal';
+import Modal from './Base';
 
 export const UPLOAD_STEPS = {
   ix: {
@@ -32,16 +32,16 @@ export const UPLOAD_STEPS = {
 type ProgressModalProps = {
   active: keyof typeof UPLOAD_STEPS;
   error?: Error;
-  open: boolean;
   onClose: () => void;
+  open: boolean;
   pubkey: PublicKey;
 };
 
 const ProgressModal: FunctionComponent<ProgressModalProps> = ({
   active,
   error,
-  open,
   onClose,
+  open,
   pubkey
 }) => {
   const router = useRouter();

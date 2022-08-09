@@ -1,19 +1,13 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import { type KeyboardEvent, type FunctionComponent, useState, memo } from 'react';
+import { type FunctionComponent, useState, memo } from 'react';
 import { usePublish } from '../../state/atoms/publish';
-
-function blockSpecialNumericals(e: KeyboardEvent) {
-  if (['+', '-', 'e', '.'].includes(e.key)) {
-    e.preventDefault();
-  }
-}
+import Input from '../Inputs/Input';
 
 type SupplySelectProps = {
-  inputClasses?: string;
   value: string;
 };
 
-const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, value }) => {
+const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
   const [_, setPublishState] = usePublish();
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
@@ -39,14 +33,14 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ inputClasses, valu
           <span className="flex-1 font-medium">Fixed Supply</span>
           {selected === 'fixed' && <CheckCircleIcon className="h-5 text-[#F66C5E]" />}
         </div>
-        <input
+        <Input
           id="supply"
           name="supply"
+          className="mt-4 !border-[#393C43]"
           type="number"
-          className={inputClasses}
           placeholder="0"
           value={value === 'inf' ? '' : value}
-          onKeyDown={blockSpecialNumericals}
+          forbiddenChars={['+', '-', 'e', '.']}
           onChange={e => setPublishState(prev => ({ ...prev, supply: e.target.value }))}
         />
       </div>

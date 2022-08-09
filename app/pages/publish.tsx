@@ -13,7 +13,7 @@ import {
   useEffect
 } from 'react';
 import { useResetRecoilState } from 'recoil';
-import { UPLOAD_STEPS } from '../components/Publish/ProgressModal';
+import { UPLOAD_STEPS } from '../components/Modal/ProgressModal';
 import { publishState as publishStateAtom } from '../state/atoms/publish';
 import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
@@ -22,7 +22,7 @@ import xNFT from '../utils/xnft';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
-const ProgressModal = dynamic(() => import('../components/Publish/ProgressModal'));
+const ProgressModal = dynamic(() => import('../components/Modal/ProgressModal'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
 export type StepComponentProps = {
