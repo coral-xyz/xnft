@@ -39,7 +39,7 @@ const xnftEditsState = atom({
       const xnft = get(focusXnftState);
       return {
         installVault: xnft ? xnft.account.installVault.toBase58() : '',
-        price: xnft ? xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL : '',
+        price: xnft ? (xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL).toString() : '',
         tag: xNFT.tagName(xnft ? xnft.account.tag : { none: {} }),
         uri: xnft ? xnft.metadataAccount.data.uri : ''
       };

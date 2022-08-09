@@ -1,8 +1,11 @@
 import { PencilAltIcon } from '@heroicons/react/solid';
-import { type FunctionComponent, memo, useMemo } from 'react';
+import { BN } from '@project-serum/anchor';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { type FunctionComponent, memo, useMemo, useCallback } from 'react';
 import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
+import { useProgram } from '../../state/atoms/program';
 import { priceRx } from '../../state/atoms/publish';
-import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
+import xNFT, { XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import Modal from './Base';
@@ -13,7 +16,8 @@ type EditModalProps = {
 };
 
 const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
-  const [xnft] = useXnftFocus();
+  const program = useProgram();
+  const [focused] = useXnftFocus();
   const [edits, setEdits] = useXnftEdits();
 
   /**
@@ -29,12 +33,27 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     []
   );
 
+  const handleUpdate = useCallback(async () => {
+    if (!focused) return;
+
+    try {
+      await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, {
+        installVault: new PublicKey(edits.installVault),
+        price: new BN(parseFloat(edits.price) * LAMPORTS_PER_SOL),
+        tag: { [edits.tag.toLowerCase()]: {} } as never,
+        uri: edits.uri
+      });
+    } catch (err) {
+      console.error(`handleUpdate: ${err}`);
+    }
+  }, [edits, focused, program]);
+
   return (
     <Modal
       title={
         <span className="flex items-center gap-2 border-b border-[#393C43] pb-2">
           <PencilAltIcon height={16} />
-          {xnft?.metadata.name}
+          {focused?.metadata.name}
         </span>
       }
       open={open}
@@ -116,6 +135,15 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
             value={edits.uri}
             onChange={e => setEdits(prev => ({ ...prev, uri: e.target.value }))}
           />
+        </div>
+
+        <div className="mt-6 flex justify-center gap-4">
+          <button className="rounded-md bg-[#3F3F46] px-4 py-2 text-white" onClick={onClose}>
+            Close
+          </button>
+          <button className="rounded-md bg-[#4F46E5] px-4 py-2 text-white" onClick={handleUpdate}>
+            Update
+          </button>
         </div>
       </section>
     </Modal>
