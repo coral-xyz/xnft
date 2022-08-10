@@ -1,6 +1,6 @@
 import { type FunctionComponent, memo } from 'react';
 
-const Placeholder: FunctionComponent = () => {
+const App: FunctionComponent = () => {
   return (
     <div className="mx-auto w-full max-w-sm rounded-xl bg-[#27272A] p-4">
       <div className="flex animate-pulse items-center space-x-4">
@@ -20,4 +20,4 @@ const Placeholder: FunctionComponent = () => {
   );
 };
 
-export default memo(Placeholder);
+export default memo(App);

@@ -19,9 +19,11 @@ import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
 import { uploadFiles, uploadMetadata } from '../utils/s3';
 import xNFT from '../utils/xnft';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
+const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders/Disconnected'));
 const ProgressModal = dynamic(() => import('../components/Modal/ProgressModal'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
@@ -52,6 +54,7 @@ const inputSteps = [
 
 const PublishPage: NextPage = () => {
   const router = useRouter();
+  const { connected } = useWallet();
   const program = useProgram();
   const [publishState, setPublishState] = usePublish();
   const resetPublishState = useResetRecoilState(publishStateAtom);
@@ -136,7 +139,7 @@ const PublishPage: NextPage = () => {
     handlePublish();
   }, [inputStep, handlePublish]);
 
-  return (
+  return connected ? (
     <>
       <div className="flex justify-center">
         <div className={inputStep === inputSteps.length - 1 ? '' : 'inline-block'}>
@@ -194,6 +197,8 @@ const PublishPage: NextPage = () => {
         pubkey={newPubkey}
       />
     </>
+  ) : (
+    <DisconnectedPlaceholder />
   );
 };
 

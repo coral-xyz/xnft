@@ -6,8 +6,10 @@ import dynamic from 'next/dynamic';
 import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
 import { useXnftFocus } from '../state/atoms/edit';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const App = dynamic(() => import('../components/App'));
+const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders/Disconnected'));
 const EditModal = dynamic(() => import('../components/Modal/EditModal'));
 
 type PlaceholderProps = {
@@ -38,6 +40,7 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
 };
 
 const MePage: NextPage = () => {
+  const { connected } = useWallet();
   const { installed } = useInstalledXnftsLoadable();
   const { owned } = useOwnedXnftsLoadable();
   const [focused, setFocused] = useXnftFocus();
@@ -47,7 +50,7 @@ const MePage: NextPage = () => {
    */
   const handleModalClose = useCallback(() => setFocused(undefined), [setFocused]);
 
-  return (
+  return connected ? (
     <>
       <Layout contentClassName="flex flex-col gap-20">
         <section className="flex flex-col">
@@ -121,6 +124,8 @@ const MePage: NextPage = () => {
       </Layout>
       <EditModal open={focused !== undefined} onClose={handleModalClose} />
     </>
+  ) : (
+    <DisconnectedPlaceholder />
   );
 };
 
