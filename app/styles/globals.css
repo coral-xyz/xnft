@@ -6,3 +6,16 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
 	-webkit-appearance: none;
 }
+
+#nprogress .bar {
+  background: #F66C5E !important;
+  height: 2px;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #F66C5E, 0 0 5px #F66C5E !important;
+}
+
+#nprogress .spinner-icon {
+  display: none;
+}

@@ -4,11 +4,18 @@ import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import PlausibleProvider from 'next-plausible';
 import Head from 'next/head';
+import Router from 'next/router';
+import nprogress from 'nprogress';
 import Nav from '../components/Nav';
 import { ContextProvider } from '../state/context/ContextProvider';
 import Footer from '../components/Footer';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
+require('nprogress/nprogress.css');
+
+Router.events.on('routeChangeStart', nprogress.start);
+Router.events.on('routeChangeError', nprogress.done);
+Router.events.on('routeChangeComplete', nprogress.done);
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

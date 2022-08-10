@@ -1,4 +1,4 @@
-import { PencilAltIcon, ViewGridAddIcon } from '@heroicons/react/outline';
+import { PencilIcon, ViewGridAddIcon } from '@heroicons/react/outline';
 import { useCallback, type FunctionComponent, type ReactNode } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -27,7 +27,7 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
       <span className="tracking-wide text-[#9CA3AF]">{props.subtitle}</span>
       <Link
         href={props.buttonHref}
-        className="mx-auto mt-5 flex gap-1 rounded-lg bg-[#0D9488]
+        className="mx-auto mt-5 flex gap-2 rounded-lg bg-[#0D9488]
           py-2 px-3 tracking-wide text-white"
       >
         {props.buttonIcon}
@@ -87,12 +87,23 @@ const MePage: NextPage = () => {
 
         {/* Published xNFTs Apps */}
         <section className="flex flex-col gap-8">
-          <h2 className="text-3xl font-extrabold tracking-wide text-white">Published</h2>
+          <h2 className="flex items-center text-3xl font-extrabold tracking-wide text-white">
+            <span className="flex-1">Published</span>
+            {owned.length > 0 && (
+              <Link
+                href="/publish"
+                className="flex items-center gap-2 rounded-md bg-[#0D9488] py-2 px-3 text-sm font-normal"
+              >
+                <PencilIcon height={12} />
+                Publish New xNFT
+              </Link>
+            )}
+          </h2>
           {owned.length === 0 ? (
             <Placeholder
               buttonHref="/publish"
               buttonText="Publish new xNFT"
-              buttonIcon={<PencilAltIcon className="h-6 w-6" />}
+              buttonIcon={<PencilIcon className="h-6 w-6" />}
               subtitle="Get started by publishing your app on the decentralized xNFT library."
             />
           ) : (
