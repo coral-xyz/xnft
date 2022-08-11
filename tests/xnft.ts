@@ -24,11 +24,12 @@ describe('xnft', () => {
     const name = 'my-xnft';
     const symbol = 'xnft';
     const tag = { defi: {} };
+    const kind = { app: {} };
     const uri =
       'https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json';
     const seller_fee_basis_points = 1;
     const tx = program.methods
-      .createXnft(name, symbol, tag, uri, seller_fee_basis_points, installPrice, installVault)
+      .createXnft(name, symbol, tag, kind, uri, seller_fee_basis_points, installPrice, installVault)
       .accounts({
         metadataProgram
       });

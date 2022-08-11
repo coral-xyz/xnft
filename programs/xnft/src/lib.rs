@@ -26,6 +26,7 @@ pub mod xnft {
         name: String,
         symbol: String,
         tag: Tag,
+        kind: Kind,
         uri: String,
         seller_fee_basis_points: u16,
         install_price: u64,
@@ -91,7 +92,7 @@ pub mod xnft {
         xnft.install_price = install_price;
         xnft.install_vault = install_vault;
         xnft.name = name;
-        xnft.kind = Kind::App;
+        xnft.kind = kind;
         xnft.publisher = ctx.accounts.publisher.key();
         xnft.authority = ctx.accounts.publisher.key();
         xnft.master_edition = ctx.accounts.master_edition.key();
