@@ -1,22 +1,23 @@
 import type { AnchorWallet } from '@solana/wallet-adapter-react';
+import { Connection } from '@solana/web3.js';
 import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
 
 /**
- * RPC connection URL state.
+ * RPC connection object state.
  * @export
  */
-export const connectionUrlState = atom<string>({
-  key: 'connectionUrl',
-  default: process.env.NEXT_PUBLIC_CONNECTION
+export const connectionState = atom<Connection>({
+  key: 'connection',
+  default: new Connection(process.env.NEXT_PUBLIC_CONNECTION, 'confirmed')
 });
 
 /**
  * Custom hook to access and mutate the connection URL recoil atom.
  * @export
- * @returns {[string, SetterOrUpdater<string>]}
+ * @returns {[Connection, SetterOrUpdater<Connection>]}
  */
-export function useConnectionUrl(): [string, SetterOrUpdater<string>] {
-  return useRecoilState(connectionUrlState);
+export function useConnection(): [Connection, SetterOrUpdater<Connection>] {
+  return useRecoilState(connectionState);
 }
 
 /**

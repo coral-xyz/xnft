@@ -25,18 +25,16 @@ function truncatePublicKey(pk: string): string {
 
 export const DisconnectedMenu: FunctionComponent = () => {
   const { setVisible } = useWalletModal();
-  const [installed, setInstalled] = useState(true);
+  const [backpackInstalled, setBackpackInstalled] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setInstalled(Object.hasOwn(window, 'backpack'));
-    }, 500);
+    setTimeout(() => setBackpackInstalled(Object.hasOwn(window, 'backpack')), 500);
   }, []);
 
   return (
     <>
       <Transition
-        show={!installed}
+        show={!backpackInstalled}
         enter="transition-all ease-in-out duration-500"
         enterFrom="transform opacity-0"
         enterTo="transform opacity-100"

@@ -3,17 +3,17 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { BackpackWalletAdapter, PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { type FunctionComponent, type ReactNode, useMemo } from 'react';
 import { useAutoConnect } from '../context/AutoConnectProvider';
-import { useConnectionUrl } from '../atoms/solana';
+import { useConnection } from '../atoms/solana';
 import { AutoConnectProvider } from './AutoConnectProvider';
 
 const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   const { autoConnect } = useAutoConnect();
-  const [endpoint] = useConnectionUrl();
+  const [connection] = useConnection();
 
   const wallets = useMemo(() => [new BackpackWalletAdapter(), new PhantomWalletAdapter()], []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider endpoint={connection.rpcEndpoint}>
       <WalletProvider wallets={wallets} autoConnect={autoConnect}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
