@@ -18,8 +18,10 @@ export const programState = atom<Program<Xnft>>({
     dangerouslyAllowMutability: true,
     get: ({ get }) => {
       const wallet = get(anchorWalletState);
+      const connection = get(connectionState);
+
       const provider = new AnchorProvider(
-        get(connectionState),
+        connection,
         wallet ?? {
           publicKey: PublicKey.default,
           signTransaction: undefined,

@@ -36,7 +36,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           {/* Price */}
           <div>
             <span className="rounded-md bg-[#4F46E5] px-4 py-2 font-medium text-white">
-              {publishState.price === '0.0' ? 'FREE' : publishState.price + ' SOL'}
+              {parseFloat(publishState.price) === 0 ? 'FREE' : publishState.price + ' SOL'}
             </span>
           </div>
         </div>

@@ -72,12 +72,11 @@ const PublishPage: NextPage = () => {
    * publishing input flow when the route changes.
    */
   useEffect(() => {
-    router.events.on('routeChangeComplete', resetPublishState);
+    router.events.on('beforeHistoryChange', resetPublishState);
     return () => {
-      router.events.off('routeChangeComplete', resetPublishState);
+      router.events.off('beforeHistoryChange', resetPublishState);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetPublishState]);
+  }, [router, resetPublishState]);
 
   /**
    * Sets the `publisher` field of the xNFT publish input state
