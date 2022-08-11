@@ -8,6 +8,7 @@ import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
  */
 export const connectionState = atom<Connection>({
   key: 'connection',
+  dangerouslyAllowMutability: true,
   default: new Connection(process.env.NEXT_PUBLIC_CONNECTION, 'confirmed')
 });
 

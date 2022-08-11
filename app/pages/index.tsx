@@ -23,8 +23,10 @@ const HomePage: NextPage<{ data: string }> = ({ data }) => {
   const xnftList: SerializedXnftWithMetadata[] = JSON.parse(data);
   const [auroryIdx, setAuroryIdx] = useState(0);
 
+  // TODO: temporary for aesthetics, should be removed
   useEffect(() => {
-    setAuroryIdx(xnftList.findIndex(x => x.metadata.name === 'Aurory') || 0);
+    const idx = xnftList.findIndex(x => x.metadata.name === 'Aurory');
+    setAuroryIdx(idx === -1 ? 0 : idx);
   }, [xnftList]);
 
   return (

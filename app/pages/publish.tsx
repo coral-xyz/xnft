@@ -72,9 +72,9 @@ const PublishPage: NextPage = () => {
    * publishing input flow when the route changes.
    */
   useEffect(() => {
-    router.events.on('beforeHistoryChange', resetPublishState);
+    router.events.on('hashChangeComplete', resetPublishState);
     return () => {
-      router.events.off('beforeHistoryChange', resetPublishState);
+      router.events.off('hashChangeComplete', resetPublishState);
     };
   }, [router, resetPublishState]);
 
@@ -102,7 +102,7 @@ const PublishPage: NextPage = () => {
     try {
       setModalOpen(true);
 
-      const xnft = await xNFT.create(program, publishState);
+      const [_, xnft] = await xNFT.create(program, publishState);
       setNewPubkey(xnft);
 
       setProcessingStep('files');

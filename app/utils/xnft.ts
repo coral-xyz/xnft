@@ -61,21 +61,24 @@ const anonymousProgram: Program<IDLType> = new Program(
 
 export default abstract class xNFT {
   /**
-   * Call the `create_xnft` instruction on the program to mint.
+   * Creates the `create_xnft` instruction on the program to mint.
    * @static
    * @param {Program<IDLType>} program
    * @param {PublishState} details
-   * @returns {Promise<PublicKey>}
+   * @returns {Promise<[string, PublicKey]>}
    * @memberof xNFT
    */
-  static async create(program: Program<IDLType>, details: PublishState): Promise<PublicKey> {
+  static async create(
+    program: Program<IDLType>,
+    details: PublishState
+  ): Promise<[string, PublicKey]> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
 
     const uri = `${BUCKET_URL}/${getMetadataPath(xnft)}`;
     const sellerFeeBasis = parseFloat(details.royalties) * 100;
     const price = new BN(parseFloat(details.price) * LAMPORTS_PER_SOL);
 
-    await program.methods
+    const tx = await program.methods
       .createXnft(
         details.title,
         '',
@@ -87,8 +90,11 @@ export default abstract class xNFT {
         program.provider.publicKey!
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
-      .rpc();
-    return xnft;
+      .transaction();
+
+    const sig = await program.provider.sendAndConfirm(tx);
+
+    return [sig, xnft];
   }
 
   /**
@@ -182,28 +188,46 @@ export default abstract class xNFT {
   }
 
   /**
-   * Calls the `create_install` program instruction to create an xNFT
+   * Creates the `create_install` program instruction to create an xNFT
    * installation for the wallet assigned to the argued program's provider.
    * @static
    * @param {Program<IDLType>} program
    * @param {(XnftWithMetadata | SerializedXnftWithMetadata)} xnft
+   * @returns {Promise<string>>}
    * @memberof xNFT
    */
   static async install(
     program: Program<IDLType>,
     xnft: XnftWithMetadata | SerializedXnftWithMetadata
-  ) {
-    await program.methods
+  ): Promise<string> {
+    const tx = await program.methods
       .createInstall()
       .accounts({
         xnft: new PublicKey(xnft.publicKey),
         installVault: new PublicKey(xnft.account.installVault)
       })
-      .rpc();
+      .transaction();
+
+    return await program.provider.sendAndConfirm(tx);
   }
 
   /**
-   * Returns the select option valid name for the argued tag enum object.
+   * Returns the selection option valid name for the argued kind enum variant.
+   * @static
+   * @param {Partial<{ [K: string]: {} }>} t
+   * @returns {*}  {string}
+   * @memberof xNFT
+   */
+  static kindName(t: Partial<{ [K: string]: {} }>): string {
+    for (const o of XNFT_KIND_OPTIONS) {
+      if (Object.hasOwn(t, o.toLowerCase())) {
+        return o;
+      }
+    }
+  }
+
+  /**
+   * Returns the select option valid name for the argued tag enum variant.
    * @static
    * @param {Partial<{ [T: string]: {} }>} t
    * @returns {string}
@@ -218,13 +242,14 @@ export default abstract class xNFT {
   }
 
   /**
-   * Calls the `update_xnft` program instruction to allow users to mutate
+   * Creates the `update_xnft` program instruction to allow users to mutate
    * the properties and metadata of their xNFTs.
    * @static
    * @param {Program<IDLType>} program
    * @param {PublicKey} xnft
    * @param {PublicKey} metadata
    * @param {UpdateParams} params
+   * @returns {Promise<string>}
    * @memberof xNFT
    */
   static async update(
@@ -232,11 +257,13 @@ export default abstract class xNFT {
     xnft: PublicKey,
     metadata: PublicKey,
     params: UpdateParams
-  ) {
-    await program.methods
+  ): Promise<string> {
+    const tx = await program.methods
       .updateXnft(params)
       .accounts({ xnft, masterMetadata: metadata, metadataProgram: METADATA_PROGRAM_ID })
-      .rpc();
+      .transaction();
+
+    return await program.provider.sendAndConfirm(tx);
   }
 }
 
