@@ -22,7 +22,7 @@ const Listing: FunctionComponent<ListingProps> = ({
   onButtonClick
 }) => {
   return (
-    <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4">
+    <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
       <Link href={link} className="flex items-center">
         <Image
           className="rounded-lg"

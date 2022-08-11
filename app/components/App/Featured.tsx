@@ -22,7 +22,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
   onButtonClick
 }) => {
   return (
-    <div className="flex items-center gap-14 rounded-2xl bg-[#27272A]">
+    <div className="flex items-center gap-14 rounded-2xl bg-[#27272A] shadow-lg">
       <div className="flex items-center">
         <Image
           className="rounded-l-2xl"
