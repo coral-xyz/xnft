@@ -91,6 +91,7 @@ pub mod xnft {
         xnft.install_price = install_price;
         xnft.install_vault = install_vault;
         xnft.name = name;
+        xnft.kind = Kind::App;
         xnft.publisher = ctx.accounts.publisher.key();
         xnft.authority = ctx.accounts.publisher.key();
         xnft.master_edition = ctx.accounts.master_edition.key();
@@ -506,8 +507,7 @@ impl Install {
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub enum Kind {
-    Table,
-    Image,
+    App,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
