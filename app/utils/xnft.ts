@@ -19,6 +19,7 @@ import { BUCKET_URL, getMetadataPath } from './s3';
 
 export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
 
+export const XNFT_KIND_OPTIONS = IDL.types[1].type.variants.map(v => v.name);
 export const XNFT_TAG_OPTIONS = IDL.types[2].type.variants.map(v => v.name);
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
@@ -79,6 +80,7 @@ export default abstract class xNFT {
         details.title,
         '',
         { [details.tag.toLowerCase()]: {} },
+        { [details.kind.toLowerCase()]: {} },
         uri,
         sellerFeeBasis,
         price,

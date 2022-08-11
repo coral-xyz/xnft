@@ -1,5 +1,5 @@
 import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
-import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
+import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/xnft';
 
 export type PublishState = typeof defaultPublishState;
 
@@ -13,6 +13,7 @@ const defaultPublishState = {
   website: '',
   bundle: {} as File,
   tag: 'None' as typeof XNFT_TAG_OPTIONS[number],
+  kind: 'App' as typeof XNFT_KIND_OPTIONS[number],
   royalties: '',
   price: '',
   supply: 'inf',

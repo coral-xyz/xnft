@@ -197,6 +197,12 @@ export type Xnft = {
           }
         },
         {
+          "name": "kind",
+          "type": {
+            "defined": "Kind"
+          }
+        },
+        {
           "name": "uri",
           "type": "string"
         },
@@ -536,10 +542,7 @@ export type Xnft = {
         "kind": "enum",
         "variants": [
           {
-            "name": "Table"
-          },
-          {
-            "name": "Image"
+            "name": "App"
           }
         ]
       }
@@ -773,6 +776,12 @@ export const IDL: Xnft = {
           }
         },
         {
+          "name": "kind",
+          "type": {
+            "defined": "Kind"
+          }
+        },
+        {
           "name": "uri",
           "type": "string"
         },
@@ -1112,10 +1121,7 @@ export const IDL: Xnft = {
         "kind": "enum",
         "variants": [
           {
-            "name": "Table"
-          },
-          {
-            "name": "Image"
+            "name": "App"
           }
         ]
       }

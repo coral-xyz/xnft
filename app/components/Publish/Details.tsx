@@ -4,7 +4,7 @@ import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
 import { priceRx, royaltyRx, usePublish } from '../../state/atoms/publish';
-import { XNFT_TAG_OPTIONS } from '../../utils/xnft';
+import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import { inputClasses } from '../Inputs/Input';
 
 const Input = dynamic(() => import('../Inputs/Input'));
@@ -95,6 +95,31 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           value={publishState.publisher}
           onChange={e => setPublishState(prev => ({ ...prev, publisher: e.target.value }))}
         />
+      </div>
+
+      {/* Kind */}
+      <div>
+        <label htmlFor="kind" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+          Kind
+        </label>
+        <select
+          id="kind"
+          name="kind"
+          className={inputClasses}
+          value={publishState.kind}
+          onChange={e =>
+            setPublishState(prev => ({
+              ...prev,
+              kind: e.target.value as typeof XNFT_KIND_OPTIONS[number]
+            }))
+          }
+        >
+          {XNFT_KIND_OPTIONS.map((o, idx) => (
+            <option key={idx} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Tag */}
