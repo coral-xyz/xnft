@@ -3,22 +3,19 @@ import dynamic from 'next/dynamic';
 import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { priceRx, royaltyRx, usePublish, validateDetailsInput } from '../../state/atoms/publish';
-import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/xnft';
+import { usePublish, validateDetailsInput } from '../../state/atoms/publish';
+import { ALLOWED_IMAGE_TYPES, PLACEHOLDER_PUBKEY } from '../../utils/constants';
+import { PRICE_RX, ROYALTY_RX, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
 import { inputClasses } from '../Inputs/Input';
 
 const Input = dynamic(() => import('../Inputs/Input'));
 const InputWIthSuffix = dynamic(() => import('../Inputs/InputWIthSuffix'));
 const SupplySelect = dynamic(() => import('./SupplySelect'));
 
-function getNameList(screenshots: File[]): string {
-  return screenshots.map(s => s.name).join(', ');
-}
-
 const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   const [publishState, setPublishState] = usePublish();
-  const iconDrop = useDropzone({ accept: { 'image/*': ['.png', '.jpg', '.jpeg'] }, maxFiles: 1 });
-  const ssDrop = useDropzone({ accept: { 'image/*': ['.png', '.jpg', '.jpeg'] }, multiple: true });
+  const iconDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, maxFiles: 1 });
+  const ssDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, multiple: true });
 
   useEffect(() => {
     if (iconDrop.acceptedFiles.length > 0) {
@@ -78,7 +75,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           name="publisher"
           type="text"
           spellCheck={false}
-          placeholder="3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3"
+          placeholder={PLACEHOLDER_PUBKEY}
           value={publishState.publisher}
           onChange={e => setPublishState(prev => ({ ...prev, publisher: e.target.value }))}
         />
@@ -172,7 +169,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           value={publishState.price}
           forbiddenChars={['+', '-', 'e']}
           onChange={e => {
-            if (priceRx.test(e.target.value))
+            if (PRICE_RX.test(e.target.value))
               setPublishState(prev => ({ ...prev, price: e.target.value }));
           }}
         />
@@ -194,7 +191,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           forbiddenChars={['+', '-', 'e']}
           onChange={e => {
             if (
-              royaltyRx.test(e.target.value) &&
+              ROYALTY_RX.test(e.target.value) &&
               (parseFloat(e.target.value) <= 100 || e.target.value === '')
             )
               setPublishState(prev => ({ ...prev, royalties: e.target.value }));
@@ -249,7 +246,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
                   {publishState.screenshots.length > 0 ? (
-                    getNameList(publishState.screenshots)
+                    publishState.screenshots.map(s => s.name).join(', ')
                   ) : (
                     <>
                       <span className="text-[#F66C5E]">Upload a file(s)</span> or drag and drop

@@ -16,11 +16,7 @@ import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
 import { BUCKET_URL, getMetadataPath } from './s3';
-
-export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
-
-export const XNFT_KIND_OPTIONS = IDL.types[1].type.variants.map(v => v.name);
-export const XNFT_TAG_OPTIONS = IDL.types[2].type.variants.map(v => v.name);
+import { XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];

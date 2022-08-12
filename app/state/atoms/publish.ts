@@ -1,10 +1,7 @@
 import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
-import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/xnft';
+import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
 
 export type PublishState = typeof defaultPublishState;
-
-export const priceRx = /^\d*(\.\d{0,5})?$/;
-export const royaltyRx = /^\d*(\.\d{0,2})?$/;
 
 const defaultPublishState = {
   title: '',

@@ -1,8 +1,5 @@
-// import { useWallet } from '@solana/wallet-adapter-react';
-import { useEffect, useState } from 'react';
 import { selector, useRecoilValueLoadable } from 'recoil';
-import { getCache } from '../../utils/localStorage';
-import xNFT, { type XnftWithMetadata, type SerializedXnftWithMetadata } from '../../utils/xnft';
+import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 import { anchorWalletState } from './solana';
 
 /**
@@ -72,28 +69,5 @@ export function useOwnedXnftsLoadable(): {
     owned: owned.state === 'hasValue' ? owned.contents : [],
     loading: owned.state === 'loading',
     err: owned.state === 'hasError' ? owned.contents : undefined
-  };
-}
-
-/**
- * Custom hook to get the xNFTs that are cached in local storage.
- * @export
- * @returns {{ isLoading: boolean; cachedXNFTs: SerializedXnftWithMetadata[] }}
- */
-export function useCachedXNFTs(): {
-  isLoading: boolean;
-  cachedXNFTs: SerializedXnftWithMetadata[];
-} {
-  const [cachedXNFTs, setCachedXNFTs] = useState<SerializedXnftWithMetadata[]>([]);
-
-  useEffect(() => {
-    if (cachedXNFTs.length === 0) {
-      setCachedXNFTs(getCache('xnfts'));
-    }
-  }, []);
-
-  return {
-    isLoading: cachedXNFTs.length === 0,
-    cachedXNFTs: cachedXNFTs
   };
 }

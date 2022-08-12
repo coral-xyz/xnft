@@ -1,5 +1,6 @@
 import { type FunctionComponent, memo } from 'react';
 import Image from 'next/image';
+import { CORAL_LINKS } from '../../utils/constants';
 
 const Footer: FunctionComponent = () => {
   return (
@@ -7,14 +8,14 @@ const Footer: FunctionComponent = () => {
       <div className="flex flex-col justify-between">
         <p className="text-[#9CA3AF]">
           Built by{' '}
-          <a className="text-white" href="https://coral.community">
+          <a className="text-white" href={CORAL_LINKS.home}>
             Coral
           </a>
         </p>
       </div>
       <div className="flex">
         <a
-          href="https://twitter.com/0xCoral"
+          href={CORAL_LINKS.twitter}
           className="mr-6 flex h-full w-5 flex-col justify-center"
           target="_blank"
           rel="noreferrer"
@@ -28,7 +29,7 @@ const Footer: FunctionComponent = () => {
           />
         </a>
         <a
-          href="https://github.com/coral-xyz"
+          href={CORAL_LINKS.github}
           className="flex w-5 flex-col justify-center"
           target="_blank"
           rel="noreferrer"

@@ -1,8 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import type { PublishState } from '../state/atoms/publish';
+import { S3_BUCKET_URL } from './constants';
 import { generateMetadata } from './metadata';
-
-export const BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
 
 export const getMetadataPath = (xnft: PublicKey): string => `${xnft.toBase58()}/metadata.json`;
 
@@ -89,5 +88,5 @@ export async function uploadMetadata(xnft: PublicKey, state: PublishState): Prom
     body: JSON.stringify(metadata)
   });
 
-  return `${BUCKET_URL}/${fileName}`;
+  return `${S3_BUCKET_URL}/${fileName}`;
 }

@@ -5,8 +5,8 @@ import { type FunctionComponent, memo, useMemo, useCallback, useState } from 're
 import { HashLoader } from 'react-spinners';
 import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
-import { priceRx } from '../../state/atoms/publish';
-import xNFT, { XNFT_TAG_OPTIONS } from '../../utils/xnft';
+import { PLACEHOLDER_PUBKEY, PRICE_RX, XNFT_TAG_OPTIONS } from '../../utils/constants';
+import xNFT from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import Modal from './Base';
@@ -90,7 +90,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
               value={edits.price}
               forbiddenChars={['+', '-', 'e']}
               onChange={e => {
-                if (priceRx.test(e.target.value)) {
+                if (PRICE_RX.test(e.target.value)) {
                   setEdits(prev => ({ ...prev, price: e.target.value }));
                 }
               }}
@@ -110,7 +110,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
               name="installVault"
               type="text"
               spellCheck={false}
-              placeholder="3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3"
+              placeholder={PLACEHOLDER_PUBKEY}
               value={edits.installVault}
               onChange={e => setEdits(prev => ({ ...prev, installVault: e.target.value }))}
             />

@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import type { PublishState } from '../state/atoms/publish';
-import { BUCKET_URL, getBundlePath, getIconPath, getScreenshotPath } from './s3';
+import { S3_BUCKET_URL } from './constants';
+import { getBundlePath, getIconPath, getScreenshotPath } from './s3';
 
 export type Metadata = {
   name: string;
@@ -30,12 +31,12 @@ export const generateMetadata = (xnft: PublicKey, state: PublishState): Metadata
   name: state.title,
   symbol: state.title.slice(0, 3).toUpperCase(),
   description: state.description,
-  image: `${BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
+  image: `${S3_BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
   external_url: state.website,
   properties: {
-    bundle: `${BUCKET_URL}/${getBundlePath(xnft, state.bundle.name)}`,
-    icon: `${BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
-    screenshots: state.screenshots.map(s => `${BUCKET_URL}/${getScreenshotPath(xnft, s.name)}`),
+    bundle: `${S3_BUCKET_URL}/${getBundlePath(xnft, state.bundle.name)}`,
+    icon: `${S3_BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
+    screenshots: state.screenshots.map(s => `${S3_BUCKET_URL}/${getScreenshotPath(xnft, s.name)}`),
     twitter: '', // TODO:
     discord: '' // TODO:
   }

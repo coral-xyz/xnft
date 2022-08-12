@@ -2,7 +2,7 @@ import { AnchorProvider, Program } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { atom, selector, useRecoilValue } from 'recoil';
 import { IDL, type Xnft } from '../../programs/xnft';
-import { XNFT_PROGRAM_ID } from '../../utils/xnft';
+import { XNFT_PROGRAM_ID } from '../../utils/constants';
 import { anchorWalletState, connectionState } from './solana';
 
 /**
