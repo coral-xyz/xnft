@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { priceRx, royaltyRx, usePublish } from '../../state/atoms/publish';
+import { priceRx, royaltyRx, usePublish, validateDetailsInput } from '../../state/atoms/publish';
 import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/xnft';
 import { inputClasses } from '../Inputs/Input';
 
@@ -33,20 +33,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   }, [ssDrop.acceptedFiles, setPublishState]);
 
   useEffect(() => {
-    const checks = [
-      publishState.title,
-      publishState.description,
-      publishState.publisher,
-      publishState.tag,
-      publishState.website,
-      publishState.supply,
-      publishState.price,
-      publishState.royalties,
-      publishState.icon.name ?? '',
-      publishState.screenshots
-    ];
-
-    if (checks.every(x => x.length > 0)) {
+    if (validateDetailsInput(publishState)) {
       setNextEnabled(true);
     }
   }, [publishState, setNextEnabled]);

@@ -15,13 +15,15 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
     <section className="flex max-w-6xl flex-col gap-5 divide-y divide-[#393C43] py-10">
       <div className="flex justify-center gap-6 px-52">
         {/* App Icon */}
-        <Image
-          className="rounded-xl"
-          alt="app-icon"
-          src={URL.createObjectURL(publishState.icon)}
-          height={224}
-          width={224}
-        />
+        {publishState.icon.name && (
+          <Image
+            className="rounded-xl"
+            alt="app-icon"
+            src={URL.createObjectURL(publishState.icon)}
+            height={224}
+            width={224}
+          />
+        )}
 
         <div className="flex flex-col gap-4">
           {/* Title and verification status */}
@@ -46,14 +48,16 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <ul className="flex list-none gap-5 overflow-x-scroll">
           {publishState.screenshots.map((s, idx) => (
             <li key={idx}>
-              <Image
-                className="rounded-xl"
-                alt={`screenshot-${idx}`}
-                src={URL.createObjectURL(s)}
-                height={479}
-                width={300}
-                layout="fixed"
-              />
+              {s.name && (
+                <Image
+                  className="rounded-xl"
+                  alt={`screenshot-${idx}`}
+                  src={URL.createObjectURL(s)}
+                  height={479}
+                  width={300}
+                  layout="fixed"
+                />
+              )}
             </li>
           ))}
         </ul>

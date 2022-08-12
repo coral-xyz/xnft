@@ -1,4 +1,4 @@
-import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
+import { ArrowLeftIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
 import { WalletSignTransactionError } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next';
@@ -131,12 +131,21 @@ const PublishPage: NextPage = () => {
   const handleNextClicked = useCallback(async () => {
     if (inputStep !== inputSteps.length - 1) {
       setInputStep(curr => curr + 1);
-      setNextEnabled(false);
+      setNextEnabled(x => !x);
       return;
     }
 
     handlePublish();
   }, [inputStep, handlePublish]);
+
+  /**
+   * Memoized function to handle clicking the "Back" button in the flow.
+   */
+  const handleBackClicked = useCallback(() => {
+    if (inputStep > 0) {
+      setInputStep(curr => curr - 1);
+    }
+  }, [inputStep]);
 
   return connected ? (
     <>
@@ -170,13 +179,22 @@ const PublishPage: NextPage = () => {
                 ))}
               </div>
 
-              <div className={`rounded-2xl bg-[#27272A]`}>
+              <div className="rounded-2xl bg-[#27272A]">
                 {activeStepComponent.component({ setNextEnabled })}
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex justify-center gap-6 pt-12">
+                {inputStep > 0 && (
+                  <button
+                    className="flex items-center rounded-md bg-[#4F46E5] px-4 py-2 text-white"
+                    onClick={handleBackClicked}
+                  >
+                    <ArrowLeftIcon className="inline-block w-4" />
+                    <span className="inline-block pl-2">Back</span>
+                  </button>
+                )}
                 <button
-                  className="mt-12 flex items-center rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
+                  className="flex items-center rounded-md bg-[#4F46E5] px-4 py-2 text-white disabled:opacity-50"
                   onClick={handleNextClicked}
                   disabled={!nextEnabled}
                 >

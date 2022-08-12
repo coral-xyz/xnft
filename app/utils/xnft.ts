@@ -77,6 +77,7 @@ export default abstract class xNFT {
     const uri = `${BUCKET_URL}/${getMetadataPath(xnft)}`;
     const sellerFeeBasis = parseFloat(details.royalties) * 100;
     const price = new BN(parseFloat(details.price) * LAMPORTS_PER_SOL);
+    const supply = details.supply === 'inf' ? null : new BN(parseInt(details.supply));
 
     const tx = await program.methods
       .createXnft(
@@ -87,7 +88,8 @@ export default abstract class xNFT {
         uri,
         sellerFeeBasis,
         price,
-        program.provider.publicKey!
+        program.provider.publicKey!,
+        supply
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
       .transaction();

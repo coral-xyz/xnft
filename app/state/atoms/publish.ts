@@ -38,3 +38,36 @@ export const publishState = atom<PublishState>({
 export function usePublish(): [PublishState, SetterOrUpdater<PublishState>] {
   return useRecoilState(publishState);
 }
+
+/**
+ * Custom input validation for the uploaded bundle source file.
+ * @export
+ * @param {PublishState} state
+ * @returns {boolean}
+ */
+export function validateBundleInput(state: PublishState): boolean {
+  return (state.bundle.size ?? 0) > 0;
+}
+
+/**
+ * Custom input validation for the inputted publish details.
+ * @export
+ * @param {PublishState} state
+ * @returns {boolean}
+ */
+export function validateDetailsInput(state: PublishState): boolean {
+  const checks = [
+    state.title,
+    state.description,
+    state.publisher,
+    state.tag,
+    state.website,
+    state.supply,
+    state.price,
+    state.royalties,
+    state.icon.name ?? '',
+    state.screenshots
+  ];
+
+  return checks.every(x => x.length > 0);
+}
