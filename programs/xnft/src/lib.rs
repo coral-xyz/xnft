@@ -5,7 +5,7 @@ use anchor_spl::metadata::{
     UpdateMetadataAccountsV2,
 };
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{CollectionDetails, DataV2, TokenMetadataAccount};
+use mpl_token_metadata::state::{DataV2, TokenMetadataAccount};
 
 declare_id!("xnftkTnW8pdgkzyGcF8bb3WCMoBeU4r4d8JbKbv6MhW");
 
@@ -53,11 +53,6 @@ pub mod xnft {
         //
         let is_mutable = true;
         let authority_is_signer = true;
-        let details = if let Some(s) = supply {
-            Some(CollectionDetails::V1 { size: s })
-        } else {
-            None
-        };
 
         metadata::create_metadata_accounts_v3(
             ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
@@ -76,8 +71,20 @@ pub mod xnft {
             },
             is_mutable,
             authority_is_signer,
-            details,
+            None, // NOTE: mpl's current program sets the size to 0 regardless of provided value, must be done with set_collection_size
         )?;
+
+        if let Some(sup) = supply {
+            metadata::set_collection_size(
+                ctx.accounts.set_collection_size_ctx().with_signer(&[&[
+                    "xnft".as_bytes(),
+                    ctx.accounts.master_edition.key().as_ref(),
+                    &[xnft_bump],
+                ]]),
+                None, // TODO:
+                sup,
+            )?;
+        }
 
         //
         // Create master edition.
