@@ -2,7 +2,7 @@ import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
 import { memo, type FunctionComponent, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish } from '../../state/atoms/publish';
+import { usePublish, validateBundleInput } from '../../state/atoms/publish';
 
 function transformBundleSize(size: number): string {
   if (size < 1000) {
@@ -24,9 +24,14 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
   useEffect(() => {
     if (acceptedFiles.length > 0) {
       setPublishState(prev => ({ ...prev, bundle: acceptedFiles[0] }));
+    }
+  }, [acceptedFiles, setPublishState]);
+
+  useEffect(() => {
+    if (validateBundleInput(publishState)) {
       setNextEnabled(true);
     }
-  }, [acceptedFiles, setPublishState, setNextEnabled]);
+  }, [publishState, setNextEnabled]);
 
   return (
     <label {...getRootProps({ htmlFor: 'bundle', className: 'relative cursor-pointer' })}>
