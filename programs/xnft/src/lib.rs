@@ -1,7 +1,8 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{self, system_instruction};
 use anchor_spl::metadata::{
-    self, CreateMasterEditionV3, CreateMetadataAccountsV2, Metadata, UpdateMetadataAccountsV2,
+    self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
+    UpdateMetadataAccountsV2,
 };
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{DataV2, TokenMetadataAccount};
@@ -31,6 +32,7 @@ pub mod xnft {
         seller_fee_basis_points: u16,
         install_price: u64,
         install_vault: Pubkey,
+        supply: Option<u64>,
     ) -> Result<()> {
         let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
@@ -51,7 +53,8 @@ pub mod xnft {
         //
         let is_mutable = true;
         let authority_is_signer = true;
-        metadata::create_metadata_accounts_v2(
+
+        metadata::create_metadata_accounts_v3(
             ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
                 "xnft".as_bytes(),
                 ctx.accounts.master_edition.key().as_ref(),
@@ -62,13 +65,26 @@ pub mod xnft {
                 symbol,
                 uri,
                 seller_fee_basis_points,
-                creators: None,   // todo
-                collection: None, // todo
-                uses: None,       //
+                creators: None,   // TODO:
+                collection: None, // TODO:
+                uses: None,       // TODO:
             },
             is_mutable,
             authority_is_signer,
+            None, // NOTE: mpl's current program sets the size to 0 regardless of provided value, must be done with set_collection_size
         )?;
+
+        if let Some(sup) = supply {
+            metadata::set_collection_size(
+                ctx.accounts.set_collection_size_ctx().with_signer(&[&[
+                    "xnft".as_bytes(),
+                    ctx.accounts.master_edition.key().as_ref(),
+                    &[xnft_bump],
+                ]]),
+                None, // TODO:
+                sup,
+            )?;
+        }
 
         //
         // Create master edition.
@@ -306,11 +322,24 @@ impl<'info> CreateXnft<'info> {
         CpiContext::new(program, accounts)
     }
 
+    pub fn set_collection_size_ctx(
+        &self,
+    ) -> CpiContext<'_, '_, '_, 'info, SetCollectionSize<'info>> {
+        let program = self.metadata_program.to_account_info();
+        let accounts = SetCollectionSize {
+            metadata: self.master_metadata.to_account_info(),
+            mint: self.master_mint.to_account_info(),
+            update_authority: self.xnft.to_account_info(),
+            system_program: self.system_program.to_account_info(),
+        };
+        CpiContext::new(program, accounts)
+    }
+
     pub fn create_metadata_accounts_ctx(
         &self,
-    ) -> CpiContext<'_, '_, '_, 'info, CreateMetadataAccountsV2<'info>> {
+    ) -> CpiContext<'_, '_, '_, 'info, CreateMetadataAccountsV3<'info>> {
         let program = self.metadata_program.to_account_info();
-        let accounts = CreateMetadataAccountsV2 {
+        let accounts = CreateMetadataAccountsV3 {
             metadata: self.master_metadata.to_account_info(),
             mint: self.master_mint.to_account_info(),
             mint_authority: self.xnft.to_account_info(),

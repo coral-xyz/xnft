@@ -16,7 +16,7 @@ describe('xnft', () => {
   const program = anchor.workspace.Xnft as Program<Xnft>;
 
   let xnft: PublicKey;
-  let install: PublicKey;
+  // let install: PublicKey;
   const installVault = program.provider.publicKey;
 
   it('creates the xNFT', async () => {
@@ -28,8 +28,20 @@ describe('xnft', () => {
     const uri =
       'https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json';
     const seller_fee_basis_points = 1;
+    const supply = new anchor.BN(100);
+
     const tx = program.methods
-      .createXnft(name, symbol, tag, kind, uri, seller_fee_basis_points, installPrice, installVault)
+      .createXnft(
+        name,
+        symbol,
+        tag,
+        kind,
+        uri,
+        seller_fee_basis_points,
+        installPrice,
+        installVault,
+        supply
+      )
       .accounts({
         metadataProgram
       });
@@ -53,8 +65,8 @@ describe('xnft', () => {
 
     await tx.rpc();
 
-    const pubkeys = await tx.pubkeys();
-    install = pubkeys.install;
+    // const pubkeys = await tx.pubkeys();
+    // install = pubkeys.install;
   });
 
   it('fetch xnfts owned by user', async () => {
