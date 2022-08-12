@@ -28,14 +28,31 @@ describe('xnft', () => {
     const uri =
       'https://xnfts-dev.s3.us-west-2.amazonaws.com/DigDvhGGe29L6PWd3a42GJpDJV8WqSS2CTaeNzpH8QnK/Mango+Swap/metadata.json';
     const seller_fee_basis_points = 1;
+
     const tx = program.methods
-      .createXnft(name, symbol, tag, kind, uri, seller_fee_basis_points, installPrice, installVault)
+      .createXnft(
+        name,
+        symbol,
+        tag,
+        kind,
+        uri,
+        seller_fee_basis_points,
+        installPrice,
+        installVault,
+        new anchor.BN(505)
+      )
       .accounts({
         metadataProgram
       });
 
     await tx.rpc();
     const pubkeys = await tx.pubkeys();
+
+    const m = await Metadata.fromAccountAddress(
+      program.provider.connection,
+      pubkeys.masterMetadata
+    );
+    console.log(m);
 
     xnft = pubkeys.xnft;
   });
