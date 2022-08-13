@@ -1,4 +1,3 @@
-import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo, useEffect } from 'react';
 import Image from 'next/image';
 import type { StepComponentProps } from '../../pages/publish';
@@ -27,10 +26,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
         <div className="flex flex-col gap-4">
           {/* Title and verification status */}
-          <h1 className="flex items-center gap-2 text-3xl font-semibold text-white">
-            {publishState.title}
-            <BadgeCheckIcon height={22} color="#45EB4D" />
-          </h1>
+          <h1 className="text-3xl font-semibold text-white">{publishState.title}</h1>
 
           {/* Description */}
           <h5 className="max-w-[350px] font-medium text-zinc-500">{publishState.description}</h5>
