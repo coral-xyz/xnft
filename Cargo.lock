@@ -25,7 +25,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-access-control"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -38,7 +38,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-account"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -52,7 +52,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-constant"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "proc-macro2",
@@ -62,7 +62,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-error"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "proc-macro2",
@@ -73,7 +73,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-event"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -85,7 +85,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-interface"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -98,7 +98,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-program"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -110,7 +110,7 @@ dependencies = [
 [[package]]
 name = "anchor-attribute-state"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -122,7 +122,7 @@ dependencies = [
 [[package]]
 name = "anchor-derive-accounts"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-syn",
  "anyhow",
@@ -134,7 +134,7 @@ dependencies = [
 [[package]]
 name = "anchor-lang"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-attribute-access-control",
  "anchor-attribute-account",
@@ -157,7 +157,7 @@ dependencies = [
 [[package]]
 name = "anchor-spl"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anchor-lang",
  "mpl-token-metadata",
@@ -169,7 +169,7 @@ dependencies = [
 [[package]]
 name = "anchor-syn"
 version = "0.25.0"
-source = "git+https://github.com/coral-xyz/anchor#000e74ed48a697df18526127049cb93c0e6fedbb"
+source = "git+https://github.com/coral-xyz/anchor#7101ece8038736972e55051b5e70beb34d79526b"
 dependencies = [
  "anyhow",
  "bs58 0.3.1",
@@ -1160,18 +1160,18 @@ dependencies = [
 
 [[package]]
 name = "shank"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85a6c6cad96abd1fd950d1df186ec02e786566161f03adadbb7cf157ae9a82d8"
+checksum = "7a9986b297e6f42bcbe41f95ca2a881e7a75bd091549e95ecf495fa8178c0c1b"
 dependencies = [
  "shank_macro",
 ]
 
 [[package]]
 name = "shank_macro"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0b3bf722b43cea02627c7fd89925f5861f7aa27604c1852720f8eee1a73523d"
+checksum = "5dd835154aa943dfc958f5a208f2e82b7d2a2c52b024229168c211ecc2d2bfd1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1181,9 +1181,9 @@ dependencies = [
 
 [[package]]
 name = "shank_macro_impl"
-version = "0.0.4"
+version = "0.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90a37f762b0529d64a9e3401ac3829e132f58fa9bc50b1fd6ad7b5a1a414a228"
+checksum = "d99ad9d5137704e86e2e4a54a121b9c443c37b60ce6638a7723ab700dbd2232a"
 dependencies = [
  "anyhow",
  "proc-macro2",

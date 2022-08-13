@@ -1,11 +1,11 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{self, system_instruction};
 use anchor_spl::metadata::{
-    self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
-    UpdateMetadataAccountsV2,
+    self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, MetadataAccount,
+    SetCollectionSize, UpdateMetadataAccountsV2,
 };
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{DataV2, TokenMetadataAccount};
+use mpl_token_metadata::state::DataV2;
 
 declare_id!("xnftkTnW8pdgkzyGcF8bb3WCMoBeU4r4d8JbKbv6MhW");
 
@@ -125,12 +125,9 @@ pub mod xnft {
     ///
     /// This is simply a token metadata update cpi.
     pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
-        let metadata = ctx.accounts.master_metadata.to_account_info().clone();
+        let md = &ctx.accounts.master_metadata;
 
         if let Some(u) = updates.uri {
-            let md: mpl_token_metadata::state::Metadata =
-                mpl_token_metadata::state::Metadata::from_account_info(&metadata)?;
-
             metadata::update_metadata_accounts_v2(
                 ctx.accounts.update_metadata_accounts_ctx().with_signer(&[&[
                     "xnft".as_bytes(),
@@ -140,12 +137,12 @@ pub mod xnft {
                 None,
                 Some(DataV2 {
                     name: ctx.accounts.xnft.name.clone(),
-                    symbol: md.data.symbol,
+                    symbol: md.data.symbol.clone(),
                     uri: u,
                     seller_fee_basis_points: md.data.seller_fee_basis_points,
-                    creators: None,   // todo
-                    collection: None, // todo
-                    uses: None,       //
+                    creators: None,   // TODO:
+                    collection: None, // TODO:
+                    uses: None,       // TODO:
                 }),
                 None,
                 None,
@@ -379,9 +376,8 @@ pub struct UpdateXnft<'info> {
     )]
     pub xnft: Account<'info, Xnft2>,
 
-    /// CHECK: validated with the `has_one` on xnft account.
     #[account(mut)]
-    pub master_metadata: UncheckedAccount<'info>,
+    pub master_metadata: Account<'info, MetadataAccount>,
 
     pub authority: Signer<'info>,
     pub metadata_program: Program<'info, Metadata>,
