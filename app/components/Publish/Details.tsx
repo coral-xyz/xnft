@@ -4,7 +4,7 @@ import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
 import { usePublish, validateDetailsInput } from '../../state/atoms/publish';
-import { ALLOWED_IMAGE_TYPES, PLACEHOLDER_PUBKEY } from '../../utils/constants';
+import { ALLOWED_IMAGE_TYPES, MAX_NAME_LENGTH, PLACEHOLDER_PUBKEY } from '../../utils/constants';
 import { PRICE_RX, ROYALTY_RX, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
 import { inputClasses } from '../Inputs/Input';
 
@@ -47,7 +47,11 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           name="title"
           type="text"
           value={publishState.title}
-          onChange={e => setPublishState(prev => ({ ...prev, title: e.target.value }))}
+          onChange={e => {
+            if (e.target.value.length <= MAX_NAME_LENGTH) {
+              setPublishState(prev => ({ ...prev, title: e.target.value }));
+            }
+          }}
         />
       </div>
 
