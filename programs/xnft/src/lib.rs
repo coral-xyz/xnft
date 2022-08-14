@@ -36,7 +36,7 @@ pub mod xnft {
     ) -> Result<()> {
         let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
-        if name.len() > Xnft2::MAX_NAME_LEN {
+        if name.len() > Xnft::MAX_NAME_LEN {
             return Err(error!(CustomError::NameTooLong));
         }
 
@@ -298,14 +298,14 @@ pub struct CreateXnft<'info> {
     #[account(
         init,
         payer = payer,
-        space = Xnft2::LEN,
+        space = Xnft::LEN,
         seeds = [
             "xnft".as_bytes(),
             master_edition.key().as_ref(),
         ],
         bump,
     )]
-    pub xnft: Account<'info, Xnft2>,
+    pub xnft: Account<'info, Xnft>,
     #[account(mut)]
     pub payer: Signer<'info>,
     pub publisher: Signer<'info>,
@@ -380,7 +380,7 @@ pub struct UpdateXnft<'info> {
         has_one = authority,
         has_one = master_metadata,
     )]
-    pub xnft: Account<'info, Xnft2>,
+    pub xnft: Account<'info, Xnft>,
 
     #[account(mut)]
     pub master_metadata: Account<'info, MetadataAccount>,
@@ -410,7 +410,7 @@ pub struct CreateInstall<'info> {
         constraint = xnft.install_authority == None,
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
-    pub xnft: Account<'info, Xnft2>,
+    pub xnft: Account<'info, Xnft>,
 
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
@@ -441,7 +441,7 @@ pub struct CreateInstallWithAuthority<'info> {
         constraint = xnft.install_authority == Some(install_authority.key()),
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
-    pub xnft: Account<'info, Xnft2>,
+    pub xnft: Account<'info, Xnft>,
 
     ////////////////////////////////////////////////////////////////////////////
     // Auto derived below.
@@ -475,13 +475,13 @@ pub struct SetSuspended<'info> {
         mut,
         has_one = authority,
     )]
-    pub xnft: Account<'info, Xnft2>,
+    pub xnft: Account<'info, Xnft>,
 
     pub authority: Signer<'info>,
 }
 
 #[account]
-pub struct Xnft2 {
+pub struct Xnft {
     authority: Pubkey,
     publisher: Pubkey,
     install_vault: Pubkey,
@@ -501,7 +501,7 @@ pub struct Xnft2 {
     _reserved: [u8; 32],
 }
 
-impl Xnft2 {
+impl Xnft {
     pub const MAX_NAME_LEN: usize = 30;
     pub const LEN: usize = 8 + (32 * 6) + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + (8 * 4) + 1 + 32;
 }
