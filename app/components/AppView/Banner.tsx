@@ -1,5 +1,4 @@
 import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
-import { BadgeCheckIcon } from '@heroicons/react/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
 import xNFT, { type XnftWithMetadata, type SerializedXnftWithMetadata } from '../../utils/xnft';
@@ -54,12 +53,9 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
       />
 
       <div className="flex flex-col items-start gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-3xl font-semibold tracking-wide text-white">
-            {xnft.metadata.name}
-          </span>
-          <BadgeCheckIcon className="text-[#45EB4D]" height={25} />
-        </div>
+        <span className="text-3xl font-semibold tracking-wide text-white">
+          {xnft.metadata.name}
+        </span>
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}
         </div>
