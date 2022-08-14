@@ -498,12 +498,12 @@ pub struct Xnft2 {
     created_ts: i64,
     updated_ts: i64,
     suspended: bool,
+    _reserved: [u8; 32],
 }
 
 impl Xnft2 {
     pub const MAX_NAME_LEN: usize = 30;
-    pub const LEN: usize =
-        8 + 32 + 32 + 32 + 32 + 32 + 32 + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + 8 + 8 + 8 + 8 + 1;
+    pub const LEN: usize = 8 + (32 * 6) + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + (8 * 4) + 1 + 32;
 }
 
 #[account]
@@ -512,10 +512,11 @@ pub struct Install {
     xnft: Pubkey,
     master_metadata: Pubkey,
     id: u64,
+    _reserved: [u8; 64],
 }
 
 impl Install {
-    pub const LEN: usize = 8 + 32 + 32 + 32 + 8 + 1;
+    pub const LEN: usize = 8 + (32 * 3) + 8 + 64;
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
