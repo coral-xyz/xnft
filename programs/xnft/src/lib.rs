@@ -36,6 +36,10 @@ pub mod xnft {
     ) -> Result<()> {
         let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
+        if name.len() > Xnft2::MAX_NAME_LEN {
+            return Err(error!(CustomError::NameTooLong));
+        }
+
         //
         // Mint the master token.
         //
@@ -103,20 +107,22 @@ pub mod xnft {
         //
         let clock = Clock::get()?;
         let xnft = &mut ctx.accounts.xnft;
-        xnft.created_ts = clock.unix_timestamp;
-        xnft.updated_ts = clock.unix_timestamp;
-        xnft.install_price = install_price;
-        xnft.install_vault = install_vault;
-        xnft.name = name;
+        xnft.bump = xnft_bump;
         xnft.kind = kind;
+        xnft.tag = tag;
+        xnft.name = name;
         xnft.publisher = ctx.accounts.publisher.key();
         xnft.authority = ctx.accounts.publisher.key();
         xnft.master_edition = ctx.accounts.master_edition.key();
         xnft.master_metadata = ctx.accounts.master_metadata.key();
         xnft.master_mint = ctx.accounts.master_mint.key();
-        xnft.bump = xnft_bump;
+        xnft.install_authority = None;
+        xnft.total_installs = 0;
+        xnft.install_price = install_price;
+        xnft.install_vault = install_vault;
+        xnft.created_ts = clock.unix_timestamp;
+        xnft.updated_ts = clock.unix_timestamp;
         xnft.suspended = false;
-        xnft.tag = tag;
 
         Ok(())
     }
@@ -196,9 +202,9 @@ pub mod xnft {
         // Initialize the install data.
         //
         install.xnft = xnft.key();
-        install.id = xnft.total_installs;
         install.authority = ctx.accounts.authority.key();
         install.master_metadata = xnft.master_metadata;
+        install.id = xnft.total_installs;
 
         //
         // Track aggregate xnft metrics.
@@ -292,7 +298,7 @@ pub struct CreateXnft<'info> {
     #[account(
         init,
         payer = payer,
-        space = 8 + Xnft2::LEN,
+        space = Xnft2::LEN,
         seeds = [
             "xnft".as_bytes(),
             master_edition.key().as_ref(),
@@ -447,6 +453,7 @@ pub struct CreateInstallWithAuthority<'info> {
         seeds = [
             "install".as_bytes(),
             authority.key().as_ref(),
+            xnft.key().as_ref(),
         ],
         bump,
     )]
@@ -459,7 +466,7 @@ pub struct CreateInstallWithAuthority<'info> {
 
 #[derive(Accounts)]
 pub struct DeleteInstall {
-    // todo
+    // TODO:
 }
 
 #[derive(Accounts)]
@@ -477,58 +484,38 @@ pub struct SetSuspended<'info> {
 pub struct Xnft2 {
     authority: Pubkey,
     publisher: Pubkey,
-    kind: Kind,
-    //
-    // Total amount of installs circulating.
-    //
-    total_installs: u64,
-    //
-    // The amount one must pay to install in lamports. If zero, it's free.
-    //
-    install_price: u64,
-    //
-    // The vault that will receive install revenue.
-    //
     install_vault: Pubkey,
-    //
-    // Token metadata for the underlying NFT.
-    //
     master_edition: Pubkey,
     master_metadata: Pubkey,
     master_mint: Pubkey,
-    //
-    // If present, this key must sign off on all installs.
-    //
+    install_authority: Option<Pubkey>,
     bump: u8,
+    kind: Kind,
+    tag: Tag,
+    name: String,
+    total_installs: u64,
+    install_price: u64,
     created_ts: i64,
     updated_ts: i64,
-    install_authority: Option<Pubkey>,
-    name: String,
-    //
-    // Flag to mark xnft as suspending further installs.
-    //
     suspended: bool,
-    tag: Tag,
 }
 
 impl Xnft2 {
+    pub const MAX_NAME_LEN: usize = 30;
     pub const LEN: usize =
-        8 + 8 + 100 + 32 + 32 + 8 + 8 + 32 + 8 + 32 + 32 + 32 + 32 + 8 + 32 + 32 + 1 + 1; // TODO:FIXME: needs to be recalculated
+        8 + 32 + 32 + 32 + 32 + 32 + 32 + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + 8 + 8 + 8 + 8 + 1;
 }
 
 #[account]
 pub struct Install {
     authority: Pubkey,
     xnft: Pubkey,
-    id: u64,
-    //
-    // Token metadata for the underlying NFT.
-    //
     master_metadata: Pubkey,
+    id: u64,
 }
 
 impl Install {
-    pub const LEN: usize = 8 + 32 + 32 + 8 + 8 + 32; // TODO:FIXME: needs to be recalculated
+    pub const LEN: usize = 8 + 32 + 32 + 32 + 8 + 1;
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
@@ -554,6 +541,9 @@ pub struct UpdateParams {
 
 #[error_code]
 pub enum CustomError {
+    #[msg("The name provided for creating the xNFT exceeded the byte limit")]
+    NameTooLong,
+
     #[msg("Attempting to install a currently suspended xNFT")]
     SuspendedInstallation,
 }
