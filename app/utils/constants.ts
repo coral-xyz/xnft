@@ -14,6 +14,8 @@ export const CORAL_LINKS = {
 };
 export const DOCS_LINK = 'https://docs.xnft.gg';
 
+export const MAX_NAME_LENGTH = 30;
+
 export const PLACEHOLDER_PUBKEY = '3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3';
 
 export const PRICE_RX = /^\d*(\.\d{0,5})?$/;
