@@ -15,8 +15,8 @@ import fetch from 'isomorphic-unfetch';
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { BUCKET_URL, getMetadataPath } from './s3';
-import { XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
+import { getMetadataPath } from './s3';
+import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft2'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
@@ -70,7 +70,7 @@ export default abstract class xNFT {
   ): Promise<[string, PublicKey]> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
 
-    const uri = `${BUCKET_URL}/${getMetadataPath(xnft)}`;
+    const uri = `${S3_BUCKET_URL}/${getMetadataPath(xnft)}`;
     const sellerFeeBasis = parseFloat(details.royalties) * 100;
     const price = new BN(parseFloat(details.price) * LAMPORTS_PER_SOL);
     const supply = details.supply === 'inf' ? null : new BN(parseInt(details.supply));
