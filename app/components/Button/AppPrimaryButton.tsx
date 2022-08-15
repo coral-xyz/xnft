@@ -19,11 +19,19 @@ const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
   onClick,
   price
 }) => {
+  /**
+   * Memoized value for the button text based on the
+   * installation status and app price.
+   */
   const btnText = useMemo(
     () => (installed ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`),
     [installed, price]
   );
 
+  /**
+   * Memoized value for the class list of the button that
+   * depend of the intended size of the button.
+   */
   const classes = useMemo(
     () => (large ? 'px-4 rounded-md' : 'px-3 rounded text-xs font-medium tracking-wide'),
     [large]

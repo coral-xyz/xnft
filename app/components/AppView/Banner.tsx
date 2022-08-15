@@ -19,6 +19,10 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const { installed, err } = useInstalledXnftsLoadable();
   const [isInstalled, setIsInstalled] = useState(false);
 
+  /**
+   * Effect hook to mark whether the public key of the prop provided
+   * xNFT was found in the loaded list of installed xNFTs for the connected wallet.
+   */
   useEffect(() => {
     if (!err) {
       setIsInstalled(
@@ -31,12 +35,26 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
     }
   }, [installed, err, xnft]);
 
-  const price = useMemo(() => parseInt(xnft.account.installPrice, 16), [xnft.account.installPrice]);
+  /**
+   * Memoized value for the app price in lamports.
+   */
+  const priceLamports = useMemo(
+    () => parseInt(xnft.account.installPrice, 16),
+    [xnft.account.installPrice]
+  );
 
+  /**
+   * Memoized function to handle the button to launch the app
+   * in the connected Backpack wallet extension.
+   */
   const handleOpenApp = useCallback(() => {
     // TODO:
   }, []);
 
+  /**
+   * Memoized function to handle the install button click
+   * to execute the contract instruction.
+   */
   const handleInstall = useCallback(async () => {
     try {
       await xNFT.install(program, xnft);
@@ -67,7 +85,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
           className="bg-[#4F46E5] text-white"
           disabled={!connected}
           installed={isInstalled}
-          price={price}
+          price={priceLamports}
           onClick={isInstalled ? handleOpenApp : handleInstall}
         />
       </div>

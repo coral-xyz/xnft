@@ -28,10 +28,18 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
   const { installed, err } = useInstalledXnftsLoadable();
   const [isInstalled, setIsInstalled] = useState(false);
 
+  /**
+   * Memoized value for the xNFT account public key based on the
+   * type of xNFT object provided to the component.
+   */
   const pubkey = useMemo(
     () => ('xnft' in xnft ? xnft.xnft.publicKey : new PublicKey(xnft.publicKey)),
     [xnft]
   );
+
+  /**
+   * Memoized href link for the app view of the current public key.
+   */
   const appLink = useMemo(() => `/app/${pubkey.toBase58()}`, [pubkey]);
 
   /**

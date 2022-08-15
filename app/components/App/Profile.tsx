@@ -35,8 +35,16 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   const program = useProgram();
   const [_, setFocused] = useXnftFocus();
 
+  /**
+   * Memoized value for the xNFT account data based on the structure
+   * of the object provided to the component.
+   */
   const account = useMemo(() => ('xnft' in xnft ? xnft.xnft : xnft), [xnft]);
 
+  /**
+   * Memoized functions for the `onClick` handlers of the
+   * different `MetaButton` components on the app panel.
+   */
   const handleClickDetails = useCallback(() => router.push(link), [link, router]);
   const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused]);
   const handleClickUninstall = useCallback(async () => {

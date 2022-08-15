@@ -1,7 +1,7 @@
 import { PencilAltIcon } from '@heroicons/react/solid';
 import { BN } from '@project-serum/anchor';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { type FunctionComponent, memo, useMemo, useCallback, useState } from 'react';
+import { type FunctionComponent, memo, useCallback, useState, useMemo } from 'react';
 import { HashLoader } from 'react-spinners';
 import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
@@ -16,6 +16,15 @@ type EditModalProps = {
   open: boolean;
 };
 
+/**
+ * Array of components for all tag select field options.
+ */
+const tagOptions = XNFT_TAG_OPTIONS.map((o, idx) => (
+  <option key={idx} value={o}>
+    {o}
+  </option>
+));
+
 const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   const program = useProgram();
   const [focused] = useXnftFocus();
@@ -23,18 +32,23 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   const [loading, setLoading] = useState(false);
 
   /**
-   * Memoized option elements for each valid xNFT tag enum variant.
+   * Memoized value of the ReactNode used for the title field of the modal.
    */
-  const tagOptions = useMemo(
+  const modalTitle = useMemo(
     () =>
-      XNFT_TAG_OPTIONS.map((o, idx) => (
-        <option key={idx} value={o}>
-          {o}
-        </option>
-      )),
-    []
+      loading ? undefined : (
+        <span className="flex items-center gap-2 border-b border-[#393C43] pb-2">
+          <PencilAltIcon height={16} />
+          {focused?.metadata.name}
+        </span>
+      ),
+    [focused, loading]
   );
 
+  /**
+   * Memoized function to handle the execution of the update xNFT
+   * contract instruction with the provided modal inputs.
+   */
   const handleUpdate = useCallback(async () => {
     if (!focused) return;
 
@@ -57,18 +71,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   }, [edits, focused, program, onClose]);
 
   return (
-    <Modal
-      title={
-        loading ? undefined : (
-          <span className="flex items-center gap-2 border-b border-[#393C43] pb-2">
-            <PencilAltIcon height={16} />
-            {focused?.metadata.name}
-          </span>
-        )
-      }
-      open={open}
-      onClose={onClose}
-    >
+    <Modal title={modalTitle} open={open} onClose={onClose}>
       {loading ? (
         <section className="flex justify-center">
           <HashLoader className="my-12" color="#F66C5E" size={56} />

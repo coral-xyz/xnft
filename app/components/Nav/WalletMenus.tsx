@@ -27,6 +27,11 @@ export const DisconnectedMenu: FunctionComponent = () => {
   const { setVisible } = useWalletModal();
   const [backpackInstalled, setBackpackInstalled] = useState(true);
 
+  /**
+   * Component effect to check if Backpack is installed in the current
+   * browser window in order to determine if the download button
+   * should be displayed in the navbar.
+   */
   useEffect(() => {
     setTimeout(() => setBackpackInstalled(Object.hasOwn(window, 'backpack')), 500);
   }, []);
@@ -64,7 +69,8 @@ export const ConnectedMenu: FunctionComponent<ConnectedMenuProps> = ({ onDisconn
         className="flex items-center gap-2 rounded-3xl bg-[#27272A]
           px-4 py-3 font-medium tracking-wide text-[#FAFAFA]"
       >
-        <UserCircleIcon height={20} /> {truncatePublicKey(publicKey.toBase58())}{' '}
+        <UserCircleIcon height={20} />
+        {truncatePublicKey(publicKey.toBase58())}
         <ChevronDownIcon height={20} />
       </Menu.Button>
       <Transition

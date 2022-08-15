@@ -1,5 +1,5 @@
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
-import { type FunctionComponent, memo, useCallback, useEffect } from 'react';
+import { type FunctionComponent, memo, useCallback, useEffect, useMemo } from 'react';
 import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,6 +16,10 @@ const Nav: FunctionComponent = () => {
   const resetWallet = useResetRecoilState(anchorWalletState);
   // const [searchValue, setSearchValue] = useState('');
 
+  /**
+   * Component effect to set or reset the recoil wallet
+   * state based on the values of the wallet adapter context.
+   */
   useEffect(() => {
     if (connected) {
       setWallet(anchorWallet);
@@ -24,12 +28,25 @@ const Nav: FunctionComponent = () => {
     }
   }, [anchorWallet, connected, setWallet, resetWallet]);
 
+  /**
+   * Memoized function to handle the routing and wallet disconnecting
+   * when clicked in the menu.
+   */
   const handleDisconnect = useCallback(async () => {
     if (router.pathname !== '/') {
       await router.push('/');
     }
     await disconnect();
   }, [disconnect, router]);
+
+  /**
+   * Memoized value of the menu type to display
+   * based on the wallet connection status.
+   */
+  const menu = useMemo(
+    () => (connected ? <ConnectedMenu onDisconnect={handleDisconnect} /> : <DisconnectedMenu />),
+    [connected, handleDisconnect]
+  );
 
   return (
     <nav className="tracking-wide">
@@ -43,7 +60,7 @@ const Nav: FunctionComponent = () => {
 
         <div className="flex items-center justify-end gap-3">
           <DocsLink />
-          {connected ? <ConnectedMenu onDisconnect={handleDisconnect} /> : <DisconnectedMenu />}
+          {menu}
         </div>
       </div>
     </nav>

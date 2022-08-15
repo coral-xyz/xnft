@@ -1,5 +1,10 @@
 import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
-import { MIN_APP_ICON_SIZE, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
+import {
+  APP_ICON_CONSTRAINTS,
+  APP_SCREENSHOT_CONSTRAINTS,
+  XNFT_KIND_OPTIONS,
+  XNFT_TAG_OPTIONS
+} from '../../utils/constants';
 
 export type PublishState = typeof defaultPublishState;
 
@@ -48,8 +53,10 @@ export function validateAppIcon(file: File): Promise<File> {
     img.addEventListener('load', () => {
       if (img.width !== img.height) {
         return reject('Icon should have equal width and height');
-      } else if (img.width < MIN_APP_ICON_SIZE) {
-        return reject('Icon should be a minimum of 256x256');
+      } else if (img.width < APP_ICON_CONSTRAINTS[0] || img.width > APP_ICON_CONSTRAINTS[1]) {
+        return reject(
+          `Icon should be between ${APP_ICON_CONSTRAINTS[0]}x${APP_ICON_CONSTRAINTS[0]} and ${APP_ICON_CONSTRAINTS[1]}x${APP_ICON_CONSTRAINTS[1]}`
+        );
       } else {
         return resolve(file);
       }
@@ -89,4 +96,24 @@ export function validateDetailsInput(state: PublishState): boolean {
   ];
 
   return checks.every(x => x.length > 0);
+}
+
+export function validateAppScreenshot(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener('load', () => {
+      const longestSide = Math.max(img.height, img.width);
+      if (
+        longestSide < APP_SCREENSHOT_CONSTRAINTS[0] ||
+        longestSide > APP_SCREENSHOT_CONSTRAINTS[1]
+      ) {
+        return reject(
+          `The longest side of the screenshot must be between ${APP_SCREENSHOT_CONSTRAINTS[0]}px and ${APP_SCREENSHOT_CONSTRAINTS[1]}px.`
+        );
+      } else {
+        return resolve(file);
+      }
+    });
+    img.src = URL.createObjectURL(file);
+  });
 }

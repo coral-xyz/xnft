@@ -65,6 +65,10 @@ const PublishPage: NextPage = () => {
   const [processingError, setProcessingError] = useState<Error>(undefined);
   const [newPubkey, setNewPubkey] = useState(PublicKey.default);
 
+  /**
+   * Memoized value for the active component designated by
+   * the active step numerical indicator.
+   */
   const activeStepComponent = useMemo(() => inputSteps[inputStep], [inputStep]);
 
   /**
@@ -147,6 +151,23 @@ const PublishPage: NextPage = () => {
     }
   }, [inputStep]);
 
+  /**
+   * Memoized list of components representing the dynamic headers
+   * for the panels in the publishing flow.
+   */
+  const stepHeaders = useMemo(
+    () =>
+      inputSteps.map((s, idx) => (
+        <div
+          key={s.title}
+          className={`w-full text-center ${inputStep >= idx ? 'text-[#F66C5E]' : 'text-white'}`}
+        >
+          {s.title}
+        </div>
+      )),
+    [inputStep]
+  );
+
   return connected ? (
     <>
       <div className="flex justify-center">
@@ -166,18 +187,7 @@ const PublishPage: NextPage = () => {
             </button>
 
             <div className="flex w-full flex-col gap-2 px-4">
-              <div className="mt-12 mb-4 flex w-full justify-center gap-8">
-                {inputSteps.map((s, idx) => (
-                  <div
-                    key={s.title}
-                    className={`w-full text-center ${
-                      inputStep >= idx ? 'text-[#F66C5E]' : 'text-white'
-                    }`}
-                  >
-                    {s.title}
-                  </div>
-                ))}
-              </div>
+              <div className="mt-12 mb-4 flex w-full justify-center gap-8">{stepHeaders}</div>
 
               <div className="rounded-2xl bg-[#27272A]">
                 {activeStepComponent.component({ setNextEnabled })}

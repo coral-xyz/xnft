@@ -8,6 +8,10 @@ const App = dynamic(() => import('../components/App'));
 const CategoryPreview = dynamic(() => import('../components/Category/CategoryPreview'));
 const SecondaryCta = dynamic(() => import('../components/SecondaryCta'));
 
+/**
+ * Generate the static props to provide to this page during build.
+ * @export
+ */
 export async function getStaticProps() {
   const xnfts: XnftWithMetadata[] = await xNFT.getAll();
 

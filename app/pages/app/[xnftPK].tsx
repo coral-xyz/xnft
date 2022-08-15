@@ -7,6 +7,10 @@ import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
 const Tabs = dynamic(() => import('../../components/AppView/Tabs'));
 const Banner = dynamic(() => import('../../components/AppView/Banner'));
 
+/**
+ * Generates all static slug paths for this page path.
+ * @export
+ */
 export async function getStaticPaths() {
   const data = await xNFT.getAll();
 
@@ -19,6 +23,11 @@ export async function getStaticPaths() {
   return { paths, fallback: 'blocking' };
 }
 
+/**
+ * Generates the static props for each static path of this page.
+ * @export
+ * @param {GetStaticPropsContext} context
+ */
 export async function getStaticProps(context: GetStaticPropsContext) {
   const xnft = await xNFT.get(new PublicKey(context.params.xnftPK));
 

@@ -35,6 +35,10 @@ const Input: FunctionComponent<InputProps> = ({
   type,
   value
 }) => {
+  /**
+   * Memoized function to block the prop provided characters from
+   * being able to be inputted by the user.
+   */
   const blockForbiddenChars = useCallback(
     (e: KeyboardEvent) => {
       if (forbiddenChars.includes(e.key)) {

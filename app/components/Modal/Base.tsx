@@ -10,6 +10,9 @@ type ModalProps = {
 };
 
 const Modal: FunctionComponent<ModalProps> = props => {
+  /**
+   * Memoized value for the width of the modal panel.
+   */
   const w = useMemo(
     () => (props.width !== undefined ? `[${props.width}px]` : 'full'),
     [props.width]

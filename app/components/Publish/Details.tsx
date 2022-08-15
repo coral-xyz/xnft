@@ -3,7 +3,12 @@ import dynamic from 'next/dynamic';
 import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish, validateAppIcon, validateDetailsInput } from '../../state/atoms/publish';
+import {
+  usePublish,
+  validateAppIcon,
+  validateAppScreenshot,
+  validateDetailsInput
+} from '../../state/atoms/publish';
 import { ALLOWED_IMAGE_TYPES, MAX_NAME_LENGTH, PLACEHOLDER_PUBKEY } from '../../utils/constants';
 import { PRICE_RX, ROYALTY_RX, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
 import { inputClasses } from '../Inputs/Input';
@@ -12,11 +17,33 @@ const Input = dynamic(() => import('../Inputs/Input'));
 const InputWIthSuffix = dynamic(() => import('../Inputs/InputWIthSuffix'));
 const SupplySelect = dynamic(() => import('./SupplySelect'));
 
+/**
+ * Array of components for all kind select field options.
+ */
+const kindOptions = XNFT_KIND_OPTIONS.map((o, idx) => (
+  <option key={idx} value={o}>
+    {o}
+  </option>
+));
+
+/**
+ * Array of components for all tag select field options.
+ */
+const tagOptions = XNFT_TAG_OPTIONS.map((o, idx) => (
+  <option key={idx} value={o}>
+    {o}
+  </option>
+));
+
 const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   const [publishState, setPublishState] = usePublish();
   const iconDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, maxFiles: 1 });
   const ssDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, multiple: true });
 
+  /**
+   * Component effect to handle the acceptance and validation
+   * of the selected app icon file through the dropzone input.
+   */
   useEffect(() => {
     if (iconDrop.acceptedFiles.length > 0) {
       validateAppIcon(iconDrop.acceptedFiles[0])
@@ -25,12 +52,27 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
     }
   }, [iconDrop.acceptedFiles, setPublishState]);
 
+  /**
+   * Component effect to handle the acceptance and validation
+   * of all screenshot files selected through the dropzone input.
+   */
   useEffect(() => {
     if (ssDrop.acceptedFiles.length > 0) {
-      setPublishState(prev => ({ ...prev, screenshots: ssDrop.acceptedFiles }));
+      Promise.all(
+        ssDrop.acceptedFiles.map(f =>
+          validateAppScreenshot(f).catch(err => alert(`${f.name}: ${err}`))
+        )
+      ).then(files =>
+        setPublishState(prev => ({ ...prev, screenshots: files.filter(f => f) as File[] }))
+      );
     }
   }, [ssDrop.acceptedFiles, setPublishState]);
 
+  /**
+   * Component effect to process the validation of all input fields
+   * in the form every state change in or to determine if the 'Next'
+   * button should be enabled for the user to continue the flow.
+   */
   useEffect(() => {
     if (validateDetailsInput(publishState)) {
       setNextEnabled(true);
@@ -104,11 +146,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
             }))
           }
         >
-          {XNFT_KIND_OPTIONS.map((o, idx) => (
-            <option key={idx} value={o}>
-              {o}
-            </option>
-          ))}
+          {kindOptions}
         </select>
       </div>
 
@@ -129,11 +167,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
             }))
           }
         >
-          {XNFT_TAG_OPTIONS.map((o, idx) => (
-            <option key={idx} value={o}>
-              {o}
-            </option>
-          ))}
+          {tagOptions}
         </select>
       </div>
 

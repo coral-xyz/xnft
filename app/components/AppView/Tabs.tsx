@@ -122,7 +122,6 @@ const Tabs: FunctionComponent<TabsProps> = ({ xnft }) => {
                 'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ' +
                   'disabled:text-[#393C43] disabled:hover:cursor-not-allowed'
               )}
-              aria-current={selectedTab === tab.name ? 'page' : undefined}
               onClick={() => setSelectedTab(tab.name)}
             >
               {tab.name}

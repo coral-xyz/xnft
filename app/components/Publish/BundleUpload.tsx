@@ -1,12 +1,17 @@
 import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
-import { memo, type FunctionComponent, useEffect } from 'react';
+import { memo, type FunctionComponent, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
 import { usePublish, validateBundleInput } from '../../state/atoms/publish';
 
+/**
+ * Convert the file byte size into a user field display.
+ * @param {number} size
+ * @returns {string}
+ */
 function transformBundleSize(size: number): string {
   if (size < 1000) {
-    return size.toString();
+    return `${size.toString()} B`;
   } else if (size < 1000000) {
     return `${(size / 1000).toFixed(2)} KB`;
   } else {
@@ -21,17 +26,37 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
     maxFiles: 1
   });
 
+  /**
+   * Component effect to handle the acceptances and validation
+   * of the bundle source code file selected through the dropzone input.
+   */
   useEffect(() => {
     if (acceptedFiles.length > 0) {
+      // TODO: validation
       setPublishState(prev => ({ ...prev, bundle: acceptedFiles[0] }));
     }
   }, [acceptedFiles, setPublishState]);
 
+  /**
+   * Component effect to process the validation of the input fields
+   * every state change in or to determine if the 'Next'
+   * button should be enabled for the user to continue the flow.
+   */
   useEffect(() => {
     if (validateBundleInput(publishState)) {
       setNextEnabled(true);
     }
   }, [publishState, setNextEnabled]);
+
+  /**
+   * Memoized value of the subtext for the bundle dropzone input
+   * based on whether a source file has been selected or not.
+   */
+  const inputSubtext = useMemo(
+    () =>
+      publishState.bundle.size ? transformBundleSize(publishState.bundle.size) : 'or drag and drop',
+    [publishState.bundle]
+  );
 
   return (
     <label {...getRootProps({ htmlFor: 'bundle', className: 'relative cursor-pointer' })}>
@@ -48,11 +73,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
             </span>
             <input {...getInputProps({ className: 'sr-only hidden' })} />
           </div>
-          <p className="text-sm text-[#393C43]">
-            {publishState.bundle.size
-              ? transformBundleSize(publishState.bundle.size)
-              : 'or drag and drop'}
-          </p>
+          <p className="text-sm text-[#393C43]">{inputSubtext}</p>
         </div>
       </div>
     </label>

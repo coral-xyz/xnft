@@ -1,5 +1,5 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import { type FunctionComponent, useState, memo } from 'react';
+import { type FunctionComponent, useState, memo, useCallback } from 'react';
 import { usePublish } from '../../state/atoms/publish';
 import Input from '../Inputs/Input';
 
@@ -11,10 +11,19 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
   const [_, setPublishState] = usePublish();
   const [selected, setSelected] = useState<'unlimited' | 'fixed'>('unlimited');
 
-  const classes = (checked: boolean, others?: string): string =>
-    ` px-4 py-4 border-2 bg-[#18181B] text-sm cursor-pointer rounded-md text-white ${
-      checked ? 'border-[#F66C5E]' : 'border-[#18181B]'
-    } ${others ? others : ''}`;
+  /**
+   * Memoized function to calculate the tailwind class list for the selection options.
+   * @param {boolean} checked
+   * @param {[string]} others
+   * @returns {string}
+   */
+  const classes = useCallback(
+    (checked: boolean, others?: string): string =>
+      ` px-4 py-4 border-2 bg-[#18181B] text-sm cursor-pointer rounded-md text-white ${
+        checked ? 'border-[#F66C5E]' : 'border-[#18181B]'
+      } ${others ? others : ''}`,
+    []
+  );
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -36,7 +45,7 @@ const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
         <Input
           id="supply"
           name="supply"
-          className="mt-4 !border-[#393C43]"
+          className="!mt-4 !border-[#393C43]"
           type="number"
           placeholder="0"
           value={value === 'inf' ? '' : value}
