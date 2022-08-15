@@ -10,13 +10,12 @@ const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('xnft', () => {
-  // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.Xnft as Program<Xnft>;
 
   let xnft: PublicKey;
-  // let install: PublicKey;
+  let install: PublicKey;
   const installVault = program.provider.publicKey;
 
   it('creates the xNFT', async () => {
@@ -57,16 +56,50 @@ describe('xnft', () => {
     assert.equal(fetchedXnft.name, 'my-xnft');
   });
 
-  it("installs an xNFT into the user's wallet", async () => {
-    const tx = program.methods.createInstall().accounts({
-      xnft,
-      installVault
+  describe('a user can create an installation of an xnft', () => {
+    it('by calling the `create_install` instruction', async () => {
+      const tx = program.methods.createInstall().accounts({
+        xnft,
+        installVault
+      });
+
+      const keys = await tx.pubkeys();
+      install = keys.install;
+
+      await tx.rpc();
     });
 
-    await tx.rpc();
+    it('and can be fetched by installation authority', async () => {
+      const installedxNFTs = await program.account.install.all([
+        {
+          memcmp: {
+            offset: 8, // Discriminator
+            bytes: program.provider.publicKey.toBase58()
+          }
+        }
+      ]);
 
-    // const pubkeys = await tx.pubkeys();
-    // install = pubkeys.install;
+      assert.isNotEmpty(installedxNFTs);
+    });
+  });
+
+  describe('an installation can be removed by a user', () => {
+    after(async () => {
+      await wait(500);
+      await program.methods.createInstall().accounts({ xnft, installVault }).rpc();
+    });
+
+    it('with the `delete_install` instruction', async () => {
+      await program.methods
+        .deleteInstall()
+        .accounts({ install, receiver: program.provider.publicKey })
+        .rpc();
+    });
+
+    it('the install would return null on a fetch', async () => {
+      const i = await program.account.install.fetchNullable(install);
+      assert.isNull(i);
+    });
   });
 
   it('fetch xnfts owned by user', async () => {
@@ -80,19 +113,6 @@ describe('xnft', () => {
     ]);
 
     assert.isNotEmpty(ownedxNFTs);
-  });
-
-  it('fetch user installed xNFTs', async () => {
-    const installedxNFTs = await program.account.install.all([
-      {
-        memcmp: {
-          offset: 8, // Discriminator
-          bytes: program.provider.publicKey.toBase58()
-        }
-      }
-    ]);
-
-    assert.isNotEmpty(installedxNFTs);
   });
 
   describe('if the authority was to stop installations of their xnft', () => {
