@@ -51,7 +51,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={xnft.xnft.metadata.properties.icon}
+          src={xnft.xnft.metadata.image}
           height={64}
           width={64}
           layout="fixed"

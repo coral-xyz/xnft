@@ -1,7 +1,10 @@
 import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
-import xNFT, { type XnftWithMetadata, type SerializedXnftWithMetadata } from '../../utils/xnft';
+import xNFT, {
+  type InstalledXnftWithMetadata,
+  type SerializedXnftWithMetadata
+} from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
@@ -19,8 +22,9 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   useEffect(() => {
     if (!err) {
       setIsInstalled(
-        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === xnft.publicKey) !==
-          undefined
+        installed.find(
+          (i: InstalledXnftWithMetadata) => i.xnft.publicKey.toBase58() === xnft.publicKey
+        ) !== undefined
       );
     } else {
       console.error(err);
@@ -46,7 +50,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
       <Image
         className="col-span-1 rounded-lg"
         alt="app-icon"
-        src={xnft.metadata.properties.icon}
+        src={xnft.metadata.image}
         width={100}
         height={100}
         layout="fixed"

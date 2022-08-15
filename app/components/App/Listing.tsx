@@ -27,7 +27,7 @@ const Listing: FunctionComponent<ListingProps> = ({
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={metadata.properties.icon}
+          src={metadata.image}
           height={64}
           width={64}
           layout="fixed"

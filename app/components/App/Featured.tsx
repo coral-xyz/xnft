@@ -27,7 +27,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <Image
           className="rounded-l-2xl"
           alt="app-icon"
-          src={metadata.properties.icon}
+          src={metadata.image}
           height={400}
           width={400}
           layout="fixed"
