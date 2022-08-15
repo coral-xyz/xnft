@@ -289,7 +289,7 @@ export type Xnft = {
               {
                 kind: 'account';
                 type: 'publicKey';
-                account: 'Xnft2';
+                account: 'Xnft';
                 path: 'xnft';
               }
             ];
@@ -340,6 +340,12 @@ export type Xnft = {
                 kind: 'account';
                 type: 'publicKey';
                 path: 'authority';
+              },
+              {
+                kind: 'account';
+                type: 'publicKey';
+                account: 'Xnft';
+                path: 'xnft';
               }
             ];
           };
@@ -365,7 +371,23 @@ export type Xnft = {
     {
       name: 'deleteInstall';
       docs: ['Closes the install account.'];
-      accounts: [];
+      accounts: [
+        {
+          name: 'install';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'receiver';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'authority';
+          isMut: false;
+          isSigner: true;
+        }
+      ];
       args: [];
     },
     {
@@ -393,7 +415,7 @@ export type Xnft = {
   ];
   accounts: [
     {
-      name: 'xnft2';
+      name: 'xnft';
       type: {
         kind: 'struct';
         fields: [
@@ -404,20 +426,6 @@ export type Xnft = {
           {
             name: 'publisher';
             type: 'publicKey';
-          },
-          {
-            name: 'kind';
-            type: {
-              defined: 'Kind';
-            };
-          },
-          {
-            name: 'totalInstalls';
-            type: 'u64';
-          },
-          {
-            name: 'installPrice';
-            type: 'u64';
           },
           {
             name: 'installVault';
@@ -436,8 +444,38 @@ export type Xnft = {
             type: 'publicKey';
           },
           {
+            name: 'installAuthority';
+            type: {
+              option: 'publicKey';
+            };
+          },
+          {
             name: 'bump';
             type: 'u8';
+          },
+          {
+            name: 'kind';
+            type: {
+              defined: 'Kind';
+            };
+          },
+          {
+            name: 'tag';
+            type: {
+              defined: 'Tag';
+            };
+          },
+          {
+            name: 'name';
+            type: 'string';
+          },
+          {
+            name: 'totalInstalls';
+            type: 'u64';
+          },
+          {
+            name: 'installPrice';
+            type: 'u64';
           },
           {
             name: 'createdTs';
@@ -448,23 +486,13 @@ export type Xnft = {
             type: 'i64';
           },
           {
-            name: 'installAuthority';
-            type: {
-              option: 'publicKey';
-            };
-          },
-          {
-            name: 'name';
-            type: 'string';
-          },
-          {
             name: 'suspended';
             type: 'bool';
           },
           {
-            name: 'tag';
+            name: 'reserved';
             type: {
-              defined: 'Tag';
+              array: ['u8', 32];
             };
           }
         ];
@@ -484,12 +512,18 @@ export type Xnft = {
             type: 'publicKey';
           },
           {
+            name: 'masterMetadata';
+            type: 'publicKey';
+          },
+          {
             name: 'id';
             type: 'u64';
           },
           {
-            name: 'masterMetadata';
-            type: 'publicKey';
+            name: 'reserved';
+            type: {
+              array: ['u8', 64];
+            };
           }
         ];
       };
@@ -565,6 +599,11 @@ export type Xnft = {
   errors: [
     {
       code: 6000;
+      name: 'NameTooLong';
+      msg: 'The name provided for creating the xNFT exceeded the byte limit';
+    },
+    {
+      code: 6001;
       name: 'SuspendedInstallation';
       msg: 'Attempting to install a currently suspended xNFT';
     }
@@ -862,7 +901,7 @@ export const IDL: Xnft = {
               {
                 kind: 'account',
                 type: 'publicKey',
-                account: 'Xnft2',
+                account: 'Xnft',
                 path: 'xnft'
               }
             ]
@@ -913,6 +952,12 @@ export const IDL: Xnft = {
                 kind: 'account',
                 type: 'publicKey',
                 path: 'authority'
+              },
+              {
+                kind: 'account',
+                type: 'publicKey',
+                account: 'Xnft',
+                path: 'xnft'
               }
             ]
           }
@@ -938,7 +983,23 @@ export const IDL: Xnft = {
     {
       name: 'deleteInstall',
       docs: ['Closes the install account.'],
-      accounts: [],
+      accounts: [
+        {
+          name: 'install',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'receiver',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'authority',
+          isMut: false,
+          isSigner: true
+        }
+      ],
       args: []
     },
     {
@@ -966,7 +1027,7 @@ export const IDL: Xnft = {
   ],
   accounts: [
     {
-      name: 'xnft2',
+      name: 'xnft',
       type: {
         kind: 'struct',
         fields: [
@@ -977,20 +1038,6 @@ export const IDL: Xnft = {
           {
             name: 'publisher',
             type: 'publicKey'
-          },
-          {
-            name: 'kind',
-            type: {
-              defined: 'Kind'
-            }
-          },
-          {
-            name: 'totalInstalls',
-            type: 'u64'
-          },
-          {
-            name: 'installPrice',
-            type: 'u64'
           },
           {
             name: 'installVault',
@@ -1009,8 +1056,38 @@ export const IDL: Xnft = {
             type: 'publicKey'
           },
           {
+            name: 'installAuthority',
+            type: {
+              option: 'publicKey'
+            }
+          },
+          {
             name: 'bump',
             type: 'u8'
+          },
+          {
+            name: 'kind',
+            type: {
+              defined: 'Kind'
+            }
+          },
+          {
+            name: 'tag',
+            type: {
+              defined: 'Tag'
+            }
+          },
+          {
+            name: 'name',
+            type: 'string'
+          },
+          {
+            name: 'totalInstalls',
+            type: 'u64'
+          },
+          {
+            name: 'installPrice',
+            type: 'u64'
           },
           {
             name: 'createdTs',
@@ -1021,23 +1098,13 @@ export const IDL: Xnft = {
             type: 'i64'
           },
           {
-            name: 'installAuthority',
-            type: {
-              option: 'publicKey'
-            }
-          },
-          {
-            name: 'name',
-            type: 'string'
-          },
-          {
             name: 'suspended',
             type: 'bool'
           },
           {
-            name: 'tag',
+            name: 'reserved',
             type: {
-              defined: 'Tag'
+              array: ['u8', 32]
             }
           }
         ]
@@ -1057,12 +1124,18 @@ export const IDL: Xnft = {
             type: 'publicKey'
           },
           {
+            name: 'masterMetadata',
+            type: 'publicKey'
+          },
+          {
             name: 'id',
             type: 'u64'
           },
           {
-            name: 'masterMetadata',
-            type: 'publicKey'
+            name: 'reserved',
+            type: {
+              array: ['u8', 64]
+            }
           }
         ]
       }
@@ -1138,6 +1211,11 @@ export const IDL: Xnft = {
   errors: [
     {
       code: 6000,
+      name: 'NameTooLong',
+      msg: 'The name provided for creating the xNFT exceeded the byte limit'
+    },
+    {
+      code: 6001,
       name: 'SuspendedInstallation',
       msg: 'Attempting to install a currently suspended xNFT'
     }

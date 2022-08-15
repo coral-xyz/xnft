@@ -1,12 +1,12 @@
 import { selector, useRecoilValueLoadable } from 'recoil';
-import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
+import xNFT, { type InstalledXnftWithMetadata, type XnftWithMetadata } from '../../utils/xnft';
 import { anchorWalletState } from './solana';
 
 /**
  * State of the connected wallet's installed xNFTs found on-chain.
  * @export
  */
-export const installedXnftsState = selector<XnftWithMetadata[]>({
+export const installedXnftsState = selector<InstalledXnftWithMetadata[]>({
   key: 'installedXnfts',
   get: async ({ get }) => {
     const wallet = get(anchorWalletState);
@@ -18,13 +18,13 @@ export const installedXnftsState = selector<XnftWithMetadata[]>({
  * Custom hook to access the installed xNFTs from the loadable recoil state.
  * @export
  * @returns {{
- *   installed: XnftWithMetadata[];
+ *   installed: InstalledXnftWithMetadata[];
  *   loading: boolean;
  *   err?: Error;
  * }}
  */
 export function useInstalledXnftsLoadable(): {
-  installed: XnftWithMetadata[];
+  installed: InstalledXnftWithMetadata[];
   loading: boolean;
   err?: Error;
 } {

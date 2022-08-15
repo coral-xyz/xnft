@@ -2,7 +2,11 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import xNFT, { type SerializedXnftWithMetadata, type XnftWithMetadata } from '../../utils/xnft';
+import xNFT, {
+  type InstalledXnftWithMetadata,
+  type SerializedXnftWithMetadata,
+  type XnftWithMetadata
+} from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 
@@ -14,16 +18,20 @@ type AppProps = {
   featured?: boolean;
   price: number;
   profile?: boolean;
-  xnft: XnftWithMetadata | SerializedXnftWithMetadata;
+  type?: 'installed' | 'owned';
+  xnft: XnftWithMetadata | SerializedXnftWithMetadata | InstalledXnftWithMetadata;
 };
 
-const App: FunctionComponent<AppProps> = ({ featured, price, profile, xnft }) => {
+const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft }) => {
   const { connected } = useWallet();
   const program = useProgram();
   const { installed, err } = useInstalledXnftsLoadable();
   const [isInstalled, setIsInstalled] = useState(false);
 
-  const pubkey = useMemo(() => new PublicKey(xnft.publicKey), [xnft]);
+  const pubkey = useMemo(
+    () => ('xnft' in xnft ? xnft.xnft.publicKey : new PublicKey(xnft.publicKey)),
+    [xnft]
+  );
   const appLink = useMemo(() => `/app/${pubkey.toBase58()}`, [pubkey]);
 
   /**
@@ -33,8 +41,9 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, xnft }) =>
   useEffect(() => {
     if (!err) {
       setIsInstalled(
-        installed.find((i: XnftWithMetadata) => i.publicKey.toBase58() === pubkey.toBase58()) !==
-          undefined
+        installed.find(
+          (i: InstalledXnftWithMetadata) => i.xnft.publicKey.toBase58() === pubkey.toBase58()
+        ) !== undefined
       );
     } else {
       console.error(err);
@@ -56,7 +65,8 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, xnft }) =>
    */
   const handleInstall = useCallback(async () => {
     try {
-      await xNFT.install(program, xnft);
+      const acc = 'xnft' in xnft ? xnft.xnft : xnft;
+      await xNFT.install(program, acc);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
@@ -67,18 +77,23 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, xnft }) =>
       connected={connected}
       installed={isInstalled}
       price={price}
-      metadata={xnft.metadata}
+      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       link={appLink}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
     />
   ) : profile ? (
-    <Profile link={appLink} onOpen={handleOpenApp} xnft={xnft as XnftWithMetadata} />
+    <Profile
+      type={type}
+      link={appLink}
+      onOpen={handleOpenApp}
+      xnft={xnft as InstalledXnftWithMetadata}
+    />
   ) : (
     <Listing
       connected={connected}
       installed={isInstalled}
       price={price}
-      metadata={xnft.metadata}
+      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       link={appLink}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
     />
