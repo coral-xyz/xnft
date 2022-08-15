@@ -22,7 +22,7 @@ describe('xnft', () => {
   it('creates the xNFT', async () => {
     const installPrice = new anchor.BN(0);
     const name = 'my-xnft';
-    const symbol = 'xnft';
+    const symbol = '';
     const tag = { defi: {} };
     const kind = { app: {} };
     const uri =
@@ -53,7 +53,7 @@ describe('xnft', () => {
   });
 
   it('fetch created xNFT', async () => {
-    const fetchedXnft = await program.account.xnft2.fetch(xnft);
+    const fetchedXnft = await program.account.xnft.fetch(xnft);
     assert.equal(fetchedXnft.name, 'my-xnft');
   });
 
@@ -70,7 +70,7 @@ describe('xnft', () => {
   });
 
   it('fetch xnfts owned by user', async () => {
-    const ownedxNFTs = await program.account.xnft2.all([
+    const ownedxNFTs = await program.account.xnft.all([
       {
         memcmp: {
           offset: 8, // Discriminator
@@ -108,7 +108,7 @@ describe('xnft', () => {
         })
         .rpc();
 
-      const acc = await program.account.xnft2.fetch(xnft);
+      const acc = await program.account.xnft.fetch(xnft);
       assert.isTrue(acc.suspended);
     });
 
@@ -141,7 +141,7 @@ describe('xnft', () => {
 
   describe('the authority of an xnft can update the properties', () => {
     it('by using the `update_xnft` instruction', async () => {
-      const x = await program.account.xnft2.fetch(xnft);
+      const x = await program.account.xnft.fetch(xnft);
       await program.methods
         .updateXnft({
           installVault: null,
@@ -154,7 +154,7 @@ describe('xnft', () => {
     });
 
     it('and it will change the xnft program account', async () => {
-      const x = await program.account.xnft2.fetch(xnft);
+      const x = await program.account.xnft.fetch(xnft);
       assert.deepEqual(x.tag, { nft: {} });
 
       const m = await Metadata.fromAccountAddress(program.provider.connection, x.masterMetadata);
