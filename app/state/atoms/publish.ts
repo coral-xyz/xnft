@@ -1,5 +1,5 @@
 import { atom, type SetterOrUpdater, useRecoilState } from 'recoil';
-import { XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
+import { MIN_APP_ICON_SIZE, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
 
 export type PublishState = typeof defaultPublishState;
 
@@ -34,6 +34,28 @@ export const publishState = atom<PublishState>({
  */
 export function usePublish(): [PublishState, SetterOrUpdater<PublishState>] {
   return useRecoilState(publishState);
+}
+
+/**
+ * Validates that the file received from the icon dropzone
+ * is square and meets the minimum size requirement.
+ * @param {File} file
+ * @returns {Promise<File>}
+ */
+export function validateAppIcon(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener('load', () => {
+      if (img.width !== img.height) {
+        return reject('Icon should have equal width and height');
+      } else if (img.width < MIN_APP_ICON_SIZE) {
+        return reject('Icon should be a minimum of 256x256');
+      } else {
+        return resolve(file);
+      }
+    });
+    img.src = URL.createObjectURL(file);
+  });
 }
 
 /**

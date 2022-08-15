@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { memo, useEffect, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
-import { usePublish, validateDetailsInput } from '../../state/atoms/publish';
+import { usePublish, validateAppIcon, validateDetailsInput } from '../../state/atoms/publish';
 import { ALLOWED_IMAGE_TYPES, MAX_NAME_LENGTH, PLACEHOLDER_PUBKEY } from '../../utils/constants';
 import { PRICE_RX, ROYALTY_RX, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
 import { inputClasses } from '../Inputs/Input';
@@ -19,7 +19,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
   useEffect(() => {
     if (iconDrop.acceptedFiles.length > 0) {
-      setPublishState(prev => ({ ...prev, icon: iconDrop.acceptedFiles[0] }));
+      validateAppIcon(iconDrop.acceptedFiles[0])
+        .then(file => setPublishState(prev => ({ ...prev, icon: file })))
+        .catch(alert);
     }
   }, [iconDrop.acceptedFiles, setPublishState]);
 
