@@ -38,7 +38,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   const account = useMemo(() => ('xnft' in xnft ? xnft.xnft : xnft), [xnft]);
 
   const handleClickDetails = useCallback(() => router.push(link), [link, router]);
-  const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused, xnft]);
+  const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused]);
   const handleClickUninstall = useCallback(async () => {
     try {
       await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
