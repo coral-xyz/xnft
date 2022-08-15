@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from '@heroicons/react/outline';
 import Image from 'next/image';
 import { type FunctionComponent, memo, useState } from 'react';
 import type { SerializedXnftWithMetadata } from '../../utils/xnft';
+import xNFT from '../../utils/xnft';
 
 const tabs = [{ name: 'Overview' }, { name: 'Information' }];
 
@@ -43,6 +44,16 @@ type InformationTabProps = {
 const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
   return (
     <section className="mx-auto mt-5 flex h-full max-w-2xl flex-col gap-4 rounded-xl bg-[#292C33] p-4">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm text-[#99A4B4]">Tag</span>
+        <span className="font-medium text-white">{xNFT.tagName(xnft.account.tag)}</span>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className="text-sm text-[#99A4B4]">Kind</span>
+        <span className="font-medium text-white">{xNFT.kindName(xnft.account.kind)}</span>
+      </div>
+
       {xnft.metadata.external_url && (
         <div className="flex flex-col gap-1">
           <span className="text-sm text-[#99A4B4]">Website</span>
@@ -59,33 +70,25 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
         </div>
       )}
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1">
         <span className="text-sm text-[#99A4B4]">Supply</span>
-        <span
-          className="flex items-center gap-1 font-medium
-          text-white"
-        >
-          &#8734; {/* TODO: */}
-        </span>
+        <span className="font-medium text-white">&#8734;</span>
       </div>
-      <div className="flex flex-col">
+
+      <div className="flex flex-col gap-1">
         <span className="text-sm text-[#99A4B4]">Last Updated</span>
-        <span
-          className="flex items-center gap-1 font-medium
-           text-white"
-        >
+        <span className="font-medium text-white">
           {new Date(parseInt(xnft.account.updatedTs, 16) * 1000).toUTCString()}
         </span>
       </div>
 
       {xnft.metadataAccount.data.uri && (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <span className="text-sm text-[#99A4B4]">Metadata</span>
           <a
             href={xnft.metadataAccount.data.uri}
             target="_blank"
-            className="flex cursor-pointer items-center gap-1 font-medium
-            text-white hover:text-sky-500"
+            className="flex cursor-pointer items-center gap-1 font-medium text-white hover:text-sky-500"
             rel="noreferrer"
           >
             <ExternalLinkIcon className="h-4 w-4" />

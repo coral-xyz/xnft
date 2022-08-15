@@ -70,16 +70,15 @@ const MePage: NextPage = () => {
               />
             ) : (
               <div className="flex w-full flex-col justify-center">
-                <ul
-                  role="list"
-                  className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3"
-                >
+                <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
                   {installed.map((item, idx) => (
-                    <li
-                      key={idx}
-                      className="col-span-1 rounded-lg bg-zinc-800 py-2 hover:bg-zinc-600"
-                    >
-                      <App profile price={item.account.installPrice.toNumber()} xnft={item} />
+                    <li key={idx}>
+                      <App
+                        profile
+                        type="installed"
+                        price={item.xnft.account.installPrice.toNumber()}
+                        xnft={item}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -114,7 +113,12 @@ const MePage: NextPage = () => {
               <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
                 {owned.map((item, idx) => (
                   <li key={idx}>
-                    <App profile price={item.account.installPrice.toNumber()} xnft={item} />
+                    <App
+                      profile
+                      type="owned"
+                      price={item.account.installPrice.toNumber()}
+                      xnft={item}
+                    />
                   </li>
                 ))}
               </ul>

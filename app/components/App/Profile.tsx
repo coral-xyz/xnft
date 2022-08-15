@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { type FunctionComponent, memo, type ReactNode, useCallback } from 'react';
+import { type FunctionComponent, memo, type ReactNode, useCallback, useMemo } from 'react';
 import { useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
-import type { InstalledXnftWithMetadata } from '../../utils/xnft';
+import type { InstalledXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 import xNFT from '../../utils/xnft';
 
 type MetaButtonProps = {
@@ -27,7 +27,7 @@ type ProfileProps = {
   link: string;
   onOpen: () => void;
   type: 'installed' | 'owned';
-  xnft: InstalledXnftWithMetadata;
+  xnft: XnftWithMetadata | InstalledXnftWithMetadata;
 };
 
 const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) => {
@@ -35,11 +35,13 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   const program = useProgram();
   const [_, setFocused] = useXnftFocus();
 
+  const account = useMemo(() => ('xnft' in xnft ? xnft.xnft : xnft), [xnft]);
+
   const handleClickDetails = useCallback(() => router.push(link), [link, router]);
-  const handleClickEdit = useCallback(() => setFocused(xnft.xnft), [setFocused, xnft]);
+  const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused, xnft]);
   const handleClickUninstall = useCallback(async () => {
     try {
-      await xNFT.delete(program, xnft.install.publicKey);
+      await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
     } catch (err) {
       console.error(`onUninstall: ${err}`);
     }
@@ -51,16 +53,16 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={xnft.xnft.metadata.image}
+          src={account.metadata.image}
           height={64}
           width={64}
           layout="fixed"
         />
       </Link>
       <div className="pt-2">
-        <div className="text-lg font-bold tracking-wide text-white">{xnft.xnft.metadata.name}</div>
+        <div className="text-lg font-bold tracking-wide text-white">{account.metadata.name}</div>
         <div className="truncate text-sm tracking-wide text-[#FAFAFA]">
-          {xnft.xnft.metadata.description}
+          {account.metadata.description}
         </div>
         <div className="mt-4 flex gap-3">
           {type === 'installed' && <MetaButton onClick={onOpen}>Open</MetaButton>}
