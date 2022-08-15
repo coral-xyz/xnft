@@ -18,12 +18,12 @@ const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
     <section className="mt-6 w-full rounded-2xl bg-[#27272A]">
       <div className="flex justify-center p-10">
         <ul className="flex list-none gap-5 overflow-x-scroll">
-          {xnft.metadata.properties.screenshots.map((url, idx) => (
+          {xnft.metadata.properties.files.map((f, idx) => (
             <li key={idx}>
               <Image
                 className="rounded-xl"
                 alt={`screenshot-${idx}`}
-                src={url}
+                src={f.uri}
                 height={479}
                 width={300}
                 layout="fixed"
@@ -55,38 +55,6 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
           >
             <ExternalLinkIcon className="h-4 w-4" />
             Open
-          </a>
-        </div>
-      )}
-
-      {xnft.metadata.properties.twitter && (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-[#99A4B4]">Twitter</span>
-          <a
-            href={xnft.metadata.properties.twitter}
-            target="_blank"
-            className="flex cursor-pointer items-center gap-1 font-medium
-            text-white hover:text-sky-500"
-            rel="noreferrer"
-          >
-            <ExternalLinkIcon className="h-4 w-4" />
-            Profile
-          </a>
-        </div>
-      )}
-
-      {xnft.metadata.properties.discord && (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-[#99A4B4]">Discord</span>
-          <a
-            href={xnft.metadata.properties.discord}
-            target="_blank"
-            className="flex cursor-pointer items-center gap-1 font-medium
-            text-white hover:text-sky-500"
-            rel="noreferrer"
-          >
-            <ExternalLinkIcon className="h-4 w-4" />
-            Invitation
           </a>
         </div>
       )}

@@ -8,16 +8,19 @@ export type Metadata = {
   symbol: string;
   description: string;
   image: string;
+  animation_url: string;
   external_url: string;
   properties: MetadataProperties;
 };
 
 export type MetadataProperties = {
   bundle: string;
-  icon: string;
-  screenshots: string[];
-  twitter: string;
-  discord: string;
+  files: PropertiesFile[];
+};
+
+export type PropertiesFile = {
+  uri: string;
+  type: string;
 };
 
 /**
@@ -32,12 +35,13 @@ export const generateMetadata = (xnft: PublicKey, state: PublishState): Metadata
   symbol: state.title.slice(0, 3).toUpperCase(),
   description: state.description,
   image: `${S3_BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
+  animation_url: '',
   external_url: state.website,
   properties: {
     bundle: `${S3_BUCKET_URL}/${getBundlePath(xnft, state.bundle.name)}`,
-    icon: `${S3_BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
-    screenshots: state.screenshots.map(s => `${S3_BUCKET_URL}/${getScreenshotPath(xnft, s.name)}`),
-    twitter: '', // TODO:
-    discord: '' // TODO:
+    files: state.screenshots.map(s => ({
+      uri: `${S3_BUCKET_URL}/${getScreenshotPath(xnft, s.name)}`,
+      type: s.type
+    }))
   }
 });
