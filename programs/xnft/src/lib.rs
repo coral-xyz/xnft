@@ -223,7 +223,7 @@ pub mod xnft {
 
     /// Closes the install account.
     pub fn delete_install(_ctx: Context<DeleteInstall>) -> Result<()> {
-        // todo
+        // TODO:
         Ok(())
     }
 
@@ -465,8 +465,19 @@ pub struct CreateInstallWithAuthority<'info> {
 }
 
 #[derive(Accounts)]
-pub struct DeleteInstall {
-    // TODO:
+pub struct DeleteInstall<'info> {
+    #[account(
+        mut,
+        close = receiver,
+        has_one = authority,
+    )]
+    pub install: Account<'info, Install>,
+
+    /// CHECK: the account receiving the rent doesn't need validation.
+    #[account(mut)]
+    pub receiver: UncheckedAccount<'info>,
+
+    pub authority: Signer<'info>,
 }
 
 #[derive(Accounts)]
