@@ -8,7 +8,8 @@ import xNFT, {
   type XnftWithMetadata
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
-import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import { installedXnftsState, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import { useRecoilRefresher_UNSTABLE } from 'recoil';
 
 const Featured = dynamic(() => import('./Featured'));
 const Listing = dynamic(() => import('./Listing'));
@@ -26,6 +27,7 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
   const { connected } = useWallet();
   const program = useProgram();
   const { installed, err } = useInstalledXnftsLoadable();
+  const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
   const [isInstalled, setIsInstalled] = useState(false);
 
   /**
@@ -75,10 +77,11 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
     try {
       const acc = 'xnft' in xnft ? xnft.xnft : xnft;
       await xNFT.install(program, acc);
+      refreshInstalled();
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [program, xnft]);
+  }, [program, xnft, refreshInstalled]);
 
   return featured ? (
     <Featured

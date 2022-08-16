@@ -54,7 +54,7 @@ const anonymousProgram: Program<IDLType> = new Program(
   IDL,
   XNFT_PROGRAM_ID,
   new AnchorProvider(
-    new Connection(process.env.NEXT_PUBLIC_CONNECTION),
+    new Connection(process.env.NEXT_PUBLIC_CONNECTION, 'confirmed'),
     { publicKey: PublicKey.default, signTransaction: undefined, signAllTransactions: undefined },
     { commitment: 'confirmed', skipPreflight: true }
   )
@@ -127,27 +127,32 @@ export default abstract class xNFT {
    * Fetches a single xNFT program account by public key and its metadata.
    * @static
    * @param {PublicKey} pubkey
+   * @param {Program<IDLType>} [program=anonymousProgram]
    * @returns {Promise<XnftWithMetadata>}
    * @memberof xNFT
    */
-  static async get(pubkey: PublicKey): Promise<XnftWithMetadata> {
-    const account = await anonymousProgram.account.xnft.fetch(pubkey);
-    return transformWithMetadata(pubkey, account as any);
+  static async get(
+    pubkey: PublicKey,
+    program: Program<IDLType> = anonymousProgram
+  ): Promise<XnftWithMetadata> {
+    const account = await program.account.xnft.fetch(pubkey);
+    return transformWithMetadata(program, pubkey, account as any);
   }
 
   /**
    * Fetches all xNFT program accounts with their metadata.
    * @static
+   * @param {Program<IDLType>} [program=anonymousProgram]
    * @returns {Promise<XnftWithMetadata[]>}
    * @memberof xNFT
    */
-  static async getAll(): Promise<XnftWithMetadata[]> {
-    const xnfts = await anonymousProgram.account.xnft.all();
+  static async getAll(program: Program<IDLType> = anonymousProgram): Promise<XnftWithMetadata[]> {
+    const xnfts = await program.account.xnft.all();
     const response: XnftWithMetadata[] = [];
 
     for await (const x of xnfts) {
       try {
-        const data = await transformWithMetadata(x.publicKey, x.account as any);
+        const data = await transformWithMetadata(program, x.publicKey, x.account as any);
         response.push(data);
       } catch (error) {
         console.error(`failed to fetch metadata for ${x.publicKey.toBase58()}`, error);
@@ -161,12 +166,16 @@ export default abstract class xNFT {
    * Gets all xNFT program accounts that are installed by the argued
    * public key wallet and their metadata.
    * @static
+   * @param {Program<IDLType>} program
    * @param {PublicKey} pubkey
    * @returns {Promise<InstalledXnftWithMetadata[]>}
    * @memberof xNFT
    */
-  static async getInstalled(pubkey: PublicKey): Promise<InstalledXnftWithMetadata[]> {
-    const response: ProgramAccount<InstallAccount>[] = await anonymousProgram.account.install.all([
+  static async getInstalled(
+    program: Program<IDLType>,
+    pubkey: PublicKey
+  ): Promise<InstalledXnftWithMetadata[]> {
+    const response: ProgramAccount<InstallAccount>[] = await program.account.install.all([
       {
         memcmp: {
           offset: 8,
@@ -178,7 +187,7 @@ export default abstract class xNFT {
     const installed: InstalledXnftWithMetadata[] = [];
 
     for await (const item of response) {
-      const data = await xNFT.get(item.account.xnft);
+      const data = await xNFT.get(item.account.xnft, program);
       installed.push({ install: item, xnft: data });
     }
 
@@ -189,12 +198,13 @@ export default abstract class xNFT {
    * Gets all xNFT program accounts that are owned or published by the
    * argued public key and their metadata.
    * @static
+   * @param {Program<IDLType>} program
    * @param {PublicKey} pubkey
    * @returns {Promise<XnftWithMetadata[]>}
    * @memberof xNFT
    */
-  static async getOwned(pubkey: PublicKey): Promise<XnftWithMetadata[]> {
-    const response: ProgramAccount<XnftAccount>[] = (await anonymousProgram.account.xnft.all([
+  static async getOwned(program: Program<IDLType>, pubkey: PublicKey): Promise<XnftWithMetadata[]> {
+    const response: ProgramAccount<XnftAccount>[] = (await program.account.xnft.all([
       {
         memcmp: {
           offset: 8,
@@ -206,7 +216,7 @@ export default abstract class xNFT {
     const owned: XnftWithMetadata[] = [];
 
     for await (const item of response) {
-      const data = await transformWithMetadata(item.publicKey, item.account as any);
+      const data = await transformWithMetadata(program, item.publicKey, item.account as any);
       owned.push(data);
     }
 
@@ -313,11 +323,12 @@ export default abstract class xNFT {
 }
 
 async function transformWithMetadata(
+  program: Program<IDLType>,
   publicKey: PublicKey,
   xnft: XnftAccount
 ): Promise<XnftWithMetadata> {
   const metadataAccount = await MplMetadata.fromAccountAddress(
-    anonymousProgram.provider.connection,
+    program.provider.connection,
     xnft.masterMetadata
   );
 

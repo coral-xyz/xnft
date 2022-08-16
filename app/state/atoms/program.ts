@@ -27,7 +27,7 @@ export const programState = atom<Program<Xnft>>({
           signTransaction: undefined,
           signAllTransactions: undefined
         },
-        {}
+        { commitment: 'confirmed' }
       );
 
       return new Program(IDL, XNFT_PROGRAM_ID, provider);

@@ -1,5 +1,6 @@
 import { selector, useRecoilValueLoadable } from 'recoil';
 import xNFT, { type InstalledXnftWithMetadata, type XnftWithMetadata } from '../../utils/xnft';
+import { programState } from './program';
 import { anchorWalletState } from './solana';
 
 /**
@@ -10,7 +11,8 @@ export const installedXnftsState = selector<InstalledXnftWithMetadata[]>({
   key: 'installedXnfts',
   get: async ({ get }) => {
     const wallet = get(anchorWalletState);
-    return wallet ? await xNFT.getInstalled(wallet.publicKey) : [];
+    const program = get(programState);
+    return wallet ? await xNFT.getInstalled(program, wallet.publicKey) : [];
   }
 });
 
@@ -45,7 +47,8 @@ export const ownedXnftsState = selector<XnftWithMetadata[]>({
   key: 'ownedXnfts',
   get: async ({ get }) => {
     const wallet = get(anchorWalletState);
-    return wallet ? await xNFT.getOwned(wallet.publicKey) : [];
+    const program = get(programState);
+    return wallet ? await xNFT.getOwned(program, wallet.publicKey) : [];
   }
 });
 

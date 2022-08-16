@@ -6,8 +6,9 @@ import xNFT, {
   type SerializedXnftWithMetadata
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
-import { useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import { installedXnftsState, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
+import { useRecoilRefresher_UNSTABLE } from 'recoil';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;
@@ -17,6 +18,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();
   const { connected } = useWallet();
   const { installed, err } = useInstalledXnftsLoadable();
+  const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
   const [isInstalled, setIsInstalled] = useState(false);
 
   /**
@@ -58,10 +60,11 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const handleInstall = useCallback(async () => {
     try {
       await xNFT.install(program, xnft);
+      refreshInstalled();
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     }
-  }, [program, xnft]);
+  }, [program, xnft, refreshInstalled]);
 
   return (
     <section className="flex gap-6">
