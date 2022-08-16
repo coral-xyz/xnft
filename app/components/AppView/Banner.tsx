@@ -20,6 +20,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const { installed, err } = useInstalledXnftsLoadable();
   const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   /**
    * Effect hook to mark whether the public key of the prop provided
@@ -58,11 +59,15 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
    * to execute the contract instruction.
    */
   const handleInstall = useCallback(async () => {
+    setLoading(true);
+
     try {
       await xNFT.install(program, xnft);
       refreshInstalled();
     } catch (err) {
       console.error(`handleInstall: ${err}`);
+    } finally {
+      setLoading(false);
     }
   }, [program, xnft, refreshInstalled]);
 
@@ -95,8 +100,9 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
           className="bg-[#4F46E5] text-white"
           disabled={!connected}
           installed={isInstalled}
-          price={priceLamports}
+          loading={loading}
           onClick={isInstalled ? handleOpenApp : handleInstall}
+          price={priceLamports}
         />
       </div>
     </section>

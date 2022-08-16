@@ -29,6 +29,7 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
   const { installed, err } = useInstalledXnftsLoadable();
   const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   /**
    * Memoized value for the xNFT account public key based on the
@@ -74,12 +75,16 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
    * of the program when a user clicks on the app installation button.
    */
   const handleInstall = useCallback(async () => {
+    setLoading(true);
+
     try {
       const acc = 'xnft' in xnft ? xnft.xnft : xnft;
       await xNFT.install(program, acc);
       refreshInstalled();
     } catch (err) {
       console.error(`handleInstall: ${err}`);
+    } finally {
+      setLoading(false);
     }
   }, [program, xnft, refreshInstalled]);
 
@@ -87,10 +92,11 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
     <Featured
       connected={connected}
       installed={isInstalled}
-      price={price}
-      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       link={appLink}
+      loading={loading}
+      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
+      price={price}
     />
   ) : profile ? (
     <Profile
@@ -103,10 +109,11 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
     <Listing
       connected={connected}
       installed={isInstalled}
-      price={price}
-      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       link={appLink}
+      loading={loading}
+      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
+      price={price}
     />
   );
 };

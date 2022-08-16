@@ -1,12 +1,14 @@
 import { DownloadIcon } from '@heroicons/react/solid';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { type FunctionComponent, memo, useMemo } from 'react';
+import { ClipLoader } from 'react-spinners';
 
 type AppPrimaryButtonProps = {
   className?: string;
   disabled?: boolean;
   installed?: boolean;
   large?: boolean;
+  loading?: boolean;
   onClick: () => void;
   price: number;
 };
@@ -16,6 +18,7 @@ const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
   disabled,
   installed,
   large,
+  loading,
   onClick,
   price
 }) => {
@@ -26,6 +29,15 @@ const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
   const btnText = useMemo(
     () => (installed ? 'Open' : price === 0 ? 'Free' : `${price / LAMPORTS_PER_SOL} SOL`),
     [installed, price]
+  );
+
+  /**
+   * Memoized value for the button icon based on the
+   * prop provided loading and installed values.
+   */
+  const btnIcon = useMemo(
+    () => (loading ? <ClipLoader size={16} /> : !installed ? <DownloadIcon height={16} /> : null),
+    [loading, installed]
   );
 
   /**
@@ -46,7 +58,7 @@ const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
       disabled={disabled}
     >
       {btnText}
-      {!installed && <DownloadIcon height={16} />}
+      {btnIcon}
     </button>
   );
 };

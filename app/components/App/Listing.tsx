@@ -7,19 +7,21 @@ import type { Metadata } from '../../utils/metadata';
 type ListingProps = {
   connected?: boolean;
   installed: boolean;
-  price: number;
-  metadata: Metadata;
   link: string;
+  loading?: boolean;
+  metadata: Metadata;
   onButtonClick: () => void;
+  price: number;
 };
 
 const Listing: FunctionComponent<ListingProps> = ({
   connected,
   installed,
-  price,
-  metadata,
   link,
-  onButtonClick
+  loading,
+  metadata,
+  onButtonClick,
+  price
 }) => {
   return (
     <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
@@ -41,8 +43,9 @@ const Listing: FunctionComponent<ListingProps> = ({
         <AppPrimaryButton
           disabled={!connected}
           installed={installed}
-          price={price}
+          loading={loading}
           onClick={onButtonClick}
+          price={price}
         />
       </div>
     </div>

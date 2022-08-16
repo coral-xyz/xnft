@@ -7,19 +7,21 @@ import AppPrimaryButton from '../Button/AppPrimaryButton';
 type FeaturedProps = {
   connected?: boolean;
   installed: boolean;
-  price: number;
-  metadata: Metadata;
   link: string;
+  loading?: boolean;
+  metadata: Metadata;
   onButtonClick: () => void;
+  price: number;
 };
 
 const Featured: FunctionComponent<FeaturedProps> = ({
   connected,
   installed,
-  price,
-  metadata,
   link,
-  onButtonClick
+  loading,
+  metadata,
+  onButtonClick,
+  price
 }) => {
   return (
     <div className="flex items-center gap-14 rounded-2xl bg-[#27272A] shadow-lg">
@@ -43,8 +45,9 @@ const Featured: FunctionComponent<FeaturedProps> = ({
             large
             disabled={!connected}
             installed={installed}
-            price={price}
+            loading={loading}
             onClick={onButtonClick}
+            price={price}
           />
           <Link href={link}>
             <button className="rounded-md bg-[#52525B] py-2 px-4 text-[#D4D4D8]">Explore</button>
