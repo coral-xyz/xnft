@@ -17,7 +17,7 @@ import { UPLOAD_STEPS } from '../components/Modal/ProgressModal';
 import { publishState as publishStateAtom } from '../state/atoms/publish';
 import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
-import { uploadFiles, uploadMetadata } from '../utils/s3';
+import { revalidate, uploadFiles, uploadMetadata } from '../utils/api';
 import xNFT from '../utils/xnft';
 import { useWallet } from '@solana/wallet-adapter-react';
 
@@ -114,6 +114,7 @@ const PublishPage: NextPage = () => {
 
       setProcessingStep('metadata');
       await uploadMetadata(xnft, publishState);
+      await revalidate(xnft);
 
       setProcessingStep('success');
     } catch (err) {

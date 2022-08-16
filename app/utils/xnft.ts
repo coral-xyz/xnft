@@ -15,7 +15,7 @@ import fetch from 'isomorphic-unfetch';
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { getMetadataPath } from './s3';
+import { getMetadataPath } from './api';
 import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft'];

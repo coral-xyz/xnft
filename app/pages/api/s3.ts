@@ -23,11 +23,14 @@ type RequestBody = {
   type: string;
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default async (
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ url: string } | { message: string }>
-) => {
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method must be `POST`' });
+  }
+
   try {
     const { name, type } = req.body as RequestBody;
 
@@ -46,4 +49,4 @@ export default async (
     console.log(err);
     res.status(500).json({ message: err });
   }
-};
+}

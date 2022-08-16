@@ -15,8 +15,8 @@ export const CORAL_LINKS = {
 export const DOCS_LINK = 'https://docs.xnft.gg';
 
 export const MAX_NAME_LENGTH = 30;
-export const APP_ICON_CONSTRAINTS = [320, 1500];
-export const APP_SCREENSHOT_CONSTRAINTS = [350, 2000];
+export const APP_ICON_CONSTRAINTS = [500, 1500];
+export const APP_SCREENSHOT_CONSTRAINTS = [500, 2000];
 
 export const PLACEHOLDER_PUBKEY = '3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3';
 

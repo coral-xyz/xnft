@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import fetch from 'isomorphic-unfetch';
 import type { PublishState } from '../state/atoms/publish';
 import { S3_BUCKET_URL } from './constants';
 import { generateMetadata } from './metadata';
@@ -13,6 +14,20 @@ export const getIconPath = (xnft: PublicKey, name: string): string =>
 
 export const getScreenshotPath = (xnft: PublicKey, name: string): string =>
   `${xnft.toBase58()}/screenshots/${name}`;
+
+/**
+ * Revalidate the static rendered path for the argued xNFT public key.
+ * @export
+ * @param {PublicKey} xnft
+ */
+export async function revalidate(xnft: PublicKey) {
+  await fetch(`/api/revalidate?xnft=${xnft.toBase58()}`, {
+    method: 'POST',
+    headers: {
+      Authorization: process.env.NEXT_PUBLIC_MY_SECRET_TOKEN
+    }
+  });
+}
 
 /**
  * Uploads the xNFT files to the appropriate S3 bucket and path.

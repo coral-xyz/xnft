@@ -82,9 +82,11 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
           <span className="text-3xl font-semibold tracking-wide text-white">
             {xnft.metadata.name}
           </span>
-          <span className="badge rounded-xl bg-red-400/25 py-1 px-2 text-xs text-red-400">
-            suspended
-          </span>
+          {xnft.account.suspended && (
+            <span className="badge rounded-xl bg-red-400/25 py-1 px-2 text-xs text-red-400">
+              suspended
+            </span>
+          )}
         </div>
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}

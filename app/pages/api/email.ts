@@ -9,8 +9,9 @@ mailchimp.setConfig({
 const listID = process.env.MAILCHIMP_LISTID;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Check for secret to confirm this is a valid request
-  if (req.query.secret !== process.env.NEXT_PUBLIC_MY_SECRET_TOKEN) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method must be `POST`' });
+  } else if (req.query.secret !== process.env.NEXT_PUBLIC_MY_SECRET_TOKEN) {
     return res.status(401).json({ message: 'Invalid token' });
   }
 
