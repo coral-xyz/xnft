@@ -223,7 +223,6 @@ pub mod xnft {
 
     /// Closes the install account.
     pub fn delete_install(_ctx: Context<DeleteInstall>) -> Result<()> {
-        // TODO:
         Ok(())
     }
 

@@ -253,6 +253,25 @@ export default abstract class xNFT {
   }
 
   /**
+   * Creates the `set_suspended` contract instruction for the argued
+   * xNFT public key and the provided value for the flag.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {PublicKey} xnft
+   * @param {boolean} flag
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  static async setSuspended(
+    program: Program<IDLType>,
+    xnft: PublicKey,
+    flag: boolean
+  ): Promise<string> {
+    const tx = await program.methods.setSuspended(flag).accounts({ xnft }).transaction();
+    return await program.provider.sendAndConfirm(tx);
+  }
+
+  /**
    * Returns the select option valid name for the argued tag enum variant.
    * @static
    * @param {Partial<{ [T: string]: {} }>} t

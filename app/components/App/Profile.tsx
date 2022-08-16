@@ -9,13 +9,16 @@ import xNFT from '../../utils/xnft';
 
 type MetaButtonProps = {
   children?: ReactNode;
+  className?: string;
   onClick: () => void;
 };
 
-const MetaButton: FunctionComponent<MetaButtonProps> = ({ children, onClick }) => {
+const MetaButton: FunctionComponent<MetaButtonProps> = ({ children, className, onClick }) => {
   return (
     <button
-      className="rounded bg-[#52525B] py-2 px-3 text-xs font-medium tracking-wide text-white"
+      className={`rounded bg-[#52525B] py-2 px-3 text-xs font-medium tracking-wide text-white ${
+        className ?? ''
+      }`}
       onClick={onClick}
     >
       {children}
@@ -47,6 +50,13 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
    */
   const handleClickDetails = useCallback(() => router.push(link), [link, router]);
   const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused]);
+  const handleClickSuspensionToggle = useCallback(async () => {
+    try {
+      await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
+    } catch (err) {
+      console.error(`onSetSuspend: ${err}`);
+    }
+  }, [program, account]);
   const handleClickUninstall = useCallback(async () => {
     try {
       await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
@@ -56,7 +66,12 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   }, [program, xnft]);
 
   return (
-    <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
+    <div
+      className={`flex items-center gap-4 rounded-xl bg-[#27272A] p-4 shadow-lg transition-all
+        hover:-translate-y-1 hover:bg-[#27272A]/40 ${
+          account.account.suspended && type === 'owned' ? 'border border-red-500' : ''
+        }`}
+    >
       <Link href={link} className="self-start">
         <Image
           className="rounded-lg"
@@ -67,7 +82,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
           layout="fixed"
         />
       </Link>
-      <div className="pt-2">
+      <div className="min-w-0 pt-2">
         <div className="text-lg font-bold tracking-wide text-white">{account.metadata.name}</div>
         <div className="truncate text-sm tracking-wide text-[#FAFAFA]">
           {account.metadata.description}
@@ -75,7 +90,14 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         <div className="mt-4 flex gap-3">
           {type === 'installed' && <MetaButton onClick={onOpen}>Open</MetaButton>}
           <MetaButton onClick={handleClickDetails}>Details</MetaButton> {/* FIXME: */}
-          {type === 'owned' && <MetaButton onClick={handleClickEdit}>Edit</MetaButton>}
+          {type === 'owned' && (
+            <>
+              <MetaButton onClick={handleClickEdit}>Edit</MetaButton>
+              <MetaButton onClick={handleClickSuspensionToggle}>
+                {account.account.suspended ? 'Unsuspend' : 'Suspend'}
+              </MetaButton>
+            </>
+          )}
           {type === 'installed' && (
             <MetaButton onClick={handleClickUninstall}>Uninstall</MetaButton>
           )}

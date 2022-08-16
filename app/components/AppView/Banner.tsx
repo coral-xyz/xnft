@@ -75,9 +75,14 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
       />
 
       <div className="flex flex-col items-start gap-4">
-        <span className="text-3xl font-semibold tracking-wide text-white">
-          {xnft.metadata.name}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-3xl font-semibold tracking-wide text-white">
+            {xnft.metadata.name}
+          </span>
+          <span className="badge rounded-xl bg-red-400/25 py-1 px-2 text-xs text-red-400">
+            suspended
+          </span>
+        </div>
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}
         </div>
