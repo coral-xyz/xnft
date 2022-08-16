@@ -15,8 +15,8 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
    */
   const apps = useMemo(
     () =>
-      xnfts.map((xnft, idx) => (
-        <App key={idx} price={parseInt(xnft.account.installPrice, 16)} xnft={xnft} />
+      xnfts.map(xnft => (
+        <App key={xnft.publicKey} price={parseInt(xnft.account.installPrice, 16)} xnft={xnft} />
       )),
     [xnfts]
   );

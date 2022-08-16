@@ -19,8 +19,8 @@ type EditModalProps = {
 /**
  * Array of components for all tag select field options.
  */
-const tagOptions = XNFT_TAG_OPTIONS.map((o, idx) => (
-  <option key={idx} value={o}>
+const tagOptions = XNFT_TAG_OPTIONS.map(o => (
+  <option key={o} value={o}>
     {o}
   </option>
 ));

@@ -20,7 +20,7 @@ const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
       <div className="flex justify-center p-10">
         <ul className="flex list-none gap-5 overflow-x-scroll">
           {xnft.metadata.properties.files.map((f, idx) => (
-            <li key={idx}>
+            <li key={f.uri}>
               <Image
                 className="rounded-xl"
                 alt={`screenshot-${idx}`}
@@ -111,9 +111,9 @@ const Tabs: FunctionComponent<TabsProps> = ({ xnft }) => {
     <div className="mt-8">
       <div className="border-b-2 border-[#393C43]">
         <nav className="mx-auto -mb-px flex max-w-xl space-x-8">
-          {tabs.map((tab, idx) => (
+          {tabs.map(tab => (
             <button
-              key={idx}
+              key={tab.name}
               disabled={tab.name === 'Screenshots'}
               className={classNames(
                 selectedTab === tab.name

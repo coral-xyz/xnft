@@ -20,8 +20,8 @@ const SupplySelect = dynamic(() => import('./SupplySelect'));
 /**
  * Array of components for all kind select field options.
  */
-const kindOptions = XNFT_KIND_OPTIONS.map((o, idx) => (
-  <option key={idx} value={o}>
+const kindOptions = XNFT_KIND_OPTIONS.map(o => (
+  <option key={o} value={o}>
     {o}
   </option>
 ));
@@ -29,8 +29,8 @@ const kindOptions = XNFT_KIND_OPTIONS.map((o, idx) => (
 /**
  * Array of components for all tag select field options.
  */
-const tagOptions = XNFT_TAG_OPTIONS.map((o, idx) => (
-  <option key={idx} value={o}>
+const tagOptions = XNFT_TAG_OPTIONS.map(o => (
+  <option key={o} value={o}>
     {o}
   </option>
 ));

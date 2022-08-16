@@ -27,7 +27,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   const screenshots = useMemo(
     () =>
       publishState.screenshots.map((s, idx) => (
-        <li key={idx}>
+        <li key={s.name}>
           {s.name && (
             <Image
               className="rounded-xl"

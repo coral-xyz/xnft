@@ -71,8 +71,8 @@ const MePage: NextPage = () => {
             ) : (
               <div className="flex w-full flex-col justify-center">
                 <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
-                  {installed.map((item, idx) => (
-                    <li key={idx}>
+                  {installed.map(item => (
+                    <li key={item.xnft.publicKey.toBase58()}>
                       <App
                         profile
                         type="installed"
@@ -111,8 +111,8 @@ const MePage: NextPage = () => {
           ) : (
             <div className="flex w-full flex-col justify-center">
               <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
-                {owned.map((item, idx) => (
-                  <li key={idx}>
+                {owned.map(item => (
+                  <li key={item.publicKey.toBase58()}>
                     <App
                       profile
                       type="owned"
