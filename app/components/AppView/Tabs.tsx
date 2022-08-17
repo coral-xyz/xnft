@@ -45,6 +45,11 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
   return (
     <section className="mx-auto mt-5 flex h-full max-w-2xl flex-col gap-4 rounded-xl bg-[#292C33] p-4">
       <div className="flex flex-col gap-1">
+        <span className="text-sm text-[#99A4B4]">Authority</span>
+        <span className="font-medium text-white">{xnft.account.authority}</span>
+      </div>
+
+      <div className="flex flex-col gap-1">
         <span className="text-sm text-[#99A4B4]">Tag</span>
         <span className="font-medium text-white">{xNFT.tagName(xnft.account.tag)}</span>
       </div>
@@ -74,7 +79,7 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
         <span className="text-sm text-[#99A4B4]">Supply</span>
         <span className="font-medium text-white">
           {xnft.metadataAccount.collectionDetails ? (
-            parseInt(xnft.metadataAccount.collectionDetails.size.toString(), 16).toString()
+            parseInt(xnft.metadataAccount.collectionDetails.size.toString(), 16).toLocaleString()
           ) : (
             <>&#8734;</>
           )}
