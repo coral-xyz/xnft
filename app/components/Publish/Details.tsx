@@ -83,7 +83,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
     <section className="flex flex-col gap-4 px-16 py-14">
       {/* Title */}
       <div>
-        <label htmlFor="title" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="title"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           Title
         </label>
         <Input
@@ -101,7 +104,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* Description */}
       <div>
-        <label htmlFor="description" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="description"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           Description
         </label>
         <Input
@@ -115,7 +121,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* Publisher */}
       <div>
-        <label htmlFor="publisher" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="publisher"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           Publisher
         </label>
         <Input
@@ -131,7 +140,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* Kind */}
       <div>
-        <label htmlFor="kind" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="kind"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           Kind
         </label>
         <select
@@ -173,7 +185,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* Website */}
       <div>
-        <label htmlFor="website" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="website"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           Publisher&apos;s website
         </label>
         <Input
@@ -188,7 +203,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* Supply Type */}
       <div>
-        <label htmlFor="supply" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="supply"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           How many editions would you like to mint?
         </label>
         <SupplySelect value={publishState.supply} />
@@ -247,7 +265,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* App Icon */}
       <div>
-        <label htmlFor="icon" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="icon"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           App Icon
         </label>
         <label
@@ -274,7 +295,10 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
 
       {/* Screenshots */}
       <div>
-        <label htmlFor="screenshots" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+        <label
+          htmlFor="screenshots"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
           Screenshots
         </label>
         <label

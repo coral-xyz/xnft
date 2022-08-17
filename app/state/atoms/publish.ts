@@ -89,8 +89,6 @@ export function validateDetailsInput(state: PublishState): boolean {
     state.tag,
     state.website,
     state.supply,
-    state.price,
-    state.royalties,
     state.icon.name ?? '',
     state.screenshots
   ];

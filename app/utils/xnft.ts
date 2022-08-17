@@ -76,8 +76,8 @@ export default abstract class xNFT {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
 
     const uri = `${S3_BUCKET_URL}/${getMetadataPath(xnft)}`;
-    const sellerFeeBasis = parseFloat(details.royalties) * 100;
-    const price = new BN(parseFloat(details.price) * LAMPORTS_PER_SOL);
+    const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
+    const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
     const supply = details.supply === 'inf' ? null : new BN(parseInt(details.supply));
 
     const tx = await program.methods
@@ -251,7 +251,7 @@ export default abstract class xNFT {
    * Returns the selection option valid name for the argued kind enum variant.
    * @static
    * @param {Partial<{ [K: string]: {} }>} t
-   * @returns {*}  {string}
+   * @returns {string}
    * @memberof xNFT
    */
   static kindName(t: Partial<{ [K: string]: {} }>): string {
