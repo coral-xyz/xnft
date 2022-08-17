@@ -9,9 +9,12 @@ import nprogress from 'nprogress';
 import Nav from '../components/Nav';
 import { ContextProvider } from '../state/context/ContextProvider';
 import Footer from '../components/Footer';
+import dynamic from 'next/dynamic';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 require('nprogress/nprogress.css');
+
+const MobilePlaceholder = dynamic(() => import('../components/Placeholders/Mobile'));
 
 Router.events.on('routeChangeStart', nprogress.start);
 Router.events.on('routeChangeError', nprogress.done);
@@ -29,14 +32,15 @@ export default function App({ Component, pageProps }: AppProps) {
         <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
           <ContextProvider>
             <main>
-              <div className="flex min-h-screen flex-col justify-between py-8 px-12">
+              <div className="flex min-h-screen flex-col justify-between py-8 px-4 md:px-12">
                 <section className="border-b-[1px] border-b-[#393C43] pb-8">
                   <Nav />
                 </section>
 
-                <section className="mb-auto py-10">
+                <section className="mb-auto hidden py-10 md:block">
                   <Component {...pageProps} />
                 </section>
+                <MobilePlaceholder className="md:hidden" />
 
                 <section className="items-end pb-8">
                   <Footer />

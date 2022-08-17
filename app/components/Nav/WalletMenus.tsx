@@ -40,6 +40,7 @@ export const DisconnectedMenu: FunctionComponent = () => {
     <>
       <Transition
         show={!backpackInstalled}
+        className="hidden sm:block"
         enter="transition-all ease-in-out duration-500"
         enterFrom="transform opacity-0"
         enterTo="transform opacity-100"
@@ -47,7 +48,7 @@ export const DisconnectedMenu: FunctionComponent = () => {
         <DownloadBackpackLink />
       </Transition>
       <button
-        className="flex items-center gap-2 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white"
+        className="hidden items-center gap-2 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white sm:flex"
         onClick={() => setVisible(true)}
       >
         <UserCircleIcon height={18} /> Connect
@@ -64,7 +65,7 @@ export const ConnectedMenu: FunctionComponent<ConnectedMenuProps> = ({ onDisconn
   const { publicKey } = useWallet();
 
   return (
-    <Menu as="div" className="relative inline-block">
+    <Menu as="div" className="relative hidden sm:inline-block">
       <Menu.Button
         className="flex items-center gap-2 rounded-3xl bg-[#27272A]
           px-4 py-3 font-medium tracking-wide text-[#FAFAFA]"

@@ -6,7 +6,7 @@ import { BACKPACK_LINK, DOCS_LINK } from '../../utils/constants';
 export const DocsLink: FunctionComponent = () => {
   return (
     <Link href={DOCS_LINK} target="_blank">
-      <button className="flex items-center gap-2.5 px-4 py-3 font-medium text-[#FAFAFA]">
+      <button className="flex items-center gap-2.5 py-3 font-medium text-[#FAFAFA] sm:px-4">
         Docs <ExternalLinkIcon height={14} />
       </button>
     </Link>
