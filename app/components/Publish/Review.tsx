@@ -17,7 +17,10 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
    * Memoized content for the installation button based on the price.
    */
   const price = useMemo(
-    () => (parseFloat(publishState.price) === 0 ? 'FREE' : publishState.price + ' SOL'),
+    () =>
+      publishState.price === '' || parseFloat(publishState.price) === 0
+        ? 'FREE'
+        : publishState.price + ' SOL',
     [publishState.price]
   );
 
