@@ -32,7 +32,7 @@ export type PropertiesFile = {
  */
 export const generateMetadata = (xnft: PublicKey, state: PublishState): Metadata => ({
   name: state.title,
-  symbol: state.title.slice(0, 3).toUpperCase(),
+  symbol: '',
   description: state.description,
   image: `${S3_BUCKET_URL}/${getIconPath(xnft, state.icon.name)}`,
   animation_url: '',
