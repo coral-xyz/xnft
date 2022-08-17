@@ -33,7 +33,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         <li key={s.name}>
           {s.name && (
             <Image
-              className="rounded-xl"
+              className="rounded-xl bg-transparent"
               alt={`screenshot-${idx}`}
               src={URL.createObjectURL(s)}
               height={479}

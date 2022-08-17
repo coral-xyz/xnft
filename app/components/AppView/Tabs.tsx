@@ -22,7 +22,7 @@ const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
           {xnft.metadata.properties.files.map((f, idx) => (
             <li key={f.uri}>
               <Image
-                className="rounded-xl"
+                className="rounded-xl bg-transparent"
                 alt={`screenshot-${idx}`}
                 src={f.uri}
                 height={479}
