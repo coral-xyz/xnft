@@ -322,6 +322,14 @@ export default abstract class xNFT {
   }
 }
 
+/**
+ * Fetches and appends the appropriate metadata objects to
+ * the provided xNFT account and public key.
+ * @param {Program<IDLType>} program
+ * @param {PublicKey} publicKey
+ * @param {XnftAccount} xnft
+ * @returns {Promise<XnftWithMetadata>}
+ */
 async function transformWithMetadata(
   program: Program<IDLType>,
   publicKey: PublicKey,

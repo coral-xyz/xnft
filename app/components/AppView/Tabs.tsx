@@ -43,7 +43,7 @@ type InformationTabProps = {
 
 const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
   return (
-    <section className="mx-auto mt-5 flex h-full max-w-2xl flex-col gap-4 rounded-xl bg-[#292C33] p-4">
+    <section className="mx-auto mt-5 flex h-full max-w-3xl flex-col gap-4 rounded-xl bg-[#292C33] p-4">
       <div className="flex flex-col gap-1">
         <span className="text-sm text-[#99A4B4]">Authority</span>
         <span className="font-medium text-white">{xnft.account.authority}</span>
@@ -70,7 +70,7 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
             rel="noreferrer"
           >
             <ExternalLinkIcon className="h-4 w-4" />
-            Open
+            {xnft.metadata.external_url}
           </a>
         </div>
       )}
