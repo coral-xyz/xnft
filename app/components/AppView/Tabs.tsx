@@ -72,7 +72,13 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
 
       <div className="flex flex-col gap-1">
         <span className="text-sm text-[#99A4B4]">Supply</span>
-        <span className="font-medium text-white">&#8734;</span>
+        <span className="font-medium text-white">
+          {xnft.metadataAccount.collectionDetails ? (
+            parseInt(xnft.metadataAccount.collectionDetails.size.toString(), 16).toLocaleString()
+          ) : (
+            <>&#8734;</>
+          )}
+        </span>
       </div>
 
       <div className="flex flex-col gap-1">
