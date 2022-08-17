@@ -163,6 +163,20 @@ export default abstract class xNFT {
   }
 
   /**
+   * Gets the list of all xNFT program account public keys on the network.
+   * @static
+   * @param {Program<IDLType>} [program=anonymousProgram]
+   * @returns {Promise<PublicKey[]>}
+   * @memberof xNFT
+   */
+  static async getAllPublicKeys(
+    program: Program<IDLType> = anonymousProgram
+  ): Promise<PublicKey[]> {
+    const accs = await program.account.xnft.all();
+    return accs.map(a => a.publicKey);
+  }
+
+  /**
    * Gets all xNFT program accounts that are installed by the argued
    * public key wallet and their metadata.
    * @static

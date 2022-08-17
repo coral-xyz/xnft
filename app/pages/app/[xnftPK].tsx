@@ -12,13 +12,11 @@ const Banner = dynamic(() => import('../../components/AppView/Banner'));
  * @export
  */
 export async function getStaticPaths() {
-  const data = await xNFT.getAll();
+  const pubkeys = await xNFT.getAllPublicKeys();
 
-  const paths = data.map(xnft => {
-    return {
-      params: { xnftPK: xnft.publicKey.toBase58() }
-    };
-  });
+  const paths = pubkeys.map(pk => ({
+    params: { xnftPK: pk.toBase58() }
+  }));
 
   return { paths, fallback: 'blocking' };
 }

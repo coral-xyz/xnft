@@ -1,5 +1,6 @@
 import { ArrowLeftIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
 import { WalletSignTransactionError } from '@solana/wallet-adapter-base';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
@@ -19,7 +20,6 @@ import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
 import { revalidate, uploadFiles, uploadMetadata } from '../utils/api';
 import xNFT from '../utils/xnft';
-import { useWallet } from '@solana/wallet-adapter-react';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
