@@ -1,7 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import type { GetStaticPropsContext, NextPage } from 'next';
 import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 import Layout from '../../components/Layout';
+import { useProgram } from '../../state/atoms/program';
 import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
 
 const Tabs = dynamic(() => import('../../components/AppView/Tabs'));
@@ -39,6 +41,14 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 
 const AppPage: NextPage<{ data: string }> = ({ data }) => {
   const xnft: SerializedXnftWithMetadata = JSON.parse(data);
+  const program = useProgram();
+
+  useEffect(() => {
+    program.provider.connection
+      .getAccountInfo(new PublicKey(xnft.account.masterMetadata), 'confirmed')
+      .then(info => console.log(JSON.stringify(info)))
+      .catch(console.error);
+  }, [program]);
 
   return (
     <Layout>
