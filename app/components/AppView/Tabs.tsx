@@ -74,7 +74,7 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
         <span className="text-sm text-[#99A4B4]">Supply</span>
         <span className="font-medium text-white">
           {xnft.metadataAccount.collectionDetails ? (
-            parseInt(xnft.metadataAccount.collectionDetails.size.toString(), 16).toLocaleString()
+            parseInt(xnft.metadataAccount.collectionDetails.size.toString(), 16).toString()
           ) : (
             <>&#8734;</>
           )}
