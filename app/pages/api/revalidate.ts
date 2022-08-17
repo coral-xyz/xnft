@@ -9,13 +9,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const xnft = req.query.xnft;
 
-  if (!xnft || xnft === '') {
-    return res.json({ revalidated: false });
-  }
-
   try {
-    await res.revalidate(`/app/${xnft}`);
-    return res.json({ revalidated: true });
+    await res.revalidate('/');
+
+    if (xnft && xnft !== '') {
+      await res.revalidate(`/app/${xnft}`);
+      return res.json({ revalidated: true });
+    }
   } catch (err) {
     res.status(500).send('Error revalidating');
   }
