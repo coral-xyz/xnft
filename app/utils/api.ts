@@ -1,8 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import fetch from 'isomorphic-unfetch';
-import type { PublishState } from '../state/atoms/publish';
 import { S3_BUCKET_URL } from './constants';
-import { generateMetadata } from './metadata';
+import type { Metadata } from './metadata';
 
 export const getMetadataPath = (xnft: PublicKey): string => `${xnft.toBase58()}/metadata.json`;
 
@@ -38,14 +37,24 @@ export async function revalidate(xnft?: PublicKey) {
 /**
  * Uploads the xNFT files to the appropriate S3 bucket and path.
  * Includes bundle source, icon image, and submitted screenshots.
- * @exports
+ * @export
  * @param {PublicKey} xnft
- * @param {PublishState} state
+ * @param {File} [bundle]
+ * @param {File} [icon]
+ * @param {File[]} [screenshots]
  */
-export async function uploadFiles(xnft: PublicKey, state: PublishState) {
-  const files = [state.bundle, state.icon, ...state.screenshots];
+export async function uploadFiles(
+  xnft: PublicKey,
+  bundle?: File,
+  icon?: File,
+  screenshots?: File[]
+) {
+  const files: File[] = [bundle, icon, ...(screenshots ?? [undefined])];
+
   await Promise.all(
     files.map(async (f, idx) => {
+      if (!f) return;
+
       const resp = await fetch('/api/s3', {
         method: 'POST',
         headers: {
@@ -78,13 +87,12 @@ export async function uploadFiles(xnft: PublicKey, state: PublishState) {
 
 /**
  * Uploads the metadata JSON file to S3 for the argued xNFT public key.
- * @exports
+ * @export
  * @param {PublicKey} xnft
- * @param {PublishState} state
+ * @param {Metadata} data
  * @returns {Promise<string>}
  */
-export async function uploadMetadata(xnft: PublicKey, state: PublishState): Promise<string> {
-  const metadata = generateMetadata(xnft, state);
+export async function uploadMetadata(xnft: PublicKey, data: Metadata): Promise<string> {
   const fileName = getMetadataPath(xnft);
 
   const resp = await fetch('/api/s3', {
@@ -106,7 +114,7 @@ export async function uploadMetadata(xnft: PublicKey, state: PublishState): Prom
       'Content-type': 'application/json',
       'Access-Control-Allow-Origin': '*'
     },
-    body: JSON.stringify(metadata)
+    body: JSON.stringify(data)
   });
 
   return `${S3_BUCKET_URL}/${fileName}`;

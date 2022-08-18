@@ -29,14 +29,16 @@ export function useXnftFocus(): [
 /**
  * State to track derive and track the metadata and property
  * edits for the focused xNFT from the edits modal.
+ * @export
  */
-const xnftEditsState = atom({
+export const xnftEditsState = atom({
   key: 'xnftEdits',
   default: selector({
     key: 'xnftEditsDefault',
     get: ({ get }) => {
       const xnft = get(focusXnftState);
       return {
+        bundle: {} as File,
         installVault: xnft ? xnft.account.installVault.toBase58() : '',
         price: xnft ? (xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL).toString() : '',
         tag: xNFT.tagName(xnft ? xnft.account.tag : { none: {} }),

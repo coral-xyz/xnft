@@ -25,7 +25,7 @@ export type PropertiesFile = {
 
 /**
  * Creates the xNFT metadata JSON object to be uploaded to storage.
- * @exports
+ * @export
  * @param {PublicKey} xnft
  * @param {PublishState} state
  * @returns {Metadata}
