@@ -1,7 +1,6 @@
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { atom, selector, type SetterOrUpdater, useRecoilState } from 'recoil';
-import type { XnftWithMetadata } from '../../utils/xnft';
-import xNFT from '../../utils/xnft';
+import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 
 /**
  * Manages the state of which xNFT has been selected for

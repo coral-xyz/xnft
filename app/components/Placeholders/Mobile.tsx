@@ -1,5 +1,5 @@
 import { DesktopComputerIcon } from '@heroicons/react/solid';
-import { FunctionComponent, memo } from 'react';
+import { type FunctionComponent, memo } from 'react';
 
 type MobileProps = {
   className?: string;

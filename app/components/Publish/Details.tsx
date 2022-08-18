@@ -9,8 +9,15 @@ import {
   validateAppScreenshot,
   validateDetailsInput
 } from '../../state/atoms/publish';
-import { ALLOWED_IMAGE_TYPES, MAX_NAME_LENGTH, PLACEHOLDER_PUBKEY } from '../../utils/constants';
-import { PRICE_RX, ROYALTY_RX, XNFT_KIND_OPTIONS, XNFT_TAG_OPTIONS } from '../../utils/constants';
+import {
+  ALLOWED_IMAGE_TYPES,
+  MAX_NAME_LENGTH,
+  PLACEHOLDER_PUBKEY,
+  PRICE_RX,
+  ROYALTY_RX,
+  XNFT_KIND_OPTIONS,
+  XNFT_TAG_OPTIONS
+} from '../../utils/constants';
 import { inputClasses } from '../Inputs/Input';
 
 const Input = dynamic(() => import('../Inputs/Input'));
