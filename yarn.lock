@@ -1179,7 +1179,7 @@
   resolved "https://registry.yarnpkg.com/@metaplex-foundation/cusper/-/cusper-0.0.2.tgz#dc2032a452d6c269e25f016aa4dd63600e2af975"
   integrity sha512-S9RulC2fFCFOQraz61bij+5YCHhSO9llJegK8c8Y6731fSi6snUSQJdCUqYS8AIgR0TKbQvdvgSyIIdbDFZbBA==
 
-"@metaplex-foundation/mpl-token-metadata@^2.2.0", "@metaplex-foundation/mpl-token-metadata@^2.2.3":
+"@metaplex-foundation/mpl-token-metadata@^2.2.3":
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-token-metadata/-/mpl-token-metadata-2.2.3.tgz#099472aade1643f546d54667b47738661f1e8bff"
   integrity sha512-42QiGLXuOj2d7N5KUrzqHDe0QKGHzIF12CRZaGsD6C0EAJpCyOAn2Gu8HTZQioexPP0u2xEWfiCK+zo7UAtatQ==

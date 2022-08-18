@@ -5,6 +5,7 @@ import { type FunctionComponent, memo, useCallback, useState, useMemo } from 're
 import { HashLoader } from 'react-spinners';
 import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
+import { revalidate } from '../../utils/api';
 import { PLACEHOLDER_PUBKEY, PRICE_RX, XNFT_TAG_OPTIONS } from '../../utils/constants';
 import xNFT from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
@@ -61,6 +62,8 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         tag: { [edits.tag.toLowerCase()]: {} } as never,
         uri: edits.uri
       });
+
+      await revalidate(focused.publicKey);
 
       onClose();
     } catch (err) {

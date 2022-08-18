@@ -14,7 +14,7 @@
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
     "@mailchimp/mailchimp_marketing": "^3.0.75",
-    "@metaplex-foundation/mpl-token-metadata": "^2.2.0",
+    "@metaplex-foundation/mpl-token-metadata": "^2.2.3",
     "@project-serum/anchor": "^0.25.0",
     "@solana/wallet-adapter-base": "^0.9.9",
     "@solana/wallet-adapter-react": "^0.15.8",
