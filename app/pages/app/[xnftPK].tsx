@@ -44,9 +44,10 @@ const AppPage: NextPage<{ data: string }> = ({ data }) => {
   const program = useProgram();
 
   useEffect(() => {
+    console.log(xnft.account.masterMetadata);
     program.provider.connection
       .getAccountInfo(new PublicKey(xnft.account.masterMetadata), 'confirmed')
-      .then(info => console.log(JSON.stringify(info)))
+      .then(console.log)
       .catch(console.error);
   }, [program]);
 
