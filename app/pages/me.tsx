@@ -5,8 +5,9 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
-import { useXnftFocus } from '../state/atoms/edit';
+import { useXnftFocus, xnftEditsState } from '../state/atoms/edit';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useResetRecoilState } from 'recoil';
 
 const App = dynamic(() => import('../components/App'));
 const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders/Disconnected'));
@@ -44,11 +45,15 @@ const MePage: NextPage = () => {
   const { installed } = useInstalledXnftsLoadable();
   const { owned } = useOwnedXnftsLoadable();
   const [focused, setFocused] = useXnftFocus();
+  const resetEdits = useResetRecoilState(xnftEditsState);
 
   /**
    * Memoized function to close the modal when the user clicks.
    */
-  const handleModalClose = useCallback(() => setFocused(undefined), [setFocused]);
+  const handleModalClose = useCallback(() => {
+    setFocused(undefined);
+    resetEdits();
+  }, [resetEdits, setFocused]);
 
   return connected ? (
     <>

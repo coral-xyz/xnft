@@ -20,6 +20,7 @@ import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
 import { revalidate, uploadFiles, uploadMetadata } from '../utils/api';
 import xNFT from '../utils/xnft';
+import { generateMetadata } from '../utils/metadata';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -110,10 +111,10 @@ const PublishPage: NextPage = () => {
       setNewPubkey(xnft);
 
       setProcessingStep('files');
-      await uploadFiles(xnft, publishState);
+      await uploadFiles(xnft, publishState.bundle, publishState.icon, publishState.screenshots);
 
       setProcessingStep('metadata');
-      await uploadMetadata(xnft, publishState);
+      await uploadMetadata(xnft, generateMetadata(xnft, publishState));
       await revalidate(xnft);
 
       setProcessingStep('success');

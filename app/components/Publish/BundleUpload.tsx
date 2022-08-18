@@ -6,10 +6,11 @@ import { usePublish, validateBundleInput } from '../../state/atoms/publish';
 
 /**
  * Convert the file byte size into a user field display.
+ * @export
  * @param {number} size
  * @returns {string}
  */
-function transformBundleSize(size: number): string {
+export function transformBundleSize(size: number): string {
   if (size < 1000) {
     return `${size.toString()} B`;
   } else if (size < 1000000) {
