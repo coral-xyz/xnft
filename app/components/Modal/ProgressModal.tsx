@@ -1,7 +1,6 @@
 import { CheckCircleIcon, EmojiSadIcon } from '@heroicons/react/solid';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { type FunctionComponent, memo } from 'react';
 import { HashLoader } from 'react-spinners';
 import Modal from './Base';
@@ -33,6 +32,7 @@ type ProgressModalProps = {
   active: keyof typeof UPLOAD_STEPS;
   error?: Error;
   onClose: () => void;
+  onRetry: () => void;
   open: boolean;
   pubkey: PublicKey;
 };
@@ -41,11 +41,10 @@ const ProgressModal: FunctionComponent<ProgressModalProps> = ({
   active,
   error,
   onClose,
+  onRetry,
   open,
   pubkey
 }) => {
-  const router = useRouter();
-
   return (
     <Modal open={open} onClose={onClose}>
       <section className="flex flex-col items-center justify-center gap-6 py-8">
@@ -56,7 +55,10 @@ const ProgressModal: FunctionComponent<ProgressModalProps> = ({
             <span className="text-sm text-[#99A4B4]">{error.message}</span>
             <button
               className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
-              onClick={() => router.reload()}
+              onClick={() => {
+                onClose();
+                onRetry();
+              }}
             >
               Retry
             </button>
