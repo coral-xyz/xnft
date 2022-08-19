@@ -78,7 +78,7 @@ export default abstract class xNFT {
     // If the xNFT account already exists, skip the instruction call. This is mainly
     // for the purpose of the retry publish flow in order to skip duplicate transactions
     // that could ultimately lead to cyclical failures.
-    const exists = (await program.account.xnft.fetchNullable(xnft)) !== null;
+    const exists = (await program.provider.connection.getAccountInfo(xnft)) !== null;
     if (exists) {
       return [null, xnft];
     }
