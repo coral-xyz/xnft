@@ -107,15 +107,20 @@ const PublishPage: NextPage = () => {
     try {
       setModalOpen(true);
 
-      const [_, xnft] = await xNFT.create(program, publishState);
-      setNewPubkey(xnft);
+      const [_, xnftAddress] = await xNFT.create(program, publishState);
+      setNewPubkey(xnftAddress);
 
       setProcessingStep('files');
-      await uploadFiles(xnft, publishState.bundle, publishState.icon, publishState.screenshots);
+      await uploadFiles(
+        xnftAddress,
+        publishState.bundle,
+        publishState.icon,
+        publishState.screenshots
+      );
 
       setProcessingStep('metadata');
-      await uploadMetadata(xnft, generateMetadata(xnft, publishState));
-      await revalidate(xnft);
+      await uploadMetadata(xnftAddress, generateMetadata(xnftAddress, publishState));
+      await revalidate(xnftAddress);
 
       setProcessingStep('success');
     } catch (err) {
@@ -221,8 +226,9 @@ const PublishPage: NextPage = () => {
       <ProgressModal
         active={processingStep}
         error={processingError}
-        open={modalOpen}
         onClose={handleModalClose}
+        onRetry={handlePublish}
+        open={modalOpen}
         pubkey={newPubkey}
       />
     </>

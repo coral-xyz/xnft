@@ -66,14 +66,22 @@ export default abstract class xNFT {
    * @static
    * @param {Program<IDLType>} program
    * @param {PublishState} details
-   * @returns {Promise<[string, PublicKey]>}
+   * @returns {Promise<[string | null, PublicKey]>}
    * @memberof xNFT
    */
   static async create(
     program: Program<IDLType>,
     details: PublishState
-  ): Promise<[string, PublicKey]> {
+  ): Promise<[string | null, PublicKey]> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
+
+    // If the xNFT account already exists, skip the instruction call. This is mainly
+    // for the purpose of the retry publish flow in order to skip duplicate transactions
+    // that could ultimately lead to cyclical failures.
+    const exists = (await program.account.xnft.fetchNullable(xnft)) !== null;
+    if (exists) {
+      return [null, xnft];
+    }
 
     const uri = `${S3_BUCKET_URL}/${getMetadataPath(xnft)}`;
     const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
