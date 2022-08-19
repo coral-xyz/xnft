@@ -8,6 +8,7 @@ import Layout from '../components/Layout';
 import { useXnftFocus, xnftEditsState } from '../state/atoms/edit';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useResetRecoilState } from 'recoil';
+import { SyncLoader } from 'react-spinners';
 
 const App = dynamic(() => import('../components/App'));
 const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders/Disconnected'));
@@ -42,8 +43,8 @@ const Placeholder: FunctionComponent<PlaceholderProps> = props => {
 
 const MePage: NextPage = () => {
   const { connected } = useWallet();
-  const { installed } = useInstalledXnftsLoadable();
-  const { owned } = useOwnedXnftsLoadable();
+  const { installed, loading: loadingInstalled } = useInstalledXnftsLoadable();
+  const { owned, loading: loadingOwned } = useOwnedXnftsLoadable();
   const [focused, setFocused] = useXnftFocus();
   const resetEdits = useResetRecoilState(xnftEditsState);
 
@@ -66,7 +67,9 @@ const MePage: NextPage = () => {
           {/* Installed xNFTs Apps */}
           <div className="flex flex-col gap-8">
             <h2 className="text-3xl font-extrabold tracking-wide text-white">Downloaded</h2>
-            {installed.length === 0 ? (
+            {loadingInstalled ? (
+              <SyncLoader className="my-12 self-center" color="#0D9488" size={20} />
+            ) : installed.length === 0 ? (
               <Placeholder
                 buttonHref="/"
                 buttonText="Browse the Library"
@@ -106,7 +109,9 @@ const MePage: NextPage = () => {
               </Link>
             )}
           </h2>
-          {owned.length === 0 ? (
+          {loadingOwned ? (
+            <SyncLoader className="my-12 self-center" color="#0D9488" size={20} />
+          ) : owned.length === 0 ? (
             <Placeholder
               buttonHref="/publish"
               buttonText="Publish new xNFT"
