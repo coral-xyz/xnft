@@ -37,9 +37,9 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         />
       </div>
       <div className="flex min-w-0 flex-col pr-10 tracking-wide">
-        <h4 className="pb-2 font-medium text-[#99A4B4]">Featured</h4>
-        <h1 className="pb-6 text-6xl font-bold text-white">{metadata.name}</h1>
-        <h3 className="pb-8 font-medium text-white">{metadata.description}</h3>
+        <h4 className="pb-2 text-sm font-medium text-[#99A4B4] lg:text-base">Featured</h4>
+        <h1 className="pb-6 text-4xl font-bold text-white lg:text-6xl">{metadata.name}</h1>
+        <h3 className="pb-8 text-sm font-medium text-white lg:text-base">{metadata.description}</h3>
         <div className="flex gap-4 text-sm font-medium">
           <AppPrimaryButton
             large
