@@ -1,6 +1,7 @@
 import { PhotographIcon } from '@heroicons/react/outline';
 import dynamic from 'next/dynamic';
-import { memo, useEffect, type FunctionComponent } from 'react';
+import NextImage from 'next/image';
+import { memo, useEffect, useMemo, useState, type FunctionComponent } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
 import {
@@ -42,10 +43,28 @@ const tagOptions = XNFT_TAG_OPTIONS.map(o => (
   </option>
 ));
 
+/**
+ * Gets the image dimensions from the argued file and
+ * returns as [width, height].
+ * @param {File} f
+ * @returns {Promise<[number, number]>}
+ */
+async function getImageDimensions(f: File): Promise<[number, number]> {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.addEventListener('load', () => {
+      return resolve([img.width, img.height]);
+    });
+    img.src = URL.createObjectURL(f);
+  });
+}
+
 const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   const [publishState, setPublishState] = usePublish();
   const iconDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, maxFiles: 1 });
   const ssDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, multiple: true });
+  const [iconDimensions, setIconDimensions] = useState('');
+  const [ssDimensions, setSSDimensions] = useState<string[]>([]);
 
   /**
    * Component effect to handle the acceptance and validation
@@ -60,6 +79,18 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
   }, [iconDrop.acceptedFiles, setPublishState]);
 
   /**
+   * Component effect to generate the app icon dimensions for the
+   * subtext of the dropzone when an image is selected.
+   */
+  useEffect(() => {
+    if (publishState.icon.name) {
+      getImageDimensions(publishState.icon)
+        .then(dims => setIconDimensions(dims.join('x')))
+        .catch(console.error);
+    }
+  }, [publishState.icon]);
+
+  /**
    * Component effect to handle the acceptance and validation
    * of all screenshot files selected through the dropzone input.
    */
@@ -69,11 +100,24 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         ssDrop.acceptedFiles.map(f =>
           validateAppScreenshot(f).catch(err => alert(`${f.name}: ${err}`))
         )
-      ).then(files =>
-        setPublishState(prev => ({ ...prev, screenshots: files.filter(f => f) as File[] }))
-      );
+      ).then(async files => {
+        const screenshots = files.filter(f => f) as File[];
+        setPublishState(prev => ({ ...prev, screenshots }));
+      });
     }
   }, [ssDrop.acceptedFiles, setPublishState]);
+
+  /**
+   * Component effect to generate the array of screenshot dimensions for the
+   * subtext of the dropzone when images are selected.
+   */
+  useEffect(() => {
+    if (publishState.screenshots.length > 0) {
+      Promise.all(publishState.screenshots.map(getImageDimensions))
+        .then(dims => setSSDimensions(dims.map(d => d.join('x'))))
+        .catch(console.error);
+    }
+  }, [publishState.screenshots]);
 
   /**
    * Component effect to process the validation of all input fields
@@ -85,6 +129,25 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
       setNextEnabled(true);
     }
   }, [publishState, setNextEnabled]);
+
+  /**
+   * Memoized value for the icon/image preview in the app icon
+   * dropzone section of the form based on the selected file.
+   */
+  const iconPreview = useMemo(
+    () =>
+      publishState.icon.name ? (
+        <NextImage
+          className="rounded-md"
+          src={URL.createObjectURL(publishState.icon)}
+          height={48}
+          width={48}
+        />
+      ) : (
+        <PhotographIcon className="mx-auto text-zinc-400" height={48} />
+      ),
+    [publishState.icon]
+  );
 
   return (
     <section className="flex flex-col gap-4 px-16 py-14">
@@ -283,7 +346,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         >
           <div className="mt-1 flex justify-center rounded-md border-2 border-[#393C43] px-6 pt-5 pb-6">
             <div className="space-y-1 text-center">
-              <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
+              {iconPreview}
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
                   {publishState.icon.name ?? (
@@ -294,7 +357,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
                 </span>
                 <input {...iconDrop.getInputProps({ className: 'sr-only hidden' })} />
               </div>
-              <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
+              <p className="text-xs text-[#9CA3AF]/50">
+                {iconDimensions !== '' ? iconDimensions : 'PNG, JPG, GIF up to 10MB'}
+              </p>
             </div>
           </div>
         </label>
@@ -326,7 +391,9 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
                 </span>
                 <input {...ssDrop.getInputProps({ className: 'sr-only hidden' })} />
               </div>
-              <p className="text-xs text-[#393C43]">PNG, JPG, GIF up to 10MB</p>
+              <p className="text-xs text-[#9CA3AF]/50">
+                {ssDimensions.length > 0 ? ssDimensions.join(', ') : 'PNG, JPG, GIF up to 10MB'}
+              </p>
             </div>
           </div>
         </label>
