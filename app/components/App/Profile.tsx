@@ -73,7 +73,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
 
   return (
     <div
-      className={`flex items-center gap-4 rounded-xl bg-[#27272A] p-4 shadow-lg transition-all
+      className={`flex items-center gap-4 rounded-lg bg-[#27272A] p-4 shadow-lg transition-all
         hover:-translate-y-1 hover:bg-[#27272A]/40 ${
           account.account.suspended && type === 'owned' ? 'border border-red-500' : ''
         }`}
@@ -95,7 +95,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         </div>
         <div className="mt-4 flex gap-3">
           {type === 'installed' && <MetaButton onClick={onOpen}>Open</MetaButton>}
-          <MetaButton onClick={handleClickDetails}>Details</MetaButton> {/* FIXME: */}
+          <MetaButton onClick={handleClickDetails}>Details</MetaButton>
           {type === 'owned' && (
             <>
               <MetaButton onClick={handleClickEdit}>Edit</MetaButton>

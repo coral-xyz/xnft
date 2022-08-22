@@ -24,7 +24,7 @@ const Listing: FunctionComponent<ListingProps> = ({
   price
 }) => {
   return (
-    <div className="flex items-center gap-4 rounded-md bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
+    <div className="flex items-center gap-4 rounded-lg bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
       <Link href={link} className="flex items-center">
         <Image
           className="rounded-lg"

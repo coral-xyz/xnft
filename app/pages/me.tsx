@@ -38,7 +38,10 @@ const DownloadedApps: FunctionComponent = () => {
         />
       ) : (
         <div className="flex w-full flex-col justify-center">
-          <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
+          <ul
+            role="list"
+            className="grid grid-cols-2 gap-y-4 gap-x-4 xl:grid-cols-3 2xl:grid-cols-4"
+          >
             {installed.map(item => (
               <li key={item.xnft.publicKey.toBase58()}>
                 <App
@@ -84,7 +87,10 @@ const PublishedApps: FunctionComponent = () => {
         />
       ) : (
         <div className="flex w-full flex-col justify-center">
-          <ul role="list" className="grid grid-cols-2 gap-y-4 gap-x-6">
+          <ul
+            role="list"
+            className="grid grid-cols-2 gap-y-4 gap-x-6 xl:grid-cols-3 2xl:grid-cols-4"
+          >
             {owned.map(item => (
               <li key={item.publicKey.toBase58()}>
                 <App
