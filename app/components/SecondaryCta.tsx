@@ -5,8 +5,7 @@ const SecondaryCta: FunctionComponent = () => {
   return (
     <div>
       <h2 className="text-center text-3xl font-extrabold font-extrabold tracking-tight sm:text-4xl">
-        <span className="block text-[#F9FAFB]">Developer?</span>
-        <span className="block text-[#14B8A6]">Publish your code as an executable xNFT</span>
+        <span className="block text-[#14B8A6]">Publish your code as an xNFT</span>
       </h2>
       <div className="mt-8 flex justify-center">
         <div className="inline-flex rounded-md shadow">

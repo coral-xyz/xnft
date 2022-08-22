@@ -24,7 +24,7 @@ const Listing: FunctionComponent<ListingProps> = ({
   price
 }) => {
   return (
-    <div className="flex items-center gap-4 rounded-xl bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
+    <div className="flex items-center gap-4 rounded-md bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
       <Link href={link} className="flex items-center">
         <Image
           className="rounded-lg"
@@ -36,8 +36,10 @@ const Listing: FunctionComponent<ListingProps> = ({
         />
       </Link>
       <div className="min-w-0 flex-1">
-        <div className="text-lg font-bold tracking-wide text-white">{metadata.name}</div>
-        <div className="truncate text-sm tracking-wide text-[#FAFAFA]">{metadata.description}</div>
+        <div className="font-bold tracking-wide text-white">{metadata.name}</div>
+        <div className="truncate text-xs tracking-wide text-[#FAFAFA]/75">
+          {metadata.description}
+        </div>
       </div>
       <div className="my-auto">
         <AppPrimaryButton
