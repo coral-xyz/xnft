@@ -67,6 +67,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         )?;
     }
 
+    let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
 
     if let Some(vault) = updates.install_vault {
@@ -84,6 +85,8 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     if let Some(t) = updates.tag {
         xnft.tag = t;
     }
+
+    xnft.updated_ts = clock.unix_timestamp;
 
     Ok(())
 }

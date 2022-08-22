@@ -231,19 +231,20 @@ pub fn create_xnft_handler(
     //
     let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
-    xnft.bump = xnft_bump;
-    xnft.kind = kind;
-    xnft.tag = tag;
-    xnft.name = name;
-    xnft.publisher = ctx.accounts.publisher.key();
+
     xnft.authority = ctx.accounts.publisher.key();
+    xnft.publisher = ctx.accounts.publisher.key();
+    xnft.install_vault = install_vault;
     xnft.master_edition = ctx.accounts.master_edition.key();
     xnft.master_metadata = ctx.accounts.master_metadata.key();
     xnft.master_mint = ctx.accounts.master_mint.key();
     xnft.install_authority = None;
+    xnft.bump = xnft_bump;
+    xnft.kind = kind;
+    xnft.tag = tag;
+    xnft.name = name;
     xnft.total_installs = 0;
     xnft.install_price = install_price;
-    xnft.install_vault = install_vault;
     xnft.created_ts = clock.unix_timestamp;
     xnft.updated_ts = clock.unix_timestamp;
     xnft.suspended = false;

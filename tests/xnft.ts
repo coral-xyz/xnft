@@ -181,5 +181,10 @@ describe('xnft', () => {
       const m = await Metadata.fromAccountAddress(program.provider.connection, x.masterMetadata);
       assert.equal('https://backpack.app', m.data.uri.replace(/\0/g, ''));
     });
+
+    it('the updated timestamp will be changed', async () => {
+      const x = await program.account.xnft.fetch(xnft);
+      assert.isTrue(x.createdTs.toNumber() < x.updatedTs.toNumber());
+    });
   });
 });

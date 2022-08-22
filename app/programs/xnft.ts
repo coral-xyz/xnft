@@ -17,11 +17,6 @@ export type Xnft = {
       ];
       accounts: [
         {
-          name: 'metadataProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: 'masterMint';
           isMut: true;
           isSigner: false;
@@ -69,7 +64,6 @@ export type Xnft = {
           name: 'masterMetadata';
           isMut: true;
           isSigner: false;
-          docs: ['metadata program.'];
           pda: {
             seeds: [
               {
@@ -100,7 +94,6 @@ export type Xnft = {
           name: 'masterEdition';
           isMut: true;
           isSigner: false;
-          docs: ['metadata program.'];
           pda: {
             seeds: [
               {
@@ -162,17 +155,22 @@ export type Xnft = {
           isSigner: true;
         },
         {
-          name: 'rent';
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
         },
         {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'metadataProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
           isMut: false;
           isSigner: false;
         }
@@ -635,11 +633,6 @@ export const IDL: Xnft = {
       ],
       accounts: [
         {
-          name: 'metadataProgram',
-          isMut: false,
-          isSigner: false
-        },
-        {
           name: 'masterMint',
           isMut: true,
           isSigner: false,
@@ -687,7 +680,6 @@ export const IDL: Xnft = {
           name: 'masterMetadata',
           isMut: true,
           isSigner: false,
-          docs: ['metadata program.'],
           pda: {
             seeds: [
               {
@@ -718,7 +710,6 @@ export const IDL: Xnft = {
           name: 'masterEdition',
           isMut: true,
           isSigner: false,
-          docs: ['metadata program.'],
           pda: {
             seeds: [
               {
@@ -780,17 +771,22 @@ export const IDL: Xnft = {
           isSigner: true
         },
         {
-          name: 'rent',
-          isMut: false,
-          isSigner: false
-        },
-        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false
         },
         {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false
+        },
+        {
+          name: 'metadataProgram',
+          isMut: false,
+          isSigner: false
+        },
+        {
+          name: 'rent',
           isMut: false,
           isSigner: false
         }
