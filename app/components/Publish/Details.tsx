@@ -46,10 +46,11 @@ const tagOptions = XNFT_TAG_OPTIONS.map(o => (
 /**
  * Gets the image dimensions from the argued file and
  * returns as [width, height].
+ * @export
  * @param {File} f
  * @returns {Promise<[number, number]>}
  */
-async function getImageDimensions(f: File): Promise<[number, number]> {
+export async function getImageDimensions(f: File): Promise<[number, number]> {
   return new Promise(resolve => {
     const img = new Image();
     img.addEventListener('load', () => {

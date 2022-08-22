@@ -363,7 +363,10 @@ async function transformWithMetadata(
   );
 
   const res = await fetch(metadataAccount.data.uri, {
-    timeout: 3000
+    timeout: 3000,
+    headers: {
+      'Cache-Control': 'public,max-age=30'
+    }
   } as RequestInit);
   const metadata = await res.json();
 

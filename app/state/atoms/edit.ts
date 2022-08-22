@@ -28,6 +28,7 @@ export function useXnftFocus(): [
 
 export type XnftEdits = {
   bundle: File;
+  icon: File;
   installVault: string;
   name: string;
   price: string;
@@ -48,6 +49,7 @@ export const xnftEditsState = atom<XnftEdits>({
       const xnft = get(focusXnftState);
       return {
         bundle: {} as File,
+        icon: {} as File,
         installVault: xnft ? xnft.account.installVault.toBase58() : '',
         name: xnft ? xnft.account.name : '',
         price: xnft ? (xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL).toString() : '',
