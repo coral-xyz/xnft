@@ -16,7 +16,16 @@ describe('xnft', () => {
 
   let xnft: PublicKey;
   let install: PublicKey;
+  let authority: PublicKey;
   const installVault = program.provider.publicKey;
+
+  it('creates the control authority', async () => {
+    const tx = program.methods.createAuthority().accounts({});
+    await tx.rpc();
+
+    const pubkeys = await tx.pubkeys();
+    authority = pubkeys.authority;
+  });
 
   it('creates the xNFT', async () => {
     const installPrice = new anchor.BN(0);

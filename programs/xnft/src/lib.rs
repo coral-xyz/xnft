@@ -12,6 +12,11 @@ declare_id!("BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd");
 pub mod xnft {
     use super::*;
 
+    /// Creates a program owned authority singleton to act as xNFT update and freeze authority.
+    pub fn create_authority(ctx: Context<CreateAuthority>) -> Result<()> {
+        instructions::create_authority_handler(ctx)
+    }
+
     /// Creates all parts of an xNFT instance.
     ///
     /// * Master mint (supply 1).
