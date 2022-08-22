@@ -1,9 +1,9 @@
 import { DesktopComputerIcon } from '@heroicons/react/solid';
 import { type FunctionComponent, memo } from 'react';
 
-type MobileProps = {
+interface MobileProps {
   className?: string;
-};
+}
 
 const Mobile: FunctionComponent<MobileProps> = ({ className }) => {
   return (

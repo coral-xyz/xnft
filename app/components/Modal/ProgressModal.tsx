@@ -28,14 +28,14 @@ export const UPLOAD_STEPS = {
   }
 };
 
-type ProgressModalProps = {
+interface ProgressModalProps {
   active: keyof typeof UPLOAD_STEPS;
   error?: Error;
   onClose: () => void;
   onRetry: () => void;
   open: boolean;
   pubkey: PublicKey;
-};
+}
 
 const ProgressModal: FunctionComponent<ProgressModalProps> = ({
   active,

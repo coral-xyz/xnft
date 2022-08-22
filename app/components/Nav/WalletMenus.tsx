@@ -57,9 +57,9 @@ export const DisconnectedMenu: FunctionComponent = () => {
   );
 };
 
-type ConnectedMenuProps = {
+interface ConnectedMenuProps {
   onDisconnect: () => void;
-};
+}
 
 export const ConnectedMenu: FunctionComponent<ConnectedMenuProps> = ({ onDisconnect }) => {
   const { publicKey } = useWallet();
@@ -88,10 +88,10 @@ export const ConnectedMenu: FunctionComponent<ConnectedMenuProps> = ({ onDisconn
   );
 };
 
-type ConnectedMenuItemsProps = {
+interface ConnectedMenuItemsProps {
   publicKey: PublicKey;
   onDisconnect: () => void;
-};
+}
 
 const ConnectedMenuItems: FunctionComponent<ConnectedMenuItemsProps> = ({
   publicKey,

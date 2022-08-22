@@ -10,9 +10,9 @@ import { useProgram } from '../../state/atoms/program';
 import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
 
-type AppBannerProps = {
+interface AppBannerProps {
   xnft: SerializedXnftWithMetadata;
-};
+}
 
 const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();

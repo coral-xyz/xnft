@@ -26,7 +26,7 @@ export function useXnftFocus(): [
   return useRecoilState(focusXnftState);
 }
 
-export type XnftEdits = {
+export interface XnftEdits {
   bundle: File;
   icon: File;
   installVault: string;
@@ -34,7 +34,7 @@ export type XnftEdits = {
   price: string;
   tag: string;
   uri: string;
-};
+}
 
 /**
  * State to track derive and track the metadata and property

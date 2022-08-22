@@ -1,9 +1,9 @@
 import { type FunctionComponent, memo, type ReactNode } from 'react';
 import Input, { type InputProps } from './Input';
 
-type InputWithSuffixProps = InputProps & {
+interface InputWithSuffixProps extends InputProps {
   suffix: ReactNode;
-};
+}
 
 const InputWithSuffix: FunctionComponent<InputWithSuffixProps> = ({ suffix, ...rest }) => {
   return (

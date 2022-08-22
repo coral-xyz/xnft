@@ -96,6 +96,12 @@ export function validateDetailsInput(state: PublishState): boolean {
   return checks.every(x => x.length > 0);
 }
 
+/**
+ * Custom input validation for the inputted screenshots.
+ * @export
+ * @param {File} file
+ * @returns {*}  {Promise<File>}
+ */
 export function validateAppScreenshot(file: File): Promise<File> {
   return new Promise((resolve, reject) => {
     const img = new Image();

@@ -10,9 +10,9 @@ function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-type OverviewTabProps = {
+interface OverviewTabProps {
   xnft: SerializedXnftWithMetadata;
-};
+}
 
 const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
   return (

@@ -4,7 +4,7 @@ import { memo, type FunctionComponent } from 'react';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
 import type { Metadata } from '../../utils/metadata';
 
-type ListingProps = {
+interface ListingProps {
   connected?: boolean;
   installed: boolean;
   link: string;
@@ -12,7 +12,7 @@ type ListingProps = {
   metadata: Metadata;
   onButtonClick: () => void;
   price: number;
-};
+}
 
 const Listing: FunctionComponent<ListingProps> = ({
   connected,

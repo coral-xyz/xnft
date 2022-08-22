@@ -1,10 +1,10 @@
 import { SearchIcon } from '@heroicons/react/solid';
 import type { FunctionComponent } from 'react';
 
-type SearchProps = {
+interface SearchProps {
   value: string;
   onChange: (val: string) => void;
-};
+}
 
 const Search: FunctionComponent<SearchProps> = ({ value, onChange }) => {
   return (

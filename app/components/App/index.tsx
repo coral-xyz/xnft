@@ -15,13 +15,13 @@ const Featured = dynamic(() => import('./Featured'));
 const Listing = dynamic(() => import('./Listing'));
 const Profile = dynamic(() => import('./Profile'));
 
-type AppProps = {
+interface AppProps {
   featured?: boolean;
   price: number;
   profile?: boolean;
   type?: 'installed' | 'owned';
   xnft: XnftWithMetadata | SerializedXnftWithMetadata | InstalledXnftWithMetadata;
-};
+}
 
 const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft }) => {
   const { connected } = useWallet();

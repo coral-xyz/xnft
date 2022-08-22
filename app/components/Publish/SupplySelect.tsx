@@ -3,9 +3,9 @@ import { type FunctionComponent, useState, memo, useCallback } from 'react';
 import { usePublish } from '../../state/atoms/publish';
 import Input from '../Inputs/Input';
 
-type SupplySelectProps = {
+interface SupplySelectProps {
   value: string;
-};
+}
 
 const SupplySelect: FunctionComponent<SupplySelectProps> = ({ value }) => {
   const [_, setPublishState] = usePublish();

@@ -4,7 +4,7 @@ import { memo, type FunctionComponent } from 'react';
 import type { Metadata } from '../../utils/metadata';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
 
-type FeaturedProps = {
+interface FeaturedProps {
   connected?: boolean;
   installed: boolean;
   link: string;
@@ -12,7 +12,7 @@ type FeaturedProps = {
   metadata: Metadata;
   onButtonClick: () => void;
   price: number;
-};
+}
 
 const Featured: FunctionComponent<FeaturedProps> = ({
   connected,

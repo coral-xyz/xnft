@@ -65,10 +65,10 @@ const tagOptions = XNFT_TAG_OPTIONS.map(o => (
   </option>
 ));
 
-type EditModalProps = {
+interface EditModalProps {
   onClose: () => void;
   open: boolean;
-};
+}
 
 const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   const program = useProgram();

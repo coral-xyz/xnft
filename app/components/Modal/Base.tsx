@@ -1,13 +1,13 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, type FunctionComponent, memo, type ReactNode, useMemo } from 'react';
 
-type ModalProps = {
+interface ModalProps {
   children: ReactNode;
   title?: ReactNode;
   open: boolean;
   onClose: () => void;
   width?: number;
-};
+}
 
 const Modal: FunctionComponent<ModalProps> = props => {
   /**

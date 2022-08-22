@@ -20,8 +20,9 @@ import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } f
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
+export type UpdateParams = IdlTypes<IDLType>['UpdateParams'];
 
-export type SerializedXnftWithMetadata = {
+export interface SerializedXnftWithMetadata {
   account: {
     [K in keyof XnftAccount]: XnftAccount[K] extends never
       ? never
@@ -34,21 +35,19 @@ export type SerializedXnftWithMetadata = {
     [K in keyof MplMetadata]: MplMetadata[K] extends PublicKey ? string : MplMetadata[K];
   };
   metadata: Metadata;
-};
+}
 
-export type XnftWithMetadata = {
+export interface XnftWithMetadata {
   account: XnftAccount;
   publicKey: PublicKey;
   metadataAccount: MplMetadata;
   metadata: Metadata;
-};
+}
 
-export type InstalledXnftWithMetadata = {
+export interface InstalledXnftWithMetadata {
   install: ProgramAccount<InstallAccount>;
   xnft: XnftWithMetadata;
-};
-
-export type UpdateParams = IdlTypes<IDLType>['UpdateParams'];
+}
 
 const anonymousProgram: Program<IDLType> = new Program(
   IDL,

@@ -3,10 +3,10 @@ import type { FunctionComponent, ReactNode } from 'react';
 
 const Sidebar = dynamic(() => import('../Sidebar'));
 
-type LayoutProps = {
+interface LayoutProps {
   children: ReactNode;
   contentClassName?: string;
-};
+}
 
 const Layout: FunctionComponent<LayoutProps> = ({ children, contentClassName }) => {
   return (

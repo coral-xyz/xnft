@@ -6,12 +6,12 @@ import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import {
-  type Dispatch,
   useMemo,
   useState,
-  type SetStateAction,
   useCallback,
-  useEffect
+  useEffect,
+  type Dispatch,
+  type SetStateAction
 } from 'react';
 import { useResetRecoilState } from 'recoil';
 import { UPLOAD_STEPS } from '../components/Modal/ProgressModal';
@@ -28,9 +28,9 @@ const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders
 const ProgressModal = dynamic(() => import('../components/Modal/ProgressModal'));
 const Review = dynamic(() => import('../components/Publish/Review'));
 
-export type StepComponentProps = {
+export interface StepComponentProps {
   setNextEnabled: Dispatch<SetStateAction<boolean>>;
-};
+}
 
 const inputSteps = [
   {

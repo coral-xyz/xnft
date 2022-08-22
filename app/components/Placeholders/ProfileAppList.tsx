@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { type FunctionComponent, memo, type ReactNode } from 'react';
 
-type ProfileAppListProps = {
+interface ProfileAppListProps {
   buttonIcon: ReactNode;
   buttonHref: string;
   buttonText: string;
   subtitle: string;
-};
+}
 
 const ProfileAppList: FunctionComponent<ProfileAppListProps> = props => {
   return (

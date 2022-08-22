@@ -3,7 +3,7 @@ import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { type FunctionComponent, memo, useMemo } from 'react';
 import { ClipLoader } from 'react-spinners';
 
-type AppPrimaryButtonProps = {
+interface AppPrimaryButtonProps {
   className?: string;
   disabled?: boolean;
   installed?: boolean;
@@ -11,7 +11,7 @@ type AppPrimaryButtonProps = {
   loading?: boolean;
   onClick: () => void;
   price: number;
-};
+}
 
 const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
   className,

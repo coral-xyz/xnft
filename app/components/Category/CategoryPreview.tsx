@@ -2,11 +2,11 @@ import { type FunctionComponent, memo, useMemo } from 'react';
 import type { SerializedXnftWithMetadata } from '../../utils/xnft';
 import App from '../App';
 
-type PreviewProps = {
+interface PreviewProps {
   className?: string;
   title: string;
   xnfts: SerializedXnftWithMetadata[];
-};
+}
 
 const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xnfts }) => {
   /**

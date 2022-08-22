@@ -3,7 +3,7 @@ import type { PublishState } from '../state/atoms/publish';
 import { S3_BUCKET_URL } from './constants';
 import { getBundlePath, getIconPath, getScreenshotPath } from './api';
 
-export type Metadata = {
+export interface Metadata {
   name: string;
   symbol: string;
   description: string;
@@ -11,17 +11,17 @@ export type Metadata = {
   animation_url: string;
   external_url: string;
   properties: MetadataProperties;
-};
+}
 
-export type MetadataProperties = {
+export interface MetadataProperties {
   bundle: string;
   files: PropertiesFile[];
-};
+}
 
-export type PropertiesFile = {
+export interface PropertiesFile {
   uri: string;
   type: string;
-};
+}
 
 /**
  * Creates the xNFT metadata JSON object to be uploaded to storage.

@@ -41,11 +41,11 @@ const menuItems = [
 //   );
 // };
 
-type SidebarProps = {
+interface SidebarProps {
   active: number;
   className?: string;
   onClick: (idx: number) => void;
-};
+}
 
 const Sidebar: FunctionComponent<SidebarProps> = props => {
   // const { connected } = useWallet();

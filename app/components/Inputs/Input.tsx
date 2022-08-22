@@ -10,7 +10,7 @@ import {
 export const inputClasses = `w-full rounded-md border-[#18181B] bg-[#18181B] text-sm text-[#E5E7EB]
   placeholder:text-[#393C43] focus:border-[#F66C5E] focus:ring-0 mt-1`;
 
-export type InputProps = {
+export interface InputProps {
   className?: string;
   forbiddenChars?: string[];
   id?: string;
@@ -21,7 +21,7 @@ export type InputProps = {
   spellCheck?: boolean;
   type?: HTMLInputTypeAttribute;
   value: string | number;
-};
+}
 
 const Input: FunctionComponent<InputProps> = ({
   className,

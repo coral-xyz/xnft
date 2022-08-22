@@ -9,11 +9,11 @@ import { forceInstalledRefresh, forceOwnedRefresh } from '../../state/atoms/xnft
 import type { InstalledXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 import xNFT from '../../utils/xnft';
 
-type MetaButtonProps = {
+interface MetaButtonProps {
   children?: ReactNode;
   className?: string;
   onClick: () => void;
-};
+}
 
 const MetaButton: FunctionComponent<MetaButtonProps> = ({ children, className, onClick }) => {
   return (
