@@ -77,7 +77,7 @@ const Review: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
       </div>
 
       <div className="flex justify-center px-10 pt-5">
-        <ul className="flex list-none gap-5 overflow-x-scroll">{screenshots}</ul>
+        <ul className="no-scrollbar flex list-none gap-5 overflow-x-auto">{screenshots}</ul>
       </div>
     </section>
   );

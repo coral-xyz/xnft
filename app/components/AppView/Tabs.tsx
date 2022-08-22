@@ -18,7 +18,7 @@ const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
   return (
     <section className="mt-6 w-full rounded-2xl bg-[#27272A]">
       <div className="flex justify-center p-10">
-        <ul className="flex list-none gap-5 overflow-x-scroll">
+        <ul className="no-scrollbar flex list-none gap-5 overflow-x-auto">
           {xnft.metadata.properties.files.map((f, idx) => (
             <li key={f.uri}>
               <Image
