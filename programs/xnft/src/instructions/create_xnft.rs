@@ -21,6 +21,7 @@ pub struct CreateXnft<'info> {
         ],
         bump,
         mint::authority = xnft,
+        mint::freeze_authority = xnft,
         mint::decimals = 0,
     )]
     pub master_mint: Account<'info, Mint>,
@@ -33,7 +34,7 @@ pub struct CreateXnft<'info> {
             master_mint.key().as_ref(),
         ],
         bump,
-        token::authority = xnft,
+        token::authority = publisher,
         token::mint = master_mint,
     )]
     pub master_token: Account<'info, TokenAccount>,
@@ -180,7 +181,7 @@ pub fn create_xnft_handler(
     // Create metadata.
     //
     let is_mutable = true;
-    let authority_is_signer = true;
+    let update_authority_is_signer = true;
 
     metadata::create_metadata_accounts_v3(
         ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
@@ -198,7 +199,7 @@ pub fn create_xnft_handler(
             uses: None,       // TODO:
         },
         is_mutable,
-        authority_is_signer,
+        update_authority_is_signer,
         None, // NOTE: mpl's current program sets the size to 0 regardless of provided value, must be done with set_collection_size
     )?;
 
