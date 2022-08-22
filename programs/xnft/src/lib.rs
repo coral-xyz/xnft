@@ -161,6 +161,10 @@ pub mod xnft {
             xnft.install_vault = vault;
         }
 
+        if let Some(name) = updates.name {
+            xnft.name = name;
+        }
+
         if let Some(price) = updates.price {
             xnft.install_price = price;
         }
@@ -545,6 +549,7 @@ pub enum Tag {
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
     install_vault: Option<Pubkey>,
+    name: Option<String>,
     price: Option<u64>,
     tag: Option<Tag>,
     uri: Option<String>,

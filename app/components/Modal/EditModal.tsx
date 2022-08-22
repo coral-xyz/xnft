@@ -85,6 +85,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     try {
       await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, {
         installVault: new PublicKey(edits.installVault),
+        name: edits.name,
         price: new BN(parseFloat(edits.price) * LAMPORTS_PER_SOL),
         tag: { [edits.tag.toLowerCase()]: {} } as never,
         uri: edits.uri
@@ -121,6 +122,21 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         </section>
       ) : (
         <section className="flex flex-col gap-4">
+          {/* Name */}
+          <div>
+            <label htmlFor="name" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+              Name
+            </label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="My xNFT Name"
+              value={edits.name}
+              onChange={e => setEdits(prev => ({ ...prev, name: e.target.value }))}
+            />
+          </div>
+
           {/* Install Price */}
           <div>
             <label htmlFor="price" className="text-sm font-medium tracking-wide text-[#E5E7EB]">

@@ -40,6 +40,7 @@ export const xnftEditsState = atom({
       return {
         bundle: {} as File,
         installVault: xnft ? xnft.account.installVault.toBase58() : '',
+        name: xnft ? xnft.account.name : '',
         price: xnft ? (xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL).toString() : '',
         tag: xNFT.tagName(xnft ? xnft.account.tag : { none: {} }),
         uri: xnft ? xnft.metadataAccount.data.uri : ''
