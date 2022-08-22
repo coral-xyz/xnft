@@ -5,7 +5,7 @@ use anchor_spl::metadata::{
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::DataV2;
 
-use crate::state::{ControlAuthority, Kind, Tag, Xnft};
+use crate::state::{Kind, Tag, Xnft};
 use crate::CustomError;
 
 #[derive(Accounts)]
@@ -20,8 +20,8 @@ pub struct CreateXnft<'info> {
             name.as_bytes(),
         ],
         bump,
-        mint::authority = control_authority,
-        mint::freeze_authority = control_authority,
+        mint::authority = xnft,
+        mint::freeze_authority = xnft,
         mint::decimals = 0,
     )]
     pub master_mint: Account<'info, Mint>,
@@ -34,7 +34,7 @@ pub struct CreateXnft<'info> {
             master_mint.key().as_ref(),
         ],
         bump,
-        token::authority = control_authority,
+        token::authority = xnft,
         token::mint = master_mint,
     )]
     pub master_token: Account<'info, TokenAccount>,
@@ -78,14 +78,6 @@ pub struct CreateXnft<'info> {
     )]
     pub xnft: Account<'info, Xnft>,
 
-    #[account(
-        seeds = [
-            "authority".as_bytes(),
-        ],
-        bump = control_authority.bump,
-    )]
-    pub control_authority: Box<Account<'info, ControlAuthority>>,
-
     #[account(mut)]
     pub payer: Signer<'info>,
     pub publisher: Signer<'info>,
@@ -102,7 +94,7 @@ impl<'info> CreateXnft<'info> {
         let accounts = MintTo {
             mint: self.master_mint.to_account_info(),
             to: self.master_token.to_account_info(),
-            authority: self.control_authority.to_account_info(),
+            authority: self.xnft.to_account_info(),
         };
         CpiContext::new(program, accounts)
     }
@@ -114,7 +106,7 @@ impl<'info> CreateXnft<'info> {
         let accounts = SetCollectionSize {
             metadata: self.master_metadata.to_account_info(),
             mint: self.master_mint.to_account_info(),
-            update_authority: self.control_authority.to_account_info(),
+            update_authority: self.xnft.to_account_info(),
             system_program: self.system_program.to_account_info(),
         };
         CpiContext::new(program, accounts)
@@ -127,9 +119,9 @@ impl<'info> CreateXnft<'info> {
         let accounts = CreateMetadataAccountsV3 {
             metadata: self.master_metadata.to_account_info(),
             mint: self.master_mint.to_account_info(),
-            mint_authority: self.control_authority.to_account_info(),
+            mint_authority: self.xnft.to_account_info(),
             payer: self.payer.to_account_info(),
-            update_authority: self.control_authority.to_account_info(),
+            update_authority: self.xnft.to_account_info(),
             system_program: self.system_program.to_account_info(),
             rent: self.rent.to_account_info(),
         };
@@ -143,8 +135,8 @@ impl<'info> CreateXnft<'info> {
         let accounts = CreateMasterEditionV3 {
             edition: self.master_edition.to_account_info(),
             mint: self.master_mint.to_account_info(),
-            update_authority: self.control_authority.to_account_info(),
-            mint_authority: self.control_authority.to_account_info(), // todo: try xnft account
+            update_authority: self.xnft.to_account_info(),
+            mint_authority: self.xnft.to_account_info(), // todo: try xnft account
             payer: self.payer.to_account_info(),
             metadata: self.master_metadata.to_account_info(),
             token_program: self.token_program.to_account_info(),
@@ -167,7 +159,6 @@ pub fn create_xnft_handler(
     install_vault: Pubkey,
     supply: Option<u64>,
 ) -> Result<()> {
-    let authority_bump = ctx.accounts.control_authority.bump.clone();
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
     if name.len() > Xnft::MAX_NAME_LEN {
@@ -179,11 +170,9 @@ pub fn create_xnft_handler(
     //
     token::mint_to(
         ctx.accounts.mint_to_ctx().with_signer(&[&[
-            "authority".as_bytes(),
-            &[authority_bump],
-            // "xnft".as_bytes(),
-            // ctx.accounts.master_edition.key().as_ref(),
-            // &[xnft_bump],
+            "xnft".as_bytes(),
+            ctx.accounts.master_edition.key().as_ref(),
+            &[xnft_bump],
         ]]),
         1,
     )?;
@@ -196,10 +185,9 @@ pub fn create_xnft_handler(
 
     metadata::create_metadata_accounts_v3(
         ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
-            "authority".as_bytes(),
-            &[authority_bump], // "xnft".as_bytes(),
-                               // ctx.accounts.master_edition.key().as_ref(),
-                               // &[xnft_bump],
+            "xnft".as_bytes(),
+            ctx.accounts.master_edition.key().as_ref(),
+            &[xnft_bump],
         ]]),
         DataV2 {
             name: name.clone(),
@@ -218,11 +206,9 @@ pub fn create_xnft_handler(
     if let Some(sup) = supply {
         metadata::set_collection_size(
             ctx.accounts.set_collection_size_ctx().with_signer(&[&[
-                "authority".as_bytes(),
-                &[authority_bump],
-                // "xnft".as_bytes(),
-                // ctx.accounts.master_edition.key().as_ref(),
-                // &[xnft_bump],
+                "xnft".as_bytes(),
+                ctx.accounts.master_edition.key().as_ref(),
+                &[xnft_bump],
             ]]),
             None, // TODO:
             sup,
@@ -234,11 +220,9 @@ pub fn create_xnft_handler(
     //
     metadata::create_master_edition_v3(
         ctx.accounts.create_master_edition_v3_ctx().with_signer(&[&[
-            "authority".as_bytes(),
-            &[authority_bump],
-            // "xnft".as_bytes(),
-            // ctx.accounts.master_edition.key().as_ref(),
-            // &[xnft_bump],
+            "xnft".as_bytes(),
+            ctx.accounts.master_edition.key().as_ref(),
+            &[xnft_bump],
         ]]),
         Some(0),
     )?;

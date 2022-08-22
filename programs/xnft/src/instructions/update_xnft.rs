@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::metadata::{self, Metadata, MetadataAccount, UpdateMetadataAccountsV2};
 use mpl_token_metadata::state::DataV2;
 
-use crate::state::{ControlAuthority, Tag, Xnft};
+use crate::state::{Tag, Xnft};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
@@ -22,14 +22,6 @@ pub struct UpdateXnft<'info> {
     )]
     pub xnft: Account<'info, Xnft>,
 
-    #[account(
-        seeds = [
-            "authority".as_bytes(),
-        ],
-        bump = control_authority.bump,
-    )]
-    pub control_authority: Account<'info, ControlAuthority>,
-
     #[account(mut)]
     pub master_metadata: Account<'info, MetadataAccount>,
 
@@ -44,7 +36,7 @@ impl<'info> UpdateXnft<'info> {
         let program = self.metadata_program.to_account_info();
         let accounts = UpdateMetadataAccountsV2 {
             metadata: self.master_metadata.to_account_info(),
-            update_authority: self.control_authority.to_account_info(),
+            update_authority: self.xnft.to_account_info(),
         };
         CpiContext::new(program, accounts)
     }
@@ -52,15 +44,13 @@ impl<'info> UpdateXnft<'info> {
 
 pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
     let md = &ctx.accounts.master_metadata;
-    let authority_bump = ctx.accounts.control_authority.bump.clone();
 
     if let Some(u) = updates.uri {
         metadata::update_metadata_accounts_v2(
             ctx.accounts.update_metadata_accounts_ctx().with_signer(&[&[
-                "authority".as_bytes(),
-                &[authority_bump], // "xnft".as_bytes(),
-                                   // ctx.accounts.xnft.master_edition.as_ref(),
-                                   // &[ctx.accounts.xnft.bump],
+                "xnft".as_bytes(),
+                ctx.accounts.xnft.master_edition.as_ref(),
+                &[ctx.accounts.xnft.bump],
             ]]),
             None,
             Some(DataV2 {

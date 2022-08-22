@@ -14,15 +14,6 @@ pub enum Tag {
 }
 
 #[account]
-pub struct ControlAuthority {
-    pub bump: u8,
-}
-
-impl ControlAuthority {
-    pub const LEN: usize = 8 + 1;
-}
-
-#[account]
 pub struct Xnft {
     pub authority: Pubkey,
     pub publisher: Pubkey,
