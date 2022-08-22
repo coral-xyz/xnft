@@ -1,24 +1,60 @@
-import { DocumentAddIcon, DocumentTextIcon, PencilAltIcon } from '@heroicons/react/solid';
+import {
+  DocumentAddIcon,
+  DocumentTextIcon,
+  PencilAltIcon,
+  PhotographIcon
+} from '@heroicons/react/solid';
 import { BN } from '@project-serum/anchor';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useMemo, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { HashLoader } from 'react-spinners';
-import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
+import Image from 'next/image';
+import { useXnftEdits, useXnftFocus, type XnftEdits } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
-import { getBundlePath, revalidate, uploadFiles, uploadMetadata } from '../../utils/api';
-import { PLACEHOLDER_PUBKEY, PRICE_RX, XNFT_TAG_OPTIONS } from '../../utils/constants';
+import {
+  getBundlePath,
+  getIconPath,
+  revalidate,
+  uploadFiles,
+  uploadMetadata
+} from '../../utils/api';
+import {
+  ALLOWED_IMAGE_TYPES,
+  PLACEHOLDER_PUBKEY,
+  PRICE_RX,
+  S3_BUCKET_URL,
+  XNFT_TAG_OPTIONS
+} from '../../utils/constants';
 import type { Metadata } from '../../utils/metadata';
-import xNFT from '../../utils/xnft';
+import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import { transformBundleSize } from '../Publish/BundleUpload';
 import Modal from './Base';
+import { getImageDimensions } from '../Publish/Details';
 
-type EditModalProps = {
-  onClose: () => void;
-  open: boolean;
-};
+/**
+ * Compares the argued xNFT updates against its current state and returns
+ * the update instruction params that are necessary.
+ * @param {XnftWithMetadata} xnft
+ * @param {XnftEdits} updates
+ * @returns {UpdateParams}
+ */
+function getChanges(xnft: XnftWithMetadata, updates: XnftEdits): UpdateParams {
+  const newInstallVault = new PublicKey(updates.installVault);
+  const newPrice = new BN(parseFloat(updates.price) * LAMPORTS_PER_SOL);
+
+  return {
+    installVault: newInstallVault.equals(xnft.account.installVault) ? null : newInstallVault,
+    name: updates.name === xnft.account.name ? null : updates.name,
+    price: newPrice.eq(xnft.account.installPrice) ? null : newPrice,
+    tag: (updates.tag.toLowerCase() === xNFT.tagName(xnft.account.tag).toLowerCase()
+      ? null
+      : { [updates.tag.toLowerCase()]: {} }) as never,
+    uri: updates.uri === xnft.metadataAccount.data.uri ? null : updates.uri
+  };
+}
 
 /**
  * Array of components for all tag select field options.
@@ -29,26 +65,56 @@ const tagOptions = XNFT_TAG_OPTIONS.map(o => (
   </option>
 ));
 
+type EditModalProps = {
+  onClose: () => void;
+  open: boolean;
+};
+
 const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   const program = useProgram();
   const [focused] = useXnftFocus();
   const [edits, setEdits] = useXnftEdits();
-  const { acceptedFiles, getInputProps, getRootProps } = useDropzone({
+  const bundleDrop = useDropzone({
     accept: { 'text/javascript': ['.js'] },
     maxFiles: 1
   });
+  const iconDrop = useDropzone({ accept: ALLOWED_IMAGE_TYPES, maxFiles: 1 });
   const [loading, setLoading] = useState(false);
+  const [iconDimensions, setIconDimensions] = useState('');
 
   /**
    * Component effect to set the edits state for the bundle
    * when a new accepted file is discovered in the dropzone input.
    */
   useEffect(() => {
-    if (acceptedFiles.length > 0) {
+    if (bundleDrop.acceptedFiles.length > 0) {
       // TODO: validate against existing bundle names?
-      setEdits(prev => ({ ...prev, bundle: acceptedFiles[0] }));
+      setEdits(prev => ({ ...prev, bundle: bundleDrop.acceptedFiles[0] }));
     }
-  }, [acceptedFiles, setEdits]);
+  }, [bundleDrop.acceptedFiles, setEdits]);
+
+  /**
+   * Component effect to set the edits state for the icon
+   * when a new accepted file is discovered in the dropzone input.
+   */
+  useEffect(() => {
+    if (iconDrop.acceptedFiles.length > 0) {
+      // TODO: validate against existing bundle names?
+      setEdits(prev => ({ ...prev, icon: iconDrop.acceptedFiles[0] }));
+    }
+  }, [iconDrop.acceptedFiles, setEdits]);
+
+  /**
+   * Component effect to generate the app icon dimensions for the
+   * subtext of the dropzone when an image is selected.
+   */
+  useEffect(() => {
+    if (edits.icon.name) {
+      getImageDimensions(edits.icon)
+        .then(dims => setIconDimensions(dims.join('x')))
+        .catch(console.error);
+    }
+  }, [edits.icon]);
 
   /**
    * Memoized value of the subtext for the bundle dropzone input
@@ -81,25 +147,41 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     if (!focused) return;
 
     setLoading(true);
+    const changes = getChanges(focused, edits);
 
     try {
-      await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, {
-        installVault: new PublicKey(edits.installVault),
-        price: new BN(parseFloat(edits.price) * LAMPORTS_PER_SOL),
-        tag: { [edits.tag.toLowerCase()]: {} } as never,
-        uri: edits.uri
-      });
+      if (Object.values(changes).some(x => x !== null)) {
+        await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, changes);
+      }
 
-      if ((edits.bundle.size ?? 0) > 0) {
+      if ((edits.bundle.size ?? 0) > 0 || (edits.icon.size ?? 0) > 0) {
         const newMetadata: Metadata = {
           ...focused.metadata,
-          properties: {
-            ...focused.metadata.properties,
-            bundle: getBundlePath(focused.publicKey, edits.bundle.name)
-          }
+          properties: { ...focused.metadata.properties }
         };
 
-        await uploadFiles(focused.publicKey, edits.bundle);
+        let hasBundle = false;
+        let hasIcon = false;
+
+        if ((edits.bundle.name ?? '') !== '') {
+          hasBundle = true;
+          newMetadata.properties.bundle = `${S3_BUCKET_URL}/${getBundlePath(
+            focused.publicKey,
+            edits.bundle.name
+          )}`;
+        }
+
+        if ((edits.icon.name ?? '') !== '') {
+          hasIcon = true;
+          newMetadata.image = `${S3_BUCKET_URL}/${getIconPath(focused.publicKey, edits.icon.name)}`;
+        }
+
+        await uploadFiles(
+          focused.publicKey,
+          hasBundle ? edits.bundle : undefined,
+          hasIcon ? edits.icon : undefined
+        );
+
         await uploadMetadata(focused.publicKey, newMetadata);
       }
 
@@ -121,6 +203,21 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         </section>
       ) : (
         <section className="flex flex-col gap-4">
+          {/* Name */}
+          <div>
+            <label htmlFor="name" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+              Name
+            </label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="My xNFT Name"
+              value={edits.name}
+              onChange={e => setEdits(prev => ({ ...prev, name: e.target.value }))}
+            />
+          </div>
+
           {/* Install Price */}
           <div>
             <label htmlFor="price" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
@@ -201,34 +298,74 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
             />
           </div>
 
-          {/* New Bundle */}
-          <div>
-            <label htmlFor="bundle" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
-              New Bundle
-            </label>
-            <label
-              {...getRootProps({
-                htmlFor: 'bundle',
-                className: 'relative cursor-pointer'
-              })}
-            >
-              <div className="mt-1 flex justify-center rounded-lg bg-[#18181B] py-4">
-                <div className="space-y-1 text-center">
-                  {edits.bundle.name ? (
-                    <DocumentTextIcon height={45} className="mx-auto text-[#9CA3AF]" />
-                  ) : (
-                    <DocumentAddIcon height={45} className="mx-auto text-[#9CA3AF]" />
-                  )}
-                  <div className="text-xs text-zinc-600">
-                    <span className="text-zinc-300">
-                      {edits.bundle.name ?? 'Upload a bundle.js file'}
-                    </span>
-                    <input {...getInputProps({ className: 'sr-only hidden' })} />
+          {/* New Icon */}
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="icon" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+                New Icon
+              </label>
+              <label
+                {...iconDrop.getRootProps({
+                  htmlFor: 'icon',
+                  className: 'relative cursor-pointer'
+                })}
+              >
+                <div className="mt-1 flex justify-center rounded-lg bg-[#18181B] py-4">
+                  <div className="space-y-1 text-center">
+                    {edits.icon.name ? (
+                      <Image
+                        className="rounded-md"
+                        alt="new-app-icon"
+                        src={URL.createObjectURL(edits.icon)}
+                        height={40}
+                        width={40}
+                      />
+                    ) : (
+                      <PhotographIcon className="mx-auto text-zinc-400" height={45} />
+                    )}
+                    <div className="text-xs text-[#393C43]">
+                      <span className="text-[#E5E7EB]">
+                        {edits.icon.name ?? 'Upload a file or drag and drop'}
+                      </span>
+                      <input {...iconDrop.getInputProps({ className: 'sr-only hidden' })} />
+                    </div>
+                    <p className="text-xs text-[#9CA3AF]/50">
+                      {iconDimensions !== '' ? iconDimensions : 'PNG, JPG, GIF up to 10MB'}
+                    </p>
                   </div>
-                  <p className="text-xs text-[#393C43]">{bundleSubtext}</p>
                 </div>
-              </div>
-            </label>
+              </label>
+            </div>
+
+            {/* New Bundle */}
+            <div>
+              <label htmlFor="bundle" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+                New Bundle
+              </label>
+              <label
+                {...bundleDrop.getRootProps({
+                  htmlFor: 'bundle',
+                  className: 'relative cursor-pointer'
+                })}
+              >
+                <div className="mt-1 flex justify-center rounded-lg bg-[#18181B] py-4">
+                  <div className="space-y-1 text-center">
+                    {edits.bundle.name ? (
+                      <DocumentTextIcon height={45} className="mx-auto text-[#9CA3AF]" />
+                    ) : (
+                      <DocumentAddIcon height={45} className="mx-auto text-[#9CA3AF]" />
+                    )}
+                    <div className="text-xs text-[#393C43]">
+                      <span className="text-[#E5E7EB]">
+                        {edits.bundle.name ?? 'Upload a bundle.js file'}
+                      </span>
+                      <input {...bundleDrop.getInputProps({ className: 'sr-only hidden' })} />
+                    </div>
+                    <p className="text-xs text-[#9CA3AF]/50">{bundleSubtext}</p>
+                  </div>
+                </div>
+              </label>
+            </div>
           </div>
 
           <div className="mt-6 flex justify-center gap-4">

@@ -3,11 +3,15 @@ import { type FunctionComponent, useCallback } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useInstalledXnftsLoadable, useOwnedXnftsLoadable } from '../state/atoms/xnft';
+import {
+  forceOwnedRefresh,
+  useInstalledXnftsLoadable,
+  useOwnedXnftsLoadable
+} from '../state/atoms/xnft';
 import Layout from '../components/Layout';
 import { useXnftFocus, xnftEditsState } from '../state/atoms/edit';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useResetRecoilState } from 'recoil';
+import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import { SyncLoader } from 'react-spinners';
 
 const App = dynamic(() => import('../components/App'));
@@ -102,6 +106,7 @@ const MePage: NextPage = () => {
   const { connected } = useWallet();
   const [focused, setFocused] = useXnftFocus();
   const resetEdits = useResetRecoilState(xnftEditsState);
+  const refreshOwned = useSetRecoilState(forceOwnedRefresh);
 
   /**
    * Memoized function to close the modal when the user clicks.
@@ -109,7 +114,8 @@ const MePage: NextPage = () => {
   const handleModalClose = useCallback(() => {
     setFocused(undefined);
     resetEdits();
-  }, [resetEdits, setFocused]);
+    refreshOwned(prev => prev + 1);
+  }, [resetEdits, setFocused, refreshOwned]);
 
   return connected ? (
     <>
