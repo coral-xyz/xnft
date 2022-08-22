@@ -1,14 +1,14 @@
 import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useSetRecoilState } from 'recoil';
 import Image from 'next/image';
 import xNFT, {
   type InstalledXnftWithMetadata,
   type SerializedXnftWithMetadata
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
-import { installedXnftsState, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
-import { useRecoilRefresher_UNSTABLE } from 'recoil';
 
 type AppBannerProps = {
   xnft: SerializedXnftWithMetadata;
@@ -18,7 +18,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const program = useProgram();
   const { connected } = useWallet();
   const { installed, err } = useInstalledXnftsLoadable();
-  const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
+  const refreshInstalled = useSetRecoilState(forceInstalledRefresh);
   const [isInstalled, setIsInstalled] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -63,7 +63,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
 
     try {
       await xNFT.install(program, xnft);
-      refreshInstalled();
+      refreshInstalled(prev => prev + 1);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     } finally {

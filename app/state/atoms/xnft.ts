@@ -1,7 +1,16 @@
-import { selector, useRecoilValueLoadable } from 'recoil';
+import { atom, selector, useRecoilValueLoadable } from 'recoil';
 import xNFT, { type InstalledXnftWithMetadata, type XnftWithMetadata } from '../../utils/xnft';
 import { programState } from './program';
 import { anchorWalletState } from './solana';
+
+/**
+ * Atom to force the recalculation of the installed xNFTs selector.
+ * @export
+ */
+export const forceInstalledRefresh = atom<number>({
+  key: 'forceInstalledRefresh',
+  default: 0
+});
 
 /**
  * State of the connected wallet's installed xNFTs found on-chain.
@@ -10,6 +19,7 @@ import { anchorWalletState } from './solana';
 export const installedXnftsState = selector<InstalledXnftWithMetadata[]>({
   key: 'installedXnfts',
   get: async ({ get }) => {
+    get(forceInstalledRefresh);
     const wallet = get(anchorWalletState);
     const program = get(programState);
     return wallet ? await xNFT.getInstalled(program, wallet.publicKey) : [];
@@ -40,12 +50,22 @@ export function useInstalledXnftsLoadable(): {
 }
 
 /**
+ * Atom to force the recalculation of the owned xNFTs selector.
+ * @export
+ */
+export const forceOwnedRefresh = atom<number>({
+  key: 'forceOwnedRefresh',
+  default: 0
+});
+
+/**
  * State of the connected wallet's owned/published xNFTs found on-chain.
  * @export
  */
 export const ownedXnftsState = selector<XnftWithMetadata[]>({
   key: 'ownedXnfts',
   get: async ({ get }) => {
+    get(forceOwnedRefresh);
     const wallet = get(anchorWalletState);
     const program = get(programState);
     return wallet ? await xNFT.getOwned(program, wallet.publicKey) : [];

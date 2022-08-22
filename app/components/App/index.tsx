@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useEffect, useMemo } from 'react';
+import { useSetRecoilState } from 'recoil';
 import dynamic from 'next/dynamic';
 import xNFT, {
   type InstalledXnftWithMetadata,
@@ -8,8 +9,7 @@ import xNFT, {
   type XnftWithMetadata
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
-import { installedXnftsState, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
-import { useRecoilRefresher_UNSTABLE } from 'recoil';
+import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 
 const Featured = dynamic(() => import('./Featured'));
 const Listing = dynamic(() => import('./Listing'));
@@ -27,7 +27,7 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
   const { connected } = useWallet();
   const program = useProgram();
   const { installed, err } = useInstalledXnftsLoadable();
-  const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
+  const refreshInstalled = useSetRecoilState(forceInstalledRefresh);
   const [isInstalled, setIsInstalled] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -80,7 +80,7 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
     try {
       const acc = 'xnft' in xnft ? xnft.xnft : xnft;
       await xNFT.install(program, acc);
-      refreshInstalled();
+      refreshInstalled(prev => prev + 1);
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     } finally {

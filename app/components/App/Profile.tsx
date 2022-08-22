@@ -2,10 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { type FunctionComponent, memo, type ReactNode, useCallback, useMemo } from 'react';
-import { useRecoilRefresher_UNSTABLE } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
-import { installedXnftsState, ownedXnftsState } from '../../state/atoms/xnft';
+import { forceInstalledRefresh, forceOwnedRefresh } from '../../state/atoms/xnft';
 import type { InstalledXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 import xNFT from '../../utils/xnft';
 
@@ -39,8 +39,8 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   const router = useRouter();
   const program = useProgram();
   const [_, setFocused] = useXnftFocus();
-  const refreshInstalled = useRecoilRefresher_UNSTABLE(installedXnftsState);
-  const refreshOwned = useRecoilRefresher_UNSTABLE(ownedXnftsState);
+  const refreshInstalled = useSetRecoilState(forceInstalledRefresh);
+  const refreshOwned = useSetRecoilState(forceOwnedRefresh);
 
   /**
    * Memoized value for the xNFT account data based on the structure
@@ -57,7 +57,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   const handleClickSuspensionToggle = useCallback(async () => {
     try {
       await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
-      refreshOwned();
+      refreshOwned(prev => prev + 1);
     } catch (err) {
       console.error(`onSetSuspend: ${err}`);
     }
@@ -65,7 +65,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
   const handleClickUninstall = useCallback(async () => {
     try {
       await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
-      refreshInstalled();
+      refreshInstalled(prev => prev + 1);
     } catch (err) {
       console.error(`onUninstall: ${err}`);
     }
