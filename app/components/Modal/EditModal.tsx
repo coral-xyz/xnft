@@ -4,21 +4,38 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useMemo, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { HashLoader } from 'react-spinners';
-import { useXnftEdits, useXnftFocus } from '../../state/atoms/edit';
+import { useXnftEdits, useXnftFocus, type XnftEdits } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
 import { getBundlePath, revalidate, uploadFiles, uploadMetadata } from '../../utils/api';
 import { PLACEHOLDER_PUBKEY, PRICE_RX, XNFT_TAG_OPTIONS } from '../../utils/constants';
 import type { Metadata } from '../../utils/metadata';
-import xNFT from '../../utils/xnft';
+import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import { transformBundleSize } from '../Publish/BundleUpload';
 import Modal from './Base';
 
-type EditModalProps = {
-  onClose: () => void;
-  open: boolean;
-};
+/**
+ * Compares the argued xNFT updates against its current state and returns
+ * the update instruction params that are necessary.
+ * @param {XnftWithMetadata} xnft
+ * @param {XnftEdits} updates
+ * @returns {UpdateParams}
+ */
+function getChanges(xnft: XnftWithMetadata, updates: XnftEdits): UpdateParams {
+  const newInstallVault = new PublicKey(updates.installVault);
+  const newPrice = new BN(parseFloat(updates.price) * LAMPORTS_PER_SOL);
+
+  return {
+    installVault: newInstallVault.equals(xnft.account.installVault) ? null : newInstallVault,
+    name: updates.name === xnft.account.name ? null : updates.name,
+    price: newPrice.eq(xnft.account.installPrice) ? null : newPrice,
+    tag: (updates.tag.toLowerCase() === xNFT.tagName(xnft.account.tag).toLowerCase()
+      ? null
+      : { [updates.tag.toLowerCase()]: {} }) as never,
+    uri: updates.uri === xnft.metadataAccount.data.uri ? null : updates.uri
+  };
+}
 
 /**
  * Array of components for all tag select field options.
@@ -28,6 +45,11 @@ const tagOptions = XNFT_TAG_OPTIONS.map(o => (
     {o}
   </option>
 ));
+
+type EditModalProps = {
+  onClose: () => void;
+  open: boolean;
+};
 
 const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   const program = useProgram();
@@ -83,13 +105,12 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     setLoading(true);
 
     try {
-      await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, {
-        installVault: new PublicKey(edits.installVault),
-        name: edits.name,
-        price: new BN(parseFloat(edits.price) * LAMPORTS_PER_SOL),
-        tag: { [edits.tag.toLowerCase()]: {} } as never,
-        uri: edits.uri
-      });
+      await xNFT.update(
+        program,
+        focused.publicKey,
+        focused.account.masterMetadata,
+        getChanges(focused, edits)
+      );
 
       if ((edits.bundle.size ?? 0) > 0) {
         const newMetadata: Metadata = {

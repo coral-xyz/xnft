@@ -26,12 +26,21 @@ export function useXnftFocus(): [
   return useRecoilState(focusXnftState);
 }
 
+export type XnftEdits = {
+  bundle: File;
+  installVault: string;
+  name: string;
+  price: string;
+  tag: string;
+  uri: string;
+};
+
 /**
  * State to track derive and track the metadata and property
  * edits for the focused xNFT from the edits modal.
  * @export
  */
-export const xnftEditsState = atom({
+export const xnftEditsState = atom<XnftEdits>({
   key: 'xnftEdits',
   default: selector({
     key: 'xnftEditsDefault',

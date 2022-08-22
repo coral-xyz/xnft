@@ -165,7 +165,7 @@ describe('xnft', () => {
       await program.methods
         .updateXnft({
           installVault: null,
-          name: x.name,
+          name: null,
           price: null,
           tag: { nft: {} } as never,
           uri: 'https://backpack.app'
