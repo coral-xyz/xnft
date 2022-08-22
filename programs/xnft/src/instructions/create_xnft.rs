@@ -34,7 +34,7 @@ pub struct CreateXnft<'info> {
             master_mint.key().as_ref(),
         ],
         bump,
-        token::authority = xnft,
+        token::authority = publisher,
         token::mint = master_mint,
     )]
     pub master_token: Account<'info, TokenAccount>,
