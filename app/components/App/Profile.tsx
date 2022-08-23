@@ -89,7 +89,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         />
       </Link>
       <div className="min-w-0 pt-2">
-        <div className="text-lg font-bold tracking-wide text-white">{account.metadata.name}</div>
+        <div className="text-lg font-bold tracking-wide text-white">{account.account.name}</div>
         <div className="truncate text-sm tracking-wide text-[#FAFAFA]">
           {account.metadata.description}
         </div>

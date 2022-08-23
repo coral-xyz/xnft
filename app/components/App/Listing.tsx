@@ -2,16 +2,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { memo, type FunctionComponent } from 'react';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
-import type { Metadata } from '../../utils/metadata';
+import type { SerializedXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 
 interface ListingProps {
   connected?: boolean;
   installed: boolean;
   link: string;
   loading?: boolean;
-  metadata: Metadata;
   onButtonClick: () => void;
   price: number;
+  xnft: XnftWithMetadata | SerializedXnftWithMetadata;
 }
 
 const Listing: FunctionComponent<ListingProps> = ({
@@ -19,9 +19,9 @@ const Listing: FunctionComponent<ListingProps> = ({
   installed,
   link,
   loading,
-  metadata,
   onButtonClick,
-  price
+  price,
+  xnft
 }) => {
   return (
     <div className="flex items-center gap-4 rounded-lg bg-[#27272A] p-4 shadow-lg transition-all hover:-translate-y-1 hover:bg-[#27272A]/40">
@@ -29,16 +29,16 @@ const Listing: FunctionComponent<ListingProps> = ({
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={metadata.image}
+          src={xnft.metadata.image}
           height={64}
           width={64}
           layout="fixed"
         />
       </Link>
       <div className="min-w-0 flex-1">
-        <div className="font-bold tracking-wide text-white">{metadata.name}</div>
+        <div className="font-bold tracking-wide text-white">{xnft.account.name}</div>
         <div className="truncate text-xs tracking-wide text-[#FAFAFA]/75">
-          {metadata.description}
+          {xnft.metadata.description}
         </div>
       </div>
       <div className="my-auto">

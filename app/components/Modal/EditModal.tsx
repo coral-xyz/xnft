@@ -150,44 +150,53 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     const changes = getChanges(focused, edits);
 
     try {
+      // Call the `update_xnft` instruction if there are any account relevant changes
       if (Object.values(changes).some(x => x !== null)) {
         await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, changes);
       }
 
-      if ((edits.bundle.size ?? 0) > 0 || (edits.icon.size ?? 0) > 0) {
-        const newMetadata: Metadata = {
-          ...focused.metadata,
-          properties: { ...focused.metadata.properties }
-        };
+      // Copy metadata into new mutable object
+      let hasBundle = false;
+      let hasIcon = false;
+      const newMetadata: Metadata = {
+        ...focused.metadata,
+        name: edits.name,
+        description: edits.description,
+        properties: { ...focused.metadata.properties }
+      };
 
-        let hasBundle = false;
-        let hasIcon = false;
+      // Update bundle path if new one was provided
+      if ((edits.bundle.size ?? 0) > 0) {
+        hasBundle = true;
+        newMetadata.properties.bundle = `${S3_BUCKET_URL}/${getBundlePath(
+          focused.publicKey,
+          edits.bundle.name
+        )}`;
+      }
 
-        if ((edits.bundle.name ?? '') !== '') {
-          hasBundle = true;
-          newMetadata.properties.bundle = `${S3_BUCKET_URL}/${getBundlePath(
-            focused.publicKey,
-            edits.bundle.name
-          )}`;
-        }
+      // Update icon path if new one was provided
+      if ((edits.icon.size ?? 0) > 0) {
+        hasIcon = true;
+        newMetadata.image = `${S3_BUCKET_URL}/${getIconPath(focused.publicKey, edits.icon.name)}`;
+      }
 
-        if ((edits.icon.name ?? '') !== '') {
-          hasIcon = true;
-          newMetadata.image = `${S3_BUCKET_URL}/${getIconPath(focused.publicKey, edits.icon.name)}`;
-        }
-
+      // Upload new bundle and/or icon files if they were provided
+      if (hasBundle || hasIcon) {
         await uploadFiles(
           focused.publicKey,
           hasBundle ? edits.bundle : undefined,
           hasIcon ? edits.icon : undefined
         );
+      }
 
+      // If the new and old metadata are no longer equal, upload the new metadata object
+      if (JSON.stringify(newMetadata) !== JSON.stringify(focused.metadata)) {
         await uploadMetadata(focused.publicKey, newMetadata);
       }
 
-      onClose();
-
       await revalidate(focused.publicKey);
+
+      onClose();
     } catch (err) {
       console.error(`handleUpdate: ${err}`);
     } finally {
@@ -215,6 +224,23 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
               placeholder="My xNFT Name"
               value={edits.name}
               onChange={e => setEdits(prev => ({ ...prev, name: e.target.value }))}
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label
+              htmlFor="description"
+              className="text-sm font-medium tracking-wide text-[#E5E7EB]"
+            >
+              Description
+            </label>
+            <Input
+              id="description"
+              name="description"
+              rows={2}
+              value={edits.description}
+              onChange={e => setEdits(prev => ({ ...prev, description: e.target.value }))}
             />
           </div>
 
