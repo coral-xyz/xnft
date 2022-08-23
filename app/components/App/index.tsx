@@ -94,9 +94,9 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
       installed={isInstalled}
       link={appLink}
       loading={loading}
-      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
       price={price}
+      xnft={xnft as XnftWithMetadata | SerializedXnftWithMetadata}
     />
   ) : profile ? (
     <Profile
@@ -111,9 +111,9 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
       installed={isInstalled}
       link={appLink}
       loading={loading}
-      metadata={(xnft as XnftWithMetadata | SerializedXnftWithMetadata).metadata}
       onButtonClick={isInstalled ? handleOpenApp : handleInstall}
       price={price}
+      xnft={xnft as XnftWithMetadata | SerializedXnftWithMetadata}
     />
   );
 };

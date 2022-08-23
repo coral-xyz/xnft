@@ -89,7 +89,7 @@ const PublishedApps: FunctionComponent = () => {
         <div className="flex w-full flex-col justify-center">
           <ul
             role="list"
-            className="grid grid-cols-2 gap-y-4 gap-x-6 xl:grid-cols-3 2xl:grid-cols-4"
+            className="grid grid-cols-2 gap-y-4 gap-x-4 xl:grid-cols-3 2xl:grid-cols-4"
           >
             {owned.map(item => (
               <li key={item.publicKey.toBase58()}>

@@ -1,17 +1,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { memo, type FunctionComponent } from 'react';
-import type { Metadata } from '../../utils/metadata';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
+import type { SerializedXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 
 interface FeaturedProps {
   connected?: boolean;
   installed: boolean;
   link: string;
   loading?: boolean;
-  metadata: Metadata;
   onButtonClick: () => void;
   price: number;
+  xnft: XnftWithMetadata | SerializedXnftWithMetadata;
 }
 
 const Featured: FunctionComponent<FeaturedProps> = ({
@@ -19,9 +19,9 @@ const Featured: FunctionComponent<FeaturedProps> = ({
   installed,
   link,
   loading,
-  metadata,
   onButtonClick,
-  price
+  price,
+  xnft
 }) => {
   return (
     <div className="flex items-center gap-14 rounded-2xl bg-[#27272A] shadow-lg">
@@ -29,7 +29,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <Image
           className="rounded-l-2xl"
           alt="app-icon"
-          src={metadata.image}
+          src={xnft.metadata.image}
           height={400}
           width={400}
           layout="fixed"
@@ -38,8 +38,10 @@ const Featured: FunctionComponent<FeaturedProps> = ({
       </div>
       <div className="flex min-w-0 flex-col pr-10 tracking-wide">
         <h4 className="pb-2 text-sm font-medium text-[#99A4B4] lg:text-base">Featured</h4>
-        <h1 className="pb-6 text-4xl font-bold text-white lg:text-6xl">{metadata.name}</h1>
-        <h3 className="pb-8 text-sm font-medium text-white lg:text-base">{metadata.description}</h3>
+        <h1 className="pb-6 text-4xl font-bold text-white lg:text-6xl">{xnft.account.name}</h1>
+        <h3 className="pb-8 text-sm font-medium text-white lg:text-base">
+          {xnft.metadata.description}
+        </h3>
         <div className="flex gap-4 text-sm font-medium">
           <AppPrimaryButton
             large
