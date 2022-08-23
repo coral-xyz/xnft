@@ -71,6 +71,14 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
     }
   }, [program, xnft, refreshInstalled]);
 
+  /**
+   * Memoized function to handle clicking the app preview button.
+   */
+  const handlePreviewClick = useCallback(() => {
+    // TODO:
+    alert(`PREVIEW ${xnft.publicKey}`);
+  }, [xnft]);
+
   return (
     <section className="flex gap-6">
       <Image
@@ -96,14 +104,22 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}
         </div>
-        <AppPrimaryButton
-          className="bg-[#4F46E5] text-white"
-          disabled={!connected}
-          installed={isInstalled}
-          loading={loading}
-          onClick={isInstalled ? handleOpenApp : handleInstall}
-          price={priceLamports}
-        />
+        <div className="flex gap-4">
+          <AppPrimaryButton
+            className="bg-[#4F46E5] text-white"
+            disabled={!connected}
+            installed={isInstalled}
+            loading={loading}
+            onClick={isInstalled ? handleOpenApp : handleInstall}
+            price={priceLamports}
+          />
+          <button
+            className="rounded bg-[#27272A] px-3 py-2 text-xs font-medium tracking-wide text-white"
+            onClick={handlePreviewClick}
+          >
+            Preview
+          </button>
+        </div>
       </div>
     </section>
   );
