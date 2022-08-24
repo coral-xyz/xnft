@@ -52,7 +52,9 @@ const ProgressModal: FunctionComponent<ProgressModalProps> = ({
         <span className="font-medium tracking-wide">{UPLOAD_STEPS[active].text}</span>
         {active === 'error' && (
           <>
-            <span className="text-sm text-[#99A4B4]">{error.message}</span>
+            <div className="w-full overflow-auto rounded bg-[#18181B] p-4 text-xs text-[#99A4B4]">
+              <kbd>{error.message}</kbd>
+            </div>
             <button
               className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
               onClick={() => {
