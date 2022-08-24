@@ -12,6 +12,7 @@ const defaultPublishState = {
   title: '',
   description: '',
   publisher: '',
+  vault: '',
   website: '',
   bundle: {} as File,
   tag: 'None' as typeof XNFT_TAG_OPTIONS[number],
