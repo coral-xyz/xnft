@@ -9,6 +9,8 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useMemo, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { HashLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useXnftEdits, useXnftFocus, type XnftEdits } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
@@ -33,6 +35,8 @@ import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import { transformBundleSize } from '../Publish/BundleUpload';
 import Modal from './Base';
 import { getImageDimensions } from '../Publish/Details';
+
+const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
 
 /**
  * Compares the argued xNFT updates against its current state and returns
@@ -152,7 +156,12 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     try {
       // Call the `update_xnft` instruction to set any account data changes
       // and to update the `updated_ts` timestamp field on the xNFT account
-      await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, changes);
+      const sig = await xNFT.update(
+        program,
+        focused.publicKey,
+        focused.account.masterMetadata,
+        changes
+      );
 
       // Copy metadata into new mutable object
       let hasBundle = false;
@@ -180,13 +189,11 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
       }
 
       // Upload new bundle and/or icon files if they were provided
-      if (hasBundle || hasIcon) {
-        await uploadFiles(
-          focused.publicKey,
-          hasBundle ? edits.bundle : undefined,
-          hasIcon ? edits.icon : undefined
-        );
-      }
+      await uploadFiles(
+        focused.publicKey,
+        hasBundle ? edits.bundle : undefined,
+        hasIcon ? edits.icon : undefined
+      );
 
       // If the new and old metadata are no longer equal, upload the new metadata object
       if (JSON.stringify(newMetadata) !== JSON.stringify(focused.metadata)) {
@@ -196,6 +203,10 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
       await revalidate(focused.publicKey);
 
       onClose();
+
+      toast(<NotifyExplorer signature={sig} title={`${focused.account.name} Updated!`} />, {
+        type: 'success'
+      });
     } catch (err) {
       console.error(`handleUpdate: ${err}`);
     } finally {
