@@ -383,7 +383,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
                     )}
                     <div className="text-xs text-[#393C43]">
                       <span className="text-[#E5E7EB]">
-                        {edits.bundle.name ?? 'Upload a bundle.js file'}
+                        {edits.bundle.name ?? 'Upload an index.js file'}
                       </span>
                       <input {...bundleDrop.getInputProps({ className: 'sr-only hidden' })} />
                     </div>

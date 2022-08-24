@@ -70,7 +70,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
           )}
           <div className="text-sm text-zinc-600">
             <span className="text-sm text-zinc-300">
-              {publishState.bundle.name ?? 'Upload a bundle.js file'}
+              {publishState.bundle.name ?? 'Upload an index.js file'}
             </span>
             <input {...getInputProps({ className: 'sr-only hidden' })} />
           </div>
