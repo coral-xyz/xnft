@@ -209,6 +209,28 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         />
       </div>
 
+      {/* Install Vault */}
+      <div>
+        <label htmlFor="vault" className="text-sm font-medium tracking-wide text-[#E5E7EB]">
+          Install Vault
+        </label>
+        <Input
+          id="vault"
+          name="vault"
+          type="text"
+          spellCheck={false}
+          placeholder={publishState.publisher}
+          value={publishState.vault}
+          onChange={e => setPublishState(prev => ({ ...prev, vault: e.target.value }))}
+        />
+        <div className="max-w-md">
+          <span className="text-sm text-[#9CA3AF]">
+            An xNFT install vault is the address that receives payments (if any) for installation.
+            It will default to the publisher address.
+          </span>
+        </div>
+      </div>
+
       {/* Kind */}
       <div>
         <label
@@ -326,7 +348,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
               setPublishState(prev => ({ ...prev, royalties: e.target.value }));
           }}
         />
-        <div className="max-w-sm">
+        <div className="max-w-md">
           <span className="text-sm text-[#9CA3AF]">
             Royalties are payments earned on every secondary sale and are paid to the mint address
             in perpetuity.
