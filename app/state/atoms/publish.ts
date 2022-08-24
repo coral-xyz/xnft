@@ -66,6 +66,32 @@ export function validateAppIcon(file: File): Promise<File> {
 }
 
 /**
+ * Custom input validation for the inputted screenshots.
+ * @export
+ * @param {File} file
+ * @returns {Promise<File>}
+ */
+export function validateAppScreenshot(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener('load', () => {
+      const longestSide = Math.max(img.height, img.width);
+      if (
+        longestSide < APP_SCREENSHOT_CONSTRAINTS[0] ||
+        longestSide > APP_SCREENSHOT_CONSTRAINTS[1]
+      ) {
+        return reject(
+          `The longest side of the screenshot must be between ${APP_SCREENSHOT_CONSTRAINTS[0]}px and ${APP_SCREENSHOT_CONSTRAINTS[1]}px.`
+        );
+      } else {
+        return resolve(file);
+      }
+    });
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/**
  * Custom input validation for the uploaded bundle source file.
  * @export
  * @param {PublishState} state
@@ -94,30 +120,4 @@ export function validateDetailsInput(state: PublishState): boolean {
   ];
 
   return checks.every(x => x.length > 0);
-}
-
-/**
- * Custom input validation for the inputted screenshots.
- * @export
- * @param {File} file
- * @returns {*}  {Promise<File>}
- */
-export function validateAppScreenshot(file: File): Promise<File> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.addEventListener('load', () => {
-      const longestSide = Math.max(img.height, img.width);
-      if (
-        longestSide < APP_SCREENSHOT_CONSTRAINTS[0] ||
-        longestSide > APP_SCREENSHOT_CONSTRAINTS[1]
-      ) {
-        return reject(
-          `The longest side of the screenshot must be between ${APP_SCREENSHOT_CONSTRAINTS[0]}px and ${APP_SCREENSHOT_CONSTRAINTS[1]}px.`
-        );
-      } else {
-        return resolve(file);
-      }
-    });
-    img.src = URL.createObjectURL(file);
-  });
 }
