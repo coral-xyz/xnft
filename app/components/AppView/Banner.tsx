@@ -104,7 +104,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <AppPrimaryButton
             className="bg-[#4F46E5] text-white"
             disabled={!connected}
@@ -119,6 +119,9 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
           >
             Preview
           </button>
+          <span className="rounded-2xl bg-[#4F46E5] px-3 py-1 text-xs font-medium tracking-wide text-white">
+            {parseInt(xnft.account.totalInstalls)} Downloads
+          </span>
         </div>
       </div>
     </section>

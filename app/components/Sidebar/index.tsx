@@ -67,7 +67,7 @@ const Sidebar: FunctionComponent<SidebarProps> = props => {
             {item.name}
           </span>
           {idx !== 0 && (
-            <span className="badge rounded-xl bg-[#14B8A6]/25 py-1 px-2 text-xs text-[#14B8A6]">
+            <span className="badge rounded-xl border-[0.5px] border-[#14B8A6] bg-[#14B8A6]/25 py-1 px-2 text-xs text-[#14B8A6]">
               soon
             </span>
           )}
