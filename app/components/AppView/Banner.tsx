@@ -47,6 +47,14 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   );
 
   /**
+   * Memoized value for the number of total downloads.
+   */
+  const totalDownloads = useMemo(
+    () => parseInt(xnft.account.totalInstalls, 16).toLocaleString(),
+    [xnft.account.totalInstalls]
+  );
+
+  /**
    * Memoized function to handle the button to launch the app
    * in the connected Backpack wallet extension.
    */
@@ -120,7 +128,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
             Preview
           </button>
           <span className="rounded-2xl bg-[#4F46E5] px-3 py-1 text-xs font-medium tracking-wide text-white">
-            {parseInt(xnft.account.totalInstalls)} Downloads
+            {totalDownloads} Downloads
           </span>
         </div>
       </div>
