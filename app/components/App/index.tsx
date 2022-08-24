@@ -10,10 +10,12 @@ import xNFT, {
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import { toast } from 'react-toastify';
 
 const Featured = dynamic(() => import('./Featured'));
 const Listing = dynamic(() => import('./Listing'));
 const Profile = dynamic(() => import('./Profile'));
+const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
 
 interface AppProps {
   featured?: boolean;
@@ -79,8 +81,12 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
 
     try {
       const acc = 'xnft' in xnft ? xnft.xnft : xnft;
-      await xNFT.install(program, acc);
+      const sig = await xNFT.install(program, acc);
       refreshInstalled(prev => prev + 1);
+
+      toast(<NotifyExplorer signature={sig} title={`${acc.account.name} Installed!`} />, {
+        type: 'success'
+      });
     } catch (err) {
       console.error(`handleInstall: ${err}`);
     } finally {

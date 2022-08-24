@@ -1,16 +1,18 @@
 import '../styles/globals.css';
 
-import { RecoilRoot } from 'recoil';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Router from 'next/router';
 import PlausibleProvider from 'next-plausible';
 import nprogress from 'nprogress';
+import { ToastContainer } from 'react-toastify';
+import { RecoilRoot } from 'recoil';
 import { ContextProvider } from '../state/context/ContextProvider';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 require('nprogress/nprogress.css');
+require('react-toastify/dist/ReactToastify.css');
 
 const Footer = dynamic(() => import('../components/Footer'));
 const MobilePlaceholder = dynamic(() => import('../components/Placeholders/Mobile'));
@@ -46,6 +48,14 @@ export default function App({ Component, pageProps }: AppProps) {
                   <Footer />
                 </section>
               </div>
+
+              <ToastContainer
+                hideProgressBar
+                closeOnClick={false}
+                limit={3}
+                position="bottom-left"
+                theme="dark"
+              />
             </main>
           </ContextProvider>
         </PlausibleProvider>

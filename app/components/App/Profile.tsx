@@ -1,13 +1,17 @@
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { type FunctionComponent, memo, type ReactNode, useCallback, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useSetRecoilState } from 'recoil';
 import { useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
 import { forceInstalledRefresh, forceOwnedRefresh } from '../../state/atoms/xnft';
 import type { InstalledXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 import xNFT from '../../utils/xnft';
+
+const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
 
 interface MetaButtonProps {
   children?: ReactNode;
@@ -54,22 +58,38 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
    */
   const handleClickDetails = useCallback(() => router.push(link), [link, router]);
   const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused]);
+
   const handleClickSuspensionToggle = useCallback(async () => {
     try {
-      await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
+      const sig = await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
       refreshOwned(prev => prev + 1);
+
+      toast(
+        <NotifyExplorer
+          signature={sig}
+          title={`${account.account.name} ${
+            account.account.suspended ? 'Unsuspended' : 'Suspended'
+          }!`}
+        />,
+        { type: 'success' }
+      );
     } catch (err) {
       console.error(`onSetSuspend: ${err}`);
     }
   }, [program, account, refreshOwned]);
+
   const handleClickUninstall = useCallback(async () => {
     try {
-      await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
+      const sig = await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
       refreshInstalled(prev => prev + 1);
+
+      toast(<NotifyExplorer signature={sig} title={`${account.account.name} Uninstalled!`} />, {
+        type: 'success'
+      });
     } catch (err) {
       console.error(`onUninstall: ${err}`);
     }
-  }, [program, xnft, refreshInstalled]);
+  }, [account, program, xnft, refreshInstalled]);
 
   return (
     <div
