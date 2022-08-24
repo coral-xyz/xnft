@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { type FunctionComponent, memo } from 'react';
+import { EXPLORER_SUFFIX } from '../../utils/constants';
 
 interface ExplorerProps {
   signature: string;
@@ -12,7 +13,7 @@ const Explorer: FunctionComponent<ExplorerProps> = ({ signature, title }) => {
       <span className="font-medium tracking-wide text-white">{title}</span>
       <Link
         className="text-sm text-[#00B5F4]"
-        href={`https://solscan.io/tx/${signature}?cluster=devnet`}
+        href={`https://solscan.io/tx/${signature}${EXPLORER_SUFFIX}`}
         target="_blank"
       >
         View on SolScan

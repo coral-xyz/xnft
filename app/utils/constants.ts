@@ -14,6 +14,11 @@ export const CORAL_LINKS = {
 };
 export const DOCS_LINK = 'https://docs.xnft.gg';
 
+export const EXPLORER_SUFFIX =
+  process.env.NEXT_PUBLIC_NETWORK !== 'mainnet'
+    ? `?cluster=${process.env.NEXT_PUBLIC_NETWORK}`
+    : '';
+
 export const MAX_NAME_LENGTH = 30;
 export const APP_ICON_CONSTRAINTS = [500, 1500];
 export const APP_SCREENSHOT_CONSTRAINTS = [500, 2000];

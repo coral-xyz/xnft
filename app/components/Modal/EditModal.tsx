@@ -33,8 +33,8 @@ import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
 import { transformBundleSize } from '../Publish/BundleUpload';
-import Modal from './Base';
 import { getImageDimensions } from '../Publish/Details';
+import Modal from './Base';
 
 const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
 
