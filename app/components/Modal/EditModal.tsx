@@ -150,10 +150,9 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     const changes = getChanges(focused, edits);
 
     try {
-      // Call the `update_xnft` instruction if there are any account relevant changes
-      if (Object.values(changes).some(x => x !== null)) {
-        await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, changes);
-      }
+      // Call the `update_xnft` instruction to set any account data changes
+      // and to update the `updated_ts` timestamp field on the xNFT account
+      await xNFT.update(program, focused.publicKey, focused.account.masterMetadata, changes);
 
       // Copy metadata into new mutable object
       let hasBundle = false;
