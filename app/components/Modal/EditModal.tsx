@@ -36,7 +36,8 @@ import { transformBundleSize } from '../Publish/BundleUpload';
 import { getImageDimensions } from '../Publish/Details';
 import Modal from './Base';
 
-const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
+const NotifyExplorer = dynamic(() => import('../Notification/Explorer'));
+const NotifyTransactionFailure = dynamic(() => import('../Notification/TransactionFailure'));
 
 /**
  * Compares the argued xNFT updates against its current state and returns
@@ -209,6 +210,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
       });
     } catch (err) {
       console.error(`handleUpdate: ${err}`);
+      toast(<NotifyTransactionFailure error={err} title="Update Failed!" />, { type: 'error' });
     } finally {
       setLoading(false);
     }
