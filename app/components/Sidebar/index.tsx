@@ -55,7 +55,7 @@ const Sidebar: FunctionComponent<SidebarProps> = props => {
       menuItems.map((item, idx) => (
         <div
           key={item.name}
-          className={`flex items-center gap-3 overflow-clip rounded-2xl py-2.5 px-3 font-medium ${
+          className={`relative flex items-center gap-3 rounded-2xl py-2.5 px-3 font-medium ${
             props.active === idx ? 'bg-[#F97316]/20' : 'bg-transparent'
           }`}
           // onClick={() => props.onClick(idx)}
@@ -67,7 +67,7 @@ const Sidebar: FunctionComponent<SidebarProps> = props => {
             {item.name}
           </span>
           {idx !== 0 && (
-            <span className="badge rounded-xl border-[0.5px] border-[#14B8A6] bg-[#14B8A6]/25 py-1 px-2 text-xs text-[#14B8A6]">
+            <span className="-ml-2 rounded-xl border-[0.5px] border-[#14B8A6] bg-[#14B8A6]/25 py-[0.75px] px-1 text-[10px] text-[#14B8A6]">
               soon
             </span>
           )}
