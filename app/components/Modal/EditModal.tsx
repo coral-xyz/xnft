@@ -14,21 +14,15 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useXnftEdits, useXnftFocus, type XnftEdits } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
-import {
-  getBundlePath,
-  getIconPath,
-  revalidate,
-  uploadFiles,
-  uploadMetadata
-} from '../../utils/api';
+import { revalidate } from '../../utils/api';
 import {
   ALLOWED_IMAGE_TYPES,
   PLACEHOLDER_PUBKEY,
   PRICE_RX,
-  S3_BUCKET_URL,
   XNFT_TAG_OPTIONS
 } from '../../utils/constants';
 import type { Metadata } from '../../utils/metadata';
+import { FileType, S3Uploader } from '../../utils/uploaders';
 import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
@@ -165,8 +159,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
       );
 
       // Copy metadata into new mutable object
-      let hasBundle = false;
-      let hasIcon = false;
+      const uploader = new S3Uploader(focused.publicKey);
       const newMetadata: Metadata = {
         ...focused.metadata,
         name: edits.name,
@@ -174,31 +167,19 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         properties: { ...focused.metadata.properties }
       };
 
-      // Update bundle path if new one was provided
+      // Upload and update bundle path if new one was provided
       if ((edits.bundle.size ?? 0) > 0) {
-        hasBundle = true;
-        newMetadata.properties.bundle = `${S3_BUCKET_URL}/${getBundlePath(
-          focused.publicKey,
-          edits.bundle.name
-        )}`;
+        newMetadata.properties.bundle = await uploader.uploadFile(edits.bundle, FileType.Bundle);
       }
 
-      // Update icon path if new one was provided
+      // Upload and update icon path if new one was provided
       if ((edits.icon.size ?? 0) > 0) {
-        hasIcon = true;
-        newMetadata.image = `${S3_BUCKET_URL}/${getIconPath(focused.publicKey, edits.icon.name)}`;
+        newMetadata.image = await uploader.uploadFile(edits.icon, FileType.Icon);
       }
-
-      // Upload new bundle and/or icon files if they were provided
-      await uploadFiles(
-        focused.publicKey,
-        hasBundle ? edits.bundle : undefined,
-        hasIcon ? edits.icon : undefined
-      );
 
       // If the new and old metadata are no longer equal, upload the new metadata object
       if (JSON.stringify(newMetadata) !== JSON.stringify(focused.metadata)) {
-        await uploadMetadata(focused.publicKey, newMetadata);
+        await uploader.uploadMetadata(newMetadata);
       }
 
       await revalidate(focused.publicKey);
