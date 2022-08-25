@@ -17,6 +17,16 @@ describe('xnft', async () => {
   let xnft: PublicKey;
   let install: PublicKey;
   const installVault = program.provider.publicKey;
+  const author = anchor.web3.Keypair.generate();
+
+  before(async () => {
+    await program.provider.connection.requestAirdrop(
+      author.publicKey,
+      2 * anchor.web3.LAMPORTS_PER_SOL
+    );
+
+    await wait(500);
+  });
 
   it('creates the xNFT', async () => {
     const installPrice = new anchor.BN(0);
@@ -56,23 +66,51 @@ describe('xnft', async () => {
     assert.equal(fetchedXnft.name, 'my-xnft');
   });
 
-  describe('reviews can be created for an xNFT', () => {
-    const author = anchor.web3.Keypair.generate();
+  describe('a user can create an installation of an xnft', () => {
+    it('by calling the `create_install` instruction', async () => {
+      const tx = program.methods
+        .createInstall()
+        .accounts({
+          xnft,
+          installVault,
+          authority: author.publicKey
+        })
+        .signers([author]);
 
-    before(async () => {
-      await program.provider.connection.requestAirdrop(
-        author.publicKey,
-        anchor.web3.LAMPORTS_PER_SOL
-      );
+      const keys = await tx.pubkeys();
+      install = keys.install;
 
-      await wait(500);
+      await tx.rpc();
     });
 
+    it('and can be fetched by installation authority', async () => {
+      const installedxNFTs = await program.account.install.all([
+        {
+          memcmp: {
+            offset: 8, // Discriminator
+            bytes: author.publicKey.toBase58()
+          }
+        }
+      ]);
+
+      assert.isNotEmpty(installedxNFTs);
+    });
+  });
+
+  describe('reviews can be created for an xNFT', () => {
     it('unless you currently own it', async () => {
+      const tx = program.methods.createInstall().accounts({
+        xnft,
+        installVault
+      });
+      const pubkeys = await tx.pubkeys();
+      await tx.rpc();
+
       try {
         await program.methods
           .createReview('This review will fail', 3)
           .accounts({
+            install: pubkeys.install,
             xnft
           })
           .rpc();
@@ -89,6 +127,7 @@ describe('xnft', async () => {
           .createReview('This review will fail', 6)
           .accounts({
             author: author.publicKey,
+            install,
             xnft
           })
           .signers([author])
@@ -105,6 +144,7 @@ describe('xnft', async () => {
         .createReview('This review will succeed', 4)
         .accounts({
           author: author.publicKey,
+          install,
           xnft
         })
         .signers([author])
@@ -117,43 +157,12 @@ describe('xnft', async () => {
     });
   });
 
-  describe('a user can create an installation of an xnft', () => {
-    it('by calling the `create_install` instruction', async () => {
-      const tx = program.methods.createInstall().accounts({
-        xnft,
-        installVault
-      });
-
-      const keys = await tx.pubkeys();
-      install = keys.install;
-
-      await tx.rpc();
-    });
-
-    it('and can be fetched by installation authority', async () => {
-      const installedxNFTs = await program.account.install.all([
-        {
-          memcmp: {
-            offset: 8, // Discriminator
-            bytes: program.provider.publicKey.toBase58()
-          }
-        }
-      ]);
-
-      assert.isNotEmpty(installedxNFTs);
-    });
-  });
-
   describe('an installation can be removed by a user', () => {
-    after(async () => {
-      await wait(500);
-      await program.methods.createInstall().accounts({ xnft, installVault }).rpc();
-    });
-
     it('with the `delete_install` instruction', async () => {
       await program.methods
         .deleteInstall()
-        .accounts({ install, receiver: program.provider.publicKey })
+        .accounts({ install, receiver: author.publicKey, authority: author.publicKey })
+        .signers([author])
         .rpc();
     });
 

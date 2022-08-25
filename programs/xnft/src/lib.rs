@@ -95,6 +95,12 @@ pub enum CustomError {
     #[msg("The rating for a review must be between 0 and 5")]
     RatingOutOfBounds,
 
+    #[msg("The installation provided for the review does not match the xNFT")]
+    ReviewInstallMismatch,
+
+    #[msg("You must have an active installation of an xNFT to create a review")]
+    ReviewerMustHaveInstalled,
+
     #[msg("Attempting to install a currently suspended xNFT")]
     SuspendedInstallation,
 }

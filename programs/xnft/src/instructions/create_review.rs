@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::state::{Review, Xnft};
+use crate::state::{Install, Review, Xnft};
 use crate::CustomError;
 
 #[derive(Accounts)]
@@ -18,6 +18,12 @@ pub struct CreateReview<'info> {
         bump,
     )]
     pub review: Account<'info, Review>,
+
+    #[account(
+        has_one = xnft @ CustomError::ReviewInstallMismatch,
+        constraint = install.authority == *author.key @ CustomError::ReviewerMustHaveInstalled
+    )]
+    pub install: Account<'info, Install>,
 
     #[account(
         constraint = xnft.authority != *author.key @ CustomError::CannotReviewOwned
