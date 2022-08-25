@@ -1,4 +1,3 @@
-import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useEffect, useMemo } from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -19,14 +18,12 @@ const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
 
 interface AppProps {
   featured?: boolean;
-  price: number;
   profile?: boolean;
   type?: 'installed' | 'owned';
   xnft: XnftWithMetadata | SerializedXnftWithMetadata | InstalledXnftWithMetadata;
 }
 
-const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft }) => {
-  const { connected } = useWallet();
+const App: FunctionComponent<AppProps> = ({ featured, profile, type, xnft }) => {
   const program = useProgram();
   const { installed, err } = useInstalledXnftsLoadable();
   const refreshInstalled = useSetRecoilState(forceInstalledRefresh);
@@ -46,6 +43,19 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
    * Memoized href link for the app view of the current public key.
    */
   const appLink = useMemo(() => `/app/${pubkey.toBase58()}`, [pubkey]);
+
+  /**
+   * Memoized xNFT install price value to pass through props.
+   */
+  const price = useMemo(
+    () =>
+      'xnft' in xnft
+        ? xnft.xnft.account.installPrice.toNumber()
+        : typeof xnft.account.installPrice === 'string'
+        ? parseInt(xnft.account.installPrice, 16)
+        : xnft.account.installPrice.toNumber(),
+    [xnft]
+  );
 
   /**
    * Effect hook to mark whether the public key of the prop provided
@@ -96,7 +106,6 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
 
   return featured ? (
     <Featured
-      connected={connected}
       installed={isInstalled}
       link={appLink}
       loading={loading}
@@ -113,7 +122,6 @@ const App: FunctionComponent<AppProps> = ({ featured, price, profile, type, xnft
     />
   ) : (
     <Listing
-      connected={connected}
       installed={isInstalled}
       link={appLink}
       loading={loading}

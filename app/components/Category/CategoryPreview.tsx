@@ -13,13 +13,7 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
    * Memoized list of App components based on the list of xNFT
    * objects provided to the component via props.
    */
-  const apps = useMemo(
-    () =>
-      xnfts.map(xnft => (
-        <App key={xnft.publicKey} price={parseInt(xnft.account.installPrice, 16)} xnft={xnft} />
-      )),
-    [xnfts]
-  );
+  const apps = useMemo(() => xnfts.map(xnft => <App key={xnft.publicKey} xnft={xnft} />), [xnfts]);
 
   return (
     <div className={`flex flex-col gap-7 ${className ?? ''}`}>

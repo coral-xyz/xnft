@@ -1,3 +1,4 @@
+import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { memo, type FunctionComponent } from 'react';
@@ -5,7 +6,6 @@ import AppPrimaryButton from '../Button/AppPrimaryButton';
 import type { SerializedXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 
 interface FeaturedProps {
-  connected?: boolean;
   installed: boolean;
   link: string;
   loading?: boolean;
@@ -15,7 +15,6 @@ interface FeaturedProps {
 }
 
 const Featured: FunctionComponent<FeaturedProps> = ({
-  connected,
   installed,
   link,
   loading,
@@ -23,6 +22,8 @@ const Featured: FunctionComponent<FeaturedProps> = ({
   price,
   xnft
 }) => {
+  const { connected } = useWallet();
+
   return (
     <div className="flex items-center gap-14 rounded-2xl bg-[#27272A] shadow-lg">
       <div className="flex items-center">

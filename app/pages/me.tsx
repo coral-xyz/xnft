@@ -44,12 +44,7 @@ const DownloadedApps: FunctionComponent = () => {
           >
             {installed.map(item => (
               <li key={item.xnft.publicKey.toBase58()}>
-                <App
-                  profile
-                  type="installed"
-                  price={item.xnft.account.installPrice.toNumber()}
-                  xnft={item}
-                />
+                <App profile type="installed" xnft={item} />
               </li>
             ))}
           </ul>
@@ -93,12 +88,7 @@ const PublishedApps: FunctionComponent = () => {
           >
             {owned.map(item => (
               <li key={item.publicKey.toBase58()}>
-                <App
-                  profile
-                  type="owned"
-                  price={item.account.installPrice.toNumber()}
-                  xnft={item}
-                />
+                <App profile type="owned" xnft={item} />
               </li>
             ))}
           </ul>
