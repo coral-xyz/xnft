@@ -18,9 +18,10 @@ import { UPLOAD_STEPS } from '../components/Modal/ProgressModal';
 import { publishState as publishStateAtom } from '../state/atoms/publish';
 import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
-import { revalidate, uploadFiles, uploadMetadata } from '../utils/api';
+import { revalidate } from '../utils/api';
 import xNFT from '../utils/xnft';
 import { generateMetadata } from '../utils/metadata';
+import { FileType, S3Uploader } from '../utils/uploaders';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -113,17 +114,18 @@ const PublishPage: NextPage = () => {
         setNewPubkey(xnftAddress);
 
         setProcessingStep('files');
-        await uploadFiles(
-          xnftAddress,
-          publishState.bundle,
-          publishState.icon,
-          publishState.screenshots
+        const uploader = new S3Uploader(xnftAddress);
+        await uploader.uploadFile(publishState.bundle, FileType.Bundle);
+        await uploader.uploadFile(publishState.icon, FileType.Icon);
+
+        await Promise.all(
+          publishState.screenshots.map(s => uploader.uploadFile(s, FileType.Screenshot))
         );
 
         setProcessingStep('metadata');
-        await uploadMetadata(xnftAddress, generateMetadata(xnftAddress, publishState));
-        await revalidate(xnftAddress);
+        await uploader.uploadMetadata(generateMetadata(xnftAddress, publishState));
 
+        await revalidate(xnftAddress);
         setProcessingStep('success');
       } catch (err) {
         if (err instanceof WalletSignTransactionError) {
