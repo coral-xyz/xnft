@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useSetRecoilState } from 'recoil';
 import dynamic from 'next/dynamic';
 import xNFT, {
@@ -9,12 +10,12 @@ import xNFT, {
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
-import { toast } from 'react-toastify';
 
 const Featured = dynamic(() => import('./Featured'));
 const Listing = dynamic(() => import('./Listing'));
 const Profile = dynamic(() => import('./Profile'));
-const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
+const NotifyExplorer = dynamic(() => import('../Notification/Explorer'));
+const NotifyTransactionFailure = dynamic(() => import('../Notification/TransactionFailure'));
 
 interface AppProps {
   featured?: boolean;
@@ -99,6 +100,9 @@ const App: FunctionComponent<AppProps> = ({ featured, profile, type, xnft }) => 
       });
     } catch (err) {
       console.error(`handleInstall: ${err}`);
+      toast(<NotifyTransactionFailure error={err} title="Installation Failed!" />, {
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }

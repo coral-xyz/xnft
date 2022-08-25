@@ -11,7 +11,8 @@ import { forceInstalledRefresh, forceOwnedRefresh } from '../../state/atoms/xnft
 import type { InstalledXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 import xNFT from '../../utils/xnft';
 
-const NotifyExplorer = dynamic(() => import('../Notification/explorer'));
+const NotifyExplorer = dynamic(() => import('../Notification/Explorer'));
+const NotifyTransactionFailure = dynamic(() => import('../Notification/TransactionFailure'));
 
 interface MetaButtonProps {
   children?: ReactNode;
@@ -75,6 +76,9 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
       );
     } catch (err) {
       console.error(`onSetSuspend: ${err}`);
+      toast(<NotifyTransactionFailure error={err} title="Suspension Toggle Failed!" />, {
+        type: 'error'
+      });
     }
   }, [program, account, refreshOwned]);
 
@@ -88,6 +92,9 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
       });
     } catch (err) {
       console.error(`onUninstall: ${err}`);
+      toast(<NotifyTransactionFailure error={err} title="Uninstallation Failed!" />, {
+        type: 'error'
+      });
     }
   }, [account, program, xnft, refreshInstalled]);
 
