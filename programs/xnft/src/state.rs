@@ -51,3 +51,20 @@ pub struct Install {
 impl Install {
     pub const LEN: usize = 8 + (32 * 3) + 8 + 64;
 }
+
+#[account]
+pub struct Review {
+    pub author: Pubkey,
+    pub xnft: Pubkey,
+    pub rating: u8,
+    pub comment: String,
+    _reserved: [u8; 32],
+}
+
+impl Review {
+    pub const MAX_RATING: u8 = 5;
+
+    pub fn len(comment: String) -> usize {
+        8 + 32 + 32 + 1 + (4 + comment.len()) + 32
+    }
+}

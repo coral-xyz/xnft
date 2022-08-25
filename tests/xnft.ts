@@ -9,7 +9,7 @@ const metadataProgram = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-describe('xnft', () => {
+describe('xnft', async () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.Xnft as Program<Xnft>;
@@ -54,6 +54,67 @@ describe('xnft', () => {
   it('fetch created xNFT', async () => {
     const fetchedXnft = await program.account.xnft.fetch(xnft);
     assert.equal(fetchedXnft.name, 'my-xnft');
+  });
+
+  describe('reviews can be created for an xNFT', () => {
+    const author = anchor.web3.Keypair.generate();
+
+    before(async () => {
+      await program.provider.connection.requestAirdrop(
+        author.publicKey,
+        anchor.web3.LAMPORTS_PER_SOL
+      );
+
+      await wait(500);
+    });
+
+    it('unless you currently own it', async () => {
+      try {
+        await program.methods
+          .createReview('This review will fail', 3)
+          .accounts({
+            xnft
+          })
+          .rpc();
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, 'CannotReviewOwned');
+      }
+    });
+
+    it('the rating cannot be larger than 5', async () => {
+      try {
+        await program.methods
+          .createReview('This review will fail', 6)
+          .accounts({
+            author: author.publicKey,
+            xnft
+          })
+          .signers([author])
+          .rpc();
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, 'RatingOutOfBounds');
+      }
+    });
+
+    it('will succeed if properly formed', async () => {
+      await program.methods
+        .createReview('This review will succeed', 4)
+        .accounts({
+          author: author.publicKey,
+          xnft
+        })
+        .signers([author])
+        .rpc();
+
+      const reviews = await program.account.review.all();
+      assert.lengthOf(reviews, 1);
+      assert.strictEqual(reviews[0].account.comment, 'This review will succeed');
+      assert.strictEqual(reviews[0].account.rating, 4);
+    });
   });
 
   describe('a user can create an installation of an xnft', () => {
