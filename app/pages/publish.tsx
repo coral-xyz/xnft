@@ -62,6 +62,7 @@ const PublishPage: NextPage = () => {
   const [inputStep, setInputStep] = useState(0);
   const [nextEnabled, setNextEnabled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [canRetry, setCanRetry] = useState(true);
   const [processingStep, setProcessingStep] = useState<keyof typeof UPLOAD_STEPS>('ix');
   const [processingError, setProcessingError] = useState<Error>(undefined);
   const [newPubkey, setNewPubkey] = useState(PublicKey.default);
@@ -103,37 +104,42 @@ const PublishPage: NextPage = () => {
    * metadata files and requesting the approval and the confirmation
    * of the instruction from the contract to create it on-chain.
    */
-  const handlePublish = useCallback(async () => {
-    try {
-      setModalOpen(true);
+  const handlePublish = useCallback(
+    async (retry?: boolean) => {
+      try {
+        setModalOpen(true);
 
-      const [_, xnftAddress] = await xNFT.create(program, publishState);
-      setNewPubkey(xnftAddress);
+        const [_, xnftAddress] = await xNFT.create(program, publishState, retry);
+        setNewPubkey(xnftAddress);
 
-      setProcessingStep('files');
-      await uploadFiles(
-        xnftAddress,
-        publishState.bundle,
-        publishState.icon,
-        publishState.screenshots
-      );
+        setProcessingStep('files');
+        await uploadFiles(
+          xnftAddress,
+          publishState.bundle,
+          publishState.icon,
+          publishState.screenshots
+        );
 
-      setProcessingStep('metadata');
-      await uploadMetadata(xnftAddress, generateMetadata(xnftAddress, publishState));
-      await revalidate(xnftAddress);
+        setProcessingStep('metadata');
+        await uploadMetadata(xnftAddress, generateMetadata(xnftAddress, publishState));
+        await revalidate(xnftAddress);
 
-      setProcessingStep('success');
-    } catch (err) {
-      if (err instanceof WalletSignTransactionError) {
-        setModalOpen(false);
-        return;
+        setProcessingStep('success');
+      } catch (err) {
+        if (err instanceof WalletSignTransactionError) {
+          setModalOpen(false);
+          return;
+        } else if ((err as Error).message.includes('already published')) {
+          setCanRetry(false);
+        }
+
+        setProcessingStep('error');
+        setProcessingError(err);
+        console.error(`handleNextClicked: ${err}`);
       }
-
-      setProcessingStep('error');
-      setProcessingError(err);
-      console.error(`handleNextClicked: ${err}`);
-    }
-  }, [program, publishState]);
+    },
+    [program, publishState]
+  );
 
   /**
    * Memoized function to handle the clicking event of the "Next"
@@ -225,9 +231,10 @@ const PublishPage: NextPage = () => {
       </div>
       <ProgressModal
         active={processingStep}
+        canRetry={canRetry}
         error={processingError}
         onClose={handleModalClose}
-        onRetry={handlePublish}
+        onRetry={() => handlePublish(true)}
         open={modalOpen}
         pubkey={newPubkey}
       />

@@ -65,12 +65,14 @@ export default abstract class xNFT {
    * @static
    * @param {Program<IDLType>} program
    * @param {PublishState} details
+   * @param {boolean} [retry]
    * @returns {Promise<[string | null, PublicKey]>}
    * @memberof xNFT
    */
   static async create(
     program: Program<IDLType>,
-    details: PublishState
+    details: PublishState,
+    retry?: boolean
   ): Promise<[string | null, PublicKey]> {
     const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
 
@@ -79,7 +81,11 @@ export default abstract class xNFT {
     // that could ultimately lead to cyclical failures.
     const exists = (await program.provider.connection.getAccountInfo(xnft)) !== null;
     if (exists) {
-      return [null, xnft];
+      if (retry) {
+        return [null, xnft];
+      }
+
+      throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
     const uri = `${S3_BUCKET_URL}/${getMetadataPath(xnft)}`;

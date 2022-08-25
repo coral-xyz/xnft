@@ -1,6 +1,7 @@
 import { CheckCircleIcon, EmojiSadIcon } from '@heroicons/react/solid';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { type FunctionComponent, memo } from 'react';
 import { HashLoader } from 'react-spinners';
 import Modal from './Base';
@@ -30,6 +31,7 @@ export const UPLOAD_STEPS = {
 
 interface ProgressModalProps {
   active: keyof typeof UPLOAD_STEPS;
+  canRetry?: boolean;
   error?: Error;
   onClose: () => void;
   onRetry: () => void;
@@ -39,12 +41,15 @@ interface ProgressModalProps {
 
 const ProgressModal: FunctionComponent<ProgressModalProps> = ({
   active,
+  canRetry,
   error,
   onClose,
   onRetry,
   open,
   pubkey
 }) => {
+  const router = useRouter();
+
   return (
     <Modal open={open} onClose={onClose}>
       <section className="flex flex-col items-center justify-center gap-6 py-8">
@@ -55,15 +60,24 @@ const ProgressModal: FunctionComponent<ProgressModalProps> = ({
             <div className="w-full overflow-auto rounded bg-[#18181B] p-4 text-xs text-[#99A4B4]">
               <kbd>{error.message}</kbd>
             </div>
-            <button
-              className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
-              onClick={() => {
-                onClose();
-                onRetry();
-              }}
-            >
-              Retry
-            </button>
+            {canRetry ? (
+              <button
+                className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
+                onClick={() => {
+                  onClose();
+                  onRetry();
+                }}
+              >
+                Retry
+              </button>
+            ) : (
+              <button
+                className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
+                onClick={() => router.reload()}
+              >
+                Restart
+              </button>
+            )}
           </>
         )}
         {active === 'success' && (
