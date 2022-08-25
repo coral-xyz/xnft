@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
-import fetch from 'isomorphic-unfetch';
 import { S3_BUCKET_URL } from './constants';
 import type { Metadata } from './metadata';
+import fetch from './fetch';
 
 export const getMetadataPath = (xnft: PublicKey): string => `${xnft.toBase58()}/metadata.json`;
 
@@ -26,12 +26,16 @@ export async function revalidate(xnft?: PublicKey) {
     uri += `?xnft=${xnft.toBase58()}`;
   }
 
-  await fetch(uri, {
-    method: 'POST',
-    headers: {
-      Authorization: process.env.NEXT_PUBLIC_MY_SECRET_TOKEN
-    }
-  });
+  await fetch(
+    uri,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: process.env.NEXT_PUBLIC_MY_SECRET_TOKEN
+      }
+    },
+    10000
+  );
 }
 
 /**
@@ -55,32 +59,40 @@ export async function uploadFiles(
     files.map(async (f, idx) => {
       if (!f) return;
 
-      const resp = await fetch('/api/s3', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
+      const resp = await fetch(
+        '/api/s3',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name:
+              idx === 0
+                ? getBundlePath(xnft, f.name)
+                : idx === 1
+                ? getIconPath(xnft, f.name)
+                : getScreenshotPath(xnft, f.name),
+            type: f.type
+          })
         },
-        body: JSON.stringify({
-          name:
-            idx === 0
-              ? getBundlePath(xnft, f.name)
-              : idx === 1
-              ? getIconPath(xnft, f.name)
-              : getScreenshotPath(xnft, f.name),
-          type: f.type
-        })
-      });
+        10000
+      );
 
       const { url } = await resp.json();
 
-      await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-type': f.type,
-          'Access-Control-Allow-Origin': '*'
+      await fetch(
+        url,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-type': f.type,
+            'Access-Control-Allow-Origin': '*'
+          },
+          body: f
         },
-        body: f
-      });
+        10000
+      );
     })
   );
 }
@@ -95,27 +107,35 @@ export async function uploadFiles(
 export async function uploadMetadata(xnft: PublicKey, data: Metadata): Promise<string> {
   const fileName = getMetadataPath(xnft);
 
-  const resp = await fetch('/api/s3', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+  const resp = await fetch(
+    '/api/s3',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: fileName,
+        type: 'application/json'
+      })
     },
-    body: JSON.stringify({
-      name: fileName,
-      type: 'application/json'
-    })
-  });
+    10000
+  );
 
   const { url } = await resp.json();
 
-  await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+  await fetch(
+    url,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify(data)
     },
-    body: JSON.stringify(data)
-  });
+    10000
+  );
 
   return `${S3_BUCKET_URL}/${fileName}`;
 }

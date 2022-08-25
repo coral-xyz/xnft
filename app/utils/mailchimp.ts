@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-unfetch';
+import fetch from './fetch';
 
 /**
  * Subscribe to Mailchimp list
