@@ -18,7 +18,9 @@ const CategoryPreview: FunctionComponent<PreviewProps> = ({ className, title, xn
   return (
     <div className={`flex flex-col gap-7 ${className ?? ''}`}>
       <h2 className="text-2xl font-extrabold tracking-wide text-white">{title}</h2>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-4 xl:grid-cols-3 2xl:grid-cols-4">{apps}</div>
+      <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        {apps}
+      </div>
     </div>
   );
 };
