@@ -31,12 +31,15 @@ pub struct Xnft {
     pub created_ts: i64,
     pub updated_ts: i64,
     pub suspended: bool,
-    _reserved: [u8; 32],
+    pub total_rating: u64,
+    pub num_ratings: u32,
+    _reserved: [u8; 20],
 }
 
 impl Xnft {
     pub const MAX_NAME_LEN: usize = 30;
-    pub const LEN: usize = 8 + (32 * 6) + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + (8 * 4) + 1 + 32;
+    pub const LEN: usize =
+        8 + (32 * 6) + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 20;
 }
 
 #[account]
@@ -57,14 +60,14 @@ pub struct Review {
     pub author: Pubkey,
     pub xnft: Pubkey,
     pub rating: u8,
-    pub comment: String,
+    pub uri: String,
     _reserved: [u8; 32],
 }
 
 impl Review {
     pub const MAX_RATING: u8 = 5;
 
-    pub fn len(comment: String) -> usize {
-        8 + 32 + 32 + 1 + (4 + comment.len()) + 32
+    pub fn len(uri: String) -> usize {
+        8 + 32 + 32 + 1 + (4 + uri.len()) + 32
     }
 }

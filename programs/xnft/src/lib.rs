@@ -21,6 +21,7 @@ pub mod xnft {
     /// * xNFT PDA associated with the master edition.
     ///
     /// Once this is invoked, an xNFT exists and can be "installed" by users.
+    #[allow(clippy::too_many_arguments)]
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,

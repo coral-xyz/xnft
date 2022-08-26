@@ -108,7 +108,7 @@ describe('xnft', async () => {
 
       try {
         await program.methods
-          .createReview('This review will fail', 3)
+          .createReview('https://arweave.net/abc123', 3)
           .accounts({
             install: pubkeys.install,
             xnft
@@ -124,7 +124,7 @@ describe('xnft', async () => {
     it('the rating cannot be larger than 5', async () => {
       try {
         await program.methods
-          .createReview('This review will fail', 6)
+          .createReview('https://arweave.net/abc123', 6)
           .accounts({
             author: author.publicKey,
             install,
@@ -141,7 +141,7 @@ describe('xnft', async () => {
 
     it('will succeed if properly formed', async () => {
       await program.methods
-        .createReview('This review will succeed', 4)
+        .createReview('https://arweave.net/abc123', 4)
         .accounts({
           author: author.publicKey,
           install,
@@ -152,8 +152,14 @@ describe('xnft', async () => {
 
       const reviews = await program.account.review.all();
       assert.lengthOf(reviews, 1);
-      assert.strictEqual(reviews[0].account.comment, 'This review will succeed');
+      assert.strictEqual(reviews[0].account.uri, 'https://arweave.net/abc123');
       assert.strictEqual(reviews[0].account.rating, 4);
+    });
+
+    it('the rating data on the xnft account will be updated', async () => {
+      const acc = await program.account.xnft.fetch(xnft);
+      assert.strictEqual(acc.totalRating.toNumber(), 4);
+      assert.strictEqual(acc.numRatings, 1);
     });
   });
 

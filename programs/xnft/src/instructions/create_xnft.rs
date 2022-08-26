@@ -147,6 +147,7 @@ impl<'info> CreateXnft<'info> {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
