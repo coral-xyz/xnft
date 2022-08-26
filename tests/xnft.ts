@@ -3,19 +3,24 @@ import * as anchor from '@project-serum/anchor';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
 import { assert } from 'chai';
 import type { Xnft } from '../target/types/xnft';
-import { metadataProgram, wait } from './common';
 
-describe('Program Account Creation', () => {
-  const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
-  const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
-  const installVault = authority.publicKey;
+export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const metadataProgram = new anchor.web3.PublicKey(
+  'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
+);
 
-  let xnft: anchor.web3.PublicKey;
-  let install: anchor.web3.PublicKey;
+const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
+const installVault = authority.publicKey;
+const author = anchor.web3.Keypair.generate();
 
+let xnft: anchor.web3.PublicKey;
+let metadataAccount: anchor.web3.PublicKey;
+let install: anchor.web3.PublicKey;
+let authorInstallation: anchor.web3.PublicKey;
+
+describe('Account Creations', () => {
   describe('an xNFT can be created', () => {
-    let metadataAccount: anchor.web3.PublicKey;
-
     const price = new anchor.BN(0);
     const name = 'test xnft';
     const symbol = '';
@@ -118,9 +123,6 @@ describe('Program Account Creation', () => {
   });
 
   describe('a Review can be created', () => {
-    const author = anchor.web3.Keypair.generate();
-    let authorInstallation: anchor.web3.PublicKey;
-
     before(async () => {
       await program.provider.connection.requestAirdrop(
         author.publicKey,
@@ -200,5 +202,46 @@ describe('Program Account Creation', () => {
       assert.strictEqual(acc.numRatings, 1);
       assert.strictEqual(acc.totalRating.toNumber(), 4);
     });
+  });
+});
+
+describe('Account Updates', () => {
+  it('the data in an xNFT account can be updated by the owner', async () => {
+    await program.methods
+      .updateXnft({
+        installVault: null,
+        name: null,
+        price: new anchor.BN(100),
+        tag: { none: {} } as never,
+        uri: null
+      })
+      .accounts({
+        xnft,
+        masterMetadata: metadataAccount,
+        metadataProgram
+      })
+      .rpc();
+
+    const acc = await program.account.xnft.fetch(xnft);
+
+    assert.strictEqual(acc.installPrice.toNumber(), 100);
+    assert.deepEqual(acc.tag, { none: {} });
+  });
+});
+
+describe('Account Closure', () => {
+  it('an Install can be deleted by the authority', async () => {
+    await program.methods
+      .deleteInstall()
+      .accounts({
+        install: authorInstallation,
+        receiver: author.publicKey,
+        authority: author.publicKey
+      })
+      .signers([author])
+      .rpc();
+
+    const acc = await program.account.install.fetchNullable(authorInstallation);
+    assert.isNull(acc);
   });
 });
