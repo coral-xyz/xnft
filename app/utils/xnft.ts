@@ -257,7 +257,7 @@ export default abstract class xNFT {
    * @static
    * @param {Program<IDLType>} program
    * @param {(XnftWithMetadata | SerializedXnftWithMetadata)} xnft
-   * @returns {Promise<string>>}
+   * @returns {Promise<string>}
    * @memberof xNFT
    */
   static async install(

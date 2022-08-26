@@ -1,14 +1,17 @@
-import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import xNFT, {
   type InstalledXnftWithMetadata,
   type SerializedXnftWithMetadata
-} from '../../utils/xnft';
-import { useProgram } from '../../state/atoms/program';
-import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
-import AppPrimaryButton from '../Button/AppPrimaryButton';
+} from '../../../utils/xnft';
+import { useProgram } from '../../../state/atoms/program';
+import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../../state/atoms/xnft';
+
+const AppPrimaryButton = dynamic(() => import('../../Button/AppPrimaryButton'));
+const Rating = dynamic(() => import('./Rating'));
 
 interface AppBannerProps {
   xnft: SerializedXnftWithMetadata;
@@ -52,6 +55,17 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
   const totalDownloads = useMemo(
     () => parseInt(xnft.account.totalInstalls, 16).toLocaleString(),
     [xnft.account.totalInstalls]
+  );
+
+  /**
+   * Memoized value of the xNFT's average rating from account data.
+   */
+  const averageRating = useMemo(
+    () =>
+      xnft.account.numRatings === 0
+        ? 0
+        : parseInt(xnft.account.totalRating, 16) / xnft.account.numRatings,
+    [xnft.account.totalRating, xnft.account.numRatings]
   );
 
   /**
@@ -112,6 +126,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
         <div className="max-w-md text-lg font-medium text-[#99A4B4]">
           {xnft.metadata.description}
         </div>
+        <Rating rating={averageRating} total={xnft.account.numRatings} />
         <div className="flex items-center gap-4">
           <AppPrimaryButton
             className="bg-[#4F46E5] text-white"
@@ -124,6 +139,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
           <button
             className="rounded bg-[#27272A] px-3 py-2 text-xs font-medium tracking-wide text-white"
             onClick={handlePreviewClick}
+            disabled={!connected}
           >
             Preview
           </button>
