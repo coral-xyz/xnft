@@ -4,8 +4,9 @@ import type { SerializedXnftWithMetadata } from '../../../utils/xnft';
 
 const InformationTab = dynamic(() => import('./Information'));
 const OverviewTab = dynamic(() => import('./Overview'));
+const Reviews = dynamic(() => import('./Reviews'));
 
-const tabs = [{ name: 'Overview' }, { name: 'Information' }];
+const tabs = [{ name: 'Overview' }, { name: 'Information' }, { name: 'Reviews' }];
 
 /**
  * @param {...any[]} classes
@@ -24,7 +25,7 @@ const Tabs: FunctionComponent<TabsProps> = ({ xnft }) => {
 
   return (
     <div className="mt-8">
-      <div className="border-b-2 border-[#393C43]">
+      <div className="mb-6 border-b-2 border-[#393C43]">
         <nav className="mx-auto -mb-px flex max-w-xl space-x-8">
           {tabs.map(tab => (
             <button
@@ -46,6 +47,7 @@ const Tabs: FunctionComponent<TabsProps> = ({ xnft }) => {
       </div>
       {selectedTab === 'Overview' && <OverviewTab xnft={xnft} />}
       {selectedTab === 'Information' && <InformationTab xnft={xnft} />}
+      {selectedTab === 'Reviews' && <Reviews xnft={xnft} />}
     </div>
   );
 };

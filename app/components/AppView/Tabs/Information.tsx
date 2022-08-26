@@ -23,7 +23,7 @@ interface InformationTabProps {
 
 const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
   return (
-    <section className="mx-auto mt-5 flex h-full max-w-3xl flex-col gap-4 rounded-xl bg-[#292C33] p-4">
+    <section className="mx-auto flex h-full max-w-3xl flex-col gap-4 rounded-2xl bg-[#292C33] p-4">
       <Item name="Authority" value={xnft.account.authority} />
       <Item name="Tag" value={xNFT.tagName(xnft.account.tag)} />
       <Item name="Kind" value={xNFT.kindName(xnft.account.kind)} />

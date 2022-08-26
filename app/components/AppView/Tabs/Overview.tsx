@@ -8,7 +8,7 @@ interface OverviewTabProps {
 
 const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
   return (
-    <section className="mt-6 w-full rounded-2xl bg-[#27272A]">
+    <section className="w-full rounded-2xl bg-[#292C33]">
       <div className="flex justify-center p-10">
         <ul className="no-scrollbar flex list-none gap-5 overflow-x-auto">
           {xnft.metadata.properties.files.map((f, idx) => (
