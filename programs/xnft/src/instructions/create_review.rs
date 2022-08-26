@@ -21,7 +21,7 @@ pub struct CreateReview<'info> {
 
     #[account(
         has_one = xnft @ CustomError::ReviewInstallMismatch,
-        constraint = install.authority == *author.key @ CustomError::ReviewerMustHaveInstalled
+        constraint = install.authority == *author.key @ CustomError::InstallAuthorityMismatch,
     )]
     pub install: Account<'info, Install>,
 
