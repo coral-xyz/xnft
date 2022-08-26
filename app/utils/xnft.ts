@@ -291,6 +291,53 @@ export default abstract class xNFT {
   }
 
   /**
+   * Finds the user's active installation of the argued xNFT, throwing an error
+   * if one cannot be found, and creates a `Review` program account with the
+   * argued rating value and comment URI.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {PublicKey} xnft
+   * @param {string} commentUri
+   * @param {number} rating
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  static async review(
+    program: Program<IDLType>,
+    xnft: PublicKey,
+    commentUri: string,
+    rating: number
+  ): Promise<string> {
+    const resp = await program.account.install.all([
+      {
+        memcmp: {
+          offset: 8,
+          bytes: program.provider.publicKey.toBase58()
+        }
+      },
+      {
+        memcmp: {
+          offset: 8 + 32,
+          bytes: xnft.toBase58()
+        }
+      }
+    ]);
+
+    if (resp.length === 0) {
+      throw new Error(`No active installation found for xNFT ${xnft.toBase58()}`);
+    }
+
+    const tx = await program.methods
+      .createReview(commentUri, rating)
+      .accounts({
+        install: resp[0].publicKey,
+        xnft
+      })
+      .transaction();
+    return await program.provider.sendAndConfirm(tx);
+  }
+
+  /**
    * Creates the `set_suspended` contract instruction for the argued
    * xNFT public key and the provided value for the flag.
    * @static

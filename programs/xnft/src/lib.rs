@@ -55,9 +55,9 @@ pub mod xnft {
         instructions::update_xnft_handler(ctx, updates)
     }
 
-    /// Creates a "review" of an xNFT containing a comment and a 0-5 rating.
-    pub fn create_review(ctx: Context<CreateReview>, comment: String, rating: u8) -> Result<()> {
-        instructions::create_review_handler(ctx, comment, rating)
+    /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
+    pub fn create_review(ctx: Context<CreateReview>, uri: String, rating: u8) -> Result<()> {
+        instructions::create_review_handler(ctx, uri, rating)
     }
 
     /// Creates an "installation" of an xNFT.
