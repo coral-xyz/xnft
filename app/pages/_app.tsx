@@ -15,7 +15,6 @@ require('nprogress/nprogress.css');
 require('react-toastify/dist/ReactToastify.css');
 
 const Footer = dynamic(() => import('../components/Footer'));
-const MobilePlaceholder = dynamic(() => import('../components/Placeholders/Mobile'));
 const Nav = dynamic(() => import('../components/Nav'));
 
 Router.events.on('routeChangeStart', nprogress.start);
@@ -39,10 +38,9 @@ export default function App({ Component, pageProps }: AppProps) {
                   <Nav />
                 </section>
 
-                <section className="mb-auto hidden py-10 md:block">
+                <section className="mb-auto py-10">
                   <Component {...pageProps} />
                 </section>
-                <MobilePlaceholder className="md:hidden" />
 
                 <section className="items-end pb-8">
                   <Footer />

@@ -25,8 +25,8 @@ const Featured: FunctionComponent<FeaturedProps> = ({
   const { connected } = useWallet();
 
   return (
-    <div className="flex items-center gap-14 rounded-2xl bg-[#27272A] shadow-lg">
-      <div className="flex items-center">
+    <div className="flex flex-col items-center gap-5 rounded-2xl bg-[#27272A] shadow-lg md:flex-row md:gap-14">
+      <div className="hidden items-center md:flex">
         <Image
           className="rounded-l-2xl"
           alt="app-icon"
@@ -37,7 +37,18 @@ const Featured: FunctionComponent<FeaturedProps> = ({
           priority
         />
       </div>
-      <div className="flex min-w-0 flex-col pr-10 tracking-wide">
+      <div className="w-full md:hidden">
+        <Image
+          className="rounded-t-2xl"
+          alt="app-icon"
+          src={xnft.metadata.image}
+          height={400}
+          width={400}
+          layout="responsive"
+          priority
+        />
+      </div>
+      <div className="flex flex-col px-8 py-6 tracking-wide md:px-0 md:pr-10">
         <h4 className="pb-2 text-sm font-medium text-[#99A4B4] lg:text-base">Featured</h4>
         <h1 className="pb-6 text-4xl font-bold text-white lg:text-6xl">{xnft.account.name}</h1>
         <h3 className="pb-8 text-sm font-medium text-white lg:text-base">
