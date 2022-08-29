@@ -14,9 +14,9 @@ import {
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { getMetadataPath } from './api';
 import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 import fetch from './fetch';
+import { S3Uploader } from './uploaders';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
@@ -89,7 +89,7 @@ export default abstract class xNFT {
       throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
-    const uri = `${S3_BUCKET_URL}/${getMetadataPath(xnft)}`;
+    const uri = `${S3_BUCKET_URL}/${new S3Uploader(xnft).getMetadataPath()}`; // TODO:
     const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
     const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
     const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
