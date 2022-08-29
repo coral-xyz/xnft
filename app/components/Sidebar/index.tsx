@@ -1,5 +1,5 @@
-import { CashIcon, PhotographIcon, PuzzleIcon, StarIcon } from '@heroicons/react/outline';
-// import { DownloadIcon } from '@heroicons/react/solid';
+import { BanknotesIcon, PhotoIcon, PuzzlePieceIcon, StarIcon } from '@heroicons/react/24/outline';
+// import { ArrownDownOnTrayIcon } from '@heroicons/react/24/solid';
 // import { Transition } from '@headlessui/react';
 // import { useWallet } from '@solana/wallet-adapter-react';
 import { type FunctionComponent, memo, useMemo } from 'react';
@@ -11,15 +11,15 @@ const menuItems = [
   },
   {
     name: 'NFTs',
-    icon: <PhotographIcon height={18} />
+    icon: <PhotoIcon height={18} />
   },
   {
     name: 'Games',
-    icon: <PuzzleIcon height={18} />
+    icon: <PuzzlePieceIcon height={18} />
   },
   {
     name: 'Finance',
-    icon: <CashIcon height={18} />
+    icon: <BanknotesIcon height={18} />
   }
 ];
 
@@ -31,7 +31,7 @@ const menuItems = [
 //       <div className="flex items-center justify-between py-2.5 px-3 font-medium">
 //         <span className="flex items-center gap-3">
 //           <span className="text-[#99A4B4]">
-//             <DownloadIcon height={18} />
+//             <ArrownDownOnTrayIcon height={18} />
 //           </span>
 //           <span className="text-[#FAFAFA]">Updates</span>
 //         </span>

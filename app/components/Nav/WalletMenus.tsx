@@ -1,12 +1,12 @@
 import { Menu, Transition } from '@headlessui/react';
 import {
   ChevronDownIcon,
-  ClipboardCopyIcon,
-  CodeIcon,
-  LogoutIcon,
+  ClipboardDocumentIcon,
+  CodeBracketIcon,
+  ArrowLeftOnRectangleIcon,
   SparklesIcon,
   UserCircleIcon
-} from '@heroicons/react/solid';
+} from '@heroicons/react/24/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
@@ -107,7 +107,7 @@ const ConnectedMenuItems: FunctionComponent<ConnectedMenuItemsProps> = ({
                 active ? 'bg-[#52525B]' : ''
               } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
             >
-              <CodeIcon height={14} /> My xNFTs
+              <CodeBracketIcon height={14} /> My xNFTs
             </button>
           </Link>
         )}
@@ -133,7 +133,7 @@ const ConnectedMenuItems: FunctionComponent<ConnectedMenuItemsProps> = ({
             } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
             onClick={() => navigator.clipboard.writeText(publicKey.toBase58())}
           >
-            <ClipboardCopyIcon height={14} /> Copy Address
+            <ClipboardDocumentIcon height={14} /> Copy Address
           </button>
         )}
       </Menu.Item>
@@ -145,7 +145,7 @@ const ConnectedMenuItems: FunctionComponent<ConnectedMenuItemsProps> = ({
             } flex w-full items-center gap-3 rounded-lg px-3 py-2`}
             onClick={onDisconnect}
           >
-            <LogoutIcon height={14} /> Disconnect
+            <ArrowLeftOnRectangleIcon height={14} /> Disconnect
           </button>
         )}
       </Menu.Item>

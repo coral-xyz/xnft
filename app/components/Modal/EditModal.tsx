@@ -1,9 +1,9 @@
 import {
-  DocumentAddIcon,
+  DocumentPlusIcon,
   DocumentTextIcon,
-  PencilAltIcon,
-  PhotographIcon
-} from '@heroicons/react/solid';
+  PencilSquareIcon,
+  PhotoIcon
+} from '@heroicons/react/24/solid';
 import { BN } from '@project-serum/anchor';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { type FunctionComponent, memo, useCallback, useState, useMemo, useEffect } from 'react';
@@ -132,7 +132,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     () =>
       loading ? undefined : (
         <span className="flex items-center gap-2 border-b border-[#393C43] pb-2">
-          <PencilAltIcon height={16} />
+          <PencilSquareIcon height={16} />
           {focused?.metadata.name}
         </span>
       ),
@@ -351,7 +351,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
                         width={40}
                       />
                     ) : (
-                      <PhotographIcon className="mx-auto text-zinc-400" height={45} />
+                      <PhotoIcon className="mx-auto text-zinc-400" height={45} />
                     )}
                     <div className="text-xs text-[#393C43]">
                       <span className="text-[#E5E7EB]">
@@ -383,7 +383,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
                     {edits.bundle.name ? (
                       <DocumentTextIcon height={45} className="mx-auto text-[#9CA3AF]" />
                     ) : (
-                      <DocumentAddIcon height={45} className="mx-auto text-[#9CA3AF]" />
+                      <DocumentPlusIcon height={45} className="mx-auto text-[#9CA3AF]" />
                     )}
                     <div className="text-xs text-[#393C43]">
                       <span className="text-[#E5E7EB]">

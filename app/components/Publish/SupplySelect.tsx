@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from '@heroicons/react/solid';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { type FunctionComponent, useState, memo, useCallback } from 'react';
 import { usePublish } from '../../state/atoms/publish';
 import Input from '../Inputs/Input';

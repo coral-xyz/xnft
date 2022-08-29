@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from '@heroicons/react/solid';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { memo, type ReactNode, type FunctionComponent } from 'react';
 import xNFT, { type SerializedXnftWithMetadata } from '../../../utils/xnft';
@@ -37,7 +37,7 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
               target="_blank"
               rel="noreferrer"
             >
-              <ExternalLinkIcon className="h-4 w-4" />
+              <ArrowTopRightOnSquareIcon className="h-4 w-4" />
               {xnft.metadata.external_url}
             </Link>
           }
@@ -68,7 +68,7 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
               target="_blank"
               rel="noreferrer"
             >
-              <ExternalLinkIcon className="h-4 w-4" />
+              <ArrowTopRightOnSquareIcon className="h-4 w-4" />
               Open
             </Link>
           }

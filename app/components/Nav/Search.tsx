@@ -1,4 +1,4 @@
-import { SearchIcon } from '@heroicons/react/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import type { FunctionComponent } from 'react';
 
 interface SearchProps {
@@ -11,7 +11,7 @@ const Search: FunctionComponent<SearchProps> = ({ value, onChange }) => {
     <div className="flex items-center justify-center">
       <label className="relative">
         <span className="absolute inset-y-0 right-0 flex items-center pr-4">
-          <SearchIcon className="text-[#99A4B4]" height={16} />
+          <MagnifyingGlassIcon className="text-[#99A4B4]" height={16} />
         </span>
         <input
           className="w-64 rounded-lg border-[1px] border-[#393C43] bg-transparent py-3

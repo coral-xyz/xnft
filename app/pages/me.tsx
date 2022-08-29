@@ -1,4 +1,4 @@
-import { PencilIcon, ViewGridAddIcon } from '@heroicons/react/outline';
+import { PencilIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import { type FunctionComponent, useCallback } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ const DownloadedApps: FunctionComponent = () => {
         <ProfileAppListPlaceholder
           buttonHref="/"
           buttonText="Browse the Library"
-          buttonIcon={<ViewGridAddIcon className="h-6 w-6" />}
+          buttonIcon={<Squares2X2Icon className="h-6 w-6" />}
           subtitle="Find xNFTs in the decentralized library."
         />
       ) : (

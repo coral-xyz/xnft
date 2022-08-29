@@ -12,7 +12,7 @@
     "@aws-sdk/client-s3": "^3.141.0",
     "@aws-sdk/s3-request-presigner": "^3.141.0",
     "@headlessui/react": "^1.6.5",
-    "@heroicons/react": "^1.0.6",
+    "@heroicons/react": "^2.0.8",
     "@mailchimp/mailchimp_marketing": "^3.0.75",
     "@metaplex-foundation/mpl-token-metadata": "^2.2.3",
     "@project-serum/anchor": "^0.25.0",

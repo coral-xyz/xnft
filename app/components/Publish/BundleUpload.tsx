@@ -1,4 +1,4 @@
-import { DocumentAddIcon, DocumentTextIcon } from '@heroicons/react/solid';
+import { DocumentPlusIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
 import { memo, type FunctionComponent, useEffect, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import type { StepComponentProps } from '../../pages/publish';
@@ -66,7 +66,7 @@ const BundleUpload: FunctionComponent<StepComponentProps> = ({ setNextEnabled })
           {publishState.bundle.name ? (
             <DocumentTextIcon height={66} className="mx-auto text-[#9CA3AF]" />
           ) : (
-            <DocumentAddIcon height={66} className="mx-auto text-[#9CA3AF]" />
+            <DocumentPlusIcon height={66} className="mx-auto text-[#9CA3AF]" />
           )}
           <div className="text-sm text-zinc-600">
             <span className="text-sm text-zinc-300">
