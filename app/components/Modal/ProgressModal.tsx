@@ -1,4 +1,4 @@
-import { CheckCircleIcon, EmojiSadIcon } from '@heroicons/react/solid';
+import { CheckCircleIcon, FaceFrownIcon } from '@heroicons/react/24/solid';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -25,7 +25,7 @@ export const UPLOAD_STEPS = {
   },
   error: {
     text: 'Something went wrong!',
-    icon: <EmojiSadIcon className="text-[#F66C5E]" height={50} />
+    icon: <FaceFrownIcon className="text-[#F66C5E]" height={50} />
   }
 };
 

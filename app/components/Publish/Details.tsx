@@ -1,4 +1,4 @@
-import { PhotographIcon } from '@heroicons/react/outline';
+import { PhotoIcon } from '@heroicons/react/24/outline';
 import dynamic from 'next/dynamic';
 import NextImage from 'next/image';
 import { memo, useEffect, useMemo, useState, type FunctionComponent } from 'react';
@@ -145,7 +145,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           width={48}
         />
       ) : (
-        <PhotographIcon className="mx-auto text-zinc-400" height={48} />
+        <PhotoIcon className="mx-auto text-zinc-400" height={48} />
       ),
     [publishState.icon]
   );
@@ -410,7 +410,7 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
         >
           <div className="mt-1 flex justify-center rounded-md border-2 border-[#393C43] px-6 pt-5 pb-6">
             <div className="space-y-1 text-center">
-              <PhotographIcon className="mx-auto h-12 w-12 text-zinc-400" />
+              <PhotoIcon className="mx-auto h-12 w-12 text-zinc-400" />
               <div className="text-sm text-[#393C43]">
                 <span className="text-[#E5E7EB]">
                   {publishState.screenshots.length > 0 ? (

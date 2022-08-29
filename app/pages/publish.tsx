@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/solid';
+import { ArrowLeftIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/solid';
 import { WalletSignTransactionError } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';

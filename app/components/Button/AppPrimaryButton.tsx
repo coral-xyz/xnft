@@ -1,4 +1,4 @@
-import { DownloadIcon } from '@heroicons/react/solid';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { type FunctionComponent, memo, useMemo } from 'react';
 import { ClipLoader } from 'react-spinners';
@@ -36,7 +36,8 @@ const AppPrimaryButton: FunctionComponent<AppPrimaryButtonProps> = ({
    * prop provided loading and installed values.
    */
   const btnIcon = useMemo(
-    () => (loading ? <ClipLoader size={16} /> : !installed ? <DownloadIcon height={16} /> : null),
+    () =>
+      loading ? <ClipLoader size={16} /> : !installed ? <ArrowDownTrayIcon height={16} /> : null,
     [loading, installed]
   );
 

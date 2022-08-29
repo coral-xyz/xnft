@@ -6,12 +6,12 @@ import Image from 'next/image';
 import xNFT, {
   type InstalledXnftWithMetadata,
   type SerializedXnftWithMetadata
-} from '../../../utils/xnft';
-import { useProgram } from '../../../state/atoms/program';
-import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../../state/atoms/xnft';
+} from '../../utils/xnft';
+import { useProgram } from '../../state/atoms/program';
+import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
 
-const AppPrimaryButton = dynamic(() => import('../../Button/AppPrimaryButton'));
-const Rating = dynamic(() => import('./Rating'));
+const AppPrimaryButton = dynamic(() => import('../Button/AppPrimaryButton'));
+const Rating = dynamic(() => import('../Rating/Static'));
 
 interface AppBannerProps {
   xnft: SerializedXnftWithMetadata;

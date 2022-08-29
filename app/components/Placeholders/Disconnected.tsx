@@ -1,4 +1,4 @@
-import { WifiIcon } from '@heroicons/react/solid';
+import { WifiIcon } from '@heroicons/react/24/solid';
 import { type FunctionComponent, memo } from 'react';
 
 const Disconnected: FunctionComponent = () => {

@@ -14,12 +14,13 @@ import {
 import { IDL, type Xnft as IDLType } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { getMetadataPath } from './api';
 import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 import fetch from './fetch';
+import { S3Uploader } from './uploaders';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
+export type ReviewAccount = IdlAccounts<IDLType>['review'];
 export type UpdateParams = IdlTypes<IDLType>['UpdateParams'];
 
 export interface SerializedXnftWithMetadata {
@@ -88,7 +89,7 @@ export default abstract class xNFT {
       throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
-    const uri = `${S3_BUCKET_URL}/${getMetadataPath(xnft)}`;
+    const uri = `${S3_BUCKET_URL}/${new S3Uploader(xnft).getMetadataPath()}`; // TODO:
     const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
     const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
     const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
@@ -252,6 +253,28 @@ export default abstract class xNFT {
   }
 
   /**
+   * Fetch all Review program accounts for a given xNFT public key.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {PublicKey} pubkey
+   * @returns {Promise<ProgramAccount<ReviewAccount>[]>}
+   * @memberof xNFT
+   */
+  static async getReviews(
+    program: Program<IDLType>,
+    pubkey: PublicKey
+  ): Promise<ProgramAccount<ReviewAccount>[]> {
+    return await program.account.review.all([
+      {
+        memcmp: {
+          offset: 8 + 32,
+          bytes: pubkey.toBase58()
+        }
+      }
+    ]);
+  }
+
+  /**
    * Creates the `create_install` program instruction to create an xNFT
    * installation for the wallet assigned to the argued program's provider.
    * @static
@@ -308,32 +331,15 @@ export default abstract class xNFT {
     commentUri: string,
     rating: number
   ): Promise<string> {
-    const resp = await program.account.install.all([
-      {
-        memcmp: {
-          offset: 8,
-          bytes: program.provider.publicKey.toBase58()
-        }
-      },
-      {
-        memcmp: {
-          offset: 8 + 32,
-          bytes: xnft.toBase58()
-        }
-      }
-    ]);
-
-    if (resp.length === 0) {
-      throw new Error(`No active installation found for xNFT ${xnft.toBase58()}`);
-    }
-
+    const install = await deriveInstallAddress(program.provider.publicKey, xnft);
     const tx = await program.methods
       .createReview(commentUri, rating)
       .accounts({
-        install: resp[0].publicKey,
+        install,
         xnft
       })
       .transaction();
+
     return await program.provider.sendAndConfirm(tx);
   }
 
@@ -432,6 +438,21 @@ async function transformWithMetadata(
     metadataAccount,
     metadata
   };
+}
+
+/**
+ * Derive the PDA for an Install program account.
+ * @param {PublicKey} authority
+ * @param {PublicKey} xnft
+ * @returns {Promise<PublicKey>}
+ */
+async function deriveInstallAddress(authority: PublicKey, xnft: PublicKey): Promise<PublicKey> {
+  const [pk] = await PublicKey.findProgramAddress(
+    [Buffer.from('install'), authority.toBytes(), xnft.toBytes()],
+    XNFT_PROGRAM_ID
+  );
+
+  return pk;
 }
 
 /**

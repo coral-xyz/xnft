@@ -1,17 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import fetch from './fetch';
 
-export const getMetadataPath = (xnft: PublicKey): string => `${xnft.toBase58()}/metadata.json`;
-
-export const getBundlePath = (xnft: PublicKey, name: string): string =>
-  `${xnft.toBase58()}/bundle/${name}`;
-
-export const getIconPath = (xnft: PublicKey, name: string): string =>
-  `${xnft.toBase58()}/icon/${name}`;
-
-export const getScreenshotPath = (xnft: PublicKey, name: string): string =>
-  `${xnft.toBase58()}/screenshots/${name}`;
-
 /**
  * Revalidate the static rendered path for the argued xNFT public key.
  * @export
