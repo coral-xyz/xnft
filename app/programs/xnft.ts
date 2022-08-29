@@ -464,6 +464,33 @@ export type Xnft = {
       args: [];
     },
     {
+      name: 'deleteReview';
+      docs: ['Closes the review account and removes metrics from xNFT account.'];
+      accounts: [
+        {
+          name: 'review';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'xnft';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'receiver';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'author';
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [];
+    },
+    {
       name: 'setSuspended';
       docs: ['Sets the install suspension flag on the xnft.'];
       accounts: [
@@ -1206,6 +1233,33 @@ export const IDL: Xnft = {
         },
         {
           name: 'authority',
+          isMut: false,
+          isSigner: true
+        }
+      ],
+      args: []
+    },
+    {
+      name: 'deleteReview',
+      docs: ['Closes the review account and removes metrics from xNFT account.'],
+      accounts: [
+        {
+          name: 'review',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'xnft',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'receiver',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'author',
           isMut: false,
           isSigner: true
         }

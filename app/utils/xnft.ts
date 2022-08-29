@@ -308,32 +308,15 @@ export default abstract class xNFT {
     commentUri: string,
     rating: number
   ): Promise<string> {
-    const resp = await program.account.install.all([
-      {
-        memcmp: {
-          offset: 8,
-          bytes: program.provider.publicKey.toBase58()
-        }
-      },
-      {
-        memcmp: {
-          offset: 8 + 32,
-          bytes: xnft.toBase58()
-        }
-      }
-    ]);
-
-    if (resp.length === 0) {
-      throw new Error(`No active installation found for xNFT ${xnft.toBase58()}`);
-    }
-
+    const install = await deriveInstallAddress(program.provider.publicKey, xnft);
     const tx = await program.methods
       .createReview(commentUri, rating)
       .accounts({
-        install: resp[0].publicKey,
+        install,
         xnft
       })
       .transaction();
+
     return await program.provider.sendAndConfirm(tx);
   }
 
@@ -432,6 +415,21 @@ async function transformWithMetadata(
     metadataAccount,
     metadata
   };
+}
+
+/**
+ * Derive the PDA for an Install program account.
+ * @param {PublicKey} authority
+ * @param {PublicKey} xnft
+ * @returns {Promise<PublicKey>}
+ */
+async function deriveInstallAddress(authority: PublicKey, xnft: PublicKey): Promise<PublicKey> {
+  const [pk] = await PublicKey.findProgramAddress(
+    [Buffer.from('install'), authority.toBytes(), xnft.toBytes()],
+    XNFT_PROGRAM_ID
+  );
+
+  return pk;
 }
 
 /**

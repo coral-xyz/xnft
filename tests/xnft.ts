@@ -17,6 +17,7 @@ const author = anchor.web3.Keypair.generate();
 let xnft: anchor.web3.PublicKey;
 let metadataAccount: anchor.web3.PublicKey;
 let install: anchor.web3.PublicKey;
+let review: anchor.web3.PublicKey;
 let authorInstallation: anchor.web3.PublicKey;
 
 describe('Account Creations', () => {
@@ -195,6 +196,7 @@ describe('Account Creations', () => {
 
       const accs = await program.account.review.all();
       assert.lengthOf(accs, 1);
+      review = accs[0].publicKey;
     });
 
     it('and the xNFTs total rating and number of ratings should reflect it', async () => {
@@ -242,6 +244,22 @@ describe('Account Closure', () => {
       .rpc();
 
     const acc = await program.account.install.fetchNullable(authorInstallation);
+    assert.isNull(acc);
+  });
+
+  it('a Review can be delete by the author', async () => {
+    await program.methods
+      .deleteReview()
+      .accounts({
+        review,
+        xnft,
+        receiver: author.publicKey,
+        author: author.publicKey
+      })
+      .signers([author])
+      .rpc();
+
+    const acc = await program.account.review.fetchNullable(review);
     assert.isNull(acc);
   });
 });

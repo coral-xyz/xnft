@@ -84,6 +84,11 @@ pub mod xnft {
         instructions::delete_install_handler(ctx)
     }
 
+    /// Closes the review account and removes metrics from xNFT account.
+    pub fn delete_review(ctx: Context<DeleteReview>) -> Result<()> {
+        instructions::delete_review_handler(ctx)
+    }
+
     /// Sets the install suspension flag on the xnft.
     pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
         instructions::set_suspended_handler(ctx, flag)
