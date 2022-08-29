@@ -50,7 +50,7 @@ const Reviews: FunctionComponent<ReviewsProps> = ({ xnft }) => {
       <section className="w-full rounded-2xl bg-[#292C33]">
         {loading ? (
           <div className="flex justify-center py-12">
-            <ClipLoader color="#F66C5E" size={64} />
+            <ClipLoader color="#F66C5E" size={100} cssOverride={{ borderWidth: 10 }} />
           </div>
         ) : reviews.length > 0 ? (
           <div>
