@@ -1,17 +1,26 @@
+import { PublicKey } from '@solana/web3.js';
 import dynamic from 'next/dynamic';
-import { type FunctionComponent, memo, useState, useCallback, type ReactNode } from 'react';
+import { type FunctionComponent, memo, useState, type ReactNode, useCallback } from 'react';
+import { toast } from 'react-toastify';
+import { useProgram } from '../../state/atoms/program';
+import { S3Uploader } from '../../utils/uploaders';
+import xNFT from '../../utils/xnft';
 import Input from '../Inputs/Input';
 import Modal from './Base';
 
+const NotifyExplorer = dynamic(() => import('../Notification/Explorer'));
+const NotifyTransactionFailure = dynamic(() => import('../Notification/TransactionFailure'));
 const RatingSelection = dynamic(() => import('../Rating/Selectable'));
 
 interface ReviewModalProps {
   onClose: () => void;
   open: boolean;
   title: ReactNode;
+  xnft: string;
 }
 
-const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title }) => {
+const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title, xnft }) => {
+  const program = useProgram();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
@@ -19,7 +28,28 @@ const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title
    * Memoized function for handling the submission and uploading
    * of the xNFT review rating and comment data.
    */
-  const handleSubmitReview = useCallback(async () => {}, []);
+  const handleSubmitReview = useCallback(async () => {
+    const pk = new PublicKey(xnft);
+    const uploader = new S3Uploader(pk);
+
+    try {
+      const uri = await uploader.uploadComment(program.provider.publicKey, comment);
+      toast('Comment Uploaded!', { type: 'success' });
+
+      const sig = await xNFT.review(program, pk, uri, rating);
+
+      toast(<NotifyExplorer signature={sig} title="Review Created!" />, {
+        type: 'success'
+      });
+
+      onClose();
+    } catch (err) {
+      console.error(`handleUpdate: ${err}`);
+      toast(<NotifyTransactionFailure error={err} title="Review Creation Failed!" />, {
+        type: 'error'
+      });
+    }
+  }, [comment, onClose, program, rating, xnft]);
 
   return (
     <Modal title={title} open={open} onClose={onClose}>

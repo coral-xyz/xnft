@@ -5,7 +5,7 @@ import { type FunctionComponent, memo, useMemo } from 'react';
 interface StaticRatingProps {
   rating: number;
   size?: number;
-  total: number;
+  total?: number;
 }
 
 const StaticRating: FunctionComponent<StaticRatingProps> = ({ rating, size, total }) => {
@@ -23,7 +23,9 @@ const StaticRating: FunctionComponent<StaticRatingProps> = ({ rating, size, tota
           <StarOutlinedIcon key={idx} height={starSize} color="#FC9870" />
         )
       )}
-      <span className="pl-2 text-xs font-medium text-white">{total} Reviews</span>
+      {total !== undefined && (
+        <span className="pl-2 text-xs font-medium text-white">{total} Reviews</span>
+      )}
     </div>
   );
 };

@@ -16,7 +16,7 @@ interface Uploader {
 }
 
 export class S3Uploader implements Uploader {
-  constructor(public publicKey: PublicKey) {}
+  constructor(public xnft: PublicKey) {}
 
   async uploadComment(author: PublicKey, comment: string): Promise<string> {
     const fileName = this.getCommentPath(author);
@@ -26,7 +26,7 @@ export class S3Uploader implements Uploader {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        fileName: fileName,
+        name: fileName,
         type: 'application/json'
       })
     });
@@ -121,22 +121,22 @@ export class S3Uploader implements Uploader {
   }
 
   getBundlePath(name: string): string {
-    return `${this.publicKey.toBase58()}/bundle/${name}`;
+    return `${this.xnft.toBase58()}/bundle/${name}`;
   }
 
   getCommentPath(author: PublicKey): string {
-    return `${this.publicKey.toBase58()}/comments/${author.toBase58()}/comment.json`;
+    return `${this.xnft.toBase58()}/comments/${author.toBase58()}/comment.json`;
   }
 
   getIconPath(name: string): string {
-    return `${this.publicKey.toBase58()}/icon/${name}`;
+    return `${this.xnft.toBase58()}/icon/${name}`;
   }
 
   getMetadataPath(): string {
-    return `${this.publicKey.toBase58()}/metadata.json`;
+    return `${this.xnft.toBase58()}/metadata.json`;
   }
 
   getScreenshotPath(name: string): string {
-    return `${this.publicKey.toBase58()}/screenshots/${name}`;
+    return `${this.xnft.toBase58()}/screenshots/${name}`;
   }
 }
