@@ -25,7 +25,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
   const { connected } = useWallet();
 
   return (
-    <div className="flex flex-col items-center gap-5 rounded-2xl bg-[#27272A] shadow-lg md:flex-row md:gap-14">
+    <div className="flex flex-col gap-5 rounded-2xl bg-[#27272A] shadow-lg md:flex-row md:items-center md:gap-14">
       <div className="hidden items-center md:flex">
         <Image
           className="rounded-l-2xl"
