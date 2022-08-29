@@ -332,6 +332,12 @@ export default abstract class xNFT {
     rating: number
   ): Promise<string> {
     const install = await deriveInstallAddress(program.provider.publicKey, xnft);
+
+    const exists = (await program.provider.connection.getAccountInfo(install)) !== null;
+    if (!exists) {
+      throw new Error('Must have an active installation to review an xNFT');
+    }
+
     const tx = await program.methods
       .createReview(commentUri, rating)
       .accounts({
