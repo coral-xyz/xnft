@@ -8,6 +8,11 @@ use state::{Kind, Tag};
 
 declare_id!("BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd");
 
+#[constant]
+pub const MAX_NAME_LEN: usize = 30;
+#[constant]
+pub const MAX_RATING: u8 = 5;
+
 #[program]
 pub mod xnft {
     use super::*;

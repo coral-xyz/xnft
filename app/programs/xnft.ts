@@ -1,6 +1,20 @@
 export type Xnft = {
   version: '0.1.0';
   name: 'xnft';
+  constants: [
+    {
+      name: 'MAX_NAME_LEN';
+      type: {
+        defined: 'usize';
+      };
+      value: '30';
+    },
+    {
+      name: 'MAX_RATING';
+      type: 'u8';
+      value: '5';
+    }
+  ];
   instructions: [
     {
       name: 'createXnft';
@@ -736,6 +750,20 @@ export type Xnft = {
 export const IDL: Xnft = {
   version: '0.1.0',
   name: 'xnft',
+  constants: [
+    {
+      name: 'MAX_NAME_LEN',
+      type: {
+        defined: 'usize'
+      },
+      value: '30'
+    },
+    {
+      name: 'MAX_RATING',
+      type: 'u8',
+      value: '5'
+    }
+  ],
   instructions: [
     {
       name: 'createXnft',

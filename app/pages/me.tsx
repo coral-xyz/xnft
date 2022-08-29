@@ -107,11 +107,17 @@ const MePage: NextPage = () => {
   /**
    * Memoized function to close the modal when the user clicks.
    */
-  const handleModalClose = useCallback(() => {
-    setFocused(undefined);
-    resetEdits();
-    refreshOwned(prev => prev + 1);
-  }, [resetEdits, setFocused, refreshOwned]);
+  const handleModalClose = useCallback(
+    (refresh?: boolean) => {
+      setFocused(undefined);
+      resetEdits();
+
+      if (refresh) {
+        refreshOwned(prev => prev + 1);
+      }
+    },
+    [resetEdits, setFocused, refreshOwned]
+  );
 
   return connected ? (
     <>

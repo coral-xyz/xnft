@@ -15,6 +15,7 @@ export interface InputProps {
   forbiddenChars?: string[];
   id?: string;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  maxLength?: number;
   name?: string;
   placeholder?: string;
   rows?: number;
@@ -28,6 +29,7 @@ const Input: FunctionComponent<InputProps> = ({
   forbiddenChars,
   id,
   onChange,
+  maxLength,
   name,
   placeholder,
   rows,
@@ -53,6 +55,7 @@ const Input: FunctionComponent<InputProps> = ({
       className={`${inputClasses} resize-none ${className ?? ''}`}
       id={id}
       name={name}
+      maxLength={maxLength}
       spellCheck={spellCheck}
       rows={rows}
       value={value}
@@ -66,6 +69,7 @@ const Input: FunctionComponent<InputProps> = ({
       name={name}
       spellCheck={spellCheck}
       type={type}
+      maxLength={maxLength}
       placeholder={placeholder}
       value={value}
       onKeyDown={forbiddenChars ? blockForbiddenChars : undefined}

@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 use crate::state::{Install, Review, Xnft};
-use crate::CustomError;
+use crate::{CustomError, MAX_RATING};
 
 #[derive(Accounts)]
 #[instruction(uri: String)]
@@ -41,7 +41,7 @@ pub fn create_review_handler(ctx: Context<CreateReview>, uri: String, rating: u8
     let xnft = &mut ctx.accounts.xnft;
     let review = &mut ctx.accounts.review;
 
-    if rating > Review::MAX_RATING {
+    if rating > MAX_RATING {
         return Err(error!(CustomError::RatingOutOfBounds));
     }
 

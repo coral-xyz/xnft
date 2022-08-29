@@ -6,7 +6,7 @@ use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::DataV2;
 
 use crate::state::{Kind, Tag, Xnft};
-use crate::CustomError;
+use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(Accounts)]
 #[instruction(name: String)]
@@ -162,7 +162,7 @@ pub fn create_xnft_handler(
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
-    if name.len() > Xnft::MAX_NAME_LEN {
+    if name.len() > MAX_NAME_LEN {
         return Err(error!(CustomError::NameTooLong));
     }
 

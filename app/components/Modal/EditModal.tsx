@@ -17,6 +17,7 @@ import { useProgram } from '../../state/atoms/program';
 import { revalidate } from '../../utils/api';
 import {
   ALLOWED_IMAGE_TYPES,
+  MAX_NAME_LENGTH,
   PLACEHOLDER_PUBKEY,
   PRICE_RX,
   XNFT_TAG_OPTIONS
@@ -65,7 +66,7 @@ const tagOptions = XNFT_TAG_OPTIONS.map(o => (
 ));
 
 interface EditModalProps {
-  onClose: () => void;
+  onClose: (refresh?: boolean) => void;
   open: boolean;
 }
 
@@ -139,6 +140,12 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
   );
 
   /**
+   * Memoizd value for how many characters are remaining that can be
+   * used in the inputted name for the new xNFT.
+   */
+  const nameCharsLeft = useMemo(() => MAX_NAME_LENGTH - edits.name.length, [edits.name]);
+
+  /**
    * Memoized function to handle the execution of the update xNFT
    * contract instruction with the provided modal inputs.
    */
@@ -184,7 +191,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
 
       await revalidate(focused.publicKey);
 
-      onClose();
+      onClose(true);
 
       toast(<NotifyExplorer signature={sig} title={`${focused.account.name} Updated!`} />, {
         type: 'success'
@@ -214,10 +221,14 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
               id="name"
               name="name"
               type="text"
+              maxLength={MAX_NAME_LENGTH}
               placeholder="My xNFT Name"
               value={edits.name}
               onChange={e => setEdits(prev => ({ ...prev, name: e.target.value }))}
             />
+            <span className="float-right pt-1 text-xs text-[#9CA3AF]">
+              {nameCharsLeft} characters left
+            </span>
           </div>
 
           {/* Description */}
@@ -388,7 +399,10 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
           </div>
 
           <div className="mt-6 flex justify-center gap-4">
-            <button className="rounded-md bg-[#3F3F46] px-4 py-2 text-white" onClick={onClose}>
+            <button
+              className="rounded-md bg-[#3F3F46] px-4 py-2 text-white"
+              onClick={() => onClose(false)}
+            >
               Close
             </button>
             <button className="rounded-md bg-[#4F46E5] px-4 py-2 text-white" onClick={handleUpdate}>

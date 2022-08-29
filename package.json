@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "idl": "cp target/types/xnft.ts app/programs/xnft.ts && yarn lint:fix",
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts,.tsx}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts,.tsx}\" --check"
   },

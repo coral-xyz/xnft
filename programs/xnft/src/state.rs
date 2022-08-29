@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
 
+use crate::MAX_NAME_LEN;
+
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub enum Kind {
     App,
@@ -37,9 +39,7 @@ pub struct Xnft {
 }
 
 impl Xnft {
-    pub const MAX_NAME_LEN: usize = 30;
-    pub const LEN: usize =
-        8 + (32 * 6) + 33 + 8 + 1 + 1 + Self::MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 20;
+    pub const LEN: usize = 8 + (32 * 6) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 20;
 }
 
 #[account]
@@ -65,8 +65,6 @@ pub struct Review {
 }
 
 impl Review {
-    pub const MAX_RATING: u8 = 5;
-
     pub fn len(uri: String) -> usize {
         8 + 32 + 32 + 1 + (4 + uri.len()) + 32
     }

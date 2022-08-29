@@ -150,6 +150,15 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
     [publishState.icon]
   );
 
+  /**
+   * Memoizd value for how many characters are remaining that can be
+   * used in the inputted name for the new xNFT.
+   */
+  const nameCharsLeft = useMemo(
+    () => MAX_NAME_LENGTH - publishState.title.length,
+    [publishState.title]
+  );
+
   return (
     <section className="flex flex-col gap-4 px-16 py-14">
       {/* Title */}
@@ -164,13 +173,13 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
           id="title"
           name="title"
           type="text"
+          maxLength={MAX_NAME_LENGTH}
           value={publishState.title}
-          onChange={e => {
-            if (e.target.value.length <= MAX_NAME_LENGTH) {
-              setPublishState(prev => ({ ...prev, title: e.target.value }));
-            }
-          }}
+          onChange={e => setPublishState(prev => ({ ...prev, title: e.target.value }))}
         />
+        <span className="float-right pt-1 text-xs text-[#9CA3AF]">
+          {nameCharsLeft} characters left
+        </span>
       </div>
 
       {/* Description */}

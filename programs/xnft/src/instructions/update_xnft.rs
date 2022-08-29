@@ -3,7 +3,7 @@ use anchor_spl::metadata::{self, Metadata, MetadataAccount, UpdateMetadataAccoun
 use mpl_token_metadata::state::DataV2;
 
 use crate::state::{Tag, Xnft};
-use crate::CustomError;
+use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
@@ -76,7 +76,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     }
 
     if let Some(name) = updates.name {
-        if name.len() > Xnft::MAX_NAME_LEN {
+        if name.len() > MAX_NAME_LEN {
             return Err(error!(CustomError::NameTooLong));
         }
 
