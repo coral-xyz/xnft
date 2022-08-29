@@ -20,6 +20,7 @@ import fetch from './fetch';
 
 export type XnftAccount = IdlAccounts<IDLType>['xnft'];
 export type InstallAccount = IdlAccounts<IDLType>['install'];
+export type ReviewAccount = IdlAccounts<IDLType>['review'];
 export type UpdateParams = IdlTypes<IDLType>['UpdateParams'];
 
 export interface SerializedXnftWithMetadata {
@@ -249,6 +250,28 @@ export default abstract class xNFT {
     }
 
     return owned;
+  }
+
+  /**
+   * Fetch all Review program accounts for a given xNFT public key.
+   * @static
+   * @param {Program<IDLType>} program
+   * @param {PublicKey} pubkey
+   * @returns {Promise<ProgramAccount<ReviewAccount>[]>}
+   * @memberof xNFT
+   */
+  static async getReviews(
+    program: Program<IDLType>,
+    pubkey: PublicKey
+  ): Promise<ProgramAccount<ReviewAccount>[]> {
+    return await program.account.review.all([
+      {
+        memcmp: {
+          offset: 8 + 32,
+          bytes: pubkey.toBase58()
+        }
+      }
+    ]);
   }
 
   /**
