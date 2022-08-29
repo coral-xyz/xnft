@@ -583,7 +583,7 @@ export type Xnft = {
             type: 'publicKey';
           },
           {
-            name: 'id';
+            name: 'edition';
             type: 'u64';
           },
           {
@@ -1318,7 +1318,7 @@ export const IDL: Xnft = {
             type: 'publicKey'
           },
           {
-            name: 'id',
+            name: 'edition',
             type: 'u64'
           },
           {

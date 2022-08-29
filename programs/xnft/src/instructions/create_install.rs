@@ -64,12 +64,12 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     install.xnft = xnft.key();
     install.authority = ctx.accounts.authority.key();
     install.master_metadata = xnft.master_metadata;
-    install.id = xnft.total_installs;
+    install.edition = xnft.total_installs;
 
     //
     // Track aggregate xnft metrics.
     //
-    xnft.total_installs += 1;
+    xnft.total_installs = xnft.total_installs.checked_add(1).unwrap();
 
     Ok(())
 }
