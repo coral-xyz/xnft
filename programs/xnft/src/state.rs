@@ -47,7 +47,7 @@ pub struct Install {
     pub authority: Pubkey,
     pub xnft: Pubkey,
     pub master_metadata: Pubkey,
-    pub id: u64,
+    pub edition: u64,
     _reserved: [u8; 64],
 }
 
