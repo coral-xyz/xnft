@@ -1,5 +1,3 @@
-export {};
-
 declare global {
   interface Window {
     solana: any;
@@ -8,3 +6,5 @@ declare global {
     HTMLElement: any;
   }
 }
+
+export {};

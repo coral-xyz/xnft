@@ -21,7 +21,7 @@ import { usePublish } from '../state/atoms/publish';
 import { revalidate } from '../utils/api';
 import xNFT from '../utils/xnft';
 import { generateMetadata } from '../utils/metadata';
-import { FileType, S3Uploader } from '../utils/uploaders';
+import { FileType, S3Storage } from '../utils/backend';
 import { deriveXnftAddress } from '../utils/pubkeys';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
@@ -121,7 +121,7 @@ const PublishPage: NextPage = () => {
         setNewPubkey(xnftAddress);
         setProcessingStep('files');
 
-        const uploader = new S3Uploader(xnftAddress);
+        const uploader = new S3Storage(xnftAddress);
         await uploader.uploadFile(publishState.bundle, FileType.Bundle);
         await uploader.uploadFile(publishState.icon, FileType.Icon);
 

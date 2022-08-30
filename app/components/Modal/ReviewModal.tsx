@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { type FunctionComponent, memo, useState, type ReactNode, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useProgram } from '../../state/atoms/program';
-import { S3Uploader } from '../../utils/uploaders';
+import { S3Storage } from '../../utils/backend';
 import xNFT from '../../utils/xnft';
 import Input from '../Inputs/Input';
 import Modal from './Base';
@@ -32,7 +32,7 @@ const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title
     const pk = new PublicKey(xnft);
 
     try {
-      const sig = await xNFT.review(program, new S3Uploader(pk), pk, comment, rating);
+      const sig = await xNFT.review(program, new S3Storage(pk), pk, comment, rating);
       toast(<NotifyExplorer signature={sig} title="Review Created!" />, {
         type: 'success'
       });

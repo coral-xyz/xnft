@@ -9,14 +9,14 @@ export const enum FileType {
   Screenshot = 'screenshot'
 }
 
-export interface Uploader {
+export interface StorageBackend {
   uploadComment(author: PublicKey, comment: string): Promise<string>;
-  uploadFile(file: File, type: FileType): Promise<any>;
+  uploadFile(file: File, type: FileType): Promise<string>;
   uploadMetadata(data: Metadata): Promise<string>;
 }
 
-export class S3Uploader implements Uploader {
-  constructor(public xnft: PublicKey) {}
+export class S3Storage implements StorageBackend {
+  constructor(private xnft: PublicKey) {}
 
   async uploadComment(author: PublicKey, comment: string): Promise<string> {
     const fileName = this.getCommentPath(author);

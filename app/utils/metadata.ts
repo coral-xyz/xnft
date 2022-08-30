@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import type { PublishState } from '../state/atoms/publish';
 import { S3_BUCKET_URL } from './constants';
-import { S3Uploader } from './uploaders';
+import { S3Storage } from './backend';
 
 export interface Metadata {
   name: string;
@@ -31,7 +31,7 @@ export interface PropertiesFile {
  * @returns {Metadata}
  */
 export const generateMetadata = (xnft: PublicKey, state: PublishState): Metadata => {
-  const uploader = new S3Uploader(xnft); // TODO:
+  const uploader = new S3Storage(xnft); // TODO:
   return {
     name: state.title,
     symbol: '',

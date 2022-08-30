@@ -23,7 +23,7 @@ import {
   XNFT_TAG_OPTIONS
 } from '../../utils/constants';
 import type { Metadata } from '../../utils/metadata';
-import { FileType, S3Uploader } from '../../utils/uploaders';
+import { FileType, S3Storage } from '../../utils/backend';
 import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
@@ -166,7 +166,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
       );
 
       // Copy metadata into new mutable object
-      const uploader = new S3Uploader(focused.publicKey);
+      const uploader = new S3Storage(focused.publicKey);
       const newMetadata: Metadata = {
         ...focused.metadata,
         name: edits.name,

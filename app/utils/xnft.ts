@@ -16,7 +16,7 @@ import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
 import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 import fetch from './fetch';
-import { S3Uploader, type Uploader } from './uploaders';
+import { S3Storage, type StorageBackend } from './backend';
 import { deriveInstallAddress } from './pubkeys';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
@@ -90,7 +90,7 @@ export default abstract class xNFT {
       throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
-    const uri = `${S3_BUCKET_URL}/${new S3Uploader(xnft).getMetadataPath()}`; // TODO:FIXME:
+    const uri = `${S3_BUCKET_URL}/${new S3Storage(xnft).getMetadataPath()}`; // TODO:FIXME:
     const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
     const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
     const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
@@ -343,7 +343,7 @@ export default abstract class xNFT {
    * argued rating value and comment URI.
    * @static
    * @param {Program<Xnft>} program
-   * @param {Uploader} uploader
+   * @param {StorageBackend} storage
    * @param {PublicKey} xnft
    * @param {string} comment
    * @param {number} rating
@@ -352,7 +352,7 @@ export default abstract class xNFT {
    */
   static async review(
     program: Program<Xnft>,
-    uploader: Uploader,
+    storage: StorageBackend,
     xnft: PublicKey,
     comment: string,
     rating: number
@@ -363,7 +363,7 @@ export default abstract class xNFT {
       throw new Error('Must have an active installation to review an xNFT');
     }
 
-    const uri = await uploader.uploadComment(program.provider.publicKey, comment);
+    const uri = await storage.uploadComment(program.provider.publicKey, comment);
 
     const tx = await program.methods
       .createReview(uri, rating)
