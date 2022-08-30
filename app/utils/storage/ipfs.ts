@@ -11,19 +11,7 @@ export class IpfsStorage implements StorageBackend {
    * @memberof IpfsStorage
    */
   async uploadComment(_: PublicKey, comment: string): Promise<string> {
-    const resp = await fetch('/api/ipfs', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        content: JSON.stringify({ comment }),
-        type: 'application/json'
-      })
-    });
-
-    const { cid } = await resp.json();
-    return cid;
+    return await this._send(JSON.stringify({ comment }), 'application/json');
   }
 
   /**
@@ -34,19 +22,7 @@ export class IpfsStorage implements StorageBackend {
    */
   async uploadFile(file: File, _: FileType): Promise<string> {
     const content = await file.text();
-    const resp = await fetch('/api/ipfs', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        content,
-        type: file.type
-      })
-    });
-
-    const { cid } = await resp.json();
-    return cid;
+    return await this._send(content, file.type);
   }
 
   /**
@@ -55,14 +31,27 @@ export class IpfsStorage implements StorageBackend {
    * @memberof IpfsStorage
    */
   async uploadMetadata(data: Metadata): Promise<string> {
+    return await this._send(JSON.stringify(data), 'application/json');
+  }
+
+  /**
+   * Common HTTP request function to send content and file type
+   * to the private API handler for uploading and return the CID.
+   * @private
+   * @param {string} content
+   * @param {string} type
+   * @returns {Promise<string>}
+   * @memberof IpfsStorage
+   */
+  private async _send(content: string, type: string): Promise<string> {
     const resp = await fetch('/api/ipfs', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        content: JSON.stringify(data),
-        type: 'application/json'
+        content,
+        type
       })
     });
 

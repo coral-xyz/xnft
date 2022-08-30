@@ -19,18 +19,7 @@ export class S3Storage implements StorageBackend {
    */
   async uploadComment(author: PublicKey, comment: string): Promise<string> {
     const fileName = this.getCommentPath(author);
-    const resp = await fetch('/api/s3', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: fileName,
-        type: 'application/json'
-      })
-    });
-
-    const { url } = await resp.json();
+    const url = await this._requestUrl(fileName, 'application/json');
 
     await fetch(url, {
       method: 'PUT',
@@ -73,23 +62,12 @@ export class S3Storage implements StorageBackend {
       }
     }
 
-    const resp = await fetch('/api/s3', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: fileName,
-        type: file.type
-      })
-    });
-
-    const { url } = await resp.json();
+    const url = await this._requestUrl(fileName, file.type);
 
     await fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-type': file.type,
+        'Content-Type': file.type,
         'Access-Control-Allow-Origin': '*'
       },
       body: file
@@ -105,18 +83,7 @@ export class S3Storage implements StorageBackend {
    */
   async uploadMetadata(data: Metadata): Promise<string> {
     const fileName = this.getMetadataPath();
-    const resp = await fetch('/api/s3', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: fileName,
-        type: 'application/json'
-      })
-    });
-
-    const { url } = await resp.json();
+    const url = await this._requestUrl(fileName, 'application/json');
 
     await fetch(url, {
       method: 'PUT',
@@ -177,5 +144,30 @@ export class S3Storage implements StorageBackend {
    */
   getScreenshotPath(name: string): string {
     return `${this.xnft.toBase58()}/screenshots/${name}`;
+  }
+
+  /**
+   * Common function to request the S3 file name URL to publish to
+   * from the private API handler.
+   * @private
+   * @param {string} name
+   * @param {string} type
+   * @returns {Promise<string>}
+   * @memberof S3Storage
+   */
+  private async _requestUrl(name: string, type: string): Promise<string> {
+    const resp = await fetch('/api/s3', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        type
+      })
+    });
+
+    const { url } = await resp.json();
+    return url;
   }
 }
