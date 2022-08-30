@@ -11,17 +11,18 @@ import {
   Metadata as MplMetadata,
   PROGRAM_ID as METADATA_PROGRAM_ID
 } from '@metaplex-foundation/mpl-token-metadata';
-import { IDL, type Xnft as IDLType } from '../programs/xnft';
+import { IDL, type Xnft } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
 import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 import fetch from './fetch';
-import { S3Uploader } from './uploaders';
+import { S3Uploader, type Uploader } from './uploaders';
+import { deriveInstallAddress } from './pubkeys';
 
-export type XnftAccount = IdlAccounts<IDLType>['xnft'];
-export type InstallAccount = IdlAccounts<IDLType>['install'];
-export type ReviewAccount = IdlAccounts<IDLType>['review'];
-export type UpdateParams = IdlTypes<IDLType>['UpdateParams'];
+export type XnftAccount = IdlAccounts<Xnft>['xnft'];
+export type InstallAccount = IdlAccounts<Xnft>['install'];
+export type ReviewAccount = IdlAccounts<Xnft>['review'];
+export type UpdateParams = IdlTypes<Xnft>['UpdateParams'];
 
 export interface SerializedXnftWithMetadata {
   account: {
@@ -50,7 +51,7 @@ export interface InstalledXnftWithMetadata {
   xnft: XnftWithMetadata;
 }
 
-const anonymousProgram: Program<IDLType> = new Program(
+const anonymousProgram: Program<Xnft> = new Program(
   IDL,
   XNFT_PROGRAM_ID,
   new AnchorProvider(
@@ -64,32 +65,32 @@ export default abstract class xNFT {
   /**
    * Creates the `create_xnft` instruction on the program to mint.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
+   * @param {PublicKey} xnft
    * @param {PublishState} details
    * @param {boolean} [retry]
-   * @returns {Promise<[string | null, PublicKey]>}
+   * @returns {Promise<string | null>}
    * @memberof xNFT
    */
   static async create(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
+    xnft: PublicKey,
     details: PublishState,
     retry?: boolean
-  ): Promise<[string | null, PublicKey]> {
-    const xnft = await deriveXnftAddress(details.title, new PublicKey(details.publisher));
-
+  ): Promise<string | null> {
     // If the xNFT account already exists, skip the instruction call. This is mainly
     // for the purpose of the retry publish flow in order to skip duplicate transactions
     // that could ultimately lead to cyclical failures.
     const exists = (await program.provider.connection.getAccountInfo(xnft)) !== null;
     if (exists) {
       if (retry) {
-        return [null, xnft];
+        return null;
       }
 
       throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
-    const uri = `${S3_BUCKET_URL}/${new S3Uploader(xnft).getMetadataPath()}`; // TODO:
+    const uri = `${S3_BUCKET_URL}/${new S3Uploader(xnft).getMetadataPath()}`; // TODO:FIXME:
     const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
     const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
     const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
@@ -110,23 +111,21 @@ export default abstract class xNFT {
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
       .transaction();
 
-    const sig = await program.provider.sendAndConfirm(tx);
-
-    return [sig, xnft];
+    return await program.provider.sendAndConfirm(tx);
   }
 
   /**
    * Creates and sends the `delete_install` instruction on the program
    * to close an `Install` program account under the user's authority.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {PublicKey} install
    * @param {PublicKey} [receiver]
    * @returns {Promise<string>}
    * @memberof xNFT
    */
   static async delete(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
     install: PublicKey,
     receiver?: PublicKey
   ): Promise<string> {
@@ -134,7 +133,34 @@ export default abstract class xNFT {
       .deleteInstall()
       .accounts({ install, receiver: receiver ?? program.provider.publicKey })
       .transaction();
+    return await program.provider.sendAndConfirm(tx);
+  }
 
+  /**
+   * Closes the argued Review program account for an xNFT.
+   * @static
+   * @param {Program<Xnft>} program
+   * @param {PublicKey} review
+   * @param {PublicKey} xnft
+   * @param {PublicKey} [receiver]
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  static async deleteReview(
+    program: Program<Xnft>,
+    review: PublicKey,
+    xnft: PublicKey,
+    receiver?: PublicKey
+  ): Promise<string> {
+    // TODO: remove JSON file from backend storage
+    const tx = await program.methods
+      .deleteReview()
+      .accounts({
+        review,
+        xnft,
+        receiver: receiver ?? program.provider.publicKey
+      })
+      .transaction();
     return await program.provider.sendAndConfirm(tx);
   }
 
@@ -142,13 +168,13 @@ export default abstract class xNFT {
    * Fetches a single xNFT program account by public key and its metadata.
    * @static
    * @param {PublicKey} pubkey
-   * @param {Program<IDLType>} [program=anonymousProgram]
+   * @param {Program<Xnft>} [program=anonymousProgram]
    * @returns {Promise<XnftWithMetadata>}
    * @memberof xNFT
    */
   static async get(
     pubkey: PublicKey,
-    program: Program<IDLType> = anonymousProgram
+    program: Program<Xnft> = anonymousProgram
   ): Promise<XnftWithMetadata> {
     const account = await program.account.xnft.fetch(pubkey);
     return transformWithMetadata(program, pubkey, account as any);
@@ -157,11 +183,11 @@ export default abstract class xNFT {
   /**
    * Fetches all xNFT program accounts with their metadata.
    * @static
-   * @param {Program<IDLType>} [program=anonymousProgram]
+   * @param {Program<Xnft>} [program=anonymousProgram]
    * @returns {Promise<XnftWithMetadata[]>}
    * @memberof xNFT
    */
-  static async getAll(program: Program<IDLType> = anonymousProgram): Promise<XnftWithMetadata[]> {
+  static async getAll(program: Program<Xnft> = anonymousProgram): Promise<XnftWithMetadata[]> {
     const xnfts = await program.account.xnft.all();
     const response: XnftWithMetadata[] = [];
 
@@ -180,13 +206,11 @@ export default abstract class xNFT {
   /**
    * Gets the list of all xNFT program account public keys on the network.
    * @static
-   * @param {Program<IDLType>} [program=anonymousProgram]
+   * @param {Program<Xnft>} [program=anonymousProgram]
    * @returns {Promise<PublicKey[]>}
    * @memberof xNFT
    */
-  static async getAllPublicKeys(
-    program: Program<IDLType> = anonymousProgram
-  ): Promise<PublicKey[]> {
+  static async getAllPublicKeys(program: Program<Xnft> = anonymousProgram): Promise<PublicKey[]> {
     const accs = await program.account.xnft.all();
     return accs.map(a => a.publicKey);
   }
@@ -195,13 +219,13 @@ export default abstract class xNFT {
    * Gets all xNFT program accounts that are installed by the argued
    * public key wallet and their metadata.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {PublicKey} pubkey
    * @returns {Promise<InstalledXnftWithMetadata[]>}
    * @memberof xNFT
    */
   static async getInstalled(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
     pubkey: PublicKey
   ): Promise<InstalledXnftWithMetadata[]> {
     const response: ProgramAccount<InstallAccount>[] = await program.account.install.all([
@@ -227,12 +251,12 @@ export default abstract class xNFT {
    * Gets all xNFT program accounts that are owned or published by the
    * argued public key and their metadata.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {PublicKey} pubkey
    * @returns {Promise<XnftWithMetadata[]>}
    * @memberof xNFT
    */
-  static async getOwned(program: Program<IDLType>, pubkey: PublicKey): Promise<XnftWithMetadata[]> {
+  static async getOwned(program: Program<Xnft>, pubkey: PublicKey): Promise<XnftWithMetadata[]> {
     const response: ProgramAccount<XnftAccount>[] = (await program.account.xnft.all([
       {
         memcmp: {
@@ -255,13 +279,13 @@ export default abstract class xNFT {
   /**
    * Fetch all Review program accounts for a given xNFT public key.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {PublicKey} pubkey
    * @returns {Promise<ProgramAccount<ReviewAccount>[]>}
    * @memberof xNFT
    */
   static async getReviews(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
     pubkey: PublicKey
   ): Promise<ProgramAccount<ReviewAccount>[]> {
     return await program.account.review.all([
@@ -278,13 +302,13 @@ export default abstract class xNFT {
    * Creates the `create_install` program instruction to create an xNFT
    * installation for the wallet assigned to the argued program's provider.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {(XnftWithMetadata | SerializedXnftWithMetadata)} xnft
    * @returns {Promise<string>}
    * @memberof xNFT
    */
   static async install(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
     xnft: XnftWithMetadata | SerializedXnftWithMetadata
   ): Promise<string> {
     const tx = await program.methods
@@ -318,28 +342,31 @@ export default abstract class xNFT {
    * if one cannot be found, and creates a `Review` program account with the
    * argued rating value and comment URI.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
+   * @param {Uploader} uploader
    * @param {PublicKey} xnft
-   * @param {string} commentUri
+   * @param {string} comment
    * @param {number} rating
    * @returns {Promise<string>}
    * @memberof xNFT
    */
   static async review(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
+    uploader: Uploader,
     xnft: PublicKey,
-    commentUri: string,
+    comment: string,
     rating: number
   ): Promise<string> {
     const install = await deriveInstallAddress(program.provider.publicKey, xnft);
-
     const exists = (await program.provider.connection.getAccountInfo(install)) !== null;
     if (!exists) {
       throw new Error('Must have an active installation to review an xNFT');
     }
 
+    const uri = await uploader.uploadComment(program.provider.publicKey, comment);
+
     const tx = await program.methods
-      .createReview(commentUri, rating)
+      .createReview(uri, rating)
       .accounts({
         install,
         xnft
@@ -353,14 +380,14 @@ export default abstract class xNFT {
    * Creates the `set_suspended` contract instruction for the argued
    * xNFT public key and the provided value for the flag.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {PublicKey} xnft
    * @param {boolean} flag
    * @returns {Promise<string>}
    * @memberof xNFT
    */
   static async setSuspended(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
     xnft: PublicKey,
     flag: boolean
   ): Promise<string> {
@@ -387,7 +414,7 @@ export default abstract class xNFT {
    * Creates the `update_xnft` program instruction to allow users to mutate
    * the properties and metadata of their xNFTs.
    * @static
-   * @param {Program<IDLType>} program
+   * @param {Program<Xnft>} program
    * @param {PublicKey} xnft
    * @param {PublicKey} metadata
    * @param {UpdateParams} params
@@ -395,7 +422,7 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async update(
-    program: Program<IDLType>,
+    program: Program<Xnft>,
     xnft: PublicKey,
     metadata: PublicKey,
     params: UpdateParams
@@ -412,13 +439,13 @@ export default abstract class xNFT {
 /**
  * Fetches and appends the appropriate metadata objects to
  * the provided xNFT account and public key.
- * @param {Program<IDLType>} program
+ * @param {Program<Xnft>} program
  * @param {PublicKey} publicKey
  * @param {XnftAccount} xnft
  * @returns {Promise<XnftWithMetadata>}
  */
 async function transformWithMetadata(
-  program: Program<IDLType>,
+  program: Program<Xnft>,
   publicKey: PublicKey,
   xnft: XnftAccount
 ): Promise<XnftWithMetadata> {
@@ -444,52 +471,4 @@ async function transformWithMetadata(
     metadataAccount,
     metadata
   };
-}
-
-/**
- * Derive the PDA for an Install program account.
- * @param {PublicKey} authority
- * @param {PublicKey} xnft
- * @returns {Promise<PublicKey>}
- */
-async function deriveInstallAddress(authority: PublicKey, xnft: PublicKey): Promise<PublicKey> {
-  const [pk] = await PublicKey.findProgramAddress(
-    [Buffer.from('install'), authority.toBytes(), xnft.toBytes()],
-    XNFT_PROGRAM_ID
-  );
-
-  return pk;
-}
-
-/**
- * Derive the PDA of the associated xNFT program account.
- * @param {string} name
- * @param {PublicKey} publisher
- * @returns {Promise<PublicKey>}
- */
-async function deriveXnftAddress(name: string, publisher: PublicKey): Promise<PublicKey> {
-  // Mint PDA Address
-  const [masterMint] = await PublicKey.findProgramAddress(
-    [Buffer.from('mint'), publisher.toBytes(), Buffer.from(name)],
-    XNFT_PROGRAM_ID
-  );
-
-  // Master Edition PDA
-  const [masterEditionPdaAddress] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from('metadata'),
-      METADATA_PROGRAM_ID.toBytes(),
-      masterMint.toBytes(),
-      Buffer.from('edition')
-    ],
-    METADATA_PROGRAM_ID
-  );
-
-  // xnft PDA (needed to install)
-  const [xnftPdaAddress] = await PublicKey.findProgramAddress(
-    [Buffer.from('xnft'), masterEditionPdaAddress.toBytes()],
-    XNFT_PROGRAM_ID
-  );
-
-  return xnftPdaAddress;
 }

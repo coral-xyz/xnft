@@ -22,6 +22,7 @@ import { revalidate } from '../utils/api';
 import xNFT from '../utils/xnft';
 import { generateMetadata } from '../utils/metadata';
 import { FileType, S3Uploader } from '../utils/uploaders';
+import { deriveXnftAddress } from '../utils/pubkeys';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));
@@ -110,10 +111,16 @@ const PublishPage: NextPage = () => {
       try {
         setModalOpen(true);
 
-        const [_, xnftAddress] = await xNFT.create(program, publishState, retry);
-        setNewPubkey(xnftAddress);
+        const xnftAddress = await deriveXnftAddress(
+          publishState.title,
+          new PublicKey(publishState.publisher)
+        );
 
+        await xNFT.create(program, xnftAddress, publishState, retry);
+
+        setNewPubkey(xnftAddress);
         setProcessingStep('files');
+
         const uploader = new S3Uploader(xnftAddress);
         await uploader.uploadFile(publishState.bundle, FileType.Bundle);
         await uploader.uploadFile(publishState.icon, FileType.Icon);
