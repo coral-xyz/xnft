@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import type { PublishState } from '../state/atoms/publish';
 import { S3_BUCKET_URL } from './constants';
-import { S3Storage } from './backend';
+import { S3Storage } from './storage';
 
 export interface Metadata {
   name: string;

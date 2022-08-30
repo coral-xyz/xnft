@@ -21,7 +21,7 @@ import { usePublish } from '../state/atoms/publish';
 import { revalidate } from '../utils/api';
 import xNFT from '../utils/xnft';
 import { generateMetadata } from '../utils/metadata';
-import { FileType, S3Storage } from '../utils/backend';
+import { FileType, S3Storage } from '../utils/storage';
 import { deriveXnftAddress } from '../utils/pubkeys';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
