@@ -9,7 +9,7 @@ export const enum FileType {
   Screenshot = 'screenshot'
 }
 
-interface Uploader {
+export interface Uploader {
   uploadComment(author: PublicKey, comment: string): Promise<string>;
   uploadFile(file: File, type: FileType): Promise<any>;
   uploadMetadata(data: Metadata): Promise<string>;

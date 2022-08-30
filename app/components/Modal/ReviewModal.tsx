@@ -30,14 +30,9 @@ const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title
    */
   const handleSubmitReview = useCallback(async () => {
     const pk = new PublicKey(xnft);
-    const uploader = new S3Uploader(pk);
 
     try {
-      const uri = await uploader.uploadComment(program.provider.publicKey, comment);
-      toast('Comment Uploaded!', { type: 'success' });
-
-      const sig = await xNFT.review(program, pk, uri, rating);
-
+      const sig = await xNFT.review(program, new S3Uploader(pk), pk, comment, rating);
       toast(<NotifyExplorer signature={sig} title="Review Created!" />, {
         type: 'success'
       });
