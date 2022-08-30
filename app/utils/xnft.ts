@@ -16,7 +16,7 @@ import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
 import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 import fetch from './fetch';
-import { S3Storage, type StorageBackend } from './backend';
+import { S3Storage, type StorageBackend } from './storage';
 import { deriveInstallAddress } from './pubkeys';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];

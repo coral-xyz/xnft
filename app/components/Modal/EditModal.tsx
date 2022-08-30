@@ -23,7 +23,7 @@ import {
   XNFT_TAG_OPTIONS
 } from '../../utils/constants';
 import type { Metadata } from '../../utils/metadata';
-import { FileType, S3Storage } from '../../utils/backend';
+import { FileType, S3Storage } from '../../utils/storage';
 import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';

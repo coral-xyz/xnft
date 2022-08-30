@@ -13,27 +13,27 @@ const client = new S3Client({
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '2mb' // TODO: using limit to show a warning
+      sizeLimit: '2mb'
     }
   }
 };
 
-type RequestBody = {
+interface RequestBody {
   name: string;
   type: string;
-};
+}
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ url: string } | { message: string }>
+  res: NextApiResponse<{ url: string } | { message: string | Error }>
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method must be `POST`' });
   }
 
-  try {
-    const { name, type } = req.body as RequestBody;
+  const { name, type } = req.body as RequestBody;
 
+  try {
     const url = await getSignedUrl(
       client,
       new PutObjectCommand({
@@ -46,7 +46,7 @@ export default async function handler(
 
     res.status(200).json({ url });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: err });
   }
 }
