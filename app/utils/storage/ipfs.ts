@@ -6,6 +6,12 @@ import { FileType, type StorageBackend } from './common';
 export class IpfsStorage implements StorageBackend {
   /**
    * @param {PublicKey} _
+   * @memberof IpfsStorage
+   */
+  constructor(_: PublicKey) {}
+
+  /**
+   * @param {PublicKey} _
    * @param {string} comment
    * @returns {Promise<string>}
    * @memberof IpfsStorage
@@ -44,7 +50,7 @@ export class IpfsStorage implements StorageBackend {
    * @memberof IpfsStorage
    */
   private async _send(content: string, type: string): Promise<string> {
-    const resp = await fetch('/api/ipfs', {
+    const resp = await fetch('/api/storage/ipfs', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

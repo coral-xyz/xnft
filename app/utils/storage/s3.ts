@@ -156,7 +156,7 @@ export class S3Storage implements StorageBackend {
    * @memberof S3Storage
    */
   private async _requestUrl(name: string, type: string): Promise<string> {
-    const resp = await fetch('/api/s3', {
+    const resp = await fetch('/api/storage/s3', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

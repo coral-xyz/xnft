@@ -18,7 +18,7 @@ export const CORAL_LINKS = {
 export const DOCS_LINK = 'https://docs.xnft.gg';
 
 export const EXPLORER_SUFFIX =
-  process.env.NEXT_PUBLIC_NETWORK !== 'mainnet'
+  process.env.NEXT_PUBLIC_NETWORK !== 'mainnet-beta'
     ? `?cluster=${process.env.NEXT_PUBLIC_NETWORK}`
     : '';
 
