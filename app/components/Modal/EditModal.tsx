@@ -155,6 +155,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     setLoading(true);
     const changes = getChanges(focused, edits);
 
+    // TODO: FIXME:
     try {
       // Call the `update_xnft` instruction to set any account data changes
       // and to update the `updated_ts` timestamp field on the xNFT account

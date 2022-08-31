@@ -16,7 +16,7 @@ export const config = {
 };
 
 interface RequestBody {
-  content: string;
+  content: string | number[];
   type: string;
 }
 
@@ -31,7 +31,7 @@ export default async function handler(
   const { content, type } = req.body as RequestBody;
 
   try {
-    const blob = new Blob([content], { type });
+    const blob = new Blob([typeof content === 'string' ? content : Buffer.from(content)], { type });
     const cid = await client.storeBlob(blob);
 
     res.status(201).json({ cid });

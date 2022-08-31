@@ -109,7 +109,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={account.metadata.image}
+          src={account.metadata.image.replace('ipfs://', 'https://nftstorage.link/ipfs/')}
           height={64}
           width={64}
           layout="fixed"

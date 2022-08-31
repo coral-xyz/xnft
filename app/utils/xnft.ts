@@ -14,9 +14,9 @@ import {
 import { IDL, type Xnft } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { S3_BUCKET_URL, XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
+import { XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
 import fetch from './fetch';
-import { S3Storage, type StorageBackend } from './storage';
+import type { StorageBackend } from './storage';
 import { deriveInstallAddress } from './pubkeys';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
@@ -67,6 +67,7 @@ export default abstract class xNFT {
    * @static
    * @param {Program<Xnft>} program
    * @param {PublicKey} xnft
+   * @param {string} metadataUri
    * @param {PublishState} details
    * @param {boolean} [retry]
    * @returns {Promise<string | null>}
@@ -75,6 +76,7 @@ export default abstract class xNFT {
   static async create(
     program: Program<Xnft>,
     xnft: PublicKey,
+    metadataUri: string,
     details: PublishState,
     retry?: boolean
   ): Promise<string | null> {
@@ -90,7 +92,6 @@ export default abstract class xNFT {
       throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
-    const uri = `${S3_BUCKET_URL}/${new S3Storage(xnft).getMetadataPath()}`; // TODO:FIXME:
     const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
     const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
     const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
@@ -102,7 +103,7 @@ export default abstract class xNFT {
         '',
         { [details.tag.toLowerCase()]: {} },
         { [details.kind.toLowerCase()]: {} },
-        uri,
+        metadataUri,
         sellerFeeBasis,
         price,
         vault,
@@ -188,7 +189,9 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getAll(program: Program<Xnft> = anonymousProgram): Promise<XnftWithMetadata[]> {
-    const xnfts = await program.account.xnft.all();
+    const xnfts = (await program.account.xnft.all()).filter(
+      x => x.publicKey.toBase58() !== 'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa'
+    ); // FIXME:
     const response: XnftWithMetadata[] = [];
 
     for await (const x of xnfts) {
@@ -211,7 +214,9 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getAllPublicKeys(program: Program<Xnft> = anonymousProgram): Promise<PublicKey[]> {
-    const accs = await program.account.xnft.all();
+    const accs = (await program.account.xnft.all()).filter(
+      x => x.publicKey.toBase58() !== 'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa'
+    ); // FIXME:
     return accs.map(a => a.publicKey);
   }
 
@@ -455,7 +460,7 @@ async function transformWithMetadata(
   );
 
   const res = await fetch(
-    metadataAccount.data.uri,
+    metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'),
     {
       headers: {
         'Cache-Control': 'public,max-age=30'
@@ -463,7 +468,7 @@ async function transformWithMetadata(
     },
     5000
   );
-  const metadata = await res.json();
+  const metadata: Metadata = await res.json();
 
   return {
     publicKey,

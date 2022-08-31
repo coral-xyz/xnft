@@ -106,7 +106,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
       <Image
         className="col-span-1 rounded-lg"
         alt="app-icon"
-        src={xnft.metadata.image}
+        src={xnft.metadata.image.replace('ipfs://', 'https://nftstorage.link/ipfs/')}
         width={100}
         height={100}
         layout="fixed"

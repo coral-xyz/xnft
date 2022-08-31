@@ -16,7 +16,7 @@ const OverviewTab: FunctionComponent<OverviewTabProps> = ({ xnft }) => {
               <Image
                 className="rounded-xl bg-transparent"
                 alt={`screenshot-${idx}`}
-                src={f.uri}
+                src={f.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/')}
                 height={479}
                 width={300}
                 layout="fixed"

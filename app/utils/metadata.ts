@@ -1,7 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
 import type { PublishState } from '../state/atoms/publish';
-import { S3_BUCKET_URL } from './constants';
-import { S3Storage } from './storage';
 
 export interface Metadata {
   name: string;
@@ -26,25 +23,26 @@ export interface PropertiesFile {
 /**
  * Creates the xNFT metadata JSON object to be uploaded to storage.
  * @export
- * @param {PublicKey} xnft
  * @param {PublishState} state
+ * @param {string} imageUri
+ * @param {string} bundleUri
+ * @param {PropertiesFile[]} screenshots
  * @returns {Metadata}
  */
-export const generateMetadata = (xnft: PublicKey, state: PublishState): Metadata => {
-  const uploader = new S3Storage(xnft); // TODO:
-  return {
-    name: state.title,
-    symbol: '',
-    description: state.description,
-    image: `${S3_BUCKET_URL}/${uploader.getIconPath(state.icon.name)}`,
-    animation_url: '',
-    external_url: state.website,
-    properties: {
-      bundle: `${S3_BUCKET_URL}/${uploader.getBundlePath(state.bundle.name)}`,
-      files: state.screenshots.map(s => ({
-        uri: `${S3_BUCKET_URL}/${uploader.getScreenshotPath(s.name)}`,
-        type: s.type
-      }))
-    }
-  };
-};
+export const generateMetadata = (
+  state: PublishState,
+  imageUri: string,
+  bundleUri: string,
+  screenshots: PropertiesFile[]
+): Metadata => ({
+  name: state.title,
+  symbol: '',
+  description: state.description,
+  image: imageUri,
+  animation_url: '',
+  external_url: state.website,
+  properties: {
+    bundle: bundleUri,
+    files: screenshots
+  }
+});

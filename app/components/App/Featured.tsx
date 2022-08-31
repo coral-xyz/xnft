@@ -30,7 +30,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <Image
           className="rounded-l-2xl"
           alt="app-icon"
-          src={xnft.metadata.image}
+          src={xnft.metadata.image.replace('ipfs://', 'https://nftstorage.link/ipfs/')}
           height={400}
           width={400}
           layout="fixed"
@@ -41,7 +41,7 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         <Image
           className="rounded-t-2xl"
           alt="app-icon"
-          src={xnft.metadata.image}
+          src={xnft.metadata.image.replace('ipfs://', 'https://nftstorage.link/ipfs/')}
           height={400}
           width={400}
           layout="responsive"

@@ -30,7 +30,7 @@ const Listing: FunctionComponent<ListingProps> = ({
         <Image
           className="rounded-lg"
           alt="app-icon"
-          src={xnft.metadata.image}
+          src={xnft.metadata.image.replace('ipfs://', 'https://nftstorage.link/ipfs/')}
           height={64}
           width={64}
           layout="fixed"

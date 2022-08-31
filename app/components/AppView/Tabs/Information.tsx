@@ -64,7 +64,10 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
           value={
             <Link
               className="flex cursor-pointer items-center gap-1 font-medium text-white hover:text-sky-500"
-              href={xnft.metadataAccount.data.uri}
+              href={xnft.metadataAccount.data.uri.replace(
+                'ipfs://',
+                'https://nftstorage.link/ipfs/'
+              )}
               target="_blank"
               rel="noreferrer"
             >

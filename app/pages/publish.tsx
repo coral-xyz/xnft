@@ -15,13 +15,13 @@ import {
 } from 'react';
 import { useResetRecoilState } from 'recoil';
 import { UPLOAD_STEPS } from '../components/Modal/ProgressModal';
-import { publishState as publishStateAtom } from '../state/atoms/publish';
+import { publishState as publishStateAtom, StorageName } from '../state/atoms/publish';
 import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
 import { revalidate } from '../utils/api';
 import xNFT from '../utils/xnft';
-import { generateMetadata } from '../utils/metadata';
-import { FileType, S3Storage } from '../utils/storage';
+import { generateMetadata, type PropertiesFile } from '../utils/metadata';
+import { FileType, IpfsStorage, S3Storage } from '../utils/storage';
 import { deriveXnftAddress } from '../utils/pubkeys';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
@@ -29,12 +29,19 @@ const Details = dynamic(() => import('../components/Publish/Details'));
 const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders/Disconnected'));
 const ProgressModal = dynamic(() => import('../components/Modal/ProgressModal'));
 const Review = dynamic(() => import('../components/Publish/Review'));
+const StorageSelection = dynamic(() => import('../components/Publish/StorageSelection'));
 
 export interface StepComponentProps {
   setNextEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 const inputSteps = [
+  {
+    title: 'Storage',
+    component: (props: StepComponentProps) => <StorageSelection {...props} />,
+    nextButtonText: 'Next',
+    nextButtonIcon: <ArrowRightIcon className="inline-block w-4" />
+  },
   {
     title: 'Upload files',
     component: (props: StepComponentProps) => <BundleUpload {...props} />,
@@ -65,7 +72,7 @@ const PublishPage: NextPage = () => {
   const [nextEnabled, setNextEnabled] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [canRetry, setCanRetry] = useState(true);
-  const [processingStep, setProcessingStep] = useState<keyof typeof UPLOAD_STEPS>('ix');
+  const [processingStep, setProcessingStep] = useState<keyof typeof UPLOAD_STEPS>('files');
   const [processingError, setProcessingError] = useState<Error>(undefined);
   const [newPubkey, setNewPubkey] = useState(PublicKey.default);
 
@@ -107,6 +114,7 @@ const PublishPage: NextPage = () => {
    * of the instruction from the contract to create it on-chain.
    */
   const handlePublish = useCallback(
+    // TODO: FIXME:
     async (retry?: boolean) => {
       try {
         setModalOpen(true);
@@ -115,22 +123,29 @@ const PublishPage: NextPage = () => {
           publishState.title,
           new PublicKey(publishState.publisher)
         );
-
-        await xNFT.create(program, xnftAddress, publishState, retry);
-
         setNewPubkey(xnftAddress);
-        setProcessingStep('files');
 
-        const uploader = new S3Storage(xnftAddress);
-        await uploader.uploadFile(publishState.bundle, FileType.Bundle);
-        await uploader.uploadFile(publishState.icon, FileType.Icon);
+        const storage =
+          publishState.storageType === StorageName.Ipfs
+            ? new IpfsStorage(xnftAddress)
+            : new S3Storage(xnftAddress);
 
-        await Promise.all(
-          publishState.screenshots.map(s => uploader.uploadFile(s, FileType.Screenshot))
+        const bundleUri = await storage.uploadFile(publishState.bundle, FileType.Bundle);
+        const imageUri = await storage.uploadFile(publishState.icon, FileType.Icon);
+
+        const screenshotProperties: PropertiesFile[] = await Promise.all(
+          publishState.screenshots.map(s =>
+            storage.uploadFile(s, FileType.Screenshot).then(uri => ({ uri, type: s.type }))
+          )
         );
 
         setProcessingStep('metadata');
-        await uploader.uploadMetadata(generateMetadata(xnftAddress, publishState));
+        const metadataUri = await storage.uploadMetadata(
+          generateMetadata(publishState, imageUri, bundleUri, screenshotProperties)
+        );
+
+        setProcessingStep('ix');
+        await xNFT.create(program, xnftAddress, metadataUri, publishState, retry);
 
         await revalidate(xnftAddress);
         setProcessingStep('success');

@@ -8,7 +8,13 @@ import {
 
 export type PublishState = typeof defaultPublishState;
 
+export const enum StorageName {
+  Ipfs,
+  S3
+}
+
 const defaultPublishState = {
+  storageType: null as StorageName,
   title: '',
   description: '',
   publisher: '',
