@@ -483,15 +483,19 @@ async function transformWithMetadata(
 
   if (!staticRender && metadataAccount.data.uri.startsWith('ipfs://')) {
     const uri = metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/');
-    resp = await fetch('/api/metadata', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    resp = await fetch(
+      '/api/metadata',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uri
+        })
       },
-      body: JSON.stringify({
-        uri
-      })
-    });
+      10000
+    );
   } else {
     resp = await fetch(
       metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'),
@@ -500,7 +504,7 @@ async function transformWithMetadata(
           'Cache-Control': 'public,max-age=30'
         }
       },
-      5000
+      10000
     );
   }
 

@@ -32,7 +32,7 @@ export default async function handler(
           'Cache-Control': 'public,max-age=30'
         }
       },
-      5000
+      10000
     );
     const meta = await resp.json();
 

@@ -63,14 +63,18 @@ export class IpfsStorage implements StorageBackend {
       type
     });
 
-    const resp = await fetch('/api/storage/ipfs', {
-      method: 'PUT',
-      headers: {
-        'Content-Length': body.length.toString(),
-        'Content-Type': 'application/json'
+    const resp = await fetch(
+      '/api/storage/ipfs',
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Length': body.length.toString(),
+          'Content-Type': 'application/json'
+        },
+        body
       },
-      body
-    });
+      10000
+    );
 
     const resJson = await resp.json();
     if (resJson.cid === undefined) {

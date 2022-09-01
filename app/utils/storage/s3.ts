@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import fetch from 'isomorphic-unfetch';
+import fetch from '../fetch';
 import { S3_BUCKET_URL } from '../constants';
 import type { Metadata } from '../metadata';
 import { FileType, type StorageBackend } from './common';
@@ -21,14 +21,18 @@ export class S3Storage implements StorageBackend {
     const fileName = this.getCommentPath(author);
     const url = await this._requestUrl(fileName, 'application/json');
 
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+    await fetch(
+      url,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({ comment })
       },
-      body: JSON.stringify({ comment })
-    });
+      10000
+    );
 
     return `${S3_BUCKET_URL}/${fileName}`;
   }
@@ -64,14 +68,18 @@ export class S3Storage implements StorageBackend {
 
     const url = await this._requestUrl(fileName, file.type);
 
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': file.type,
-        'Access-Control-Allow-Origin': '*'
+    await fetch(
+      url,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type,
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: file
       },
-      body: file
-    });
+      10000
+    );
 
     return `${S3_BUCKET_URL}/${fileName}`;
   }
@@ -85,14 +93,18 @@ export class S3Storage implements StorageBackend {
     const fileName = this.getMetadataPath();
     const url = await this._requestUrl(fileName, 'application/json');
 
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+    await fetch(
+      url,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(data)
       },
-      body: JSON.stringify(data)
-    });
+      10000
+    );
 
     return `${S3_BUCKET_URL}/${fileName}`;
   }
@@ -156,16 +168,20 @@ export class S3Storage implements StorageBackend {
    * @memberof S3Storage
    */
   private async _requestUrl(name: string, type: string): Promise<string> {
-    const resp = await fetch('/api/storage/s3', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    const resp = await fetch(
+      '/api/storage/s3',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          type
+        })
       },
-      body: JSON.stringify({
-        name,
-        type
-      })
-    });
+      10000
+    );
 
     const { url } = await resp.json();
     return url;
