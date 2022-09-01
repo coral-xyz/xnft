@@ -116,9 +116,13 @@ const PublishPage: NextPage = () => {
   const handlePublish = useCallback(
     // TODO: FIXME:
     async (retry?: boolean) => {
-      try {
-        setModalOpen(true);
+      setModalOpen(true);
 
+      if (retry) {
+        setProcessingStep('files');
+      }
+
+      try {
         const xnftAddress = await deriveXnftAddress(
           publishState.title,
           new PublicKey(publishState.publisher)

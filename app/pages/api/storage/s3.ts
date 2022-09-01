@@ -47,6 +47,6 @@ export default async function handler(
     res.status(200).json({ url });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: JSON.stringify(err) });
+    res.status(500).json({ error: err.message });
   }
 }
