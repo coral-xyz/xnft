@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NFTStorage } from 'nft.storage';
 
-const endpoint = process.env.NFT_STORAGE_ENDPOINT;
 const client = new NFTStorage({
-  endpoint: endpoint && endpoint !== '' ? new URL(endpoint) : undefined,
   token: process.env.NFT_STORAGE_API_KEY
 });
 
