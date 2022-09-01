@@ -191,13 +191,7 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getAll(program: Program<Xnft> = anonymousProgram): Promise<XnftWithMetadata[]> {
-    const xnfts = (await program.account.xnft.all()).filter(
-      x =>
-        ![
-          'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa',
-          '7gkWdXcZrndKhJNJ2ySoe2D6Xh3hhEatnkcxEpLojzpz'
-        ].includes(x.publicKey.toBase58())
-    ); // FIXME:
+    const xnfts = await program.account.xnft.all();
     const response: XnftWithMetadata[] = [];
 
     for await (const x of xnfts) {
@@ -220,13 +214,7 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getAllPublicKeys(program: Program<Xnft> = anonymousProgram): Promise<PublicKey[]> {
-    const accs = (await program.account.xnft.all()).filter(
-      x =>
-        ![
-          'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa',
-          '7gkWdXcZrndKhJNJ2ySoe2D6Xh3hhEatnkcxEpLojzpz'
-        ].includes(x.publicKey.toBase58())
-    ); // FIXME:
+    const accs = await program.account.xnft.all();
     return accs.map(a => a.publicKey);
   }
 
@@ -272,22 +260,14 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getOwned(program: Program<Xnft>, pubkey: PublicKey): Promise<XnftWithMetadata[]> {
-    const response: ProgramAccount<XnftAccount>[] = (
-      await program.account.xnft.all([
-        {
-          memcmp: {
-            offset: 8,
-            bytes: pubkey.toBase58()
-          }
+    const response: ProgramAccount<XnftAccount>[] = (await program.account.xnft.all([
+      {
+        memcmp: {
+          offset: 8,
+          bytes: pubkey.toBase58()
         }
-      ])
-    ).filter(
-      x =>
-        ![
-          'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa',
-          '7gkWdXcZrndKhJNJ2ySoe2D6Xh3hhEatnkcxEpLojzpz'
-        ].includes(x.publicKey.toBase58())
-    ) as any; // FIXME:
+      }
+    ])) as any;
 
     const owned: XnftWithMetadata[] = [];
 
