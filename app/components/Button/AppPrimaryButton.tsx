@@ -1,6 +1,6 @@
 import { ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { type FunctionComponent, memo, useMemo } from 'react';
+import { type FunctionComponent, memo, useMemo, type MouseEventHandler } from 'react';
 import { ClipLoader } from 'react-spinners';
 
 interface AppPrimaryButtonProps {
@@ -9,7 +9,7 @@ interface AppPrimaryButtonProps {
   installed?: boolean;
   large?: boolean;
   loading?: boolean;
-  onClick: () => void;
+  onClick: MouseEventHandler<HTMLButtonElement>;
   price: number;
 }
 

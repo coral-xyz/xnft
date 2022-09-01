@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { memo, type FunctionComponent } from 'react';
+import { memo, type MouseEventHandler, type FunctionComponent } from 'react';
 import AppPrimaryButton from '../Button/AppPrimaryButton';
 import type { SerializedXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 
@@ -9,7 +9,7 @@ interface FeaturedProps {
   installed: boolean;
   link: string;
   loading?: boolean;
-  onButtonClick: () => void;
+  onButtonClick: MouseEventHandler<HTMLButtonElement>;
   price: number;
   xnft: XnftWithMetadata | SerializedXnftWithMetadata;
 }
