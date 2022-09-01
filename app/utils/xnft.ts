@@ -170,15 +170,17 @@ export default abstract class xNFT {
    * @static
    * @param {PublicKey} pubkey
    * @param {Program<Xnft>} [program=anonymousProgram]
+   * @param {boolean} [staticRender]
    * @returns {Promise<XnftWithMetadata>}
    * @memberof xNFT
    */
   static async get(
     pubkey: PublicKey,
-    program: Program<Xnft> = anonymousProgram
+    program: Program<Xnft> = anonymousProgram,
+    staticRender?: boolean
   ): Promise<XnftWithMetadata> {
     const account = await program.account.xnft.fetch(pubkey);
-    return transformWithMetadata(program, pubkey, account as any);
+    return transformWithMetadata(program, pubkey, account as any, staticRender);
   }
 
   /**
@@ -200,7 +202,7 @@ export default abstract class xNFT {
 
     for await (const x of xnfts) {
       try {
-        const data = await transformWithMetadata(program, x.publicKey, x.account as any);
+        const data = await transformWithMetadata(program, x.publicKey, x.account as any, true);
         response.push(data);
       } catch (error) {
         console.error(`failed to fetch metadata for ${x.publicKey.toBase58()}`, error);
@@ -270,14 +272,22 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getOwned(program: Program<Xnft>, pubkey: PublicKey): Promise<XnftWithMetadata[]> {
-    const response: ProgramAccount<XnftAccount>[] = (await program.account.xnft.all([
-      {
-        memcmp: {
-          offset: 8,
-          bytes: pubkey.toBase58()
+    const response: ProgramAccount<XnftAccount>[] = (
+      await program.account.xnft.all([
+        {
+          memcmp: {
+            offset: 8,
+            bytes: pubkey.toBase58()
+          }
         }
-      }
-    ])) as any;
+      ])
+    ).filter(
+      x =>
+        ![
+          'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa',
+          '7gkWdXcZrndKhJNJ2ySoe2D6Xh3hhEatnkcxEpLojzpz'
+        ].includes(x.publicKey.toBase58())
+    ) as any; // FIXME:
 
     const owned: XnftWithMetadata[] = [];
 
@@ -455,28 +465,46 @@ export default abstract class xNFT {
  * @param {Program<Xnft>} program
  * @param {PublicKey} publicKey
  * @param {XnftAccount} xnft
+ * @param {boolean} [staticRender]
  * @returns {Promise<XnftWithMetadata>}
  */
 async function transformWithMetadata(
   program: Program<Xnft>,
   publicKey: PublicKey,
-  xnft: XnftAccount
+  xnft: XnftAccount,
+  staticRender?: boolean
 ): Promise<XnftWithMetadata> {
   const metadataAccount = await MplMetadata.fromAccountAddress(
     program.provider.connection,
     xnft.masterMetadata
   );
 
-  const res = await fetch(
-    metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'),
-    {
+  let resp: Response;
+
+  if (!staticRender && metadataAccount.data.uri.startsWith('ipfs://')) {
+    const uri = metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/');
+    resp = await fetch('/api/metadata', {
+      method: 'POST',
       headers: {
-        'Cache-Control': 'public,max-age=30'
-      }
-    },
-    5000
-  );
-  const metadata: Metadata = await res.json();
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uri
+      })
+    });
+  } else {
+    resp = await fetch(
+      metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'),
+      {
+        headers: {
+          'Cache-Control': 'public,max-age=30'
+        }
+      },
+      5000
+    );
+  }
+
+  const metadata: Metadata = await resp.json();
 
   return {
     publicKey,

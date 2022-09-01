@@ -27,7 +27,7 @@ export async function getStaticPaths() {
  * @param {GetStaticPropsContext} context
  */
 export async function getStaticProps(context: GetStaticPropsContext) {
-  const xnft = await xNFT.get(new PublicKey(context.params.xnftPK));
+  const xnft = await xNFT.get(new PublicKey(context.params.xnftPK), undefined, true);
 
   return {
     props: {
