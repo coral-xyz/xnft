@@ -72,7 +72,11 @@ export class IpfsStorage implements StorageBackend {
       body
     });
 
-    const { cid } = await resp.json();
-    return `ipfs://${cid}`;
+    const resJson = await resp.json();
+    if (resJson.cid === undefined) {
+      throw new Error(resJson.message ?? `Failed to upload file (${type}) to IPFS`);
+    }
+
+    return `ipfs://${resJson.cid}`;
   }
 }

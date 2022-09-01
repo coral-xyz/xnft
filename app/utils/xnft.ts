@@ -190,7 +190,11 @@ export default abstract class xNFT {
    */
   static async getAll(program: Program<Xnft> = anonymousProgram): Promise<XnftWithMetadata[]> {
     const xnfts = (await program.account.xnft.all()).filter(
-      x => x.publicKey.toBase58() !== 'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa'
+      x =>
+        ![
+          'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa',
+          '7gkWdXcZrndKhJNJ2ySoe2D6Xh3hhEatnkcxEpLojzpz'
+        ].includes(x.publicKey.toBase58())
     ); // FIXME:
     const response: XnftWithMetadata[] = [];
 
@@ -215,7 +219,11 @@ export default abstract class xNFT {
    */
   static async getAllPublicKeys(program: Program<Xnft> = anonymousProgram): Promise<PublicKey[]> {
     const accs = (await program.account.xnft.all()).filter(
-      x => x.publicKey.toBase58() !== 'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa'
+      x =>
+        ![
+          'DLQ3eC9rB837Qk4ZYhApQ8og1Zz3rQP3rfZRtz3i9uUa',
+          '7gkWdXcZrndKhJNJ2ySoe2D6Xh3hhEatnkcxEpLojzpz'
+        ].includes(x.publicKey.toBase58())
     ); // FIXME:
     return accs.map(a => a.publicKey);
   }
