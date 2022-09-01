@@ -25,10 +25,10 @@ interface RequestBody {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ url: string } | { message: string | Error }>
+  res: NextApiResponse<{ url: string } | { error: string | Error }>
 ) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method must be `POST`' });
+    return res.status(405).json({ error: 'Method must be `POST`' });
   }
 
   const { name, type } = req.body as RequestBody;
@@ -47,6 +47,6 @@ export default async function handler(
     res.status(200).json({ url });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err });
+    res.status(500).json({ error: JSON.stringify(err) });
   }
 }

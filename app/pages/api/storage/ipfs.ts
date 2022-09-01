@@ -20,10 +20,10 @@ interface RequestBody {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ cid: string } | { message: string | Error }>
+  res: NextApiResponse<{ cid: string } | { error: string | Error }>
 ) {
   if (req.method !== 'PUT') {
-    return res.status(405).json({ message: 'Method must be `PUT`' });
+    return res.status(405).json({ error: 'Method must be `PUT`' });
   }
 
   const { content, type } = req.body as RequestBody;
@@ -35,6 +35,6 @@ export default async function handler(
     res.status(201).json({ cid });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err });
+    res.status(500).json({ error: JSON.stringify(err) });
   }
 }
