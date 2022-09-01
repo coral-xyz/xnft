@@ -2,7 +2,15 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { type FunctionComponent, memo, type ReactNode, useCallback, useMemo } from 'react';
+import {
+  memo,
+  useCallback,
+  useMemo,
+  type FunctionComponent,
+  type ReactNode,
+  type MouseEvent,
+  type MouseEventHandler
+} from 'react';
 import { toast } from 'react-toastify';
 import { useSetRecoilState } from 'recoil';
 import { useXnftFocus } from '../../state/atoms/edit';
@@ -17,7 +25,7 @@ const NotifyTransactionFailure = dynamic(() => import('../Notification/Transacti
 interface MetaButtonProps {
   children?: ReactNode;
   className?: string;
-  onClick: () => void;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 }
 
 const MetaButton: FunctionComponent<MetaButtonProps> = ({ children, className, onClick }) => {
@@ -35,7 +43,7 @@ const MetaButton: FunctionComponent<MetaButtonProps> = ({ children, className, o
 
 type ProfileProps = {
   link: string;
-  onOpen: () => void;
+  onOpen: MouseEventHandler<HTMLButtonElement>;
   type: 'installed' | 'owned';
   xnft: XnftWithMetadata | InstalledXnftWithMetadata;
 };
@@ -57,55 +65,82 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
    * Memoized functions for the `onClick` handlers of the
    * different `MetaButton` components on the app panel.
    */
-  const handleClickDetails = useCallback(() => router.push(link), [link, router]);
-  const handleClickEdit = useCallback(() => setFocused(account), [account, setFocused]);
+  const handleClickDetails = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      router.push(link);
+    },
+    [link, router]
+  );
 
-  const handleClickSuspensionToggle = useCallback(async () => {
-    try {
-      const sig = await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
-      refreshOwned(prev => prev + 1);
+  const handleClickEdit = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setFocused(account);
+    },
+    [account, setFocused]
+  );
 
-      toast(
-        <NotifyExplorer
-          signature={sig}
-          title={`${account.account.name} ${
-            account.account.suspended ? 'Unsuspended' : 'Suspended'
-          }!`}
-        />,
-        { type: 'success' }
-      );
-    } catch (err) {
-      console.error(`onSetSuspend: ${err}`);
-      toast(<NotifyTransactionFailure error={err} title="Suspension Toggle Failed!" />, {
-        type: 'error'
-      });
-    }
-  }, [program, account, refreshOwned]);
+  const handleClickSuspensionToggle = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
 
-  const handleClickUninstall = useCallback(async () => {
-    try {
-      const sig = await xNFT.delete(program, (xnft as InstalledXnftWithMetadata).install.publicKey);
-      refreshInstalled(prev => prev + 1);
+      try {
+        const sig = await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
+        refreshOwned(prev => prev + 1);
 
-      toast(<NotifyExplorer signature={sig} title={`${account.account.name} Uninstalled!`} />, {
-        type: 'success'
-      });
-    } catch (err) {
-      console.error(`onUninstall: ${err}`);
-      toast(<NotifyTransactionFailure error={err} title="Uninstallation Failed!" />, {
-        type: 'error'
-      });
-    }
-  }, [account, program, xnft, refreshInstalled]);
+        toast(
+          <NotifyExplorer
+            signature={sig}
+            title={`${account.account.name} ${
+              account.account.suspended ? 'Unsuspended' : 'Suspended'
+            }!`}
+          />,
+          { type: 'success' }
+        );
+      } catch (err) {
+        console.error(`onSetSuspend: ${err}`);
+        toast(<NotifyTransactionFailure error={err} title="Suspension Toggle Failed!" />, {
+          type: 'error'
+        });
+      }
+    },
+    [program, account, refreshOwned]
+  );
+
+  const handleClickUninstall = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+
+      try {
+        const sig = await xNFT.delete(
+          program,
+          (xnft as InstalledXnftWithMetadata).install.publicKey
+        );
+        refreshInstalled(prev => prev + 1);
+
+        toast(<NotifyExplorer signature={sig} title={`${account.account.name} Uninstalled!`} />, {
+          type: 'success'
+        });
+      } catch (err) {
+        console.error(`onUninstall: ${err}`);
+        toast(<NotifyTransactionFailure error={err} title="Uninstallation Failed!" />, {
+          type: 'error'
+        });
+      }
+    },
+    [account, program, xnft, refreshInstalled]
+  );
 
   return (
-    <div
+    <Link
+      href={link}
       className={`flex items-center gap-4 rounded-lg bg-[#27272A] p-4 shadow-lg transition-all
         hover:-translate-y-1 hover:bg-[#27272A]/40 ${
           account.account.suspended && type === 'owned' ? 'border border-red-500' : ''
         }`}
     >
-      <Link href={link} className="self-start">
+      <div className="self-start">
         <Image
           className="rounded-lg"
           alt="app-icon"
@@ -114,7 +149,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
           width={64}
           layout="fixed"
         />
-      </Link>
+      </div>
       <div className="min-w-0 pt-2">
         <div className="text-lg font-bold tracking-wide text-white">{account.account.name}</div>
         <div className="truncate text-sm tracking-wide text-[#FAFAFA]">
@@ -136,7 +171,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

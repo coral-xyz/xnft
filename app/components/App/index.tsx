@@ -1,5 +1,13 @@
 import { PublicKey } from '@solana/web3.js';
-import { type FunctionComponent, memo, useCallback, useState, useEffect, useMemo } from 'react';
+import {
+  type FunctionComponent,
+  memo,
+  useCallback,
+  useState,
+  useEffect,
+  useMemo,
+  type MouseEvent
+} from 'react';
 import { toast } from 'react-toastify';
 import { useSetRecoilState } from 'recoil';
 import dynamic from 'next/dynamic';
@@ -78,35 +86,42 @@ const App: FunctionComponent<AppProps> = ({ featured, profile, type, xnft }) => 
    * Memoized function for opening the xNFT app in Backpack if
    * the 'Open' button is clicked.
    */
-  const handleOpenApp = useCallback(() => {
-    // TODO:
-    alert(`OPEN ${pubkey.toBase58()}`);
-  }, [pubkey]);
+  const handleOpenApp = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      alert(`OPEN ${pubkey.toBase58()}`);
+    },
+    [pubkey]
+  );
 
   /**
    * Memoized function for processing the `create_install` instruction
    * of the program when a user clicks on the app installation button.
    */
-  const handleInstall = useCallback(async () => {
-    setLoading(true);
+  const handleInstall = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setLoading(true);
 
-    try {
-      const acc = 'xnft' in xnft ? xnft.xnft : xnft;
-      const sig = await xNFT.install(program, acc);
-      refreshInstalled(prev => prev + 1);
+      try {
+        const acc = 'xnft' in xnft ? xnft.xnft : xnft;
+        const sig = await xNFT.install(program, acc);
+        refreshInstalled(prev => prev + 1);
 
-      toast(<NotifyExplorer signature={sig} title={`${acc.account.name} Installed!`} />, {
-        type: 'success'
-      });
-    } catch (err) {
-      console.error(`handleInstall: ${err}`);
-      toast(<NotifyTransactionFailure error={err} title="Installation Failed!" />, {
-        type: 'error'
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [program, xnft, refreshInstalled]);
+        toast(<NotifyExplorer signature={sig} title={`${acc.account.name} Installed!`} />, {
+          type: 'success'
+        });
+      } catch (err) {
+        console.error(`handleInstall: ${err}`);
+        toast(<NotifyTransactionFailure error={err} title="Installation Failed!" />, {
+          type: 'error'
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [program, xnft, refreshInstalled]
+  );
 
   return featured ? (
     <Featured
