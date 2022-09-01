@@ -23,7 +23,7 @@ import {
   XNFT_TAG_OPTIONS
 } from '../../utils/constants';
 import type { Metadata } from '../../utils/metadata';
-import { FileType, S3Storage } from '../../utils/storage';
+import { FileType, IpfsStorage, S3Storage } from '../../utils/storage';
 import xNFT, { type UpdateParams, type XnftWithMetadata } from '../../utils/xnft';
 import Input, { inputClasses } from '../Inputs/Input';
 import InputWIthSuffix from '../Inputs/InputWIthSuffix';
@@ -153,21 +153,15 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
     if (!focused) return;
 
     setLoading(true);
-    const changes = getChanges(focused, edits);
 
-    // TODO: FIXME:
     try {
-      // Call the `update_xnft` instruction to set any account data changes
-      // and to update the `updated_ts` timestamp field on the xNFT account
-      const sig = await xNFT.update(
-        program,
-        focused.publicKey,
-        focused.account.masterMetadata,
-        changes
-      );
+      // Instantiate the appropriate storage backend type for where the
+      // xNFT's metadata already is published
+      const storage = focused.metadataAccount.data.uri.startsWith('ipfs://')
+        ? new IpfsStorage(focused.publicKey)
+        : new S3Storage(focused.publicKey);
 
-      // Copy metadata into new mutable object
-      const uploader = new S3Storage(focused.publicKey);
+      // Copy existing metadata into new object with edits
       const newMetadata: Metadata = {
         ...focused.metadata,
         name: edits.name,
@@ -177,23 +171,34 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
 
       // Upload and update bundle path if new one was provided
       if ((edits.bundle.size ?? 0) > 0) {
-        newMetadata.properties.bundle = await uploader.uploadFile(edits.bundle, FileType.Bundle);
+        newMetadata.properties.bundle = await storage.uploadFile(edits.bundle, FileType.Bundle);
       }
 
       // Upload and update icon path if new one was provided
       if ((edits.icon.size ?? 0) > 0) {
-        newMetadata.image = await uploader.uploadFile(edits.icon, FileType.Icon);
+        newMetadata.image = await storage.uploadFile(edits.icon, FileType.Icon);
       }
 
       // If the new and old metadata are no longer equal, upload the new metadata object
       if (JSON.stringify(newMetadata) !== JSON.stringify(focused.metadata)) {
-        await uploader.uploadMetadata(newMetadata);
+        edits.uri = await storage.uploadMetadata(newMetadata);
       }
+
+      // Calculate the changes to be provided as parameters to the update instruction
+      const changes = getChanges(focused, edits);
+
+      // Call the `update_xnft` instruction to set any account data changes
+      // and to update the `updated_ts` timestamp field on the xNFT account
+      const sig = await xNFT.update(
+        program,
+        focused.publicKey,
+        focused.account.masterMetadata,
+        changes
+      );
 
       await revalidate(focused.publicKey);
 
       onClose(true);
-
       toast(<NotifyExplorer signature={sig} title={`${focused.account.name} Updated!`} />, {
         type: 'success'
       });
