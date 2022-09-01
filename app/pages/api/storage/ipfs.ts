@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { NFTStorage } from 'nft.storage';
+import { Blob, NFTStorage } from 'nft.storage';
 
 const client = new NFTStorage({
   token: process.env.NFT_STORAGE_API_KEY
