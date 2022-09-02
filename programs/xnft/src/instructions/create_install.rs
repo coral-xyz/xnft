@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{self, system_instruction};
+use anchor_spl::metadata::MetadataAccount;
+use mpl_token_metadata::state::CollectionDetails;
 
 use crate::state::{Install, Xnft};
 use crate::CustomError;
@@ -9,6 +11,7 @@ pub struct CreateInstall<'info> {
     #[account(
         mut,
         has_one = install_vault,
+        has_one = master_metadata,
         constraint = xnft.install_authority == None,
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
@@ -28,7 +31,10 @@ pub struct CreateInstall<'info> {
     pub install: Account<'info, Install>,
 
     /// CHECK: xnft has_one constraint.
+    #[account(mut)]
     pub install_vault: UncheckedAccount<'info>,
+
+    pub master_metadata: Account<'info, MetadataAccount>,
 
     #[account(mut)]
     pub authority: Signer<'info>,
@@ -39,6 +45,13 @@ pub struct CreateInstall<'info> {
 pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     let xnft = &mut ctx.accounts.xnft;
     let install = &mut ctx.accounts.install;
+    let metadata = &ctx.accounts.master_metadata;
+
+    if let Some(CollectionDetails::V1 { size }) = metadata.collection_details {
+        if size > 0 && xnft.total_installs >= size {
+            return Err(error!(CustomError::InstallExceedsSupply));
+        }
+    }
 
     //
     // Pay to install the xNFT, if needed.
@@ -63,7 +76,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     //
     install.xnft = xnft.key();
     install.authority = ctx.accounts.authority.key();
-    install.master_metadata = xnft.master_metadata;
+    install.master_metadata = metadata.key();
     install.edition = xnft.total_installs;
 
     //

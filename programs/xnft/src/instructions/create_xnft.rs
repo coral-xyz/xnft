@@ -136,7 +136,7 @@ impl<'info> CreateXnft<'info> {
             edition: self.master_edition.to_account_info(),
             mint: self.master_mint.to_account_info(),
             update_authority: self.xnft.to_account_info(),
-            mint_authority: self.xnft.to_account_info(), // todo: try xnft account
+            mint_authority: self.xnft.to_account_info(),
             payer: self.payer.to_account_info(),
             metadata: self.master_metadata.to_account_info(),
             token_program: self.token_program.to_account_info(),
