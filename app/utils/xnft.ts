@@ -167,6 +167,19 @@ export default abstract class xNFT {
   }
 
   /**
+   * Get the name of the enum variant from the argued options and object.
+   * @static
+   * @param {string[]} options
+   * @param {Partial<{ [K: string]: {} }>} v
+   * @returns {string}
+   * @memberof xNFT
+   */
+  static enumVariantName(options: string[], v: Partial<{ [K: string]: {} }>): string {
+    const lowercaseKey = Object.keys(v)[0].toLowerCase();
+    return options.find(o => o.toLowerCase() === lowercaseKey);
+  }
+
+  /**
    * Fetches a single xNFT program account by public key and its metadata.
    * @static
    * @param {PublicKey} pubkey
@@ -325,22 +338,6 @@ export default abstract class xNFT {
       .transaction();
 
     return await program.provider.sendAndConfirm(tx);
-  }
-
-  /**
-   * Get the name of the enum variant from the argued options and object.
-   * @static
-   * @param {string[]} options
-   * @param {Partial<{ [K: string]: {} }>} v
-   * @returns {string}
-   * @memberof xNFT
-   */
-  static enumVariantName(options: string[], v: Partial<{ [K: string]: {} }>): string {
-    for (const o of options) {
-      if (Object.hasOwn(v, o.toLowerCase())) {
-        return o;
-      }
-    }
   }
 
   /**
