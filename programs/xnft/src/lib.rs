@@ -103,6 +103,9 @@ pub enum CustomError {
     #[msg("The asserted authority did not match that of the Install account")]
     InstallAuthorityMismatch,
 
+    #[msg("The max supply has been reached for the xNFT.")]
+    InstallExceedsSupply,
+
     #[msg("The name provided for creating the xNFT exceeded the byte limit")]
     NameTooLong,
 

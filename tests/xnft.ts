@@ -15,7 +15,7 @@ const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
 
 let xnft: anchor.web3.PublicKey;
-let metadataAccount: anchor.web3.PublicKey;
+let masterMetadata: anchor.web3.PublicKey;
 let install: anchor.web3.PublicKey;
 let review: anchor.web3.PublicKey;
 let authorInstallation: anchor.web3.PublicKey;
@@ -71,11 +71,11 @@ describe('Account Creations', () => {
       assert.lengthOf(accs, 1);
 
       xnft = pubkeys.xnft;
-      metadataAccount = pubkeys.masterMetadata;
+      masterMetadata = pubkeys.masterMetadata;
     });
 
     it('and the supply will be translated to the MPL metadata', async () => {
-      const meta = await Metadata.fromAccountAddress(program.provider.connection, metadataAccount);
+      const meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
       assert.strictEqual(meta.collectionDetails.size.toString(), supply.toString());
     });
   });
@@ -89,7 +89,8 @@ describe('Account Creations', () => {
           .createInstall()
           .accounts({
             xnft,
-            installVault
+            installVault,
+            masterMetadata
           })
           .rpc();
 
@@ -105,7 +106,8 @@ describe('Account Creations', () => {
     it('when the xNFT is not currently suspended', async () => {
       const tx = program.methods.createInstall().accounts({
         xnft,
-        installVault
+        installVault,
+        masterMetadata
       });
 
       const pubkeys = await tx.pubkeys();
@@ -134,7 +136,7 @@ describe('Account Creations', () => {
 
       const installTx = program.methods
         .createInstall()
-        .accounts({ xnft, installVault, authority: author.publicKey })
+        .accounts({ xnft, installVault, masterMetadata, authority: author.publicKey })
         .signers([author]);
       const installKeys = await installTx.pubkeys();
       await installTx.rpc();
@@ -219,7 +221,7 @@ describe('Account Updates', () => {
       })
       .accounts({
         xnft,
-        masterMetadata: metadataAccount,
+        masterMetadata,
         metadataProgram
       })
       .rpc();
