@@ -318,7 +318,8 @@ export default abstract class xNFT {
       .createInstall()
       .accounts({
         xnft: new PublicKey(xnft.publicKey),
-        installVault: new PublicKey(xnft.account.installVault)
+        installVault: new PublicKey(xnft.account.installVault),
+        masterMetadata: new PublicKey(xnft.account.masterMetadata)
       })
       .transaction();
 

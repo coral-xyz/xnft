@@ -370,6 +370,11 @@ export type Xnft = {
         },
         {
           name: 'installVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'masterMetadata';
           isMut: false;
           isSigner: false;
         },
@@ -753,21 +758,26 @@ export type Xnft = {
     },
     {
       code: 6002;
+      name: 'InstallExceedsSupply';
+      msg: 'The max supply has been reached for the xNFT.';
+    },
+    {
+      code: 6003;
       name: 'NameTooLong';
       msg: 'The name provided for creating the xNFT exceeded the byte limit';
     },
     {
-      code: 6003;
+      code: 6004;
       name: 'RatingOutOfBounds';
       msg: 'The rating for a review must be between 0 and 5';
     },
     {
-      code: 6004;
+      code: 6005;
       name: 'ReviewInstallMismatch';
       msg: 'The installation provided for the review does not match the xNFT';
     },
     {
-      code: 6005;
+      code: 6006;
       name: 'SuspendedInstallation';
       msg: 'Attempting to install a currently suspended xNFT';
     }
@@ -1146,6 +1156,11 @@ export const IDL: Xnft = {
         },
         {
           name: 'installVault',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'masterMetadata',
           isMut: false,
           isSigner: false
         },
@@ -1529,21 +1544,26 @@ export const IDL: Xnft = {
     },
     {
       code: 6002,
+      name: 'InstallExceedsSupply',
+      msg: 'The max supply has been reached for the xNFT.'
+    },
+    {
+      code: 6003,
       name: 'NameTooLong',
       msg: 'The name provided for creating the xNFT exceeded the byte limit'
     },
     {
-      code: 6003,
+      code: 6004,
       name: 'RatingOutOfBounds',
       msg: 'The rating for a review must be between 0 and 5'
     },
     {
-      code: 6004,
+      code: 6005,
       name: 'ReviewInstallMismatch',
       msg: 'The installation provided for the review does not match the xNFT'
     },
     {
-      code: 6005,
+      code: 6006,
       name: 'SuspendedInstallation',
       msg: 'Attempting to install a currently suspended xNFT'
     }
