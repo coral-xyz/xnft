@@ -4,7 +4,7 @@ mod instructions;
 mod state;
 
 use instructions::*;
-use state::{Kind, Tag};
+use state::{Kind, Tag, L1};
 
 declare_id!("BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd");
 
@@ -38,6 +38,7 @@ pub mod xnft {
         install_price: u64,
         install_vault: Pubkey,
         supply: Option<u64>,
+        l1: L1,
     ) -> Result<()> {
         instructions::create_xnft_handler(
             ctx,
@@ -50,6 +51,7 @@ pub mod xnft {
             install_price,
             install_vault,
             supply,
+            l1,
         )
     }
 

@@ -14,7 +14,7 @@ import {
 import { IDL, type Xnft } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
+import { XNFT_PROGRAM_ID } from './constants';
 import fetch from './fetch';
 import type { StorageBackend } from './storage';
 import { deriveInstallAddress } from './pubkeys';
@@ -107,7 +107,8 @@ export default abstract class xNFT {
         sellerFeeBasis,
         price,
         vault,
-        supply
+        supply,
+        { [details.l1.toLowerCase()]: {} }
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
       .transaction();
@@ -327,15 +328,16 @@ export default abstract class xNFT {
   }
 
   /**
-   * Returns the selection option valid name for the argued kind enum variant.
+   * Get the name of the enum variant from the argued options and object.
    * @static
-   * @param {Partial<{ [K: string]: {} }>} t
+   * @param {string[]} options
+   * @param {Partial<{ [K: string]: {} }>} v
    * @returns {string}
    * @memberof xNFT
    */
-  static kindName(t: Partial<{ [K: string]: {} }>): string {
-    for (const o of XNFT_KIND_OPTIONS) {
-      if (Object.hasOwn(t, o.toLowerCase())) {
+  static enumVariantName(options: string[], v: Partial<{ [K: string]: {} }>): string {
+    for (const o of options) {
+      if (Object.hasOwn(v, o.toLowerCase())) {
         return o;
       }
     }
@@ -397,21 +399,6 @@ export default abstract class xNFT {
   ): Promise<string> {
     const tx = await program.methods.setSuspended(flag).accounts({ xnft }).transaction();
     return await program.provider.sendAndConfirm(tx);
-  }
-
-  /**
-   * Returns the select option valid name for the argued tag enum variant.
-   * @static
-   * @param {Partial<{ [T: string]: {} }>} t
-   * @returns {string}
-   * @memberof xNFT
-   */
-  static tagName(t: Partial<{ [T: string]: {} }>): string {
-    for (const o of XNFT_TAG_OPTIONS) {
-      if (Object.hasOwn(t, o.toLowerCase())) {
-        return o;
-      }
-    }
   }
 
   /**
