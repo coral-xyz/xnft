@@ -9,8 +9,11 @@ import xNFT, {
 } from '../../utils/xnft';
 import { useProgram } from '../../state/atoms/program';
 import { forceInstalledRefresh, useInstalledXnftsLoadable } from '../../state/atoms/xnft';
+import { toast } from 'react-toastify';
 
 const AppPrimaryButton = dynamic(() => import('../Button/AppPrimaryButton'));
+const NotifyExplorer = dynamic(() => import('../Notification/Explorer'));
+const NotifyTransactionFailure = dynamic(() => import('../Notification/TransactionFailure'));
 const Rating = dynamic(() => import('../Rating/Static'));
 
 interface AppBannerProps {
@@ -84,10 +87,17 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
     setLoading(true);
 
     try {
-      await xNFT.install(program, xnft);
+      const sig = await xNFT.install(program, xnft);
       refreshInstalled(prev => prev + 1);
+
+      toast(<NotifyExplorer signature={sig} title={`${xnft.account.name} Installed!`} />, {
+        type: 'success'
+      });
     } catch (err) {
       console.error(`handleInstall: ${err}`);
+      toast(<NotifyTransactionFailure error={err} title="Installation Failed!" />, {
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
