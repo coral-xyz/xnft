@@ -97,7 +97,7 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
    * Memoized function to handle clicking the app preview button.
    */
   const handlePreviewClick = useCallback(() => {
-		window.xnft.openXnft(xnft.publicKey);
+		window.backpack.openXnft(xnft.publicKey);
   }, [xnft]);
 
   return (
