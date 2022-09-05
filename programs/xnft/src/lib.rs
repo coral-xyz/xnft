@@ -99,7 +99,7 @@ pub mod xnft {
 
 #[error_code]
 pub enum CustomError {
-    #[msg("You cannot create a review for an xNFT that you currently own")]
+    #[msg("You cannot create a review for an xNFT that you currently own or published")]
     CannotReviewOwned,
 
     #[msg("The asserted authority did not match that of the Install account")]

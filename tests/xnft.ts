@@ -10,12 +10,14 @@ export const metadataProgram = new anchor.web3.PublicKey(
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+const SplToken = anchor.Spl.token(program.provider);
 const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
 
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
+let masterToken: anchor.web3.PublicKey;
 let install: anchor.web3.PublicKey;
 let review: anchor.web3.PublicKey;
 let authorInstallation: anchor.web3.PublicKey;
@@ -85,17 +87,23 @@ describe('Account Creations', () => {
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
+      masterToken = pubkeys.masterToken;
     });
 
     it('and the supply will be translated to the MPL metadata', async () => {
       const meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
       assert.strictEqual(meta.collectionDetails.size.toString(), supply.toString());
     });
+
+    it('and the token account is frozen after the mint', async () => {
+      const acc = await SplToken.account.token.fetch(masterToken);
+      assert.strictEqual(acc.state, 2);
+    });
   });
 
   describe('an Install can be created', () => {
     it('unless the xNFT is suspended', async () => {
-      await program.methods.setSuspended(true).accounts({ xnft }).rpc();
+      await program.methods.setSuspended(true).accounts({ xnft, masterToken }).rpc();
 
       try {
         await program.methods
@@ -112,7 +120,7 @@ describe('Account Creations', () => {
         const e = err as anchor.AnchorError;
         assert.strictEqual(e.error.errorCode.code, 'SuspendedInstallation');
       } finally {
-        await program.methods.setSuspended(false).accounts({ xnft }).rpc();
+        await program.methods.setSuspended(false).accounts({ xnft, masterToken }).rpc();
       }
     });
 
@@ -160,7 +168,7 @@ describe('Account Creations', () => {
       try {
         await program.methods
           .createReview('https://google.com', 4)
-          .accounts({ install, xnft })
+          .accounts({ install, xnft, masterToken })
           .rpc();
 
         assert.ok(false);
@@ -176,7 +184,7 @@ describe('Account Creations', () => {
       try {
         await program.methods
           .createReview('https://google.com', 4)
-          .accounts({ install, xnft, author: author.publicKey })
+          .accounts({ install, xnft, author: author.publicKey, masterToken })
           .signers([author])
           .rpc();
 
@@ -191,7 +199,7 @@ describe('Account Creations', () => {
       try {
         await program.methods
           .createReview('https://google.com', 6)
-          .accounts({ install: authorInstallation, xnft, author: author.publicKey })
+          .accounts({ install: authorInstallation, xnft, author: author.publicKey, masterToken })
           .signers([author])
           .rpc();
 
@@ -205,7 +213,7 @@ describe('Account Creations', () => {
     it('when appropriate accounts and arguments', async () => {
       await program.methods
         .createReview('https://google.com', 4)
-        .accounts({ install: authorInstallation, xnft, author: author.publicKey })
+        .accounts({ install: authorInstallation, xnft, author: author.publicKey, masterToken })
         .signers([author])
         .rpc();
 
@@ -235,6 +243,7 @@ describe('Account Updates', () => {
       .accounts({
         xnft,
         masterMetadata,
+        masterToken,
         metadataProgram
       })
       .rpc();

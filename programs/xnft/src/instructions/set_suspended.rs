@@ -1,14 +1,18 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::TokenAccount;
 
 use crate::state::Xnft;
 
 #[derive(Accounts)]
 pub struct SetSuspended<'info> {
-    #[account(
-        mut,
-        has_one = authority,
-    )]
+    #[account(mut)]
     pub xnft: Account<'info, Xnft>,
+
+    #[account(
+        constraint = master_token.mint == xnft.master_mint,
+        constraint = master_token.owner == *authority.key,
+    )]
+    pub master_token: Account<'info, TokenAccount>,
 
     pub authority: Signer<'info>,
 }

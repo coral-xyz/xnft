@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::metadata::{self, Metadata, MetadataAccount, UpdateMetadataAccountsV2};
+use anchor_spl::token::TokenAccount;
 use mpl_token_metadata::state::DataV2;
 
 use crate::state::{Tag, Xnft};
@@ -18,10 +19,15 @@ pub struct UpdateParams {
 pub struct UpdateXnft<'info> {
     #[account(
         mut,
-        has_one = authority,
         has_one = master_metadata,
     )]
     pub xnft: Account<'info, Xnft>,
+
+    #[account(
+        constraint = master_token.mint == xnft.master_mint,
+        constraint = master_token.owner == *authority.key,
+    )]
+    pub master_token: Account<'info, TokenAccount>,
 
     #[account(mut)]
     pub master_metadata: Account<'info, MetadataAccount>,

@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::TokenAccount;
 
 use crate::state::{Install, Review, Xnft};
 use crate::{CustomError, MAX_RATING};
@@ -26,8 +27,14 @@ pub struct CreateReview<'info> {
     pub install: Account<'info, Install>,
 
     #[account(
+        constraint = master_token.mint == xnft.master_mint,
+        constraint = master_token.owner != *author.key @ CustomError::CannotReviewOwned,
+    )]
+    pub master_token: Account<'info, TokenAccount>,
+
+    #[account(
         mut,
-        constraint = xnft.authority != *author.key @ CustomError::CannotReviewOwned
+        constraint = xnft.publisher != *author.key @ CustomError::CannotReviewOwned,
     )]
     pub xnft: Account<'info, Xnft>,
 
