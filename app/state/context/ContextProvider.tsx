@@ -2,6 +2,8 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { BackpackWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { type FunctionComponent, type ReactNode, useMemo } from 'react';
+import { RecoilRoot } from 'recoil';
+import PlausibleProvider from 'next-plausible';
 import { useAutoConnect } from '../context/AutoConnectProvider';
 import { useConnection } from '../atoms/solana';
 import { AutoConnectProvider } from './AutoConnectProvider';
@@ -23,8 +25,12 @@ const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ chi
 
 export const ContextProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
   return (
-    <AutoConnectProvider>
-      <WalletContextProvider>{children}</WalletContextProvider>
-    </AutoConnectProvider>
+    <RecoilRoot>
+      <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
+        <AutoConnectProvider>
+          <WalletContextProvider>{children}</WalletContextProvider>
+        </AutoConnectProvider>
+      </PlausibleProvider>
+    </RecoilRoot>
   );
 };
