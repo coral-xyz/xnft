@@ -132,12 +132,7 @@ const Reviews: FunctionComponent<ReviewsProps> = ({ xnft }) => {
           </div>
         )}
       </section>
-      <ReviewModal
-        title={modalTitle}
-        open={modalOpen}
-        onClose={handleModalClose}
-        xnft={xnft.publicKey}
-      />
+      <ReviewModal title={modalTitle} open={modalOpen} onClose={handleModalClose} xnft={xnft} />
     </>
   );
 };

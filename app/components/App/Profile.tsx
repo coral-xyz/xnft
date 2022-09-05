@@ -86,7 +86,13 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
       e.preventDefault();
 
       try {
-        const sig = await xNFT.setSuspended(program, account.publicKey, !account.account.suspended);
+        const sig = await xNFT.setSuspended(
+          program,
+          account.publicKey,
+          account.tokenData.publicKey,
+          !account.account.suspended
+        );
+
         refreshOwned(prev => prev + 1);
 
         toast(

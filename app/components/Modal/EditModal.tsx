@@ -49,7 +49,8 @@ function getChanges(xnft: XnftWithMetadata, updates: XnftEdits): UpdateParams {
     installVault: newInstallVault.equals(xnft.account.installVault) ? null : newInstallVault,
     name: updates.name === xnft.account.name ? null : updates.name,
     price: newPrice.eq(xnft.account.installPrice) ? null : newPrice,
-    tag: (updates.tag.toLowerCase() === xNFT.tagName(xnft.account.tag).toLowerCase()
+    tag: (updates.tag.toLowerCase() ===
+    xNFT.enumVariantName(XNFT_TAG_OPTIONS, xnft.account.tag).toLowerCase()
       ? null
       : { [updates.tag.toLowerCase()]: {} }) as never,
     uri: updates.uri === xnft.metadataAccount.data.uri ? null : updates.uri
@@ -193,6 +194,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         program,
         focused.publicKey,
         focused.account.masterMetadata,
+        focused.tokenData.publicKey,
         changes
       );
 

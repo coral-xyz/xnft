@@ -3,6 +3,7 @@ import {
   AnchorProvider,
   BN,
   Program,
+  Spl,
   type ProgramAccount,
   type IdlAccounts,
   type IdlTypes
@@ -17,12 +18,17 @@ import type { Metadata } from './metadata';
 import { XNFT_PROGRAM_ID } from './constants';
 import fetch from './fetch';
 import type { StorageBackend } from './storage';
-import { deriveInstallAddress } from './pubkeys';
+import { deriveInstallAddress, deriveMasterTokenAddress } from './pubkeys';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
 export type InstallAccount = IdlAccounts<Xnft>['install'];
 export type ReviewAccount = IdlAccounts<Xnft>['review'];
 export type UpdateParams = IdlTypes<Xnft>['UpdateParams'];
+
+export interface XnftTokenData {
+  owner: PublicKey;
+  publicKey: PublicKey;
+}
 
 export interface SerializedXnftWithMetadata {
   account: {
@@ -37,6 +43,9 @@ export interface SerializedXnftWithMetadata {
     [K in keyof MplMetadata]: MplMetadata[K] extends PublicKey ? string : MplMetadata[K];
   };
   metadata: Metadata;
+  tokenData: {
+    [K in keyof XnftTokenData]: XnftTokenData[K] extends PublicKey | BN ? string : XnftTokenData[K];
+  };
 }
 
 export interface XnftWithMetadata {
@@ -44,6 +53,7 @@ export interface XnftWithMetadata {
   publicKey: PublicKey;
   metadataAccount: MplMetadata;
   metadata: Metadata;
+  tokenData: XnftTokenData;
 }
 
 export interface InstalledXnftWithMetadata {
@@ -348,6 +358,7 @@ export default abstract class xNFT {
    * @param {Program<Xnft>} program
    * @param {StorageBackend} storage
    * @param {PublicKey} xnft
+   * @param {PublicKey} masterToken
    * @param {string} comment
    * @param {number} rating
    * @returns {Promise<string>}
@@ -357,6 +368,7 @@ export default abstract class xNFT {
     program: Program<Xnft>,
     storage: StorageBackend,
     xnft: PublicKey,
+    masterToken: PublicKey,
     comment: string,
     rating: number
   ): Promise<string> {
@@ -372,7 +384,8 @@ export default abstract class xNFT {
       .createReview(uri, rating)
       .accounts({
         install,
-        xnft
+        xnft,
+        masterToken
       })
       .transaction();
 
@@ -385,6 +398,7 @@ export default abstract class xNFT {
    * @static
    * @param {Program<Xnft>} program
    * @param {PublicKey} xnft
+   * @param {PublicKey} masterToken
    * @param {boolean} flag
    * @returns {Promise<string>}
    * @memberof xNFT
@@ -392,9 +406,13 @@ export default abstract class xNFT {
   static async setSuspended(
     program: Program<Xnft>,
     xnft: PublicKey,
+    masterToken: PublicKey,
     flag: boolean
   ): Promise<string> {
-    const tx = await program.methods.setSuspended(flag).accounts({ xnft }).transaction();
+    const tx = await program.methods
+      .setSuspended(flag)
+      .accounts({ xnft, masterToken })
+      .transaction();
     return await program.provider.sendAndConfirm(tx);
   }
 
@@ -404,7 +422,8 @@ export default abstract class xNFT {
    * @static
    * @param {Program<Xnft>} program
    * @param {PublicKey} xnft
-   * @param {PublicKey} metadata
+   * @param {PublicKey} masterMetadata
+   * @param {PublicKey} masterToken
    * @param {UpdateParams} params
    * @returns {Promise<string>}
    * @memberof xNFT
@@ -412,12 +431,18 @@ export default abstract class xNFT {
   static async update(
     program: Program<Xnft>,
     xnft: PublicKey,
-    metadata: PublicKey,
+    masterMetadata: PublicKey,
+    masterToken: PublicKey,
     params: UpdateParams
   ): Promise<string> {
     const tx = await program.methods
       .updateXnft(params)
-      .accounts({ xnft, masterMetadata: metadata, metadataProgram: METADATA_PROGRAM_ID })
+      .accounts({
+        xnft,
+        masterToken,
+        masterMetadata,
+        metadataProgram: METADATA_PROGRAM_ID
+      })
       .transaction();
 
     return await program.provider.sendAndConfirm(tx);
@@ -475,10 +500,18 @@ async function transformWithMetadata(
 
   const metadata: Metadata = await resp.json();
 
+  const masterToken = await deriveMasterTokenAddress(xnft.masterMint);
+  const tokenAcc = await Spl.token(program.provider).account.token.fetch(masterToken);
+  const tokenData = {
+    owner: tokenAcc.authority,
+    publicKey: masterToken
+  };
+
   return {
     publicKey,
     account: xnft,
     metadataAccount,
-    metadata
+    metadata,
+    tokenData
   };
 }

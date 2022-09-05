@@ -6,6 +6,7 @@
 .idea
 .next/
 .vercel
+*.tsbuildinfo
 
 target/
 node_modules/

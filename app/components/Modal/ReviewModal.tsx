@@ -4,7 +4,7 @@ import { type FunctionComponent, memo, useState, type ReactNode, useCallback } f
 import { toast } from 'react-toastify';
 import { useProgram } from '../../state/atoms/program';
 import { S3Storage } from '../../utils/storage';
-import xNFT from '../../utils/xnft';
+import xNFT, { type SerializedXnftWithMetadata } from '../../utils/xnft';
 import Input from '../Inputs/Input';
 import Modal from './Base';
 
@@ -16,7 +16,7 @@ interface ReviewModalProps {
   onClose: () => void;
   open: boolean;
   title: ReactNode;
-  xnft: string;
+  xnft: SerializedXnftWithMetadata;
 }
 
 const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title, xnft }) => {
@@ -29,10 +29,11 @@ const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title
    * of the xNFT review rating and comment data.
    */
   const handleSubmitReview = useCallback(async () => {
-    const pk = new PublicKey(xnft);
+    const pk = new PublicKey(xnft.publicKey);
+    const token = new PublicKey(xnft.tokenData.publicKey);
 
     try {
-      const sig = await xNFT.review(program, new S3Storage(pk), pk, comment, rating);
+      const sig = await xNFT.review(program, new S3Storage(pk), pk, token, comment, rating);
       toast(<NotifyExplorer signature={sig} title="Review Created!" />, {
         type: 'success'
       });

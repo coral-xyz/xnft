@@ -250,6 +250,11 @@ export type Xnft = {
           isSigner: false;
         },
         {
+          name: 'masterToken';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'masterMetadata';
           isMut: true;
           isSigner: false;
@@ -305,6 +310,11 @@ export type Xnft = {
         },
         {
           name: 'install';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'masterToken';
           isMut: false;
           isSigner: false;
         },
@@ -511,6 +521,11 @@ export type Xnft = {
           isSigner: false;
         },
         {
+          name: 'masterToken';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'authority';
           isMut: false;
           isSigner: true;
@@ -531,8 +546,10 @@ export type Xnft = {
         kind: 'struct';
         fields: [
           {
-            name: 'authority';
-            type: 'publicKey';
+            name: 'reserved0';
+            type: {
+              array: ['u8', 32];
+            };
           },
           {
             name: 'publisher';
@@ -615,7 +632,7 @@ export type Xnft = {
             };
           },
           {
-            name: 'reserved';
+            name: 'reserved1';
             type: {
               array: ['u8', 19];
             };
@@ -775,7 +792,7 @@ export type Xnft = {
     {
       code: 6000;
       name: 'CannotReviewOwned';
-      msg: 'You cannot create a review for an xNFT that you currently own';
+      msg: 'You cannot create a review for an xNFT that you currently own or published';
     },
     {
       code: 6001;
@@ -1062,6 +1079,11 @@ export const IDL: Xnft = {
           isSigner: false
         },
         {
+          name: 'masterToken',
+          isMut: false,
+          isSigner: false
+        },
+        {
           name: 'masterMetadata',
           isMut: true,
           isSigner: false
@@ -1117,6 +1139,11 @@ export const IDL: Xnft = {
         },
         {
           name: 'install',
+          isMut: false,
+          isSigner: false
+        },
+        {
+          name: 'masterToken',
           isMut: false,
           isSigner: false
         },
@@ -1323,6 +1350,11 @@ export const IDL: Xnft = {
           isSigner: false
         },
         {
+          name: 'masterToken',
+          isMut: false,
+          isSigner: false
+        },
+        {
           name: 'authority',
           isMut: false,
           isSigner: true
@@ -1343,8 +1375,10 @@ export const IDL: Xnft = {
         kind: 'struct',
         fields: [
           {
-            name: 'authority',
-            type: 'publicKey'
+            name: 'reserved0',
+            type: {
+              array: ['u8', 32]
+            }
           },
           {
             name: 'publisher',
@@ -1427,7 +1461,7 @@ export const IDL: Xnft = {
             }
           },
           {
-            name: 'reserved',
+            name: 'reserved1',
             type: {
               array: ['u8', 19]
             }
@@ -1587,7 +1621,7 @@ export const IDL: Xnft = {
     {
       code: 6000,
       name: 'CannotReviewOwned',
-      msg: 'You cannot create a review for an xNFT that you currently own'
+      msg: 'You cannot create a review for an xNFT that you currently own or published'
     },
     {
       code: 6001,

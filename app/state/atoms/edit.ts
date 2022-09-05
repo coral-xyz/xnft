@@ -1,5 +1,6 @@
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { atom, selector, type SetterOrUpdater, useRecoilState } from 'recoil';
+import { XNFT_TAG_OPTIONS } from '../../utils/constants';
 import xNFT, { type XnftWithMetadata } from '../../utils/xnft';
 
 /**
@@ -55,7 +56,7 @@ export const xnftEditsState = atom<XnftEdits>({
         installVault: xnft ? xnft.account.installVault.toBase58() : '',
         name: xnft ? xnft.account.name : '',
         price: xnft ? (xnft.account.installPrice.toNumber() / LAMPORTS_PER_SOL).toString() : '',
-        tag: xNFT.tagName(xnft ? xnft.account.tag : { none: {} }),
+        tag: xNFT.enumVariantName(XNFT_TAG_OPTIONS, xnft ? xnft.account.tag : { none: {} }),
         uri: xnft ? xnft.metadataAccount.data.uri : ''
       };
     }
