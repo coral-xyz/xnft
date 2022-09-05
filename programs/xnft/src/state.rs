@@ -23,7 +23,7 @@ pub enum Tag {
 
 #[account]
 pub struct Xnft {
-    pub authority: Pubkey,
+    _reserved0: [u8; 32],
     pub publisher: Pubkey,
     pub install_vault: Pubkey,
     pub master_edition: Pubkey,
@@ -42,12 +42,12 @@ pub struct Xnft {
     pub total_rating: u64,
     pub num_ratings: u32,
     pub l1: L1,
-    _reserved: [u8; 19],
+    _reserved1: [u8; 19],
 }
 
 impl Xnft {
     pub const LEN: usize =
-        8 + (32 * 6) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 19;
+        8 + 32 + (32 * 5) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 19;
 }
 
 #[account]
