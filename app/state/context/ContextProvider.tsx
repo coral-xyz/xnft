@@ -1,5 +1,4 @@
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { BackpackWalletAdapter } from '@solana/wallet-adapter-wallets';
 import PlausibleProvider from 'next-plausible';
 import { type FunctionComponent, type ReactNode, useMemo } from 'react';
@@ -14,7 +13,7 @@ const WalletContextProvider: FunctionComponent<{ children: ReactNode }> = ({ chi
   return (
     <ConnectionProvider endpoint={connection.rpcEndpoint}>
       <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        {children}
       </WalletProvider>
     </ConnectionProvider>
   );
