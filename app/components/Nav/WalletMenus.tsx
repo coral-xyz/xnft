@@ -36,24 +36,15 @@ export const DisconnectedMenu: FunctionComponent = () => {
     setTimeout(() => setBackpackInstalled(Object.hasOwn(window, 'backpack')), 500);
   }, []);
 
-  return (
-    <>
-      <Transition
-        show={!backpackInstalled}
-        className="hidden sm:block"
-        enter="transition-all ease-in-out duration-500"
-        enterFrom="transform opacity-0"
-        enterTo="transform opacity-100"
-      >
-        <DownloadBackpackLink />
-      </Transition>
-      <button
-        className="hidden items-center gap-2 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white sm:flex"
-        onClick={() => setVisible(true)}
-      >
-        <UserCircleIcon height={18} /> Connect
-      </button>
-    </>
+  return backpackInstalled ? (
+    <button
+      className="hidden items-center gap-2 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white sm:flex"
+      onClick={() => setVisible(true)}
+    >
+      <UserCircleIcon height={18} /> Connect
+    </button>
+  ) : (
+    <DownloadBackpackLink />
   );
 };
 
