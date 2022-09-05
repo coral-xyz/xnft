@@ -1750,6 +1750,14 @@
   dependencies:
     "@solana/wallet-adapter-base" "^0.9.15"
 
+"@solana/wallet-adapter-react-ui@^0.9.15":
+  version "0.9.15"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react-ui/-/wallet-adapter-react-ui-0.9.15.tgz#70e2c1916caa9ccbf6c98cb1f9f38252ac5a1016"
+  integrity sha512-Vo+KtP7qVqRFjdnBTnbApIQGxc4veRnoBxoQ+mtrgB55iqI40CyB1zez70mTrPRdcDMEZQX43Vx/e80G7kihvw==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.15"
+    "@solana/wallet-adapter-react" "^0.15.17"
+
 "@solana/wallet-adapter-react@^0.15.17":
   version "0.15.17"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-react/-/wallet-adapter-react-0.15.17.tgz#d631b3214591a228a2c1d0cd6293c1fe8f7767e6"
