@@ -4,13 +4,10 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Router from 'next/router';
-import PlausibleProvider from 'next-plausible';
 import nprogress from 'nprogress';
 import { ToastContainer } from 'react-toastify';
-import { RecoilRoot } from 'recoil';
 import { ContextProvider } from '../state/context/ContextProvider';
 
-require('@solana/wallet-adapter-react-ui/styles.css');
 require('nprogress/nprogress.css');
 require('react-toastify/dist/ReactToastify.css');
 
@@ -29,35 +26,31 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>xNFT Library</title>
       </Head>
 
-      <RecoilRoot>
-        <PlausibleProvider domain="xnft.gg" trackOutboundLinks={true}>
-          <ContextProvider>
-            <main>
-              <div className="flex min-h-screen flex-col justify-between py-8 px-4 md:px-12">
-                <section className="border-b-[1px] border-b-[#393C43] pb-8">
-                  <Nav />
-                </section>
+      <ContextProvider>
+        <main>
+          <div className="flex min-h-screen flex-col justify-between py-8 px-4 md:px-12">
+            <section className="border-b-[1px] border-b-[#393C43] pb-8">
+              <Nav />
+            </section>
 
-                <section className="mb-auto py-10">
-                  <Component {...pageProps} />
-                </section>
+            <section className="mb-auto py-10">
+              <Component {...pageProps} />
+            </section>
 
-                <section className="items-end pb-8">
-                  <Footer />
-                </section>
-              </div>
+            <section className="items-end pb-8">
+              <Footer />
+            </section>
+          </div>
 
-              <ToastContainer
-                hideProgressBar
-                closeOnClick={false}
-                limit={3}
-                position="bottom-left"
-                theme="dark"
-              />
-            </main>
-          </ContextProvider>
-        </PlausibleProvider>
-      </RecoilRoot>
+          <ToastContainer
+            hideProgressBar
+            closeOnClick={false}
+            limit={3}
+            position="bottom-left"
+            theme="dark"
+          />
+        </main>
+      </ContextProvider>
     </>
   );
 }
