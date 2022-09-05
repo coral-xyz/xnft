@@ -8,7 +8,6 @@ import nprogress from 'nprogress';
 import { ToastContainer } from 'react-toastify';
 import { ContextProvider } from '../state/context/ContextProvider';
 
-require('@solana/wallet-adapter-react-ui/styles.css');
 require('nprogress/nprogress.css');
 require('react-toastify/dist/ReactToastify.css');
 

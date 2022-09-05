@@ -8,7 +8,7 @@ import {
   UserCircleIcon
 } from '@heroicons/react/24/solid';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { BackpackWalletName } from '@solana/wallet-adapter-wallets';
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import { type FunctionComponent, useEffect, useState } from 'react';
@@ -24,7 +24,7 @@ function truncatePublicKey(pk: string): string {
 }
 
 export const DisconnectedMenu: FunctionComponent = () => {
-  const { setVisible } = useWalletModal();
+  const { select } = useWallet();
   const [backpackInstalled, setBackpackInstalled] = useState(true);
 
   /**
@@ -39,7 +39,7 @@ export const DisconnectedMenu: FunctionComponent = () => {
   return backpackInstalled ? (
     <button
       className="hidden items-center gap-2 rounded-3xl bg-gradient-to-r from-[#E379B3] to-[#E1B43F] px-4 py-3 text-white sm:flex"
-      onClick={() => setVisible(true)}
+      onClick={() => select(BackpackWalletName)}
     >
       <UserCircleIcon height={18} /> Connect
     </button>
