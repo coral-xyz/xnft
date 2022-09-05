@@ -1,6 +1,7 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { memo, type ReactNode, type FunctionComponent } from 'react';
+import { XNFT_KIND_OPTIONS, XNFT_L1_OPTIONS, XNFT_TAG_OPTIONS } from '../../../utils/constants';
 import xNFT, { type SerializedXnftWithMetadata } from '../../../utils/xnft';
 
 interface ItemProps {
@@ -25,8 +26,9 @@ const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
   return (
     <section className="mx-auto flex h-full max-w-3xl flex-col gap-4 rounded-2xl bg-[#292C33] p-4">
       <Item name="Authority" value={xnft.account.authority} />
-      <Item name="Tag" value={xNFT.tagName(xnft.account.tag)} />
-      <Item name="Kind" value={xNFT.kindName(xnft.account.kind)} />
+      <Item name="L1" value={xNFT.enumVariantName(XNFT_L1_OPTIONS, xnft.account.l1)} />
+      <Item name="Kind" value={xNFT.enumVariantName(XNFT_KIND_OPTIONS, xnft.account.kind)} />
+      <Item name="Tag" value={xNFT.enumVariantName(XNFT_TAG_OPTIONS, xnft.account.tag)} />
       {xnft.metadata.external_url && (
         <Item
           name="Website"

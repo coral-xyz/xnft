@@ -14,7 +14,7 @@ import {
 import { IDL, type Xnft } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import type { Metadata } from './metadata';
-import { XNFT_KIND_OPTIONS, XNFT_PROGRAM_ID, XNFT_TAG_OPTIONS } from './constants';
+import { XNFT_PROGRAM_ID } from './constants';
 import fetch from './fetch';
 import type { StorageBackend } from './storage';
 import { deriveInstallAddress } from './pubkeys';
@@ -107,7 +107,8 @@ export default abstract class xNFT {
         sellerFeeBasis,
         price,
         vault,
-        supply
+        supply,
+        { [details.l1.toLowerCase()]: {} }
       )
       .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
       .transaction();
@@ -163,6 +164,19 @@ export default abstract class xNFT {
       })
       .transaction();
     return await program.provider.sendAndConfirm(tx);
+  }
+
+  /**
+   * Get the name of the enum variant from the argued options and object.
+   * @static
+   * @param {string[]} options
+   * @param {Partial<{ [K: string]: {} }>} v
+   * @returns {string}
+   * @memberof xNFT
+   */
+  static enumVariantName(options: string[], v: Partial<{ [K: string]: {} }>): string {
+    const lowercaseKey = Object.keys(v)[0].toLowerCase();
+    return options.find(o => o.toLowerCase() === lowercaseKey);
   }
 
   /**
@@ -327,21 +341,6 @@ export default abstract class xNFT {
   }
 
   /**
-   * Returns the selection option valid name for the argued kind enum variant.
-   * @static
-   * @param {Partial<{ [K: string]: {} }>} t
-   * @returns {string}
-   * @memberof xNFT
-   */
-  static kindName(t: Partial<{ [K: string]: {} }>): string {
-    for (const o of XNFT_KIND_OPTIONS) {
-      if (Object.hasOwn(t, o.toLowerCase())) {
-        return o;
-      }
-    }
-  }
-
-  /**
    * Finds the user's active installation of the argued xNFT, throwing an error
    * if one cannot be found, and creates a `Review` program account with the
    * argued rating value and comment URI.
@@ -397,21 +396,6 @@ export default abstract class xNFT {
   ): Promise<string> {
     const tx = await program.methods.setSuspended(flag).accounts({ xnft }).transaction();
     return await program.provider.sendAndConfirm(tx);
-  }
-
-  /**
-   * Returns the select option valid name for the argued tag enum variant.
-   * @static
-   * @param {Partial<{ [T: string]: {} }>} t
-   * @returns {string}
-   * @memberof xNFT
-   */
-  static tagName(t: Partial<{ [T: string]: {} }>): string {
-    for (const o of XNFT_TAG_OPTIONS) {
-      if (Object.hasOwn(t, o.toLowerCase())) {
-        return o;
-      }
-    }
   }
 
   /**

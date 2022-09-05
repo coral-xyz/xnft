@@ -8,6 +8,12 @@ pub enum Kind {
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub enum L1 {
+    Solana,
+    Ethereum,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub enum Tag {
     None,
     Defi,
@@ -35,11 +41,13 @@ pub struct Xnft {
     pub suspended: bool,
     pub total_rating: u64,
     pub num_ratings: u32,
-    _reserved: [u8; 20],
+    pub l1: L1,
+    _reserved: [u8; 19],
 }
 
 impl Xnft {
-    pub const LEN: usize = 8 + (32 * 6) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 20;
+    pub const LEN: usize =
+        8 + (32 * 6) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 19;
 }
 
 #[account]

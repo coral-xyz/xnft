@@ -22,14 +22,15 @@ let authorInstallation: anchor.web3.PublicKey;
 
 describe('Account Creations', () => {
   describe('an xNFT can be created', () => {
-    const price = new anchor.BN(0);
+    const installPrice = new anchor.BN(0);
     const name = 'test xnft';
     const symbol = '';
-    const tag = { defi: {} };
-    const kind = { app: {} };
+    const tag = { defi: {} } as never;
+    const kind = { app: {} } as never;
     const uri = 'https://arweave.net/abc123';
     const sellerFeeBasisPoints = 0;
     const supply = new anchor.BN(100);
+    const l1 = { solana: {} } as never;
 
     it('unless the name is too long', async () => {
       try {
@@ -41,9 +42,10 @@ describe('Account Creations', () => {
             kind,
             uri,
             sellerFeeBasisPoints,
-            price,
+            installPrice,
             installVault,
-            supply
+            supply,
+            l1
           )
           .accounts({
             metadataProgram
@@ -59,7 +61,18 @@ describe('Account Creations', () => {
 
     it('when the arguments are within the bounds', async () => {
       const tx = program.methods
-        .createXnft(name, symbol, tag, kind, uri, sellerFeeBasisPoints, price, installVault, supply)
+        .createXnft(
+          name,
+          symbol,
+          tag,
+          kind,
+          uri,
+          sellerFeeBasisPoints,
+          installPrice,
+          installVault,
+          supply,
+          l1
+        )
         .accounts({
           metadataProgram
         });

@@ -231,6 +231,12 @@ export type Xnft = {
           type: {
             option: 'u64';
           };
+        },
+        {
+          name: 'l1';
+          type: {
+            defined: 'L1';
+          };
         }
       ];
     },
@@ -603,9 +609,15 @@ export type Xnft = {
             type: 'u32';
           },
           {
+            name: 'l1';
+            type: {
+              defined: 'L1';
+            };
+          },
+          {
             name: 'reserved';
             type: {
-              array: ['u8', 20];
+              array: ['u8', 19];
             };
           }
         ];
@@ -720,6 +732,20 @@ export type Xnft = {
         variants: [
           {
             name: 'App';
+          }
+        ];
+      };
+    },
+    {
+      name: 'L1';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'Solana';
+          },
+          {
+            name: 'Ethereum';
           }
         ];
       };
@@ -1016,6 +1042,12 @@ export const IDL: Xnft = {
           name: 'supply',
           type: {
             option: 'u64'
+          }
+        },
+        {
+          name: 'l1',
+          type: {
+            defined: 'L1'
           }
         }
       ]
@@ -1389,9 +1421,15 @@ export const IDL: Xnft = {
             type: 'u32'
           },
           {
+            name: 'l1',
+            type: {
+              defined: 'L1'
+            }
+          },
+          {
             name: 'reserved',
             type: {
-              array: ['u8', 20]
+              array: ['u8', 19]
             }
           }
         ]
@@ -1506,6 +1544,20 @@ export const IDL: Xnft = {
         variants: [
           {
             name: 'App'
+          }
+        ]
+      }
+    },
+    {
+      name: 'L1',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Solana'
+          },
+          {
+            name: 'Ethereum'
           }
         ]
       }

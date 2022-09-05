@@ -17,6 +17,7 @@ import {
   PRICE_RX,
   ROYALTY_RX,
   XNFT_KIND_OPTIONS,
+  XNFT_L1_OPTIONS,
   XNFT_TAG_OPTIONS
 } from '../../utils/constants';
 import { inputClasses } from '../Inputs/Input';
@@ -29,6 +30,15 @@ const SupplySelect = dynamic(() => import('./SupplySelect'));
  * Array of components for all kind select field options.
  */
 const kindOptions = XNFT_KIND_OPTIONS.map(o => (
+  <option key={o} value={o}>
+    {o}
+  </option>
+));
+
+/**
+ * Array of components for all L1 label select field options.
+ */
+const l1Options = XNFT_L1_OPTIONS.map(o => (
   <option key={o} value={o}>
     {o}
   </option>
@@ -238,6 +248,30 @@ const Details: FunctionComponent<StepComponentProps> = ({ setNextEnabled }) => {
             It will default to the publisher address.
           </span>
         </div>
+      </div>
+
+      {/* L1 */}
+      <div>
+        <label
+          htmlFor="l1"
+          className="text-sm font-medium tracking-wide text-[#E5E7EB] after:ml-1 after:text-red-500 after:content-['*']"
+        >
+          L1
+        </label>
+        <select
+          id="l1"
+          name="l1"
+          className={inputClasses}
+          value={publishState.l1}
+          onChange={e =>
+            setPublishState(prev => ({
+              ...prev,
+              l1: e.target.value as typeof XNFT_L1_OPTIONS[number]
+            }))
+          }
+        >
+          {l1Options}
+        </select>
       </div>
 
       {/* Kind */}

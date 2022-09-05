@@ -3,6 +3,7 @@ import {
   APP_ICON_CONSTRAINTS,
   APP_SCREENSHOT_CONSTRAINTS,
   XNFT_KIND_OPTIONS,
+  XNFT_L1_OPTIONS,
   XNFT_TAG_OPTIONS
 } from '../../utils/constants';
 
@@ -23,6 +24,7 @@ const defaultPublishState = {
   bundle: {} as File,
   tag: 'None' as typeof XNFT_TAG_OPTIONS[number],
   kind: 'App' as typeof XNFT_KIND_OPTIONS[number],
+  l1: 'Solana' as typeof XNFT_L1_OPTIONS[number],
   royalties: '',
   price: '',
   supply: 'inf',
@@ -119,6 +121,8 @@ export function validateDetailsInput(state: PublishState): boolean {
     state.title,
     state.description,
     state.publisher,
+    state.kind,
+    state.l1,
     state.tag,
     state.website,
     state.supply,

@@ -5,7 +5,7 @@ use anchor_spl::metadata::{
 use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::DataV2;
 
-use crate::state::{Kind, Tag, Xnft};
+use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(Accounts)]
@@ -159,6 +159,7 @@ pub fn create_xnft_handler(
     install_price: u64,
     install_vault: Pubkey,
     supply: Option<u64>,
+    l1: L1,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
@@ -245,11 +246,11 @@ pub fn create_xnft_handler(
     xnft.kind = kind;
     xnft.tag = tag;
     xnft.name = name;
-    xnft.total_installs = 0;
     xnft.install_price = install_price;
     xnft.created_ts = clock.unix_timestamp;
     xnft.updated_ts = clock.unix_timestamp;
     xnft.suspended = false;
+    xnft.l1 = l1;
 
     Ok(())
 }
