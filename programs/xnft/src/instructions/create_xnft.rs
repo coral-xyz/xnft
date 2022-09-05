@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::metadata::{
     self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
 };
-use anchor_spl::token::{self, Mint, MintTo, Token, TokenAccount};
+use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::DataV2;
 
 use crate::state::{Kind, Tag, Xnft, L1};
@@ -145,6 +145,16 @@ impl<'info> CreateXnft<'info> {
         };
         CpiContext::new(program, accounts)
     }
+
+    pub fn freeze_account_ctx(&self) -> CpiContext<'_, '_, '_, 'info, FreezeAccount<'info>> {
+        let program = self.token_program.to_account_info();
+        let accounts = FreezeAccount {
+            account: self.master_token.to_account_info(),
+            authority: self.xnft.to_account_info(),
+            mint: self.master_mint.to_account_info(),
+        };
+        CpiContext::new(program, accounts)
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -178,6 +188,15 @@ pub fn create_xnft_handler(
         ]]),
         1,
     )?;
+
+    //
+    // Freeze the token account after minting.
+    //
+    token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
+        "xnft".as_bytes(),
+        ctx.accounts.master_edition.key().as_ref(),
+        &[xnft_bump],
+    ]]))?;
 
     //
     // Create metadata.
@@ -235,7 +254,6 @@ pub fn create_xnft_handler(
     let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
 
-    xnft.authority = ctx.accounts.publisher.key();
     xnft.publisher = ctx.accounts.publisher.key();
     xnft.install_vault = install_vault;
     xnft.master_edition = ctx.accounts.master_edition.key();
