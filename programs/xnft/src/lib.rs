@@ -55,13 +55,6 @@ pub mod xnft {
         )
     }
 
-    /// Updates the code of an xNFT.
-    ///
-    /// This is simply a token metadata update cpi.
-    pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
-        instructions::update_xnft_handler(ctx, updates)
-    }
-
     /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
     pub fn create_review(ctx: Context<CreateReview>, uri: String, rating: u8) -> Result<()> {
         instructions::create_review_handler(ctx, uri, rating)
@@ -81,6 +74,11 @@ pub mod xnft {
         instructions::create_install_with_authority_handler(ctx)
     }
 
+    /// Creates a listing program account for the xNFT to be sold.
+    pub fn create_listing(ctx: Context<CreateListing>, price: u64) -> Result<()> {
+        instructions::create_listing_handler(ctx, price)
+    }
+
     /// Closes the install account.
     pub fn delete_install(ctx: Context<DeleteInstall>) -> Result<()> {
         instructions::delete_install_handler(ctx)
@@ -94,6 +92,13 @@ pub mod xnft {
     /// Sets the install suspension flag on the xnft.
     pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
         instructions::set_suspended_handler(ctx, flag)
+    }
+
+    /// Updates the code of an xNFT.
+    ///
+    /// This is simply a token metadata update cpi.
+    pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
+        instructions::update_xnft_handler(ctx, updates)
     }
 }
 

@@ -10,15 +10,18 @@ export const metadataProgram = new anchor.web3.PublicKey(
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+const SplToken = anchor.Spl.token(program.provider);
 const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
 
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
+let masterToken: anchor.web3.PublicKey;
 let install: anchor.web3.PublicKey;
 let review: anchor.web3.PublicKey;
 let authorInstallation: anchor.web3.PublicKey;
+let listing: anchor.web3.PublicKey;
 
 describe('Account Creations', () => {
   describe('an xNFT can be created', () => {
@@ -85,6 +88,7 @@ describe('Account Creations', () => {
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
+      masterToken = pubkeys.masterToken;
     });
 
     it('and the supply will be translated to the MPL metadata', async () => {
@@ -218,6 +222,27 @@ describe('Account Creations', () => {
       const acc = await program.account.xnft.fetch(xnft);
       assert.strictEqual(acc.numRatings, 1);
       assert.strictEqual(acc.totalRating.toNumber(), 4);
+    });
+  });
+
+  describe('a Listing can be created', () => {
+    it('when the proper accounts are provided', async () => {
+      const tx = program.methods
+        .createListing(new anchor.BN(1 * anchor.web3.LAMPORTS_PER_SOL))
+        .accounts({
+          masterToken,
+          xnft
+        });
+
+      await tx.rpc();
+
+      const pubkeys = await tx.pubkeys();
+      listing = pubkeys.listing;
+    });
+
+    it('and the Listing will be the new master token account owner as an escrow', async () => {
+      const info = await SplToken.account.token.fetch(masterToken);
+      assert.strictEqual(info.authority.toBase58(), listing.toBase58());
     });
   });
 });

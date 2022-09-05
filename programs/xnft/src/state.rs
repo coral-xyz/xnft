@@ -77,3 +77,16 @@ impl Review {
         8 + 32 + 32 + 1 + (4 + uri.len()) + 32
     }
 }
+
+#[account]
+pub struct Listing {
+    pub authority: Pubkey,
+    pub xnft: Pubkey,
+    pub price: u64,
+    pub bump: u8,
+    _reserved: [u8; 64],
+}
+
+impl Listing {
+    pub const LEN: usize = 8 + (32 * 2) + 8 + 1 + 64;
+}
