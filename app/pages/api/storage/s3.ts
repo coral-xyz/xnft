@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -23,7 +24,7 @@ interface RequestBody {
   type: string;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ url: string } | { error: string | Error }>
 ) {
@@ -50,3 +51,5 @@ export default async function handler(
     res.status(500).json({ error: err.message });
   }
 }
+
+export default withSentry(handler);

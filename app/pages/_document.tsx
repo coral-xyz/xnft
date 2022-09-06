@@ -17,7 +17,7 @@ export default function Document() {
         <meta name="twitter:image" content="https://xnft.gg/coral.png" />
         <meta name="twitter:image:alt" content="Coral logo" />
 
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
         <link rel="icon" sizes="192x192" href="/coral.png" />
         <link rel="apple-touch-icon" href="/coral.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

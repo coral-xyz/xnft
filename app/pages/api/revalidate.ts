@@ -1,6 +1,7 @@
+import { withSentry } from '@sentry/nextjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method must be `POST`' });
   } else if (req.headers.authorization !== process.env.NEXT_PUBLIC_MY_SECRET_TOKEN) {
@@ -20,3 +21,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).send('Error revalidating');
   }
 }
+
+export default withSentry(handler);
