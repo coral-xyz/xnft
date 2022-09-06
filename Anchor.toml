@@ -5,7 +5,7 @@ seeds = true
 xnft = "BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd"
 
 [registry]
-url = "https://anchor.projectserum.com"
+url = "https://api.apr.dev"
 
 [provider]
 cluster = "localnet"
