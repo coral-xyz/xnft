@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fetch from '../../utils/fetch';
 import type { Metadata } from '../../utils/metadata';
@@ -14,7 +15,7 @@ interface RequestBody {
   uri: string;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Metadata | { message: string | Error }>
 ) {
@@ -42,3 +43,5 @@ export default async function handler(
     res.status(500).json({ message: err });
   }
 }
+
+export default withSentry(handler);

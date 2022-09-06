@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Blob, NFTStorage } from 'nft.storage';
 
@@ -18,7 +19,7 @@ interface RequestBody {
   type: string;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ cid: string } | { error: string | Error }>
 ) {
@@ -38,3 +39,5 @@ export default async function handler(
     res.status(500).json({ error: err.message });
   }
 }
+
+export default withSentry(handler);

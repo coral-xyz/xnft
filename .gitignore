@@ -5,6 +5,7 @@
 .env*.local
 .idea
 .next/
+.sentryclirc
 .vercel
 *.tsbuildinfo
 

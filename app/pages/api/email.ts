@@ -1,4 +1,5 @@
 import mailchimp from '@mailchimp/mailchimp_marketing';
+import { withSentry } from '@sentry/nextjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 mailchimp.setConfig({
@@ -8,7 +9,7 @@ mailchimp.setConfig({
 
 const listID = process.env.MAILCHIMP_LISTID;
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method must be `POST`' });
   } else if (req.query.secret !== process.env.NEXT_PUBLIC_MY_SECRET_TOKEN) {
@@ -29,3 +30,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).send('Error subscribing email');
   }
 }
+
+export default withSentry(handler);

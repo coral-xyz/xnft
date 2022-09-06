@@ -49,8 +49,8 @@ const Featured: FunctionComponent<FeaturedProps> = ({
         />
       </div>
       <div className="flex flex-col px-8 py-6 tracking-wide md:px-0 md:pr-10">
-        <h4 className="pb-2 text-sm font-medium text-[#99A4B4] lg:text-base">Featured</h4>
-        <h1 className="pb-6 text-4xl font-bold text-white lg:text-6xl">{xnft.account.name}</h1>
+        <h1 className="pb-2 text-sm font-medium text-[#99A4B4] lg:text-base">Featured</h1>
+        <h2 className="pb-6 text-4xl font-bold text-white lg:text-6xl">{xnft.account.name}</h2>
         <h3 className="pb-8 text-sm font-medium text-white lg:text-base">
           {xnft.metadata.description}
         </h3>
