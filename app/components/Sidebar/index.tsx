@@ -1,4 +1,10 @@
-import { BanknotesIcon, PhotoIcon, PuzzlePieceIcon, StarIcon } from '@heroicons/react/24/outline';
+import {
+  BanknotesIcon,
+  CircleStackIcon,
+  PhotoIcon,
+  PuzzlePieceIcon,
+  StarIcon
+} from '@heroicons/react/24/outline';
 // import { ArrownDownOnTrayIcon } from '@heroicons/react/24/solid';
 // import { Transition } from '@headlessui/react';
 // import { useWallet } from '@solana/wallet-adapter-react';
@@ -20,6 +26,10 @@ const menuItems = [
   {
     name: 'Finance',
     icon: <BanknotesIcon height={18} />
+  },
+  {
+    name: 'Pakkus',
+    icon: <CircleStackIcon height={18} />
   }
 ];
 
