@@ -23,10 +23,10 @@ pub struct DeleteReview<'info> {
 }
 
 pub fn delete_review_handler(ctx: Context<DeleteReview>) -> Result<()> {
-    let review = &ctx.accounts.review;
     let xnft = &mut ctx.accounts.xnft;
+    let review = &ctx.accounts.review;
 
-    xnft.num_ratings = xnft.num_ratings.checked_sub(1).unwrap();
-    xnft.total_rating = xnft.total_rating.checked_sub(review.rating.into()).unwrap();
+    xnft.num_ratings -= 1;
+    xnft.total_rating -= std::convert::TryInto::<u64>::try_into(review.rating).unwrap();
     Ok(())
 }

@@ -82,7 +82,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     //
     // Track aggregate xnft metrics.
     //
-    xnft.total_installs = xnft.total_installs.checked_add(1).unwrap();
+    xnft.total_installs += 1;
 
     Ok(())
 }
