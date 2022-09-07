@@ -1,5 +1,14 @@
 import { useWallet } from '@solana/wallet-adapter-react';
-import { type FunctionComponent, memo, useMemo, useCallback, useState, useEffect } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import {
+  memo,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  type FunctionComponent,
+  type MouseEvent
+} from 'react';
 import { useSetRecoilState } from 'recoil';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -75,9 +84,13 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
    * Memoized function to handle the button to launch the app
    * in the connected Backpack wallet extension.
    */
-  const handleOpenApp = useCallback(() => {
-    // TODO:
-  }, []);
+  const handleOpenApp = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      window.backpack.openXnft(new PublicKey(xnft.publicKey));
+    },
+    [xnft.publicKey]
+  );
 
   /**
    * Memoized function to handle the install button click
@@ -107,9 +120,8 @@ const AppBanner: FunctionComponent<AppBannerProps> = ({ xnft }) => {
    * Memoized function to handle clicking the app preview button.
    */
   const handlePreviewClick = useCallback(() => {
-    // @ts-ignore
     window.backpack.openXnft(xnft.publicKey);
-  }, [xnft]);
+  }, [xnft.publicKey]);
 
   return (
     <section className="flex gap-6">

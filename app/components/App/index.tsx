@@ -89,7 +89,6 @@ const App: FunctionComponent<AppProps> = ({ featured, profile, type, xnft }) => 
   const handleOpenApp = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      // @ts-ignore
       window.backpack.openXnft(pubkey);
     },
     [pubkey]
