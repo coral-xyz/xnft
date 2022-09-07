@@ -27,14 +27,19 @@ export async function getStaticPaths() {
  * @param {GetStaticPropsContext} context
  */
 export async function getStaticProps(context: GetStaticPropsContext) {
-  const xnft = await xNFT.get(new PublicKey(context.params.xnftPK), undefined, true);
+  try {
+    const pk = new PublicKey(context.params.xnftPK);
+    const xnft = await xNFT.get(pk, undefined, true);
 
-  return {
-    props: {
-      data: JSON.stringify(xnft)
-    },
-    revalidate: 60
-  };
+    return {
+      props: {
+        data: JSON.stringify(xnft)
+      },
+      revalidate: 60
+    };
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 const AppPage: NextPage<{ data: string }> = ({ data }) => {
