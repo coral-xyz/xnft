@@ -1,6 +1,6 @@
 import { PROGRAM_ID as METADATA_PROGRAM_ID } from '@metaplex-foundation/mpl-token-metadata';
 import { PublicKey } from '@solana/web3.js';
-import { XNFT_PROGRAM_ID } from './constants';
+import { XNFT_PROGRAM_ID } from '../constants';
 
 /**
  * Derive the PDA for an Install program account.

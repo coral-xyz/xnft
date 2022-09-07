@@ -19,10 +19,9 @@ import { publishState as publishStateAtom, StorageName } from '../state/atoms/pu
 import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
 import { revalidate } from '../utils/api';
-import xNFT from '../utils/xnft';
+import xNFT, { deriveXnftAddress } from '../utils/xnft';
 import { generateMetadata, type PropertiesFile } from '../utils/metadata';
 import { FileType, IpfsStorage, S3Storage } from '../utils/storage';
-import { deriveXnftAddress } from '../utils/pubkeys';
 
 const BundleUpload = dynamic(() => import('../components/Publish/BundleUpload'));
 const Details = dynamic(() => import('../components/Publish/Details'));

@@ -3,7 +3,6 @@ import {
   AnchorProvider,
   BN,
   Program,
-  Spl,
   type ProgramAccount,
   type IdlAccounts,
   type IdlTypes
@@ -12,13 +11,14 @@ import {
   Metadata as MplMetadata,
   PROGRAM_ID as METADATA_PROGRAM_ID
 } from '@metaplex-foundation/mpl-token-metadata';
-import { IDL, type Xnft } from '../programs/xnft';
-import type { PublishState } from '../state/atoms/publish';
-import type { Metadata } from './metadata';
-import { XNFT_PROGRAM_ID } from './constants';
-import fetch from './fetch';
-import type { StorageBackend } from './storage';
-import { deriveInstallAddress, deriveMasterTokenAddress } from './pubkeys';
+import { IDL, type Xnft } from '../../programs/xnft';
+import type { PublishState } from '../../state/atoms/publish';
+import { type Metadata, transformWithMetadata } from '../metadata';
+import { XNFT_PROGRAM_ID } from '../constants';
+import type { StorageBackend } from '../storage';
+import { deriveInstallAddress } from './pubkeys';
+
+export * from './pubkeys';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
 export type InstallAccount = IdlAccounts<Xnft>['install'];
@@ -447,71 +447,4 @@ export default abstract class xNFT {
 
     return await program.provider.sendAndConfirm(tx);
   }
-}
-
-/**
- * Fetches and appends the appropriate metadata objects to
- * the provided xNFT account and public key.
- * @param {Program<Xnft>} program
- * @param {PublicKey} publicKey
- * @param {XnftAccount} xnft
- * @param {boolean} [staticRender]
- * @returns {Promise<XnftWithMetadata>}
- */
-async function transformWithMetadata(
-  program: Program<Xnft>,
-  publicKey: PublicKey,
-  xnft: XnftAccount,
-  staticRender?: boolean
-): Promise<XnftWithMetadata> {
-  const metadataAccount = await MplMetadata.fromAccountAddress(
-    program.provider.connection,
-    xnft.masterMetadata
-  );
-
-  let resp: Response;
-
-  if (!staticRender && metadataAccount.data.uri.startsWith('ipfs://')) {
-    const uri = metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/');
-    resp = await fetch(
-      '/api/metadata',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          uri
-        })
-      },
-      10000
-    );
-  } else {
-    resp = await fetch(
-      metadataAccount.data.uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'),
-      {
-        headers: {
-          'Cache-Control': 'public,max-age=30'
-        }
-      },
-      10000
-    );
-  }
-
-  const metadata: Metadata = await resp.json();
-
-  const masterToken = await deriveMasterTokenAddress(xnft.masterMint);
-  const tokenAcc = await Spl.token(program.provider).account.token.fetch(masterToken);
-  const tokenData = {
-    owner: tokenAcc.authority,
-    publicKey: masterToken
-  };
-
-  return {
-    publicKey,
-    account: xnft,
-    metadataAccount,
-    metadata,
-    tokenData
-  };
 }
