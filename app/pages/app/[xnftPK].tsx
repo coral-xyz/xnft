@@ -18,7 +18,9 @@ export async function getStaticPaths() {
     try {
       new PublicKey(curr.toBase58());
       return [...acc, { params: { xnftPK: curr.toBase58() } }];
-    } catch (_e) {}
+    } catch (_e) {
+      return acc;
+    }
   }, []) as { params: { xnftPK: string } }[];
 
   return { paths, fallback: 'blocking' };
