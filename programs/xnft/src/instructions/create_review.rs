@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::TokenAccount;
 
+use crate::events::ReviewCreated;
 use crate::state::{Install, Review, Xnft};
 use crate::{CustomError, MAX_RATING};
 
@@ -59,6 +60,12 @@ pub fn create_review_handler(ctx: Context<CreateReview>, uri: String, rating: u8
     review.xnft = ctx.accounts.xnft.key();
     review.rating = rating;
     review.uri = uri;
+
+    emit!(ReviewCreated {
+        author: ctx.accounts.author.key(),
+        rating,
+        xnft: ctx.accounts.xnft.key(),
+    });
 
     Ok(())
 }
