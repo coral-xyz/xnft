@@ -3,6 +3,7 @@ use anchor_spl::metadata::{self, Metadata, MetadataAccount, UpdateMetadataAccoun
 use anchor_spl::token::TokenAccount;
 use mpl_token_metadata::state::DataV2;
 
+use crate::events::XnftUpdated;
 use crate::state::{Tag, Xnft};
 use crate::{CustomError, MAX_NAME_LEN};
 
@@ -52,7 +53,7 @@ impl<'info> UpdateXnft<'info> {
 pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
     let md = &ctx.accounts.master_metadata;
 
-    if let Some(u) = updates.uri {
+    if let Some(u) = updates.uri.as_ref() {
         metadata::update_metadata_accounts_v2(
             ctx.accounts.update_metadata_accounts_ctx().with_signer(&[&[
                 "xnft".as_bytes(),
@@ -63,7 +64,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
             Some(DataV2 {
                 name: ctx.accounts.xnft.name.clone(),
                 symbol: md.data.symbol.clone(),
-                uri: u,
+                uri: u.clone(),
                 seller_fee_basis_points: md.data.seller_fee_basis_points,
                 creators: None,   // TODO:
                 collection: None, // TODO:
@@ -98,6 +99,11 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     }
 
     xnft.updated_ts = clock.unix_timestamp;
+
+    emit!(XnftUpdated {
+        metadata_uri: updates.uri.unwrap_or(md.data.uri.clone()),
+        xnft: xnft.key(),
+    });
 
     Ok(())
 }

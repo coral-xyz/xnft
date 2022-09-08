@@ -3,6 +3,7 @@ use anchor_lang::solana_program::{self, system_instruction};
 use anchor_spl::metadata::MetadataAccount;
 use mpl_token_metadata::state::CollectionDetails;
 
+use crate::events::InstallationCreated;
 use crate::state::{Install, Xnft};
 use crate::CustomError;
 
@@ -83,6 +84,11 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     // Track aggregate xnft metrics.
     //
     xnft.total_installs += 1;
+
+    emit!(InstallationCreated {
+        installer: ctx.accounts.authority.key(),
+        xnft: xnft.key(),
+    });
 
     Ok(())
 }
