@@ -14,9 +14,12 @@ const Banner = dynamic(() => import('../../components/AppView/Banner'));
 export async function getStaticPaths() {
   const pubkeys = await xNFT.getAllPublicKeys();
 
-  const paths = pubkeys.map(pk => ({
-    params: { xnftPK: pk.toBase58() }
-  }));
+  const paths = pubkeys.reduce((acc, curr) => {
+    try {
+      new PublicKey(curr.toBase58());
+      return [...acc, { params: { xnftPK: curr.toBase58() } }];
+    } catch (_e) {}
+  }, []) as { params: { xnftPK: string } }[];
 
   return { paths, fallback: 'blocking' };
 }
@@ -27,19 +30,15 @@ export async function getStaticPaths() {
  * @param {GetStaticPropsContext} context
  */
 export async function getStaticProps(context: GetStaticPropsContext) {
-  try {
-    const pk = new PublicKey(context.params.xnftPK);
-    const xnft = await xNFT.get(pk, undefined, true);
+  const pk = new PublicKey(context.params.xnftPK);
+  const xnft = await xNFT.get(pk, undefined, true);
 
-    return {
-      props: {
-        data: JSON.stringify(xnft)
-      },
-      revalidate: 60
-    };
-  } catch (err) {
-    console.error(err);
-  }
+  return {
+    props: {
+      data: JSON.stringify(xnft)
+    },
+    revalidate: 60
+  };
 }
 
 const AppPage: NextPage<{ data: string }> = ({ data }) => {
