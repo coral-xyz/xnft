@@ -26,7 +26,7 @@
     "@tailwindcss/forms": "^0.5.2",
     "@tailwindcss/typography": "^0.5.7",
     "isomorphic-unfetch": "^3.1.0",
-    "next": "^12.2.4",
+    "next": "^12.3.0",
     "next-plausible": "^3.5.0",
     "nft.storage": "^7.0.0",
     "nprogress": "^0.2.0",
