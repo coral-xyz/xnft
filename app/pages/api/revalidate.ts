@@ -18,7 +18,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.json({ revalidated: true });
     }
   } catch (err) {
-    res.status(500).send('Error revalidating');
+    console.error(err);
+    return res.status(500).send('Error revalidating');
   }
 }
 

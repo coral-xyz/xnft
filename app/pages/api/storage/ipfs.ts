@@ -33,10 +33,10 @@ async function handler(
     const blob = new Blob([typeof content === 'string' ? content : Buffer.from(content)], { type });
     const cid = await client.storeBlob(blob);
 
-    res.status(201).json({ cid });
+    return res.status(201).json({ cid });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
 

@@ -37,10 +37,10 @@ async function handler(
     );
     const meta = await resp.json();
 
-    res.status(200).json(meta);
+    return res.status(200).json(meta);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err });
+    return res.status(500).json({ message: err });
   }
 }
 

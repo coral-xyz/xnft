@@ -45,10 +45,10 @@ async function handler(
       { expiresIn: 600 }
     );
 
-    res.status(200).json({ url });
+    return res.status(200).json({ url });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
 

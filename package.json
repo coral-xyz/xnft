@@ -11,10 +11,8 @@
     ".",
     "app"
   ],
-  "dependencies": {
-    "@project-serum/anchor": "^0.25.0"
-  },
   "devDependencies": {
+    "@project-serum/anchor": "^0.25.0",
     "@metaplex-foundation/mpl-token-metadata": "^2.2.3",
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",

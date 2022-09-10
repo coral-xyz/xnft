@@ -16,7 +16,8 @@ import type { PublishState } from '../../state/atoms/publish';
 import { type Metadata, transformWithMetadata } from '../metadata';
 import { XNFT_PROGRAM_ID } from '../constants';
 import type { StorageBackend } from '../storage';
-import { deriveInstallAddress } from './pubkeys';
+import { deriveInstallAddress, deriveXnftAddress } from './pubkeys';
+import { getTokenAccounts } from '../token';
 
 export * from './pubkeys';
 
@@ -284,19 +285,26 @@ export default abstract class xNFT {
    * @memberof xNFT
    */
   static async getOwned(program: Program<Xnft>, pubkey: PublicKey): Promise<XnftWithMetadata[]> {
-    const response: ProgramAccount<XnftAccount>[] = (await program.account.xnft.all([
-      {
-        memcmp: {
-          offset: 8,
-          bytes: pubkey.toBase58()
-        }
+    const tokenAccounts = await getTokenAccounts(program.provider.connection, pubkey);
+    const mints = tokenAccounts.map(acc => acc.account.mint);
+
+    const xnftAddresses: PublicKey[] = [];
+    for (const m of mints) {
+      const addr = await deriveXnftAddress(m);
+      xnftAddresses.push(addr);
+    }
+
+    const xnfts: XnftAccount[] = (await program.account.xnft.fetchMultiple(xnftAddresses)) as any;
+    const filteredXnfts: ProgramAccount<XnftAccount>[] = xnfts.reduce((acc, curr, idx) => {
+      if (curr) {
+        return [...acc, { publicKey: xnftAddresses[idx], account: curr }];
       }
-    ])) as any;
+      return acc;
+    }, []);
 
     const owned: XnftWithMetadata[] = [];
-
-    for await (const item of response) {
-      const data = await transformWithMetadata(program, item.publicKey, item.account as any);
+    for (const x of filteredXnfts) {
+      const data = await transformWithMetadata(program, x.publicKey, x.account);
       owned.push(data);
     }
 
