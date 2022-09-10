@@ -3,7 +3,7 @@ use anchor_spl::metadata::{
     self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::DataV2;
+use mpl_token_metadata::state::{Creator, DataV2};
 
 use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
@@ -215,7 +215,11 @@ pub fn create_xnft_handler(
             symbol,
             uri,
             seller_fee_basis_points,
-            creators: None,   // TODO:
+            creators: Some(vec![Creator {
+                address: ctx.accounts.publisher.key(),
+                share: 100,
+                verified: true,
+            }]),
             collection: None, // TODO:
             uses: None,       // TODO:
         },
@@ -247,6 +251,11 @@ pub fn create_xnft_handler(
         ]]),
         Some(0),
     )?;
+
+    //
+    // Set the primary sale has happened flag to true on metadata.
+    //
+    // TODO:
 
     //
     // Initialize xNFT.
