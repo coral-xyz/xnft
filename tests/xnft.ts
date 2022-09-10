@@ -34,6 +34,8 @@ describe('Account Creations', () => {
     const supply = new anchor.BN(100);
     const l1 = { solana: {} } as never;
 
+    let meta: Metadata;
+
     it('unless the name is too long', async () => {
       try {
         await program.methods
@@ -91,8 +93,17 @@ describe('Account Creations', () => {
     });
 
     it('and the supply will be translated to the MPL metadata', async () => {
-      const meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
+      meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
       assert.strictEqual(meta.collectionDetails.size.toString(), supply.toString());
+    });
+
+    it('and the creator is verified', () => {
+      assert.strictEqual(meta.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
+      assert.isTrue(meta.data.creators[0].verified);
+    });
+
+    it('and the metadata is marked with the primary sale already happened', () => {
+      assert.isTrue(meta.primarySaleHappened);
     });
 
     it('and the token account is frozen after the mint', async () => {
