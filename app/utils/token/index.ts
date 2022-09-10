@@ -1,5 +1,12 @@
+import { type Provider, Spl } from '@project-serum/anchor';
 import { type RawAccount, TOKEN_PROGRAM_ID, ACCOUNT_SIZE, AccountLayout } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { deriveMasterTokenAddress } from '../pubkeys';
+
+export interface XnftTokenData {
+  owner: PublicKey;
+  publicKey: PublicKey;
+}
 
 /**
  * Get all decoded token accounts owned by the argued wallet public key.
@@ -30,4 +37,23 @@ export async function getTokenAccounts(
     publicKey: acc.pubkey,
     account: AccountLayout.decode(acc.account.data)
   }));
+}
+
+/**
+ * Fetches the xNFT token account public key and owner for the argued master mint.
+ * @export
+ * @param {Provider} provider
+ * @param {PublicKey} masterMint
+ * @returns {Promise<XnftTokenData>}
+ */
+export async function getTokenData(
+  provider: Provider,
+  masterMint: PublicKey
+): Promise<XnftTokenData> {
+  const masterToken = await deriveMasterTokenAddress(masterMint);
+  const tokenAcc = await Spl.token(provider).account.token.fetch(masterToken);
+  return {
+    owner: tokenAcc.authority,
+    publicKey: masterToken
+  };
 }

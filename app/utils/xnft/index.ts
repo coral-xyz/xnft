@@ -13,23 +13,16 @@ import {
 } from '@metaplex-foundation/mpl-token-metadata';
 import { IDL, type Xnft } from '../../programs/xnft';
 import type { PublishState } from '../../state/atoms/publish';
-import { type Metadata, transformWithMetadata } from '../metadata';
+import { type Metadata, getMetadata } from '../metadata';
 import { XNFT_PROGRAM_ID } from '../constants';
 import type { StorageBackend } from '../storage';
-import { deriveInstallAddress, deriveXnftAddress } from './pubkeys';
-import { getTokenAccounts } from '../token';
-
-export * from './pubkeys';
+import { deriveInstallAddress, deriveXnftAddress } from '../pubkeys';
+import { getTokenAccounts, getTokenData, type XnftTokenData } from '../token';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
 export type InstallAccount = IdlAccounts<Xnft>['install'];
 export type ReviewAccount = IdlAccounts<Xnft>['review'];
 export type UpdateParams = IdlTypes<Xnft>['UpdateParams'];
-
-export interface XnftTokenData {
-  owner: PublicKey;
-  publicKey: PublicKey;
-}
 
 export interface SerializedXnftWithMetadata {
   account: {
@@ -44,7 +37,7 @@ export interface SerializedXnftWithMetadata {
     [K in keyof MplMetadata]: MplMetadata[K] extends PublicKey ? string : MplMetadata[K];
   };
   metadata: Metadata;
-  tokenData: {
+  token: {
     [K in keyof XnftTokenData]: XnftTokenData[K] extends PublicKey | BN ? string : XnftTokenData[K];
   };
 }
@@ -54,7 +47,7 @@ export interface XnftWithMetadata {
   publicKey: PublicKey;
   metadataAccount: MplMetadata;
   metadata: Metadata;
-  tokenData: XnftTokenData;
+  token: XnftTokenData;
 }
 
 export interface InstalledXnftWithMetadata {
@@ -204,8 +197,15 @@ export default abstract class xNFT {
     program: Program<Xnft> = anonymousProgram,
     staticRender?: boolean
   ): Promise<XnftWithMetadata> {
-    const account = await program.account.xnft.fetch(pubkey);
-    return transformWithMetadata(program, pubkey, account as any, staticRender);
+    const account: XnftAccount = (await program.account.xnft.fetch(pubkey)) as any;
+    const meta = await getMetadata(program, account as any, staticRender);
+    const token = await getTokenData(program.provider, account.masterMint);
+    return {
+      publicKey: pubkey,
+      account,
+      token,
+      ...meta
+    };
   }
 
   /**
@@ -221,8 +221,15 @@ export default abstract class xNFT {
 
     for await (const x of xnfts) {
       try {
-        const data = await transformWithMetadata(program, x.publicKey, x.account as any, true);
-        response.push(data);
+        const meta = await getMetadata(program, x.account as any, true);
+        const token = await getTokenData(program.provider, x.account.masterMint);
+
+        response.push({
+          publicKey: x.publicKey,
+          account: x.account as any,
+          token,
+          ...meta
+        });
       } catch (error) {
         console.error(`failed to fetch metadata for ${x.publicKey.toBase58()}`, error);
       }
@@ -289,23 +296,41 @@ export default abstract class xNFT {
     const mints = tokenAccounts.map(acc => acc.account.mint);
 
     const xnftAddresses: PublicKey[] = [];
-    for (const m of mints) {
+    for await (const m of mints) {
       const addr = await deriveXnftAddress(m);
       xnftAddresses.push(addr);
     }
 
     const xnfts: XnftAccount[] = (await program.account.xnft.fetchMultiple(xnftAddresses)) as any;
-    const filteredXnfts: ProgramAccount<XnftAccount>[] = xnfts.reduce((acc, curr, idx) => {
-      if (curr) {
-        return [...acc, { publicKey: xnftAddresses[idx], account: curr }];
-      }
-      return acc;
-    }, []);
+    const filteredXnfts = xnfts.reduce<{ acc: ProgramAccount<XnftAccount>; token: PublicKey }[]>(
+      (acc, curr, idx) => {
+        if (curr) {
+          return [
+            ...acc,
+            {
+              token: tokenAccounts[idx].publicKey,
+              acc: { publicKey: xnftAddresses[idx], account: curr }
+            }
+          ];
+        }
+        return acc;
+      },
+      []
+    );
 
     const owned: XnftWithMetadata[] = [];
-    for (const x of filteredXnfts) {
-      const data = await transformWithMetadata(program, x.publicKey, x.account);
-      owned.push(data);
+    for await (const x of filteredXnfts) {
+      const meta = await getMetadata(program, x.acc.account);
+
+      owned.push({
+        publicKey: x.acc.publicKey,
+        account: x.acc.account as any,
+        token: {
+          owner: pubkey,
+          publicKey: x.token
+        },
+        ...meta
+      });
     }
 
     return owned;
