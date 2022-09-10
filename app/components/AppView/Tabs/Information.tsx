@@ -25,7 +25,7 @@ interface InformationTabProps {
 const InformationTab: FunctionComponent<InformationTabProps> = ({ xnft }) => {
   return (
     <section className="mx-auto flex h-full max-w-3xl flex-col gap-4 rounded-2xl bg-[#292C33] p-4">
-      <Item name="Authority" value={xnft.tokenData.owner} />
+      <Item name="Authority" value={xnft.token.owner} />
       <Item name="Publisher" value={xnft.account.publisher} />
       <Item name="L1" value={xNFT.enumVariantName(XNFT_L1_OPTIONS, xnft.account.l1)} />
       <Item name="Kind" value={xNFT.enumVariantName(XNFT_KIND_OPTIONS, xnft.account.kind)} />

@@ -194,7 +194,7 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         program,
         focused.publicKey,
         focused.account.masterMetadata,
-        focused.tokenData.publicKey,
+        focused.token.publicKey,
         changes
       );
 

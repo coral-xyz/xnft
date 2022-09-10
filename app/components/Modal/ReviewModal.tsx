@@ -30,7 +30,7 @@ const ReviewModal: FunctionComponent<ReviewModalProps> = ({ onClose, open, title
    */
   const handleSubmitReview = useCallback(async () => {
     const pk = new PublicKey(xnft.publicKey);
-    const token = new PublicKey(xnft.tokenData.publicKey);
+    const token = new PublicKey(xnft.token.publicKey);
 
     try {
       const sig = await xNFT.review(program, new S3Storage(pk), pk, token, comment, rating);

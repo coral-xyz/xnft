@@ -89,7 +89,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
         const sig = await xNFT.setSuspended(
           program,
           account.publicKey,
-          account.tokenData.publicKey,
+          account.token.publicKey,
           !account.account.suspended
         );
 

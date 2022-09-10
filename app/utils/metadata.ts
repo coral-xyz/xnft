@@ -1,10 +1,9 @@
 import { Metadata as MplMetadata } from '@metaplex-foundation/mpl-token-metadata';
-import { Program, Spl } from '@project-serum/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { Program } from '@project-serum/anchor';
 import type { Xnft } from '../programs/xnft';
 import type { PublishState } from '../state/atoms/publish';
 import fetch from './fetch';
-import { deriveMasterTokenAddress, type XnftAccount, type XnftWithMetadata } from './xnft';
+import type { XnftAccount } from './xnft';
 
 export interface Metadata {
   name: string;
@@ -58,17 +57,15 @@ export const generateMetadata = (
  * the provided xNFT account and public key.
  * @export
  * @param {Program<Xnft>} program
- * @param {PublicKey} publicKey
  * @param {XnftAccount} xnft
  * @param {boolean} [staticRender]
- * @returns {Promise<XnftWithMetadata>}
+ * @returns {Promise<{ metadata: Metadata, metadataAccount: MplMetadata }>}
  */
-export async function transformWithMetadata(
+export async function getMetadata(
   program: Program<Xnft>,
-  publicKey: PublicKey,
   xnft: XnftAccount,
   staticRender?: boolean
-): Promise<XnftWithMetadata> {
+): Promise<{ metadata: Metadata; metadataAccount: MplMetadata }> {
   const metadataAccount = await MplMetadata.fromAccountAddress(
     program.provider.connection,
     xnft.masterMetadata
@@ -105,18 +102,5 @@ export async function transformWithMetadata(
 
   const metadata: Metadata = await resp.json();
 
-  const masterToken = await deriveMasterTokenAddress(xnft.masterMint);
-  const tokenAcc = await Spl.token(program.provider).account.token.fetch(masterToken);
-  const tokenData = {
-    owner: tokenAcc.authority,
-    publicKey: masterToken
-  };
-
-  return {
-    publicKey,
-    account: xnft,
-    metadataAccount,
-    metadata,
-    tokenData
-  };
+  return { metadata, metadataAccount };
 }

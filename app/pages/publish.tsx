@@ -19,7 +19,8 @@ import { publishState as publishStateAtom, StorageName } from '../state/atoms/pu
 import { useProgram } from '../state/atoms/program';
 import { usePublish } from '../state/atoms/publish';
 import { revalidate } from '../utils/api';
-import xNFT, { deriveXnftAddress } from '../utils/xnft';
+import xNFT from '../utils/xnft';
+import { deriveMasterMintAddress, deriveXnftAddress } from '../utils/pubkeys';
 import { generateMetadata, type PropertiesFile } from '../utils/metadata';
 import { FileType, IpfsStorage, S3Storage } from '../utils/storage';
 
@@ -122,10 +123,11 @@ const PublishPage: NextPage = () => {
       }
 
       try {
-        const xnftAddress = await deriveXnftAddress(
+        const mintAddress = await deriveMasterMintAddress(
           publishState.title,
           new PublicKey(publishState.publisher)
         );
+        const xnftAddress = await deriveXnftAddress(mintAddress);
         setNewPubkey(xnftAddress);
 
         const storage =

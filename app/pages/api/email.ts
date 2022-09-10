@@ -24,10 +24,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       status: 'pending'
     });
 
-    res.end();
+    return res.status(200).end();
   } catch (err) {
     console.error('Error subscribing:', err);
-    res.status(500).send('Error subscribing email');
+    return res.status(500).send('Error subscribing email');
   }
 }
 
