@@ -11,9 +11,10 @@ const moduleExports = withBundleAnalyzer({ enabled: process.env.ANALYZER === 'tr
         swcMinify: true,
         reactStrictMode: true,
         experimental: {
+          browsersListForSwc: true,
+          legacyBrowsers: false,
           newNextLinkBehavior: true,
           scrollRestoration: true,
-          legacyBrowsers: false,
           runtime: 'nodejs'
         },
         images: {

@@ -1,11 +1,11 @@
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useCallback } from 'react';
+import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import type { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { forceOwnedRefresh } from '../state/atoms/xnft';
 import Layout from '../components/Layout';
 import { useXnftFocus, xnftEditsState } from '../state/atoms/edit';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useResetRecoilState, useSetRecoilState } from 'recoil';
 
 const DisconnectedPlaceholder = dynamic(() => import('../components/Placeholders/Disconnected'));
 const DownloadedApps = dynamic(() => import('../components/Profile/Downloaded'));

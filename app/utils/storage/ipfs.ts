@@ -11,12 +11,12 @@ export class IpfsStorage implements StorageBackend {
   constructor(_: PublicKey) {}
 
   /**
-   * @param {PublicKey} _
+   * @param {PublicKey} _author
    * @param {string} comment
    * @returns {Promise<string>}
    * @memberof IpfsStorage
    */
-  async uploadComment(_: PublicKey, comment: string): Promise<string> {
+  async uploadComment(_author: PublicKey, comment: string): Promise<string> {
     return await this._send(JSON.stringify({ comment }), 'application/json');
   }
 

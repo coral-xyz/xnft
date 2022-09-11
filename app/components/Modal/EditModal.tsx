@@ -180,13 +180,15 @@ const EditModal: FunctionComponent<EditModalProps> = ({ onClose, open }) => {
         newMetadata.image = await storage.uploadFile(edits.icon, FileType.Icon);
       }
 
+      const updatedEdits = { ...edits };
+
       // If the new and old metadata are no longer equal, upload the new metadata object
       if (JSON.stringify(newMetadata) !== JSON.stringify(focused.metadata)) {
-        edits.uri = await storage.uploadMetadata(newMetadata);
+        updatedEdits.uri = await storage.uploadMetadata(newMetadata);
       }
 
       // Calculate the changes to be provided as parameters to the update instruction
-      const changes = getChanges(focused, edits);
+      const changes = getChanges(focused, updatedEdits);
 
       // Call the `update_xnft` instruction to set any account data changes
       // and to update the `updated_ts` timestamp field on the xNFT account

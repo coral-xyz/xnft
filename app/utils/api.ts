@@ -21,6 +21,6 @@ export async function revalidate(xnft?: PublicKey) {
         Authorization: process.env.NEXT_PUBLIC_MY_SECRET_TOKEN
       }
     },
-    10000
+    15000
   );
 }
