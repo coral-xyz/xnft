@@ -101,7 +101,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     xnft.updated_ts = clock.unix_timestamp;
 
     emit!(XnftUpdated {
-        metadata_uri: updates.uri.unwrap_or(md.data.uri.clone()),
+        metadata_uri: updates.uri.unwrap_or_else(|| md.data.uri.clone()),
         xnft: xnft.key(),
     });
 

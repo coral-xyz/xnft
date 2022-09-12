@@ -1,9 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_spl::metadata::{
     self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
+    SignMetadata, UpdatePrimarySaleHappenedViaToken,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::DataV2;
+use mpl_token_metadata::state::{Creator, DataV2};
 
 use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
@@ -155,6 +156,27 @@ impl<'info> CreateXnft<'info> {
         };
         CpiContext::new(program, accounts)
     }
+
+    pub fn update_primary_sale_happened_ctx(
+        &self,
+    ) -> CpiContext<'_, '_, '_, 'info, UpdatePrimarySaleHappenedViaToken<'info>> {
+        let program = self.metadata_program.to_account_info();
+        let accounts = UpdatePrimarySaleHappenedViaToken {
+            metadata: self.master_metadata.to_account_info(),
+            owner: self.publisher.to_account_info(),
+            token: self.master_token.to_account_info(),
+        };
+        CpiContext::new(program, accounts)
+    }
+
+    pub fn sign_metadata_ctx(&self) -> CpiContext<'_, '_, '_, 'info, SignMetadata<'info>> {
+        let program = self.metadata_program.to_account_info();
+        let accounts = SignMetadata {
+            creator: self.publisher.to_account_info(),
+            metadata: self.master_metadata.to_account_info(),
+        };
+        CpiContext::new(program, accounts)
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -215,7 +237,11 @@ pub fn create_xnft_handler(
             symbol,
             uri,
             seller_fee_basis_points,
-            creators: None,   // TODO:
+            creators: Some(vec![Creator {
+                address: ctx.accounts.publisher.key(),
+                share: 100,
+                verified: false,
+            }]),
             collection: None, // TODO:
             uses: None,       // TODO:
         },
@@ -224,6 +250,14 @@ pub fn create_xnft_handler(
         None, // NOTE: mpl's current program sets the size to 0 regardless of provided value, must be done with set_collection_size
     )?;
 
+    //
+    // Verify the creator set in the creators list on the metadata.
+    //
+    metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
+
+    //
+    // Apply the collection size/supply if provided.
+    //
     if let Some(sup) = supply {
         metadata::set_collection_size(
             ctx.accounts.set_collection_size_ctx().with_signer(&[&[
@@ -246,6 +280,13 @@ pub fn create_xnft_handler(
             &[xnft_bump],
         ]]),
         Some(0),
+    )?;
+
+    //
+    // Set the primary sale has happened flag to true on metadata.
+    //
+    metadata::update_primary_sale_happened_via_token(
+        ctx.accounts.update_primary_sale_happened_ctx(),
     )?;
 
     //
