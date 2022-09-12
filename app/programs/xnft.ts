@@ -788,6 +788,58 @@ export type Xnft = {
       };
     }
   ];
+  events: [
+    {
+      name: 'InstallationCreated';
+      fields: [
+        {
+          name: 'installer';
+          type: 'publicKey';
+          index: false;
+        },
+        {
+          name: 'xnft';
+          type: 'publicKey';
+          index: false;
+        }
+      ];
+    },
+    {
+      name: 'ReviewCreated';
+      fields: [
+        {
+          name: 'author';
+          type: 'publicKey';
+          index: false;
+        },
+        {
+          name: 'rating';
+          type: 'u8';
+          index: false;
+        },
+        {
+          name: 'xnft';
+          type: 'publicKey';
+          index: false;
+        }
+      ];
+    },
+    {
+      name: 'XnftUpdated';
+      fields: [
+        {
+          name: 'metadataUri';
+          type: 'string';
+          index: false;
+        },
+        {
+          name: 'xnft';
+          type: 'publicKey';
+          index: false;
+        }
+      ];
+    }
+  ];
   errors: [
     {
       code: 6000;
@@ -1615,6 +1667,58 @@ export const IDL: Xnft = {
           }
         ]
       }
+    }
+  ],
+  events: [
+    {
+      name: 'InstallationCreated',
+      fields: [
+        {
+          name: 'installer',
+          type: 'publicKey',
+          index: false
+        },
+        {
+          name: 'xnft',
+          type: 'publicKey',
+          index: false
+        }
+      ]
+    },
+    {
+      name: 'ReviewCreated',
+      fields: [
+        {
+          name: 'author',
+          type: 'publicKey',
+          index: false
+        },
+        {
+          name: 'rating',
+          type: 'u8',
+          index: false
+        },
+        {
+          name: 'xnft',
+          type: 'publicKey',
+          index: false
+        }
+      ]
+    },
+    {
+      name: 'XnftUpdated',
+      fields: [
+        {
+          name: 'metadataUri',
+          type: 'string',
+          index: false
+        },
+        {
+          name: 'xnft',
+          type: 'publicKey',
+          index: false
+        }
+      ]
     }
   ],
   errors: [
