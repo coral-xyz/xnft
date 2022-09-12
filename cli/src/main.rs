@@ -24,11 +24,11 @@ enum Command {
     },
     Installs {
         #[clap(value_parser)]
-        address: Pubkey,
+        xnft: Pubkey,
     },
     Reviews {
         #[clap(value_parser)]
-        address: Pubkey,
+        xnft: Pubkey,
     },
 }
 
@@ -43,8 +43,8 @@ fn main() -> anyhow::Result<()> {
 
     match Opts::parse().command {
         Command::Account { address } => process_account(&program, address),
-        Command::Installs { address } => process_installs(&program, address),
-        Command::Reviews { address } => process_reviews(&program, address),
+        Command::Installs { xnft } => process_installs(&program, xnft),
+        Command::Reviews { xnft } => process_reviews(&program, xnft),
     }
 }
 
@@ -54,10 +54,10 @@ fn process_account(program: &Program, address: Pubkey) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn process_installs(program: &Program, address: Pubkey) -> anyhow::Result<()> {
+fn process_installs(program: &Program, xnft: Pubkey) -> anyhow::Result<()> {
     let accs: Vec<(Pubkey, Install)> = program.accounts(vec![RpcFilterType::Memcmp(Memcmp {
         offset: 8 + 32,
-        bytes: MemcmpEncodedBytes::Base58(address.to_string()),
+        bytes: MemcmpEncodedBytes::Base58(xnft.to_string()),
         encoding: None,
     })])?;
 
@@ -70,10 +70,10 @@ fn process_installs(program: &Program, address: Pubkey) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn process_reviews(program: &Program, address: Pubkey) -> anyhow::Result<()> {
+fn process_reviews(program: &Program, xnft: Pubkey) -> anyhow::Result<()> {
     let accs: Vec<(Pubkey, Review)> = program.accounts(vec![RpcFilterType::Memcmp(Memcmp {
         offset: 8 + 32,
-        bytes: MemcmpEncodedBytes::Base58(address.to_string()),
+        bytes: MemcmpEncodedBytes::Base58(xnft.to_string()),
         encoding: None,
     })])?;
 
