@@ -2,18 +2,18 @@ use anchor_lang::prelude::*;
 
 use crate::MAX_NAME_LEN;
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub enum Kind {
     App,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub enum L1 {
     Solana,
     Ethereum,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub enum Tag {
     None,
     Defi,
@@ -22,6 +22,7 @@ pub enum Tag {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct Xnft {
     _reserved0: [u8; 32],
     pub publisher: Pubkey,
@@ -51,6 +52,7 @@ impl Xnft {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct Install {
     pub authority: Pubkey,
     pub xnft: Pubkey,
@@ -64,6 +66,7 @@ impl Install {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct Review {
     pub author: Pubkey,
     pub xnft: Pubkey,

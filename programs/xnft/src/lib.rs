@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 mod events;
 mod instructions;
-mod state;
+pub mod state;
 
 use instructions::*;
 use state::{Kind, Tag, L1};
