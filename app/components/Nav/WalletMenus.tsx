@@ -33,7 +33,7 @@ export const DisconnectedMenu: FunctionComponent = () => {
    * should be displayed in the navbar.
    */
   useEffect(() => {
-    setTimeout(() => setBackpackInstalled(Object.hasOwn(window, 'backpack')), 500);
+    setTimeout(() => setBackpackInstalled('backpack' in window), 500);
   }, []);
 
   return backpackInstalled ? (
