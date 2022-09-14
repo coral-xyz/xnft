@@ -16,6 +16,7 @@ import { useSetRecoilState } from 'recoil';
 import { useXnftFocus } from '../../state/atoms/edit';
 import { useProgram } from '../../state/atoms/program';
 import { forceInstalledRefresh, forceOwnedRefresh } from '../../state/atoms/xnft';
+import { revalidate } from '../../utils/api';
 import type { InstalledXnftWithMetadata, XnftWithMetadata } from '../../utils/xnft';
 import xNFT from '../../utils/xnft';
 
@@ -104,6 +105,8 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
           />,
           { type: 'success' }
         );
+
+        await revalidate(account.publicKey);
       } catch (err) {
         console.error(`onSetSuspend: ${err}`);
         toast(<NotifyTransactionFailure error={err} title="Suspension Toggle Failed!" />, {
