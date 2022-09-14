@@ -16,7 +16,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      data: JSON.stringify(xnfts)
+      data: JSON.stringify(xnfts.filter(x => !x.account.suspended))
     },
     revalidate: 30
   };
