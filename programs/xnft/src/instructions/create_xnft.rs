@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::metadata::{
     self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
     SignMetadata, UpdatePrimarySaleHappenedViaToken,
@@ -30,13 +31,8 @@ pub struct CreateXnft<'info> {
     #[account(
         init,
         payer = payer,
-        seeds = [
-            "token".as_bytes(),
-            master_mint.key().as_ref(),
-        ],
-        bump,
-        token::authority = publisher,
-        token::mint = master_mint,
+        associated_token::authority = publisher,
+        associated_token::mint = master_mint,
     )]
     pub master_token: Account<'info, TokenAccount>,
 
@@ -85,6 +81,7 @@ pub struct CreateXnft<'info> {
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub metadata_program: Program<'info, Metadata>,
     pub rent: Sysvar<'info, Rent>,
 }

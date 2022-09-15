@@ -1,5 +1,6 @@
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import * as anchor from '@project-serum/anchor';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
 import { assert } from 'chai';
 import type { Xnft } from '../target/types/xnft';
@@ -37,10 +38,19 @@ describe('Account Creations', () => {
     let meta: Metadata;
 
     it('unless the name is too long', async () => {
+      const badName = 'this title is way too long use!';
+
+      const [mint] = await anchor.web3.PublicKey.findProgramAddress(
+        [Buffer.from('mint'), authority.publicKey.toBytes(), Buffer.from(badName)],
+        program.programId
+      );
+
+      const masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
+
       try {
         await program.methods
           .createXnft(
-            'this title is way too long use!',
+            badName,
             symbol,
             tag,
             kind,
@@ -51,9 +61,7 @@ describe('Account Creations', () => {
             supply,
             l1
           )
-          .accounts({
-            metadataProgram
-          })
+          .accounts({ masterToken, metadataProgram })
           .rpc();
 
         assert.ok(false);
@@ -64,6 +72,13 @@ describe('Account Creations', () => {
     });
 
     it('when the arguments are within the bounds', async () => {
+      const [mint] = await anchor.web3.PublicKey.findProgramAddress(
+        [Buffer.from('mint'), authority.publicKey.toBytes(), Buffer.from(name)],
+        program.programId
+      );
+
+      masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
+
       const tx = program.methods
         .createXnft(
           name,
@@ -78,6 +93,7 @@ describe('Account Creations', () => {
           l1
         )
         .accounts({
+          masterToken,
           metadataProgram
         });
 
@@ -89,7 +105,6 @@ describe('Account Creations', () => {
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
-      masterToken = pubkeys.masterToken;
     });
 
     it('and the supply will be translated to the MPL metadata', async () => {

@@ -18,6 +18,14 @@ pub struct CreateInstall<'info> {
     )]
     pub xnft: Account<'info, Xnft>,
 
+    /// CHECK: xnft has_one constraint.
+    #[account(mut)]
+    pub install_vault: UncheckedAccount<'info>,
+
+    pub master_metadata: Account<'info, MetadataAccount>,
+    ////////////////////////////////////////////////////////////////////////////
+    // Auto derived below.
+    ////////////////////////////////////////////////////////////////////////////
     #[account(
         init,
         payer = authority,
@@ -30,12 +38,6 @@ pub struct CreateInstall<'info> {
         bump,
     )]
     pub install: Account<'info, Install>,
-
-    /// CHECK: xnft has_one constraint.
-    #[account(mut)]
-    pub install_vault: UncheckedAccount<'info>,
-
-    pub master_metadata: Account<'info, MetadataAccount>,
 
     #[account(mut)]
     pub authority: Signer<'info>,

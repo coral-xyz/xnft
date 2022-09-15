@@ -9,19 +9,6 @@ use crate::{CustomError, MAX_RATING};
 #[instruction(uri: String)]
 pub struct CreateReview<'info> {
     #[account(
-        init,
-        payer = author,
-        space = Review::len(uri),
-        seeds = [
-            "review".as_bytes(),
-            xnft.key().as_ref(),
-            author.key().as_ref(),
-        ],
-        bump,
-    )]
-    pub review: Account<'info, Review>,
-
-    #[account(
         has_one = xnft @ CustomError::ReviewInstallMismatch,
         constraint = install.authority == *author.key @ CustomError::InstallAuthorityMismatch,
     )]
@@ -38,6 +25,22 @@ pub struct CreateReview<'info> {
         constraint = xnft.publisher != *author.key @ CustomError::CannotReviewOwned,
     )]
     pub xnft: Account<'info, Xnft>,
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Auto derived below.
+    ////////////////////////////////////////////////////////////////////////////
+    #[account(
+        init,
+        payer = author,
+        space = Review::len(uri),
+        seeds = [
+            "review".as_bytes(),
+            xnft.key().as_ref(),
+            author.key().as_ref(),
+        ],
+        bump,
+    )]
+    pub review: Account<'info, Review>,
 
     #[account(mut)]
     pub author: Signer<'info>,
