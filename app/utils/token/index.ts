@@ -1,7 +1,13 @@
-import { type Provider, Spl } from '@project-serum/anchor';
-import { type RawAccount, TOKEN_PROGRAM_ID, ACCOUNT_SIZE, AccountLayout } from '@solana/spl-token';
+import type { Provider } from '@project-serum/anchor';
+import {
+  type RawAccount,
+  TOKEN_PROGRAM_ID,
+  ACCOUNT_SIZE,
+  AccountLayout,
+  getAssociatedTokenAddress,
+  getAccount
+} from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { deriveMasterTokenAddress } from '../pubkeys';
 
 export interface XnftTokenData {
   owner: PublicKey;
@@ -50,10 +56,10 @@ export async function getTokenData(
   provider: Provider,
   masterMint: PublicKey
 ): Promise<XnftTokenData> {
-  const masterToken = await deriveMasterTokenAddress(masterMint);
-  const tokenAcc = await Spl.token(provider).account.token.fetch(masterToken);
+  const masterToken = await getAssociatedTokenAddress(masterMint, provider.publicKey);
+  const tokenAcc = await getAccount(provider.connection, masterToken);
   return {
-    owner: tokenAcc.authority,
+    owner: tokenAcc.owner,
     publicKey: masterToken
   };
 }

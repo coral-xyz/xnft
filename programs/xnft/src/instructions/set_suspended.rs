@@ -9,8 +9,8 @@ pub struct SetSuspended<'info> {
     pub xnft: Account<'info, Xnft>,
 
     #[account(
-        constraint = master_token.mint == xnft.master_mint,
-        constraint = master_token.owner == *authority.key,
+        associated_token::mint = xnft.master_mint,
+        associated_token::authority = authority,
     )]
     pub master_token: Account<'info, TokenAccount>,
 

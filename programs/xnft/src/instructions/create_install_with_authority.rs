@@ -12,6 +12,9 @@ pub struct CreateInstallWithAuthority<'info> {
     )]
     pub xnft: Account<'info, Xnft>,
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Auto derived below.
+    ////////////////////////////////////////////////////////////////////////////
     #[account(
         init,
         payer = authority,
@@ -27,7 +30,6 @@ pub struct CreateInstallWithAuthority<'info> {
 
     #[account(mut)]
     pub authority: Signer<'info>,
-
     pub install_authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,

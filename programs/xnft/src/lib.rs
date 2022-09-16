@@ -7,7 +7,7 @@ pub mod state;
 use instructions::*;
 use state::{Kind, Tag, L1};
 
-declare_id!("BdbULx4sJSeLJzvR6h6QxL4fUPJAJw86qmwwXt6jBfXd");
+declare_id!("3n1C6PEsiRgvgzYbqscDHw28sBNpHFs3tUz7FSuXeYZL");
 
 #[constant]
 pub const MAX_NAME_LEN: usize = 30;

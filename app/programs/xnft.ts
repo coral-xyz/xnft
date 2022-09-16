@@ -58,21 +58,6 @@ export type Xnft = {
           name: 'masterToken';
           isMut: true;
           isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: 'const';
-                type: 'string';
-                value: 'token';
-              },
-              {
-                kind: 'account';
-                type: 'publicKey';
-                account: 'Mint';
-                path: 'master_mint';
-              }
-            ];
-          };
         },
         {
           name: 'masterMetadata';
@@ -175,6 +160,11 @@ export type Xnft = {
         },
         {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'associatedTokenProgram';
           isMut: false;
           isSigner: false;
         },
@@ -284,6 +274,21 @@ export type Xnft = {
       docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'];
       accounts: [
         {
+          name: 'install';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'masterToken';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'xnft';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'review';
           isMut: true;
           isSigner: false;
@@ -307,21 +312,6 @@ export type Xnft = {
               }
             ];
           };
-        },
-        {
-          name: 'install';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'masterToken';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'xnft';
-          isMut: true;
-          isSigner: false;
         },
         {
           name: 'author';
@@ -360,6 +350,16 @@ export type Xnft = {
           isSigner: false;
         },
         {
+          name: 'installVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'masterMetadata';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'install';
           isMut: true;
           isSigner: false;
@@ -383,16 +383,6 @@ export type Xnft = {
               }
             ];
           };
-        },
-        {
-          name: 'installVault';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'masterMetadata';
-          isMut: false;
-          isSigner: false;
         },
         {
           name: 'authority';
@@ -938,22 +928,7 @@ export const IDL: Xnft = {
         {
           name: 'masterToken',
           isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: 'const',
-                type: 'string',
-                value: 'token'
-              },
-              {
-                kind: 'account',
-                type: 'publicKey',
-                account: 'Mint',
-                path: 'master_mint'
-              }
-            ]
-          }
+          isSigner: false
         },
         {
           name: 'masterMetadata',
@@ -1056,6 +1031,11 @@ export const IDL: Xnft = {
         },
         {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false
+        },
+        {
+          name: 'associatedTokenProgram',
           isMut: false,
           isSigner: false
         },
@@ -1165,6 +1145,21 @@ export const IDL: Xnft = {
       docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'],
       accounts: [
         {
+          name: 'install',
+          isMut: false,
+          isSigner: false
+        },
+        {
+          name: 'masterToken',
+          isMut: false,
+          isSigner: false
+        },
+        {
+          name: 'xnft',
+          isMut: true,
+          isSigner: false
+        },
+        {
           name: 'review',
           isMut: true,
           isSigner: false,
@@ -1188,21 +1183,6 @@ export const IDL: Xnft = {
               }
             ]
           }
-        },
-        {
-          name: 'install',
-          isMut: false,
-          isSigner: false
-        },
-        {
-          name: 'masterToken',
-          isMut: false,
-          isSigner: false
-        },
-        {
-          name: 'xnft',
-          isMut: true,
-          isSigner: false
         },
         {
           name: 'author',
@@ -1241,6 +1221,16 @@ export const IDL: Xnft = {
           isSigner: false
         },
         {
+          name: 'installVault',
+          isMut: true,
+          isSigner: false
+        },
+        {
+          name: 'masterMetadata',
+          isMut: false,
+          isSigner: false
+        },
+        {
           name: 'install',
           isMut: true,
           isSigner: false,
@@ -1264,16 +1254,6 @@ export const IDL: Xnft = {
               }
             ]
           }
-        },
-        {
-          name: 'installVault',
-          isMut: true,
-          isSigner: false
-        },
-        {
-          name: 'masterMetadata',
-          isMut: false,
-          isSigner: false
         },
         {
           name: 'authority',

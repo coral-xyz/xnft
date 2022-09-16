@@ -32,7 +32,7 @@ export const ROYALTY_RX = /^\d*(\.\d{0,2})?$/;
 
 export const S3_BUCKET_URL = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com`;
 
-export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAMID);
+export const XNFT_PROGRAM_ID = new PublicKey(process.env.NEXT_PUBLIC_XNFT_PROGRAM_ID);
 export const XNFT_L1_OPTIONS = IDL.types[2].type.variants.map(v => v.name);
 export const XNFT_KIND_OPTIONS = IDL.types[1].type.variants.map(v => v.name);
 export const XNFT_TAG_OPTIONS = IDL.types[3].type.variants.map(v => v.name);

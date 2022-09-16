@@ -40,20 +40,6 @@ export async function deriveMasterMintAddress(
 }
 
 /**
- * Derive the PDA of the master token account.
- * @export
- * @param {PublicKey} mint
- * @returns {Promise<PublicKey>}
- */
-export async function deriveMasterTokenAddress(mint: PublicKey): Promise<PublicKey> {
-  const [masterToken] = await PublicKey.findProgramAddress(
-    [Buffer.from('token'), mint.toBytes()],
-    XNFT_PROGRAM_ID
-  );
-  return masterToken;
-}
-
-/**
  * Derive the PDA of the associated xNFT program account.
  * @export
  * @param {PublicKey} masterMint
