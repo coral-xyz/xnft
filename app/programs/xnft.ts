@@ -536,12 +536,6 @@ export type Xnft = {
         kind: 'struct';
         fields: [
           {
-            name: 'reserved0';
-            type: {
-              array: ['u8', 32];
-            };
-          },
-          {
             name: 'publisher';
             type: 'publicKey';
           },
@@ -1406,12 +1400,6 @@ export const IDL: Xnft = {
       type: {
         kind: 'struct',
         fields: [
-          {
-            name: 'reserved0',
-            type: {
-              array: ['u8', 32]
-            }
-          },
           {
             name: 'publisher',
             type: 'publicKey'

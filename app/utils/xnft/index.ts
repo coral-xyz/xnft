@@ -16,8 +16,9 @@ import type { PublishState } from '../../state/atoms/publish';
 import { type Metadata, getMetadata } from '../metadata';
 import { XNFT_PROGRAM_ID } from '../constants';
 import type { StorageBackend } from '../storage';
-import { deriveInstallAddress, deriveXnftAddress } from '../pubkeys';
+import { deriveInstallAddress, deriveMasterMintAddress, deriveXnftAddress } from '../pubkeys';
 import { getTokenAccounts, getTokenData, type XnftTokenData } from '../token';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
 export type InstallAccount = IdlAccounts<Xnft>['install'];
@@ -101,6 +102,9 @@ export default abstract class xNFT {
     const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
     const supply = details.supply === 'inf' ? null : new BN(parseInt(details.supply));
 
+    const masterMint = await deriveMasterMintAddress(details.title, program.provider.publicKey);
+    const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
+
     const tx = await program.methods
       .createXnft(
         details.title,
@@ -114,31 +118,9 @@ export default abstract class xNFT {
         supply,
         { [details.l1.toLowerCase()]: {} }
       )
-      .accounts({ metadataProgram: METADATA_PROGRAM_ID, xnft })
+      .accounts({ masterMint, masterToken, xnft, metadataProgram: METADATA_PROGRAM_ID })
       .transaction();
 
-    return await program.provider.sendAndConfirm(tx);
-  }
-
-  /**
-   * Creates and sends the `delete_install` instruction on the program
-   * to close an `Install` program account under the user's authority.
-   * @static
-   * @param {Program<Xnft>} program
-   * @param {PublicKey} install
-   * @param {PublicKey} [receiver]
-   * @returns {Promise<string>}
-   * @memberof xNFT
-   */
-  static async delete(
-    program: Program<Xnft>,
-    install: PublicKey,
-    receiver?: PublicKey
-  ): Promise<string> {
-    const tx = await program.methods
-      .deleteInstall()
-      .accounts({ install, receiver: receiver ?? program.provider.publicKey })
-      .transaction();
     return await program.provider.sendAndConfirm(tx);
   }
 
@@ -445,6 +427,28 @@ export default abstract class xNFT {
     const tx = await program.methods
       .setSuspended(flag)
       .accounts({ xnft, masterToken })
+      .transaction();
+    return await program.provider.sendAndConfirm(tx);
+  }
+
+  /**
+   * Creates and sends the `delete_install` instruction on the program
+   * to close an `Install` program account under the user's authority.
+   * @static
+   * @param {Program<Xnft>} program
+   * @param {PublicKey} install
+   * @param {PublicKey} [receiver]
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  static async uninstall(
+    program: Program<Xnft>,
+    install: PublicKey,
+    receiver?: PublicKey
+  ): Promise<string> {
+    const tx = await program.methods
+      .deleteInstall()
+      .accounts({ install, receiver: receiver ?? program.provider.publicKey })
       .transaction();
     return await program.provider.sendAndConfirm(tx);
   }

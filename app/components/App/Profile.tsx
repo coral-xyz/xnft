@@ -122,7 +122,7 @@ const Profile: FunctionComponent<ProfileProps> = ({ link, onOpen, type, xnft }) 
       e.preventDefault();
 
       try {
-        const sig = await xNFT.delete(
+        const sig = await xNFT.uninstall(
           program,
           (xnft as InstalledXnftWithMetadata).install.publicKey
         );
