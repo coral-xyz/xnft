@@ -1,12 +1,4 @@
-import type { Provider } from '@project-serum/anchor';
-import {
-  type RawAccount,
-  TOKEN_PROGRAM_ID,
-  ACCOUNT_SIZE,
-  AccountLayout,
-  getAssociatedTokenAddress,
-  getAccount
-} from '@solana/spl-token';
+import { type RawAccount, TOKEN_PROGRAM_ID, ACCOUNT_SIZE, AccountLayout } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
 
 export interface XnftTokenData {
@@ -48,18 +40,36 @@ export async function getTokenAccounts(
 /**
  * Fetches the xNFT token account public key and owner for the argued master mint.
  * @export
- * @param {Provider} provider
+ * @param {Connection} connection
  * @param {PublicKey} masterMint
  * @returns {Promise<XnftTokenData>}
  */
 export async function getTokenData(
-  provider: Provider,
+  connection: Connection,
   masterMint: PublicKey
 ): Promise<XnftTokenData> {
-  const masterToken = await getAssociatedTokenAddress(masterMint, provider.publicKey);
-  const tokenAcc = await getAccount(provider.connection, masterToken);
+  const tokenAccs = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
+    filters: [
+      {
+        dataSize: ACCOUNT_SIZE
+      },
+      {
+        memcmp: {
+          offset: 0,
+          bytes: masterMint.toBase58()
+        }
+      }
+    ]
+  });
+
+  if (tokenAccs.length === 0) {
+    throw new Error(`no token accounts found for mint ${masterMint.toBase58()}`);
+  }
+
+  const data = AccountLayout.decode(tokenAccs[0].account.data);
+
   return {
-    owner: tokenAcc.owner,
-    publicKey: masterToken
+    owner: data.owner,
+    publicKey: tokenAccs[0].pubkey
   };
 }

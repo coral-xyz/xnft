@@ -1,4 +1,7 @@
-import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import {
+  Metadata as MplMetadata,
+  PROGRAM_ID as METADATA_PROGRAM_ID
+} from '@metaplex-foundation/mpl-token-metadata';
 import {
   AnchorProvider,
   BN,
@@ -7,10 +10,8 @@ import {
   type IdlAccounts,
   type IdlTypes
 } from '@project-serum/anchor';
-import {
-  Metadata as MplMetadata,
-  PROGRAM_ID as METADATA_PROGRAM_ID
-} from '@metaplex-foundation/mpl-token-metadata';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { IDL, type Xnft } from '../../programs/xnft';
 import type { PublishState } from '../../state/atoms/publish';
 import { type Metadata, getMetadata } from '../metadata';
@@ -18,7 +19,6 @@ import { XNFT_PROGRAM_ID } from '../constants';
 import type { StorageBackend } from '../storage';
 import { deriveInstallAddress, deriveMasterMintAddress, deriveXnftAddress } from '../pubkeys';
 import { getTokenAccounts, getTokenData, type XnftTokenData } from '../token';
-import { getAssociatedTokenAddress } from '@solana/spl-token';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
 export type InstallAccount = IdlAccounts<Xnft>['install'];
@@ -118,7 +118,7 @@ export default abstract class xNFT {
         supply,
         { [details.l1.toLowerCase()]: {} }
       )
-      .accounts({ masterMint, masterToken, xnft, metadataProgram: METADATA_PROGRAM_ID })
+      .accounts({ masterToken, metadataProgram: METADATA_PROGRAM_ID })
       .transaction();
 
     return await program.provider.sendAndConfirm(tx);
@@ -180,8 +180,10 @@ export default abstract class xNFT {
     staticRender?: boolean
   ): Promise<XnftWithMetadata> {
     const account: XnftAccount = (await program.account.xnft.fetch(pubkey)) as any;
+
     const meta = await getMetadata(program, account as any, staticRender);
-    const token = await getTokenData(program.provider, account.masterMint);
+    const token = await getTokenData(program.provider.connection, account.masterMint);
+
     return {
       publicKey: pubkey,
       account,
@@ -204,7 +206,7 @@ export default abstract class xNFT {
     for await (const x of xnfts) {
       try {
         const meta = await getMetadata(program, x.account as any, true);
-        const token = await getTokenData(program.provider, x.account.masterMint);
+        const token = await getTokenData(program.provider.connection, x.account.masterMint);
 
         response.push({
           publicKey: x.publicKey,
