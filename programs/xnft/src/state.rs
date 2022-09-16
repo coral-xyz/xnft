@@ -24,7 +24,6 @@ pub enum Tag {
 #[account]
 #[derive(Debug)]
 pub struct Xnft {
-    _reserved0: [u8; 32],
     pub publisher: Pubkey,
     pub install_vault: Pubkey,
     pub master_edition: Pubkey,
@@ -48,7 +47,7 @@ pub struct Xnft {
 
 impl Xnft {
     pub const LEN: usize =
-        8 + 32 + (32 * 5) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 19;
+        8 + (32 * 5) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 19;
 }
 
 #[account]
