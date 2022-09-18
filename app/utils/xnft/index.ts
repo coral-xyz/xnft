@@ -18,7 +18,7 @@ import { type Metadata, getMetadata } from '../metadata';
 import { XNFT_PROGRAM_ID } from '../constants';
 import type { StorageBackend } from '../storage';
 import { deriveInstallAddress, deriveMasterMintAddress, deriveXnftAddress } from '../pubkeys';
-import { getTokenAccounts, getTokenData, type XnftTokenData } from '../token';
+import { getTokenAccounts, getTokenDataForMint, type XnftTokenData } from '../token';
 
 export type XnftAccount = IdlAccounts<Xnft>['xnft'];
 export type InstallAccount = IdlAccounts<Xnft>['install'];
@@ -182,7 +182,7 @@ export default abstract class xNFT {
     const account: XnftAccount = (await program.account.xnft.fetch(pubkey)) as any;
 
     const meta = await getMetadata(program, account as any, staticRender);
-    const token = await getTokenData(program.provider.connection, account.masterMint);
+    const token = await getTokenDataForMint(program.provider.connection, account.masterMint);
 
     return {
       publicKey: pubkey,
@@ -206,7 +206,7 @@ export default abstract class xNFT {
     for await (const x of xnfts) {
       try {
         const meta = await getMetadata(program, x.account as any, true);
-        const token = await getTokenData(program.provider.connection, x.account.masterMint);
+        const token = await getTokenDataForMint(program.provider.connection, x.account.masterMint);
 
         response.push({
           publicKey: x.publicKey,

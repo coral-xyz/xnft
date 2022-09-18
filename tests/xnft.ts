@@ -1,6 +1,6 @@
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import * as anchor from '@project-serum/anchor';
-import { getAssociatedTokenAddress } from '@solana/spl-token';
+import { getAssociatedTokenAddress, getAccount } from '@solana/spl-token';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
 import { assert } from 'chai';
 import type { Xnft } from '../target/types/xnft';
@@ -11,7 +11,6 @@ export const metadataProgram = new anchor.web3.PublicKey(
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
-const SplToken = anchor.Spl.token(program.provider);
 const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
@@ -122,8 +121,8 @@ describe('Account Creations', () => {
     });
 
     it('and the token account is frozen after the mint', async () => {
-      const acc = await SplToken.account.token.fetch(masterToken);
-      assert.strictEqual(acc.state, 2);
+      const acc = await getAccount(program.provider.connection, masterToken);
+      assert.isTrue(acc.isFrozen);
     });
   });
 

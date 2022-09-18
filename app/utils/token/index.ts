@@ -1,3 +1,4 @@
+import type { ProgramAccount } from '@project-serum/anchor';
 import { type RawAccount, TOKEN_PROGRAM_ID, ACCOUNT_SIZE, AccountLayout } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
 
@@ -11,12 +12,12 @@ export interface XnftTokenData {
  * @export
  * @param {Connection} connection
  * @param {PublicKey} owner
- * @returns {Promise<{ publicKey: PublicKey; account: RawAccount }[]>}
+ * @returns {Promise<ProgramAccount<RawAccount>[]>}
  */
 export async function getTokenAccounts(
   connection: Connection,
   owner: PublicKey
-): Promise<{ publicKey: PublicKey; account: RawAccount }[]> {
+): Promise<ProgramAccount<RawAccount>[]> {
   const accounts = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
     filters: [
       {
@@ -44,7 +45,7 @@ export async function getTokenAccounts(
  * @param {PublicKey} masterMint
  * @returns {Promise<XnftTokenData>}
  */
-export async function getTokenData(
+export async function getTokenDataForMint(
   connection: Connection,
   masterMint: PublicKey
 ): Promise<XnftTokenData> {
