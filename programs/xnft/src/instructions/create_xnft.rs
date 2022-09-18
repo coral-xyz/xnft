@@ -5,7 +5,7 @@ use anchor_spl::metadata::{
     SignMetadata, UpdatePrimarySaleHappenedViaToken,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{Creator, DataV2};
+use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
 use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
@@ -258,7 +258,12 @@ pub fn create_xnft_handler(
             uri: params.uri,
             seller_fee_basis_points: params.seller_fee_basis_points,
             creators,
-            collection: None,
+            collection: params.collection.map_or(None, |c| {
+                Some(Collection {
+                    key: c,
+                    verified: false,
+                })
+            }),
             uses: None,
         },
         is_mutable,

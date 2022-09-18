@@ -44,12 +44,12 @@ pub struct Xnft {
     pub num_ratings: u32,
     pub l1: L1,
     pub supply: Option<u64>,
-    _reserved1: [u8; 32],
+    _reserved: [u8; 64],
 }
 
 impl Xnft {
     pub const LEN: usize =
-        8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 32;
+        8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 64;
 }
 
 #[account]
@@ -73,11 +73,11 @@ pub struct Review {
     pub xnft: Pubkey,
     pub rating: u8,
     pub uri: String,
-    _reserved: [u8; 32],
+    _reserved: [u8; 64],
 }
 
 impl Review {
     pub fn len(uri: String) -> usize {
-        8 + 32 + 32 + 1 + (4 + uri.len()) + 32
+        8 + 32 + 32 + 1 + (4 + uri.len()) + 64
     }
 }

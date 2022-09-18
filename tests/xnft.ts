@@ -34,7 +34,7 @@ describe('Account Creations', () => {
     const sellerFeeBasisPoints = 0;
     const supply = new anchor.BN(100);
     const l1 = { solana: {} } as never;
-    const collection = null;
+    const collection = anchor.web3.Keypair.generate().publicKey;
 
     let meta: Metadata;
 
@@ -60,7 +60,7 @@ describe('Account Creations', () => {
             installVault,
             supply,
             l1,
-            collection,
+            collection: null,
             creators: [{ address: authority.publicKey, share: 100 }]
           })
           .accounts({ masterToken, metadataProgram })
@@ -128,6 +128,11 @@ describe('Account Creations', () => {
     it('and the publisher is verified', () => {
       assert.strictEqual(meta.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
       assert.isTrue(meta.data.creators[0].verified);
+    });
+
+    it('and the collection public key can be attached but not verified', () => {
+      assert.strictEqual(meta.collection.key.toBase58(), collection.toBase58());
+      assert.isFalse(meta.collection.verified);
     });
 
     it('and the metadata is marked with the primary sale already happened', () => {
