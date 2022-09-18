@@ -14,6 +14,7 @@ const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
 const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
+const otherCreator = anchor.web3.Keypair.generate();
 
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
@@ -59,7 +60,8 @@ describe('Account Creations', () => {
             installVault,
             supply,
             l1,
-            collection
+            collection,
+            creators: [{ address: authority.publicKey, share: 100 }]
           })
           .accounts({ masterToken, metadataProgram })
           .rpc();
@@ -90,7 +92,11 @@ describe('Account Creations', () => {
           installVault,
           supply,
           l1,
-          collection
+          collection,
+          creators: [
+            { address: authority.publicKey, share: 50 },
+            { address: otherCreator.publicKey, share: 50 }
+          ]
         })
         .accounts({
           masterToken,
@@ -108,7 +114,18 @@ describe('Account Creations', () => {
       meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
     });
 
-    it('and the creator is verified', () => {
+    it('and the creators are set in the metadata', () => {
+      assert.lengthOf(meta.data.creators, 2);
+      assert.strictEqual(meta.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
+      assert.isTrue(meta.data.creators[0].verified);
+      assert.strictEqual(
+        meta.data.creators[1].address.toBase58(),
+        otherCreator.publicKey.toBase58()
+      );
+      assert.isFalse(meta.data.creators[1].verified);
+    });
+
+    it('and the publisher is verified', () => {
       assert.strictEqual(meta.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
       assert.isTrue(meta.data.creators[0].verified);
     });

@@ -11,6 +11,12 @@ use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreatorsParam {
+    address: Pubkey,
+    share: u8,
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateXnftParams {
     symbol: String,
     tag: Tag,
@@ -22,6 +28,7 @@ pub struct CreateXnftParams {
     install_vault: Pubkey,
     supply: Option<u64>,
     collection: Option<Pubkey>,
+    creators: Vec<CreatorsParam>,
 }
 
 #[derive(Accounts)]
@@ -227,6 +234,17 @@ pub fn create_xnft_handler(
     //
     let is_mutable = true;
     let update_authority_is_signer = true;
+    let creators = Some(
+        params
+            .creators
+            .iter()
+            .map(|c| Creator {
+                address: c.address,
+                share: c.share,
+                verified: false,
+            })
+            .collect(),
+    );
 
     metadata::create_metadata_accounts_v3(
         ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
@@ -239,11 +257,7 @@ pub fn create_xnft_handler(
             symbol: params.symbol,
             uri: params.uri,
             seller_fee_basis_points: params.seller_fee_basis_points,
-            creators: Some(vec![Creator {
-                address: ctx.accounts.publisher.key(),
-                share: 100,
-                verified: false,
-            }]),
+            creators,
             collection: None,
             uses: None,
         },
@@ -253,7 +267,7 @@ pub fn create_xnft_handler(
     )?;
 
     //
-    // Verify the creator set in the creators list on the metadata.
+    // Verify the publisher in the list of creators on the metadata.
     //
     metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
 
@@ -266,7 +280,7 @@ pub fn create_xnft_handler(
             ctx.accounts.master_edition.key().as_ref(),
             &[xnft_bump],
         ]]),
-        Some(0),
+        Some(0), // max supply of 0 disables NFT printing
     )?;
 
     //
