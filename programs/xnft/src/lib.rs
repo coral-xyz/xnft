@@ -57,9 +57,9 @@ pub mod xnft {
 
     /// Variant of `create_xnft_installation` where the install authority is
     /// required to sign.
-    pub fn create_install_with_authority(ctx: Context<CreateInstallWithAuthority>) -> Result<()> {
-        instructions::create_install_with_authority_handler(ctx)
-    }
+    // pub fn create_install_with_authority(ctx: Context<CreateInstallWithAuthority>) -> Result<()> {
+    //     instructions::create_install_with_authority_handler(ctx)
+    // }
 
     /// Closes the install account.
     pub fn delete_install(ctx: Context<DeleteInstall>) -> Result<()> {

@@ -244,8 +244,8 @@ pub fn create_xnft_handler(
                 share: 100,
                 verified: false,
             }]),
-            collection: None, // TODO:
-            uses: None,       // TODO:
+            collection: None,
+            uses: None,
         },
         is_mutable,
         update_authority_is_signer,

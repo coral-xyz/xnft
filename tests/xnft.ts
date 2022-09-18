@@ -33,6 +33,7 @@ describe('Account Creations', () => {
     const sellerFeeBasisPoints = 0;
     const supply = new anchor.BN(100);
     const l1 = { solana: {} } as never;
+    const collection = null;
 
     let meta: Metadata;
 
@@ -57,7 +58,8 @@ describe('Account Creations', () => {
             installPrice,
             installVault,
             supply,
-            l1
+            l1,
+            collection
           })
           .accounts({ masterToken, metadataProgram })
           .rpc();
@@ -87,7 +89,8 @@ describe('Account Creations', () => {
           installPrice,
           installVault,
           supply,
-          l1
+          l1,
+          collection
         })
         .accounts({
           masterToken,
@@ -102,11 +105,7 @@ describe('Account Creations', () => {
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
-    });
-
-    it('and the supply will be translated to the MPL metadata', async () => {
       meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
-      assert.strictEqual(meta.collectionDetails.size.toString(), supply.toString());
     });
 
     it('and the creator is verified', () => {
