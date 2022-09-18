@@ -258,11 +258,9 @@ pub fn create_xnft_handler(
             uri: params.uri,
             seller_fee_basis_points: params.seller_fee_basis_points,
             creators,
-            collection: params.collection.map_or(None, |c| {
-                Some(Collection {
-                    key: c,
-                    verified: false,
-                })
+            collection: params.collection.map(|c| Collection {
+                key: c,
+                verified: false,
             }),
             uses: None,
         },
