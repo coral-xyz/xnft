@@ -21,6 +21,7 @@ pub struct CreateXnftParams {
     install_price: u64,
     install_vault: Pubkey,
     supply: Option<u64>,
+    collection: Option<Pubkey>,
 }
 
 #[derive(Accounts)]
@@ -248,28 +249,13 @@ pub fn create_xnft_handler(
         },
         is_mutable,
         update_authority_is_signer,
-        None, // NOTE: mpl's current program sets the size to 0 regardless of provided value, must be done with set_collection_size
+        None,
     )?;
 
     //
     // Verify the creator set in the creators list on the metadata.
     //
     metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
-
-    //
-    // Apply the collection size/supply if provided.
-    //
-    if let Some(sup) = params.supply {
-        metadata::set_collection_size(
-            ctx.accounts.set_collection_size_ctx().with_signer(&[&[
-                "xnft".as_bytes(),
-                ctx.accounts.master_edition.key().as_ref(),
-                &[xnft_bump],
-            ]]),
-            None, // TODO:
-            sup,
-        )?;
-    }
 
     //
     // Create master edition.
@@ -311,6 +297,7 @@ pub fn create_xnft_handler(
     xnft.updated_ts = clock.unix_timestamp;
     xnft.suspended = false;
     xnft.l1 = params.l1;
+    xnft.supply = params.supply;
 
     Ok(())
 }
