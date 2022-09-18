@@ -48,8 +48,7 @@ describe('Account Creations', () => {
 
       try {
         await program.methods
-          .createXnft(
-            badName,
+          .createXnft(badName, {
             symbol,
             tag,
             kind,
@@ -59,7 +58,7 @@ describe('Account Creations', () => {
             installVault,
             supply,
             l1
-          )
+          })
           .accounts({ masterToken, metadataProgram })
           .rpc();
 
@@ -79,8 +78,7 @@ describe('Account Creations', () => {
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const tx = program.methods
-        .createXnft(
-          name,
+        .createXnft(name, {
           symbol,
           tag,
           kind,
@@ -90,7 +88,7 @@ describe('Account Creations', () => {
           installVault,
           supply,
           l1
-        )
+        })
         .accounts({
           masterToken,
           metadataProgram

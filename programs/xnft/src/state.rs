@@ -5,6 +5,7 @@ use crate::MAX_NAME_LEN;
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
 pub enum Kind {
     App,
+    Collection,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
@@ -42,12 +43,13 @@ pub struct Xnft {
     pub total_rating: u64,
     pub num_ratings: u32,
     pub l1: L1,
-    _reserved1: [u8; 19],
+    pub supply: Option<u64>,
+    _reserved1: [u8; 32],
 }
 
 impl Xnft {
     pub const LEN: usize =
-        8 + (32 * 5) + 33 + 8 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 19;
+        8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 32;
 }
 
 #[account]

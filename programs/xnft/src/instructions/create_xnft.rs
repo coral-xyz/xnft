@@ -10,6 +10,19 @@ use mpl_token_metadata::state::{Creator, DataV2};
 use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
 
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreateXnftParams {
+    symbol: String,
+    tag: Tag,
+    kind: Kind,
+    l1: L1,
+    uri: String,
+    seller_fee_basis_points: u16,
+    install_price: u64,
+    install_vault: Pubkey,
+    supply: Option<u64>,
+}
+
 #[derive(Accounts)]
 #[instruction(name: String)]
 pub struct CreateXnft<'info> {
@@ -73,7 +86,7 @@ pub struct CreateXnft<'info> {
         ],
         bump,
     )]
-    pub xnft: Account<'info, Xnft>,
+    pub xnft: Box<Account<'info, Xnft>>,
 
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -176,19 +189,10 @@ impl<'info> CreateXnft<'info> {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
-    symbol: String,
-    tag: Tag,
-    kind: Kind,
-    uri: String,
-    seller_fee_basis_points: u16,
-    install_price: u64,
-    install_vault: Pubkey,
-    supply: Option<u64>,
-    l1: L1,
+    params: CreateXnftParams,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
@@ -231,9 +235,9 @@ pub fn create_xnft_handler(
         ]]),
         DataV2 {
             name: name.clone(),
-            symbol,
-            uri,
-            seller_fee_basis_points,
+            symbol: params.symbol,
+            uri: params.uri,
+            seller_fee_basis_points: params.seller_fee_basis_points,
             creators: Some(vec![Creator {
                 address: ctx.accounts.publisher.key(),
                 share: 100,
@@ -255,7 +259,7 @@ pub fn create_xnft_handler(
     //
     // Apply the collection size/supply if provided.
     //
-    if let Some(sup) = supply {
+    if let Some(sup) = params.supply {
         metadata::set_collection_size(
             ctx.accounts.set_collection_size_ctx().with_signer(&[&[
                 "xnft".as_bytes(),
@@ -293,20 +297,20 @@ pub fn create_xnft_handler(
     let xnft = &mut ctx.accounts.xnft;
 
     xnft.publisher = ctx.accounts.publisher.key();
-    xnft.install_vault = install_vault;
+    xnft.install_vault = params.install_vault;
     xnft.master_edition = ctx.accounts.master_edition.key();
     xnft.master_metadata = ctx.accounts.master_metadata.key();
     xnft.master_mint = ctx.accounts.master_mint.key();
     xnft.install_authority = None;
     xnft.bump = xnft_bump;
-    xnft.kind = kind;
-    xnft.tag = tag;
+    xnft.kind = params.kind;
+    xnft.tag = params.tag;
     xnft.name = name;
-    xnft.install_price = install_price;
+    xnft.install_price = params.install_price;
     xnft.created_ts = clock.unix_timestamp;
     xnft.updated_ts = clock.unix_timestamp;
     xnft.suspended = false;
-    xnft.l1 = l1;
+    xnft.l1 = params.l1;
 
     Ok(())
 }

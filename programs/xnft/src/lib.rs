@@ -5,7 +5,6 @@ mod instructions;
 pub mod state;
 
 use instructions::*;
-use state::{Kind, Tag, L1};
 
 declare_id!("3n1C6PEsiRgvgzYbqscDHw28sBNpHFs3tUz7FSuXeYZL");
 
@@ -31,29 +30,9 @@ pub mod xnft {
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
-        symbol: String,
-        tag: Tag,
-        kind: Kind,
-        uri: String,
-        seller_fee_basis_points: u16,
-        install_price: u64,
-        install_vault: Pubkey,
-        supply: Option<u64>,
-        l1: L1,
+        params: CreateXnftParams,
     ) -> Result<()> {
-        instructions::create_xnft_handler(
-            ctx,
-            name,
-            symbol,
-            tag,
-            kind,
-            uri,
-            seller_fee_basis_points,
-            install_price,
-            install_vault,
-            supply,
-            l1,
-        )
+        instructions::create_xnft_handler(ctx, name, params)
     }
 
     /// Updates the code of an xNFT.
