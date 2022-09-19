@@ -18,17 +18,18 @@ pub struct CreatorsParam {
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateXnftParams {
-    symbol: String,
-    tag: Tag,
-    kind: Kind,
-    l1: L1,
-    uri: String,
-    seller_fee_basis_points: u16,
-    install_price: u64,
-    install_vault: Pubkey,
-    supply: Option<u64>,
     collection: Option<Pubkey>,
     creators: Vec<CreatorsParam>,
+    install_authority: Option<Pubkey>,
+    install_price: u64,
+    install_vault: Pubkey,
+    kind: Kind,
+    l1: L1,
+    seller_fee_basis_points: u16,
+    supply: Option<u64>,
+    symbol: String,
+    tag: Tag,
+    uri: String,
 }
 
 #[derive(Accounts)]
@@ -317,7 +318,7 @@ pub fn create_xnft_handler(
     xnft.master_edition = ctx.accounts.master_edition.key();
     xnft.master_metadata = ctx.accounts.master_metadata.key();
     xnft.master_mint = ctx.accounts.master_mint.key();
-    xnft.install_authority = None;
+    xnft.install_authority = params.install_authority;
     xnft.bump = xnft_bump;
     xnft.kind = params.kind;
     xnft.tag = params.tag;

@@ -10,7 +10,7 @@ use crate::{CustomError, MAX_RATING};
 pub struct CreateReview<'info> {
     #[account(
         has_one = xnft @ CustomError::ReviewInstallMismatch,
-        constraint = install.authority == *author.key @ CustomError::InstallAuthorityMismatch,
+        constraint = install.authority == *author.key @ CustomError::InstallOwnerMismatch,
     )]
     pub install: Account<'info, Install>,
 

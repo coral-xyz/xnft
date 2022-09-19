@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::MAX_NAME_LEN;
+use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum Kind {
@@ -70,6 +70,24 @@ pub struct Xnft {
 impl Xnft {
     pub const LEN: usize =
         8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 64;
+
+    pub fn check_install_authority(&self, pubkey: &Pubkey) -> anchor_lang::Result<()> {
+        if let Some(auth) = self.install_authority {
+            if auth != *pubkey {
+                return Err(error!(CustomError::InstallAuthorityMismatch));
+            }
+        }
+        Ok(())
+    }
+
+    pub fn check_supply(&self) -> anchor_lang::Result<()> {
+        if let Some(supply) = self.supply {
+            if supply > 0 && self.total_installs >= supply {
+                return Err(error!(CustomError::InstallExceedsSupply));
+            }
+        }
+        Ok(())
+    }
 }
 
 #[account]
