@@ -278,6 +278,8 @@ pub fn create_xnft_handler(
 
     //
     // Verify the publisher in the list of creators on the metadata.
+    // The remainder of the creators in the list must invoke MPL
+    // `sign_metadata` on their own so that they are the signers of the tx.
     //
     metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
 
