@@ -10,10 +10,12 @@ pub struct CreateInstall<'info> {
     #[account(
         mut,
         has_one = install_vault,
-        constraint = xnft.install_authority == None,
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
     pub xnft: Account<'info, Xnft>,
+
+    /// CHECK: the account that will be the holder/authority of the new installation.
+    pub target: UncheckedAccount<'info>,
 
     /// CHECK: xnft has_one constraint.
     #[account(mut)]
@@ -24,11 +26,11 @@ pub struct CreateInstall<'info> {
     ////////////////////////////////////////////////////////////////////////////
     #[account(
         init,
-        payer = authority,
+        payer = payer,
         space = Install::LEN,
         seeds = [
             "install".as_bytes(),
-            authority.key().as_ref(),
+            target.key().as_ref(),
             xnft.key().as_ref(),
         ],
         bump,
@@ -36,6 +38,7 @@ pub struct CreateInstall<'info> {
     pub install: Account<'info, Install>,
 
     #[account(mut)]
+    pub payer: Signer<'info>,
     pub authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
@@ -46,6 +49,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     let install = &mut ctx.accounts.install;
 
     xnft.check_supply()?;
+    xnft.check_install_authority(ctx.accounts.authority.key)?;
 
     //
     // Pay to install the xNFT, if needed.
@@ -69,7 +73,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     // Initialize the install data.
     //
     install.xnft = xnft.key();
-    install.authority = ctx.accounts.authority.key();
+    install.authority = ctx.accounts.target.key();
     install.master_metadata = xnft.master_metadata.clone();
     install.edition = xnft.total_installs;
 
@@ -79,7 +83,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     xnft.total_installs += 1;
 
     emit!(InstallationCreated {
-        installer: ctx.accounts.authority.key(),
+        installer: ctx.accounts.target.key(),
         xnft: xnft.key(),
     });
 

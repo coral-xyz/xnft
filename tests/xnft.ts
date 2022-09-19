@@ -56,6 +56,7 @@ describe('Account Creations', () => {
             kind,
             uri,
             sellerFeeBasisPoints,
+            installAuthority: null,
             installPrice,
             installVault,
             supply,
@@ -88,6 +89,7 @@ describe('Account Creations', () => {
           kind,
           uri,
           sellerFeeBasisPoints,
+          installAuthority: null,
           installPrice,
           installVault,
           supply,
@@ -154,8 +156,8 @@ describe('Account Creations', () => {
           .createInstall()
           .accounts({
             xnft,
-            installVault,
-            masterMetadata
+            target: authority.publicKey,
+            installVault
           })
           .rpc();
 
@@ -171,8 +173,8 @@ describe('Account Creations', () => {
     it('when the xNFT is not currently suspended', async () => {
       const tx = program.methods.createInstall().accounts({
         xnft,
-        installVault,
-        masterMetadata
+        target: authority.publicKey,
+        installVault
       });
 
       const pubkeys = await tx.pubkeys();
@@ -201,7 +203,7 @@ describe('Account Creations', () => {
 
       const installTx = program.methods
         .createInstall()
-        .accounts({ xnft, installVault, masterMetadata, authority: author.publicKey })
+        .accounts({ xnft, installVault, target: author.publicKey, authority: author.publicKey })
         .signers([author]);
       const installKeys = await installTx.pubkeys();
       await installTx.rpc();
@@ -235,7 +237,7 @@ describe('Account Creations', () => {
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
-        assert.strictEqual(e.error.errorCode.code, 'InstallAuthorityMismatch');
+        assert.strictEqual(e.error.errorCode.code, 'InstallOwnerMismatch');
       }
     });
 

@@ -55,12 +55,6 @@ pub mod xnft {
         instructions::create_install_handler(ctx)
     }
 
-    /// Variant of `create_xnft_installation` where the install authority is
-    /// required to sign.
-    // pub fn create_install_with_authority(ctx: Context<CreateInstallWithAuthority>) -> Result<()> {
-    //     instructions::create_install_with_authority_handler(ctx)
-    // }
-
     /// Closes the install account.
     pub fn delete_install(ctx: Context<DeleteInstall>) -> Result<()> {
         instructions::delete_install_handler(ctx)
@@ -85,8 +79,11 @@ pub enum CustomError {
     #[msg("A collection pubkey was provided without the collection Kind variant")]
     CollectionWithoutKind,
 
-    #[msg("The asserted authority did not match that of the Install account")]
+    #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,
+
+    #[msg("The asserted authority/owner did not match that of the Install account")]
+    InstallOwnerMismatch,
 
     #[msg("The max supply has been reached for the xNFT.")]
     InstallExceedsSupply,
