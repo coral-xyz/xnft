@@ -97,27 +97,31 @@ export default abstract class xNFT {
       throw new Error(`You've already published an xNFT with the name '${details.title}'`);
     }
 
-    const sellerFeeBasis = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
-    const price = new BN(details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL);
-    const vault = details.vault === '' ? program.provider.publicKey! : new PublicKey(details.vault);
+    const sellerFeeBasisPoints = details.royalties === '' ? 0 : parseFloat(details.royalties) * 100;
     const supply = details.supply === 'inf' ? null : new BN(parseInt(details.supply));
+    const installPrice = new BN(
+      details.price === '' ? 0 : parseFloat(details.price) * LAMPORTS_PER_SOL
+    );
+    const installVault =
+      details.vault === '' ? program.provider.publicKey : new PublicKey(details.vault);
 
     const masterMint = await deriveMasterMintAddress(details.title, program.provider.publicKey);
     const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
 
     const tx = await program.methods
-      .createXnft(
-        details.title,
-        '',
-        { [details.tag.toLowerCase()]: {} },
-        { [details.kind.toLowerCase()]: {} },
-        metadataUri,
-        sellerFeeBasis,
-        price,
-        vault,
+      .createXnft(details.title, {
+        symbol: '',
+        tag: { [details.tag.toLowerCase()]: {} } as never,
+        kind: { [details.kind.toLowerCase()]: {} } as never,
+        l1: { [details.l1.toLowerCase()]: {} } as never,
+        uri: metadataUri,
+        sellerFeeBasisPoints,
+        installPrice,
+        installVault,
         supply,
-        { [details.l1.toLowerCase()]: {} }
-      )
+        collection: null,
+        creators: [{ address: program.provider.publicKey, share: 100 }]
+      })
       .accounts({ masterToken, metadataProgram: METADATA_PROGRAM_ID })
       .transaction();
 

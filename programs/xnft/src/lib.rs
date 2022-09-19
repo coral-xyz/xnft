@@ -6,7 +6,7 @@ pub mod state;
 
 use instructions::*;
 
-declare_id!("3n1C6PEsiRgvgzYbqscDHw28sBNpHFs3tUz7FSuXeYZL");
+declare_id!("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs");
 
 #[constant]
 pub const MAX_NAME_LEN: usize = 30;

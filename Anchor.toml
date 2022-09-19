@@ -2,7 +2,7 @@
 seeds = true
 
 [programs.localnet]
-xnft = "3n1C6PEsiRgvgzYbqscDHw28sBNpHFs3tUz7FSuXeYZL"
+xnft = "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"
 
 [registry]
 url = "https://api.apr.dev"
