@@ -156,7 +156,6 @@ describe('Account Creations', () => {
           .createInstall()
           .accounts({
             xnft,
-            target: authority.publicKey,
             installVault
           })
           .rpc();
@@ -173,7 +172,6 @@ describe('Account Creations', () => {
     it('when the xNFT is not currently suspended', async () => {
       const tx = program.methods.createInstall().accounts({
         xnft,
-        target: authority.publicKey,
         installVault
       });
 

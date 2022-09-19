@@ -14,9 +14,6 @@ pub struct CreateInstall<'info> {
     )]
     pub xnft: Account<'info, Xnft>,
 
-    /// CHECK: the account that will be the holder/authority of the new installation.
-    pub target: UncheckedAccount<'info>,
-
     /// CHECK: xnft has_one constraint.
     #[account(mut)]
     pub install_vault: UncheckedAccount<'info>,
@@ -26,7 +23,7 @@ pub struct CreateInstall<'info> {
     ////////////////////////////////////////////////////////////////////////////
     #[account(
         init,
-        payer = payer,
+        payer = authority,
         space = Install::LEN,
         seeds = [
             "install".as_bytes(),
@@ -38,8 +35,8 @@ pub struct CreateInstall<'info> {
     pub install: Account<'info, Install>,
 
     #[account(mut)]
-    pub payer: Signer<'info>,
     pub authority: Signer<'info>,
+    pub target: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }
