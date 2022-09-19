@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 use crate::MAX_NAME_LEN;
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
 pub enum Kind {
     App,
     Collection,

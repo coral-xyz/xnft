@@ -82,6 +82,9 @@ pub enum CustomError {
     #[msg("You cannot create a review for an xNFT that you currently own or published")]
     CannotReviewOwned,
 
+    #[msg("A collection pubkey was provided without the collection Kind variant")]
+    CollectionWithoutKind,
+
     #[msg("The asserted authority did not match that of the Install account")]
     InstallAuthorityMismatch,
 

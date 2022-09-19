@@ -234,6 +234,13 @@ pub fn create_xnft_handler(
     //
     let is_mutable = true;
     let update_authority_is_signer = true;
+
+    //
+    // Validation that share percentage splits sums up to 100 is
+    // done by MPL in the `create_metadata_accounts_v3` CPI call
+    // and verification that the publisher is among the list of creators
+    // is done via the `sign_metadata` CPI call to verify the pubkey.
+    //
     let creators = Some(
         params
             .creators
@@ -298,6 +305,10 @@ pub fn create_xnft_handler(
     //
     let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
+
+    if params.collection.is_some() && params.kind != Kind::Collection {
+        return Err(error!(CustomError::CollectionWithoutKind));
+    }
 
     xnft.publisher = ctx.accounts.publisher.key();
     xnft.install_vault = params.install_vault;
