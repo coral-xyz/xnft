@@ -14,6 +14,7 @@ const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
 const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWallet).payer;
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
+const otherCreator = anchor.web3.Keypair.generate();
 
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
@@ -28,11 +29,12 @@ describe('Account Creations', () => {
     const name = 'test xnft';
     const symbol = '';
     const tag = { defi: {} } as never;
-    const kind = { app: {} } as never;
+    const kind = { collection: {} } as never;
     const uri = 'https://arweave.net/abc123';
     const sellerFeeBasisPoints = 0;
     const supply = new anchor.BN(100);
     const l1 = { solana: {} } as never;
+    const collection = anchor.web3.Keypair.generate().publicKey;
 
     let meta: Metadata;
 
@@ -48,8 +50,7 @@ describe('Account Creations', () => {
 
       try {
         await program.methods
-          .createXnft(
-            badName,
+          .createXnft(badName, {
             symbol,
             tag,
             kind,
@@ -58,8 +59,10 @@ describe('Account Creations', () => {
             installPrice,
             installVault,
             supply,
-            l1
-          )
+            l1,
+            collection: null,
+            creators: [{ address: authority.publicKey, share: 100 }]
+          })
           .accounts({ masterToken, metadataProgram })
           .rpc();
 
@@ -79,8 +82,7 @@ describe('Account Creations', () => {
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const tx = program.methods
-        .createXnft(
-          name,
+        .createXnft(name, {
           symbol,
           tag,
           kind,
@@ -89,8 +91,13 @@ describe('Account Creations', () => {
           installPrice,
           installVault,
           supply,
-          l1
-        )
+          l1,
+          collection,
+          creators: [
+            { address: authority.publicKey, share: 50 },
+            { address: otherCreator.publicKey, share: 50 }
+          ]
+        })
         .accounts({
           masterToken,
           metadataProgram
@@ -104,16 +111,28 @@ describe('Account Creations', () => {
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
-    });
-
-    it('and the supply will be translated to the MPL metadata', async () => {
       meta = await Metadata.fromAccountAddress(program.provider.connection, masterMetadata);
-      assert.strictEqual(meta.collectionDetails.size.toString(), supply.toString());
     });
 
-    it('and the creator is verified', () => {
+    it('and the creators are set in the metadata', () => {
+      assert.lengthOf(meta.data.creators, 2);
       assert.strictEqual(meta.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
       assert.isTrue(meta.data.creators[0].verified);
+      assert.strictEqual(
+        meta.data.creators[1].address.toBase58(),
+        otherCreator.publicKey.toBase58()
+      );
+      assert.isFalse(meta.data.creators[1].verified);
+    });
+
+    it('and the publisher is verified', () => {
+      assert.strictEqual(meta.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
+      assert.isTrue(meta.data.creators[0].verified);
+    });
+
+    it('and the collection public key can be attached but not verified', () => {
+      assert.strictEqual(meta.collection.key.toBase58(), collection.toBase58());
+      assert.isFalse(meta.collection.verified);
     });
 
     it('and the metadata is marked with the primary sale already happened', () => {

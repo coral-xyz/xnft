@@ -5,10 +5,31 @@ use anchor_spl::metadata::{
     SignMetadata, UpdatePrimarySaleHappenedViaToken,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{Creator, DataV2};
+use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
 use crate::state::{Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreatorsParam {
+    address: Pubkey,
+    share: u8,
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreateXnftParams {
+    symbol: String,
+    tag: Tag,
+    kind: Kind,
+    l1: L1,
+    uri: String,
+    seller_fee_basis_points: u16,
+    install_price: u64,
+    install_vault: Pubkey,
+    supply: Option<u64>,
+    collection: Option<Pubkey>,
+    creators: Vec<CreatorsParam>,
+}
 
 #[derive(Accounts)]
 #[instruction(name: String)]
@@ -73,7 +94,7 @@ pub struct CreateXnft<'info> {
         ],
         bump,
     )]
-    pub xnft: Account<'info, Xnft>,
+    pub xnft: Box<Account<'info, Xnft>>,
 
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -176,19 +197,10 @@ impl<'info> CreateXnft<'info> {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
-    symbol: String,
-    tag: Tag,
-    kind: Kind,
-    uri: String,
-    seller_fee_basis_points: u16,
-    install_price: u64,
-    install_vault: Pubkey,
-    supply: Option<u64>,
-    l1: L1,
+    params: CreateXnftParams,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
@@ -223,6 +235,24 @@ pub fn create_xnft_handler(
     let is_mutable = true;
     let update_authority_is_signer = true;
 
+    //
+    // Validation that share percentage splits sums up to 100 is
+    // done by MPL in the `create_metadata_accounts_v3` CPI call
+    // and verification that the publisher is among the list of creators
+    // is done via the `sign_metadata` CPI call to verify the pubkey.
+    //
+    let creators = Some(
+        params
+            .creators
+            .iter()
+            .map(|c| Creator {
+                address: c.address,
+                share: c.share,
+                verified: false,
+            })
+            .collect(),
+    );
+
     metadata::create_metadata_accounts_v3(
         ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
             "xnft".as_bytes(),
@@ -231,41 +261,27 @@ pub fn create_xnft_handler(
         ]]),
         DataV2 {
             name: name.clone(),
-            symbol,
-            uri,
-            seller_fee_basis_points,
-            creators: Some(vec![Creator {
-                address: ctx.accounts.publisher.key(),
-                share: 100,
+            symbol: params.symbol,
+            uri: params.uri,
+            seller_fee_basis_points: params.seller_fee_basis_points,
+            creators,
+            collection: params.collection.map(|c| Collection {
+                key: c,
                 verified: false,
-            }]),
-            collection: None, // TODO:
-            uses: None,       // TODO:
+            }),
+            uses: None,
         },
         is_mutable,
         update_authority_is_signer,
-        None, // NOTE: mpl's current program sets the size to 0 regardless of provided value, must be done with set_collection_size
+        None,
     )?;
 
     //
-    // Verify the creator set in the creators list on the metadata.
+    // Verify the publisher in the list of creators on the metadata.
+    // The remainder of the creators in the list must invoke MPL
+    // `sign_metadata` on their own so that they are the signers of the tx.
     //
     metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
-
-    //
-    // Apply the collection size/supply if provided.
-    //
-    if let Some(sup) = supply {
-        metadata::set_collection_size(
-            ctx.accounts.set_collection_size_ctx().with_signer(&[&[
-                "xnft".as_bytes(),
-                ctx.accounts.master_edition.key().as_ref(),
-                &[xnft_bump],
-            ]]),
-            None, // TODO:
-            sup,
-        )?;
-    }
 
     //
     // Create master edition.
@@ -276,7 +292,7 @@ pub fn create_xnft_handler(
             ctx.accounts.master_edition.key().as_ref(),
             &[xnft_bump],
         ]]),
-        Some(0),
+        Some(0), // max supply of 0 disables NFT printing
     )?;
 
     //
@@ -292,21 +308,26 @@ pub fn create_xnft_handler(
     let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
 
+    if params.collection.is_some() && params.kind != Kind::Collection {
+        return Err(error!(CustomError::CollectionWithoutKind));
+    }
+
     xnft.publisher = ctx.accounts.publisher.key();
-    xnft.install_vault = install_vault;
+    xnft.install_vault = params.install_vault;
     xnft.master_edition = ctx.accounts.master_edition.key();
     xnft.master_metadata = ctx.accounts.master_metadata.key();
     xnft.master_mint = ctx.accounts.master_mint.key();
     xnft.install_authority = None;
     xnft.bump = xnft_bump;
-    xnft.kind = kind;
-    xnft.tag = tag;
+    xnft.kind = params.kind;
+    xnft.tag = params.tag;
     xnft.name = name;
-    xnft.install_price = install_price;
+    xnft.install_price = params.install_price;
     xnft.created_ts = clock.unix_timestamp;
     xnft.updated_ts = clock.unix_timestamp;
     xnft.suspended = false;
-    xnft.l1 = l1;
+    xnft.l1 = params.l1;
+    xnft.supply = params.supply;
 
     Ok(())
 }
