@@ -23,7 +23,6 @@ pub enum Tag {
 }
 
 #[account]
-#[derive(Debug)]
 pub struct Xnft {
     /// The pubkey of the original xNFT creator (32).
     pub publisher: Pubkey,
@@ -91,7 +90,6 @@ impl Xnft {
 }
 
 #[account]
-#[derive(Debug)]
 pub struct Install {
     /// The authority who created the installation (32).
     pub authority: Pubkey,
@@ -110,7 +108,6 @@ impl Install {
 }
 
 #[account]
-#[derive(Debug)]
 pub struct Review {
     /// The pubkey of the account that created the review (32).
     pub author: Pubkey,
