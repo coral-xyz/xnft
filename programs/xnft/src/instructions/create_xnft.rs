@@ -309,26 +309,33 @@ pub fn create_xnft_handler(
     let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
 
+    // Assert that the kind provided is `Collection` if a collection pubkey was given.
     if params.collection.is_some() && params.kind != Kind::Collection {
         return Err(error!(CustomError::CollectionWithoutKind));
     }
 
-    xnft.publisher = ctx.accounts.publisher.key();
-    xnft.install_vault = params.install_vault;
-    xnft.master_edition = ctx.accounts.master_edition.key();
-    xnft.master_metadata = ctx.accounts.master_metadata.key();
-    xnft.master_mint = ctx.accounts.master_mint.key();
-    xnft.install_authority = params.install_authority;
-    xnft.bump = xnft_bump;
-    xnft.kind = params.kind;
-    xnft.tag = params.tag;
-    xnft.name = name;
-    xnft.install_price = params.install_price;
-    xnft.created_ts = clock.unix_timestamp;
-    xnft.updated_ts = clock.unix_timestamp;
-    xnft.suspended = false;
-    xnft.l1 = params.l1;
-    xnft.supply = params.supply;
+    ***xnft = Xnft {
+        publisher: *ctx.accounts.publisher.key,
+        install_vault: params.install_vault,
+        master_edition: *ctx.accounts.master_edition.key,
+        master_metadata: *ctx.accounts.master_metadata.key,
+        master_mint: ctx.accounts.master_mint.key(),
+        install_authority: params.install_authority,
+        bump: xnft_bump,
+        kind: params.kind,
+        tag: params.tag,
+        name,
+        total_installs: 0,
+        install_price: params.install_price,
+        created_ts: clock.unix_timestamp,
+        updated_ts: clock.unix_timestamp,
+        suspended: false,
+        total_rating: 0,
+        num_ratings: 0,
+        l1: params.l1,
+        supply: params.supply,
+        _reserved: [0; 64],
+    };
 
     Ok(())
 }

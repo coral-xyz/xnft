@@ -56,13 +56,7 @@ pub fn create_review_handler(ctx: Context<CreateReview>, uri: String, rating: u8
         return Err(error!(CustomError::RatingOutOfBounds));
     }
 
-    xnft.total_rating += std::convert::TryInto::<u64>::try_into(rating).unwrap();
-    xnft.num_ratings += 1;
-
-    review.author = *ctx.accounts.author.key;
-    review.xnft = ctx.accounts.xnft.key();
-    review.rating = rating;
-    review.uri = uri;
+    **review = Review::new(xnft, ctx.accounts.author.key, uri, rating);
 
     emit!(ReviewCreated {
         author: ctx.accounts.author.key(),

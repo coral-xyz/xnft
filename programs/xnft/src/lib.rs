@@ -55,6 +55,12 @@ pub mod xnft {
         instructions::create_install_handler(ctx)
     }
 
+    /// Creates an "installation" of a private xNFT through prior access approval
+    /// granted by the xNFT's installation authority.
+    pub fn create_permissioned_install(ctx: Context<CreatePermissionedInstall>) -> Result<()> {
+        instructions::create_permissioned_install_handler(ctx)
+    }
+
     /// Closes the install account.
     pub fn delete_install(ctx: Context<DeleteInstall>) -> Result<()> {
         instructions::delete_install_handler(ctx)
@@ -68,6 +74,18 @@ pub mod xnft {
     /// Sets the install suspension flag on the xnft.
     pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
         instructions::set_suspended_handler(ctx, flag)
+    }
+
+    /// Creates an access program account that indicates a wallet's
+    /// access permission to install a private xNFT.
+    pub fn grant_access(ctx: Context<GrantAccess>) -> Result<()> {
+        instructions::grant_access_handler(ctx)
+    }
+
+    /// Closes the access program account for a given wallet on a private xNFT,
+    /// effectively revoking their permission to create installations of the xNFT.
+    pub fn revoke_access(ctx: Context<RevokeAccess>) -> Result<()> {
+        instructions::revoke_access_handler(ctx)
     }
 }
 
@@ -99,4 +117,7 @@ pub enum CustomError {
 
     #[msg("Attempting to install a currently suspended xNFT")]
     SuspendedInstallation,
+
+    #[msg("The access account provided is not associated with the wallet")]
+    UnauthorizedInstall,
 }

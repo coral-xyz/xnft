@@ -63,7 +63,7 @@ pub struct Xnft {
     /// The optional finite supply of installations available for this xNFT (9).
     pub supply: Option<u64>,
     /// Unused reserved byte space for additive future changes.
-    _reserved: [u8; 64],
+    pub _reserved: [u8; 64],
 }
 
 impl Xnft {
@@ -100,11 +100,35 @@ pub struct Install {
     /// The sequential installation number of the xNFT (8).
     pub edition: u64,
     /// Unused reserved byte space for additive future changes.
-    _reserved: [u8; 64],
+    pub _reserved: [u8; 64],
 }
 
 impl Install {
     pub const LEN: usize = 8 + (32 * 3) + 8 + 64;
+
+    pub fn new(xnft: &mut Account<'_, Xnft>, authority: &Pubkey) -> Self {
+        let i = Self {
+            authority: authority.clone(),
+            xnft: xnft.key(),
+            master_metadata: xnft.master_metadata,
+            edition: xnft.total_installs,
+            _reserved: [0; 64],
+        };
+        xnft.total_installs += 1;
+        i
+    }
+}
+
+#[account]
+pub struct Access {
+    pub wallet: Pubkey,
+    pub xnft: Pubkey,
+    pub bump: u8,
+    pub _reserved: [u8; 32],
+}
+
+impl Access {
+    pub const LEN: usize = 8 + (32 * 2) + 1 + 32;
 }
 
 #[account]
@@ -118,11 +142,24 @@ pub struct Review {
     /// The URI of the off-chain JSON data that holds the comment (4 + len).
     pub uri: String,
     /// Unused reserved byte space for future additive changes.
-    _reserved: [u8; 64],
+    pub _reserved: [u8; 32],
 }
 
 impl Review {
     pub fn len(uri: String) -> usize {
-        8 + 32 + 32 + 1 + (4 + uri.len()) + 64
+        8 + 32 + 32 + 1 + (4 + uri.len()) + 32
+    }
+
+    pub fn new(xnft: &mut Account<'_, Xnft>, author: &Pubkey, uri: String, rating: u8) -> Self {
+        xnft.total_rating += std::convert::TryInto::<u64>::try_into(rating).unwrap();
+        xnft.num_ratings += 1;
+
+        Self {
+            author: author.clone(),
+            xnft: xnft.key(),
+            rating,
+            uri,
+            _reserved: [0; 32],
+        }
     }
 }

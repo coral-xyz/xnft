@@ -2,11 +2,11 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{self, system_instruction};
 
 use crate::events::InstallationCreated;
-use crate::state::{Install, Xnft};
+use crate::state::{Access, Install, Xnft};
 use crate::CustomError;
 
 #[derive(Accounts)]
-pub struct CreateInstall<'info> {
+pub struct CreatePermissionedInstall<'info> {
     #[account(
         mut,
         has_one = install_vault,
@@ -14,7 +14,7 @@ pub struct CreateInstall<'info> {
     )]
     pub xnft: Account<'info, Xnft>,
 
-    /// CHECK: xnft has_one constraint.
+    /// CHECK: xnft has_one constraint
     #[account(mut)]
     pub install_vault: UncheckedAccount<'info>,
 
@@ -27,26 +27,40 @@ pub struct CreateInstall<'info> {
         space = Install::LEN,
         seeds = [
             "install".as_bytes(),
-            target.key().as_ref(),
+            authority.key().as_ref(),
             xnft.key().as_ref(),
         ],
         bump,
     )]
     pub install: Account<'info, Install>,
 
+    #[account(
+        seeds = [
+            "access".as_bytes(),
+            authority.key().as_ref(),
+            xnft.key().as_ref(),
+        ],
+        bump = access.bump,
+        has_one = xnft,
+        constraint = access.wallet == *authority.key @ CustomError::UnauthorizedInstall,
+    )]
+    pub access: Account<'info, Access>,
+
     #[account(mut)]
     pub authority: Signer<'info>,
-    pub target: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
+pub fn create_permissioned_install_handler(ctx: Context<CreatePermissionedInstall>) -> Result<()> {
     let xnft = &mut ctx.accounts.xnft;
     let install = &mut ctx.accounts.install;
 
+    // No validation of the install authority is necessary here. The existence of
+    // and accepted `access` account that passed the constraints asserts that the
+    // signing wallet does in fact have whitelisted permission to install this xNFT
+    // regardless of the state of it's `install_authority`.
     xnft.check_supply()?;
-    xnft.check_install_authority(ctx.accounts.authority.key)?;
 
     //
     // Pay to install the xNFT, if needed.
@@ -72,7 +86,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     **install = Install::new(xnft, ctx.accounts.authority.key);
 
     emit!(InstallationCreated {
-        installer: ctx.accounts.target.key(),
+        installer: ctx.accounts.authority.key(),
         xnft: xnft.key(),
     });
 

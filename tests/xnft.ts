@@ -15,13 +15,16 @@ const authority = ((program.provider as anchor.AnchorProvider).wallet as NodeWal
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
+const installAuthority = anchor.web3.Keypair.generate();
 
+let privateXnft: anchor.web3.PublicKey;
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
 let masterToken: anchor.web3.PublicKey;
 let install: anchor.web3.PublicKey;
 let review: anchor.web3.PublicKey;
 let authorInstallation: anchor.web3.PublicKey;
+let access: anchor.web3.PublicKey;
 
 describe('Account Creations', () => {
   describe('an xNFT can be created', () => {
@@ -272,6 +275,91 @@ describe('Account Creations', () => {
       assert.strictEqual(acc.totalRating.toNumber(), 4);
     });
   });
+
+  describe('a private xNFT can be created', () => {
+    let xnftData: anchor.IdlAccounts<Xnft>['xnft'];
+
+    before(async () => {
+      await program.provider.connection.requestAirdrop(
+        installAuthority.publicKey,
+        1 * anchor.web3.LAMPORTS_PER_SOL
+      );
+    });
+
+    it('when an install authority is provided to the instruction params', async () => {
+      const name = 'private xnft';
+      const [mint] = await anchor.web3.PublicKey.findProgramAddress(
+        [Buffer.from('mint'), authority.publicKey.toBytes(), Buffer.from(name)],
+        program.programId
+      );
+
+      const privateMasterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
+
+      const tx = program.methods
+        .createXnft(name, {
+          collection: null,
+          creators: [{ address: authority.publicKey, share: 100 }],
+          installAuthority: installAuthority.publicKey,
+          installPrice: new anchor.BN(0),
+          installVault: authority.publicKey,
+          kind: { app: {} } as never,
+          l1: { solana: {} } as never,
+          sellerFeeBasisPoints: 0,
+          supply: null,
+          symbol: '',
+          tag: { none: {} } as never,
+          uri: 'my_uri'
+        })
+        .accounts({
+          masterToken: privateMasterToken,
+          metadataProgram
+        });
+
+      const keys = await tx.pubkeys();
+      privateXnft = keys.xnft;
+
+      await tx.rpc();
+
+      xnftData = (await program.account.xnft.fetch(privateXnft)) as any;
+    });
+
+    it('and it is created with a set install authority', () => {
+      assert.strictEqual(
+        xnftData.installAuthority.toBase58(),
+        installAuthority.publicKey.toBase58()
+      );
+    });
+
+    describe('an Access grant can be created', () => {
+      it('by the install authority of a private xNFT', async () => {
+        await program.methods
+          .grantAccess()
+          .accounts({
+            xnft: privateXnft,
+            wallet: author.publicKey,
+            authority: installAuthority.publicKey
+          })
+          .signers([installAuthority])
+          .rpc();
+      });
+
+      it('and then the wallet can install it', async () => {
+        const tx = program.methods
+          .createPermissionedInstall()
+          .accounts({
+            xnft: privateXnft,
+            installVault: xnftData.installVault,
+            authority: author.publicKey
+          })
+          .signers([author]);
+
+        const keys = await tx.pubkeys();
+        access = keys.access;
+
+        await tx.rpc();
+      });
+    });
+  });
 });
 
 describe('Account Updates', () => {
@@ -329,5 +417,24 @@ describe('Account Closure', () => {
 
     const acc = await program.account.review.fetchNullable(review);
     assert.isNull(acc);
+  });
+
+  describe('Access can be revoked by the install authority', () => {
+    it('using the revoke_access instruction', async () => {
+      await program.methods
+        .revokeAccess()
+        .accounts({
+          xnft: privateXnft,
+          wallet: author.publicKey,
+          authority: installAuthority.publicKey
+        })
+        .signers([installAuthority])
+        .rpc();
+    });
+
+    it('and the Access account will be closed', async () => {
+      const acc = await program.account.access.fetchNullable(access);
+      assert.isNull(acc);
+    });
   });
 });

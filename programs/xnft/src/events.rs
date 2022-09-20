@@ -1,6 +1,12 @@
 use anchor_lang::prelude::*;
 
 #[event]
+pub struct AccessGranted {
+    pub wallet: Pubkey,
+    pub xnft: Pubkey,
+}
+
+#[event]
 pub struct InstallationCreated {
     pub installer: Pubkey,
     pub xnft: Pubkey,
