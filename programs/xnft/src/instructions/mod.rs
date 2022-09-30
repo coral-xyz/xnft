@@ -1,3 +1,5 @@
+// Copyright (C) 2022 Blue Coral, Inc.
+
 mod create_install;
 mod create_permissioned_install;
 mod create_review;

@@ -1,3 +1,5 @@
+// Copyright (C) 2022 Blue Coral, Inc.
+
 use anchor_lang::prelude::*;
 use anchor_spl::metadata::{self, Metadata, MetadataAccount, UpdateMetadataAccountsV2};
 use anchor_spl::token::TokenAccount;

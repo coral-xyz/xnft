@@ -2,6 +2,7 @@
   "name": "@coral-xyz/xnft",
   "version": "1.0.0",
   "private": true,
+  "license": "GPL-2.0-only",
   "scripts": {
     "lint:fix": "prettier \"*/**/*{.js,.ts,.tsx}\" -w",
     "lint": "prettier \"*/**/*{.js,.ts,.tsx}\" --check"

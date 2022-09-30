@@ -1,7 +1,8 @@
 [package]
 name = "xnft"
 version = "0.1.0"
-description = "Created with Anchor"
+description = "Protocol for minting and installing xNFTs"
+license = "GPL-2.0-only"
 edition = "2021"
 
 [lib]
