@@ -20,6 +20,7 @@ use anchor_lang::prelude::*;
 mod events;
 mod instructions;
 pub mod state;
+mod util;
 
 use instructions::*;
 

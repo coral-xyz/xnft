@@ -211,9 +211,7 @@ pub fn create_xnft_handler(
         return Err(error!(CustomError::NameTooLong));
     }
 
-    //
     // Mint the master token.
-    //
     token::mint_to(
         ctx.accounts.mint_to_ctx().with_signer(&[&[
             "xnft".as_bytes(),
@@ -223,9 +221,7 @@ pub fn create_xnft_handler(
         1,
     )?;
 
-    //
     // Freeze the token account after minting.
-    //
     if params.collection.is_none() {
         token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
             "xnft".as_bytes(),
@@ -234,18 +230,14 @@ pub fn create_xnft_handler(
         ]]))?;
     }
 
-    //
     // Create metadata.
-    //
     let is_mutable = true;
     let update_authority_is_signer = true;
 
-    //
     // Validation that share percentage splits sums up to 100 is
     // done by MPL in the `create_metadata_accounts_v3` CPI call
     // and verification that the publisher is among the list of creators
     // is done via the `sign_metadata` CPI call to verify the pubkey.
-    //
     let creators = Some(
         params
             .creators
@@ -281,16 +273,12 @@ pub fn create_xnft_handler(
         None,
     )?;
 
-    //
     // Verify the publisher in the list of creators on the metadata.
     // The remainder of the creators in the list must invoke MPL
     // `sign_metadata` on their own so that they are the signers of the tx.
-    //
     metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
 
-    //
     // Create master edition.
-    //
     metadata::create_master_edition_v3(
         ctx.accounts.create_master_edition_v3_ctx().with_signer(&[&[
             "xnft".as_bytes(),
@@ -300,16 +288,12 @@ pub fn create_xnft_handler(
         Some(0), // max supply of 0 disables NFT printing
     )?;
 
-    //
     // Set the primary sale has happened flag to true on metadata.
-    //
     metadata::update_primary_sale_happened_via_token(
         ctx.accounts.update_primary_sale_happened_ctx(),
     )?;
 
-    //
     // Initialize xNFT.
-    //
     let clock = Clock::get()?;
     let xnft = &mut ctx.accounts.xnft;
 

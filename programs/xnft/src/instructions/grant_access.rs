@@ -41,13 +41,16 @@ pub fn grant_access_handler(ctx: Context<GrantAccess>) -> Result<()> {
     let access = &mut ctx.accounts.access;
     let xnft = &ctx.accounts.xnft;
 
-    access.wallet = *ctx.accounts.wallet.key;
-    access.xnft = xnft.key();
-    access.bump = *ctx.bumps.get("access").unwrap();
+    **access = Access::new(
+        *ctx.accounts.wallet.key,
+        xnft.key(),
+        *ctx.bumps.get("access").unwrap(),
+    );
 
     emit!(AccessGranted {
         wallet: *ctx.accounts.wallet.key,
         xnft: xnft.key(),
     });
+
     Ok(())
 }

@@ -1,10 +1,10 @@
 // Copyright (C) 2022 Blue Coral, Inc.
 
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::{self, system_instruction};
 
 use crate::events::InstallationCreated;
 use crate::state::{Access, Install, Xnft};
+use crate::util::send_payment;
 use crate::CustomError;
 
 #[derive(Accounts)]
@@ -64,27 +64,17 @@ pub fn create_permissioned_install_handler(ctx: Context<CreatePermissionedInstal
     // regardless of the state of it's `install_authority`.
     xnft.check_supply()?;
 
-    //
     // Pay to install the xNFT, if needed.
-    //
     if xnft.install_price > 0 {
-        solana_program::program::invoke(
-            &system_instruction::transfer(
-                &ctx.accounts.authority.key(),
-                &ctx.accounts.install_vault.key(),
-                xnft.install_price,
-            ),
-            &[
-                ctx.accounts.authority.to_account_info(),
-                ctx.accounts.install_vault.to_account_info(),
-                ctx.accounts.system_program.to_account_info(),
-            ],
+        send_payment(
+            xnft.install_price,
+            ctx.accounts.authority.to_account_info(),
+            ctx.accounts.install_vault.to_account_info(),
+            ctx.accounts.system_program.to_account_info(),
         )?;
     }
 
-    //
     // Initialize the install data.
-    //
     **install = Install::new(xnft, ctx.accounts.authority.key);
 
     emit!(InstallationCreated {
