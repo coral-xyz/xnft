@@ -45,13 +45,15 @@ pub struct Xnft {
     pub l1: L1,
     /// The optional finite supply of installations available for this xNFT (9).
     pub supply: Option<u64>,
+    /// Optional pubkey of the global authority required for reviewing xNFT updates (33).
+    pub update_review_authority: Option<Pubkey>,
     /// Unused reserved byte space for additive future changes.
-    pub _reserved: [u8; 64],
+    pub _reserved: [u8; 31],
 }
 
 impl Xnft {
     pub const LEN: usize =
-        8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 64;
+        8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 33 + 31;
 
     pub fn check_supply(&self) -> anchor_lang::Result<()> {
         if let Some(supply) = self.supply {

@@ -49,8 +49,9 @@ pub mod xnft {
         ctx: Context<CreateXnft>,
         name: String,
         params: CreateXnftParams,
+        update_review_authority: Option<Pubkey>,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params)
+        instructions::create_xnft_handler(ctx, name, params, update_review_authority)
     }
 
     /// Updates the code of an xNFT.
