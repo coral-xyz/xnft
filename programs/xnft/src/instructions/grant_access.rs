@@ -2,10 +2,8 @@
 
 use anchor_lang::prelude::*;
 
-use crate::{
-    events::AccessGranted,
-    state::{Access, Xnft},
-};
+use crate::events::AccessGranted;
+use crate::state::{Access, Xnft};
 
 #[derive(Accounts)]
 pub struct GrantAccess<'info> {

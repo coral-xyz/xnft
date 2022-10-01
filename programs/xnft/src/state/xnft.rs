@@ -2,27 +2,8 @@
 
 use anchor_lang::prelude::*;
 
+use super::{Kind, Tag, L1};
 use crate::{CustomError, MAX_NAME_LEN};
-
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
-pub enum Kind {
-    App,
-    Collection,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
-pub enum L1 {
-    Solana,
-    Ethereum,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
-pub enum Tag {
-    None,
-    Defi,
-    Game,
-    Nft,
-}
 
 #[account]
 pub struct Xnft {
@@ -88,80 +69,5 @@ impl Xnft {
             }
         }
         Ok(())
-    }
-}
-
-#[account]
-pub struct Install {
-    /// The authority who created the installation (32).
-    pub authority: Pubkey,
-    /// The pubkey of the xNFT that was installed (32).
-    pub xnft: Pubkey,
-    /// The pubkey of the MPL master metadata account (32).
-    pub master_metadata: Pubkey,
-    /// The sequential installation number of the xNFT (8).
-    pub edition: u64,
-    /// Unused reserved byte space for additive future changes.
-    pub _reserved: [u8; 64],
-}
-
-impl Install {
-    pub const LEN: usize = 8 + (32 * 3) + 8 + 64;
-
-    pub fn new(xnft: &mut Account<'_, Xnft>, authority: &Pubkey) -> Self {
-        let i = Self {
-            authority: authority.clone(),
-            xnft: xnft.key(),
-            master_metadata: xnft.master_metadata,
-            edition: xnft.total_installs,
-            _reserved: [0; 64],
-        };
-        xnft.total_installs += 1;
-        i
-    }
-}
-
-#[account]
-pub struct Access {
-    pub wallet: Pubkey,
-    pub xnft: Pubkey,
-    pub bump: u8,
-    pub _reserved: [u8; 32],
-}
-
-impl Access {
-    pub const LEN: usize = 8 + (32 * 2) + 1 + 32;
-}
-
-#[account]
-pub struct Review {
-    /// The pubkey of the account that created the review (32).
-    pub author: Pubkey,
-    /// The pubkey of the associated xNFT (32).
-    pub xnft: Pubkey,
-    /// The numerical rating for the review, 0-5 (1).
-    pub rating: u8,
-    /// The URI of the off-chain JSON data that holds the comment (4 + len).
-    pub uri: String,
-    /// Unused reserved byte space for future additive changes.
-    pub _reserved: [u8; 32],
-}
-
-impl Review {
-    pub fn len(uri: String) -> usize {
-        8 + 32 + 32 + 1 + (4 + uri.len()) + 32
-    }
-
-    pub fn new(xnft: &mut Account<'_, Xnft>, author: &Pubkey, uri: String, rating: u8) -> Self {
-        xnft.total_rating += std::convert::TryInto::<u64>::try_into(rating).unwrap();
-        xnft.num_ratings += 1;
-
-        Self {
-            author: author.clone(),
-            xnft: xnft.key(),
-            rating,
-            uri,
-            _reserved: [0; 32],
-        }
     }
 }
