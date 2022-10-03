@@ -47,7 +47,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     let xnft = &mut ctx.accounts.xnft;
     let install = &mut ctx.accounts.install;
 
-    xnft.check_supply()?;
+    xnft.verify_supply()?;
     xnft.verify_install_authority(ctx.accounts.authority.key)?;
 
     // Pay to install the xNFT, if needed.

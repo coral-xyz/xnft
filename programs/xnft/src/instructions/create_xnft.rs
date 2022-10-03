@@ -204,6 +204,7 @@ pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
     params: CreateXnftParams,
+    update_review_authority: Option<Pubkey>,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
@@ -308,6 +309,7 @@ pub fn create_xnft_handler(
         master_edition: *ctx.accounts.master_edition.key,
         master_metadata: *ctx.accounts.master_metadata.key,
         master_mint: ctx.accounts.master_mint.key(),
+        update_review_authority,
         install_authority: params.install_authority,
         bump: xnft_bump,
         kind: params.kind,
@@ -322,7 +324,7 @@ pub fn create_xnft_handler(
         num_ratings: 0,
         l1: params.l1,
         supply: params.supply,
-        _reserved: [0; 64],
+        _reserved: [0; 27],
     };
 
     Ok(())

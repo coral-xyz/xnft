@@ -59,10 +59,10 @@ pub fn create_permissioned_install_handler(ctx: Context<CreatePermissionedInstal
     let install = &mut ctx.accounts.install;
 
     // No validation of the install authority is necessary here. The existence of
-    // and accepted `access` account that passed the constraints asserts that the
+    // an accepted `access` account that passed the constraints asserts that the
     // signing wallet does in fact have whitelisted permission to install this xNFT
     // regardless of the state of it's `install_authority`.
-    xnft.check_supply()?;
+    xnft.verify_supply()?;
 
     // Pay to install the xNFT, if needed.
     if xnft.install_price > 0 {

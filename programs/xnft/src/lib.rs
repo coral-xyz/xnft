@@ -49,8 +49,9 @@ pub mod xnft {
         ctx: Context<CreateXnft>,
         name: String,
         params: CreateXnftParams,
+        update_review_authority: Option<Pubkey>,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params)
+        instructions::create_xnft_handler(ctx, name, params, update_review_authority)
     }
 
     /// Updates the code of an xNFT.
@@ -138,4 +139,7 @@ pub enum CustomError {
 
     #[msg("The access account provided is not associated with the wallet")]
     UnauthorizedInstall,
+
+    #[msg("The signing authority for the xNFT update did not match the review authority")]
+    UpdateReviewAuthorityMismatch,
 }
