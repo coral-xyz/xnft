@@ -324,7 +324,7 @@ pub fn create_xnft_handler(
         num_ratings: 0,
         l1: params.l1,
         supply: params.supply,
-        _reserved: [0; 31],
+        _reserved: [0; 27],
     };
 
     Ok(())

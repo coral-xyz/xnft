@@ -139,4 +139,7 @@ pub enum CustomError {
 
     #[msg("The access account provided is not associated with the wallet")]
     UnauthorizedInstall,
+
+    #[msg("The signing authority for the xNFT update did not match the review authority")]
+    UpdateReviewAuthorityMismatch,
 }

@@ -22,13 +22,6 @@ pub struct ReviewCreated {
 }
 
 #[event]
-pub struct UpdateRequested {
-    pub requester: Pubkey,
-    pub timestamp: i64,
-    pub xnft: Pubkey,
-}
-
-#[event]
 pub struct XnftUpdated {
     pub metadata_uri: String,
     pub xnft: Pubkey,

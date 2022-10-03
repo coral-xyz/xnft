@@ -5,9 +5,8 @@ use anchor_spl::metadata::{self, Metadata, MetadataAccount, UpdateMetadataAccoun
 use anchor_spl::token::TokenAccount;
 use mpl_token_metadata::state::DataV2;
 
-use crate::events::{UpdateRequested, XnftUpdated};
+use crate::events::XnftUpdated;
 use crate::state::{Tag, Xnft};
-// use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
@@ -56,17 +55,11 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     let clock = Clock::get()?;
     let md = &ctx.accounts.master_metadata;
 
-    if ctx.accounts.xnft.update_review_authority.is_some() {
-        // TODO:
-
-        emit!(UpdateRequested {
-            requester: *ctx.accounts.authority.key,
-            timestamp: clock.unix_timestamp,
-            xnft: ctx.accounts.xnft.key(),
-        });
-
-        return Ok(());
-    }
+    // Gates the processing of an xNFT update if there is a set update authority
+    // on the account that does not match the signer of the transaction
+    ctx.accounts
+        .xnft
+        .verify_update_authority(ctx.accounts.authority.key)?;
 
     if let Some(u) = updates.uri.as_ref() {
         metadata::update_metadata_accounts_v2(

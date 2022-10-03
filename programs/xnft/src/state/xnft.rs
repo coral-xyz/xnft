@@ -48,14 +48,23 @@ pub struct Xnft {
     /// Optional pubkey of the global authority required for reviewing xNFT updates (33).
     pub update_review_authority: Option<Pubkey>,
     /// Unused reserved byte space for additive future changes.
-    pub _reserved: [u8; 31],
+    pub _reserved: [u8; 27],
 }
 
 impl Xnft {
     pub const LEN: usize =
-        8 + (32 * 5) + 33 + 1 + 1 + 1 + MAX_NAME_LEN + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 33 + 31;
+        8 + (32 * 5) + 33 + 1 + 1 + 1 + (4 + MAX_NAME_LEN) + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 33 + 27;
 
-    pub fn check_supply(&self) -> anchor_lang::Result<()> {
+    pub fn verify_install_authority(&self, pubkey: &Pubkey) -> anchor_lang::Result<()> {
+        if let Some(auth) = self.install_authority {
+            if auth != *pubkey {
+                return Err(error!(CustomError::InstallAuthorityMismatch));
+            }
+        }
+        Ok(())
+    }
+
+    pub fn verify_supply(&self) -> anchor_lang::Result<()> {
         if let Some(supply) = self.supply {
             if supply > 0 && self.total_installs >= supply {
                 return Err(error!(CustomError::InstallExceedsSupply));
@@ -64,10 +73,10 @@ impl Xnft {
         Ok(())
     }
 
-    pub fn verify_install_authority(&self, pubkey: &Pubkey) -> anchor_lang::Result<()> {
+    pub fn verify_update_authority(&self, pubkey: &Pubkey) -> anchor_lang::Result<()> {
         if let Some(auth) = self.install_authority {
             if auth != *pubkey {
-                return Err(error!(CustomError::InstallAuthorityMismatch));
+                return Err(error!(CustomError::UpdateReviewAuthorityMismatch));
             }
         }
         Ok(())
