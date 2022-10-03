@@ -11,7 +11,7 @@ use crate::state::{Tag, Xnft};
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
     install_vault: Option<Pubkey>,
-    name: Option<String>,
+    // name: Option<String>,
     price: Option<u64>,
     tag: Option<Tag>,
     uri: Option<String>,
