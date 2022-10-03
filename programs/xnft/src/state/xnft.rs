@@ -3,6 +3,7 @@
 use anchor_lang::prelude::*;
 
 use super::{Kind, Tag, L1};
+use crate::util::verify_optional_pubkey;
 use crate::{CustomError, MAX_NAME_LEN};
 
 #[account]
@@ -55,28 +56,22 @@ impl Xnft {
     pub const LEN: usize =
         8 + (32 * 5) + 33 + 1 + 1 + 1 + (4 + MAX_NAME_LEN) + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 33 + 27;
 
-    pub fn verify_install_authority(&self, pubkey: &Pubkey) -> anchor_lang::Result<()> {
-        if let Some(auth) = self.install_authority {
-            if auth != *pubkey {
-                return Err(error!(CustomError::InstallAuthorityMismatch));
-            }
-        }
-        Ok(())
-    }
+    verify_optional_pubkey!(
+        verify_install_authority,
+        install_authority,
+        CustomError::InstallAuthorityMismatch
+    );
+
+    verify_optional_pubkey!(
+        verify_update_authority,
+        update_review_authority,
+        CustomError::UpdateReviewAuthorityMismatch
+    );
 
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {
         if let Some(supply) = self.supply {
             if supply > 0 && self.total_installs >= supply {
                 return Err(error!(CustomError::InstallExceedsSupply));
-            }
-        }
-        Ok(())
-    }
-
-    pub fn verify_update_authority(&self, pubkey: &Pubkey) -> anchor_lang::Result<()> {
-        if let Some(auth) = self.install_authority {
-            if auth != *pubkey {
-                return Err(error!(CustomError::UpdateReviewAuthorityMismatch));
             }
         }
         Ok(())
