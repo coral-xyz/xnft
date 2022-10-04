@@ -1,4 +1,10 @@
-import { Metadata } from "@metaplex-foundation/mpl-token-metadata";
+import {
+  keypairIdentity,
+  Metaplex,
+  parseMetadataAccount,
+  type UnparsedAccount,
+  type MetadataAccount,
+} from "@metaplex-foundation/js";
 import * as anchor from "@project-serum/anchor";
 import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
@@ -15,6 +21,10 @@ const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
 const authority = (
   (program.provider as anchor.AnchorProvider).wallet as NodeWallet
 ).payer;
+const metaplex = new Metaplex(program.provider.connection).use(
+  keypairIdentity(authority)
+);
+
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
@@ -42,7 +52,7 @@ describe("Account Creations", () => {
     const l1 = { solana: {} } as never;
     const collection = anchor.web3.Keypair.generate().publicKey;
 
-    let meta: Metadata;
+    let meta: MetadataAccount;
 
     it("unless the name is too long", async () => {
       const badName = "this title is way too long use!";
@@ -134,41 +144,48 @@ describe("Account Creations", () => {
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
-      meta = await Metadata.fromAccountAddress(
-        program.provider.connection,
-        masterMetadata
-      );
+      // meta = await metaplex
+      //   .nfts()
+      //   .findByMetadata({ metadata: masterMetadata })
+      //   .run();
+      const acc = (await metaplex
+        .rpc()
+        .getAccount(masterMetadata)) as UnparsedAccount;
+      meta = parseMetadataAccount(acc);
     });
 
     it("and the creators are set in the metadata", () => {
-      assert.lengthOf(meta.data.creators, 2);
+      assert.lengthOf(meta.data.data.creators, 2);
       assert.strictEqual(
-        meta.data.creators[0].address.toBase58(),
+        meta.data.data.creators[0].address.toBase58(),
         authority.publicKey.toBase58()
       );
-      assert.isTrue(meta.data.creators[0].verified);
+      assert.isTrue(meta.data.data.creators[0].verified);
       assert.strictEqual(
-        meta.data.creators[1].address.toBase58(),
+        meta.data.data.creators[1].address.toBase58(),
         otherCreator.publicKey.toBase58()
       );
-      assert.isFalse(meta.data.creators[1].verified);
+      assert.isFalse(meta.data.data.creators[1].verified);
     });
 
     it("and the publisher is verified", () => {
       assert.strictEqual(
-        meta.data.creators[0].address.toBase58(),
+        meta.data.data.creators[0].address.toBase58(),
         authority.publicKey.toBase58()
       );
-      assert.isTrue(meta.data.creators[0].verified);
+      assert.isTrue(meta.data.data.creators[0].verified);
     });
 
     it("and the collection public key can be attached but not verified", () => {
-      assert.strictEqual(meta.collection.key.toBase58(), collection.toBase58());
-      assert.isFalse(meta.collection.verified);
+      assert.strictEqual(
+        meta.data.collection.key.toBase58(),
+        collection.toBase58()
+      );
+      assert.isFalse(meta.data.collection.verified);
     });
 
     it("and the metadata is marked with the primary sale already happened", () => {
-      assert.isTrue(meta.primarySaleHappened);
+      assert.isTrue(meta.data.primarySaleHappened);
     });
 
     it("and the token account is not frozen after the mint", async () => {
@@ -422,7 +439,7 @@ describe("Account Updates", () => {
     await program.methods
       .updateXnft({
         installVault: null,
-        name: null,
+        // name: null,
         price: new anchor.BN(100),
         tag: { none: {} } as never,
         uri: null,
