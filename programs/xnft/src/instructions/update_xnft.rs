@@ -57,9 +57,9 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
 
     // Gates the processing of an xNFT update if there is a set update authority
     // on the account that does not match the signer of the transaction
-    ctx.accounts
-        .xnft
-        .verify_update_authority(ctx.accounts.authority.key)?;
+    // ctx.accounts
+    //     .xnft
+    //     .verify_update_authority(ctx.accounts.authority.key)?;
 
     if let Some(u) = updates.uri.as_ref() {
         metadata::update_metadata_accounts_v2(
