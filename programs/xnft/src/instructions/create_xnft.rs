@@ -10,7 +10,7 @@ use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
 use crate::state::{Kind, Tag, Xnft, L1};
-use crate::{CustomError, APP_STORE_AUTHORITY, MAX_NAME_LEN};
+use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreatorsParam {
@@ -204,8 +204,8 @@ impl<'info> CreateXnft<'info> {
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
+    curation_authority: Option<Pubkey>,
     params: CreateXnftParams,
-    update_authority: Option<Pubkey>,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
@@ -215,9 +215,9 @@ pub fn create_xnft_handler(
     }
 
     // Assert that if the provided update authority is the app store pubkey, it matches the signer.
-    if let Some(auth) = update_authority {
-        if auth == APP_STORE_AUTHORITY && auth != *ctx.accounts.authority.key {
-            return Err(error!(CustomError::AppStoreAuthoritySetWithoutSignature));
+    if let Some(auth) = curation_authority {
+        if auth != *ctx.accounts.authority.key {
+            return Err(error!(CustomError::CurationAuthorityMismatch));
         }
     }
 
@@ -318,7 +318,7 @@ pub fn create_xnft_handler(
         master_edition: *ctx.accounts.master_edition.key,
         master_metadata: *ctx.accounts.master_metadata.key,
         master_mint: ctx.accounts.master_mint.key(),
-        update_authority,
+        curation_authority,
         install_authority: params.install_authority,
         bump: xnft_bump,
         kind: params.kind,

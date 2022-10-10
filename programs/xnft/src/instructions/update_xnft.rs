@@ -7,6 +7,7 @@ use mpl_token_metadata::state::DataV2;
 
 use crate::events::XnftUpdated;
 use crate::state::{Tag, Xnft};
+// use crate::{CustomError, APP_STORE_AUTHORITY};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
@@ -57,9 +58,10 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
 
     // Gates the processing of an xNFT update if there is a set update authority
     // on the account that does not match the signer of the transaction
+    // TODO:
     // ctx.accounts
     //     .xnft
-    //     .verify_update_authority(ctx.accounts.authority.key)?;
+    //     .verify_curation_authority(ctx.accounts.authority.key)?;
 
     if let Some(u) = updates.uri.as_ref() {
         metadata::update_metadata_accounts_v2(

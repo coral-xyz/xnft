@@ -31,11 +31,6 @@ pub const MAX_NAME_LEN: usize = 30;
 #[constant]
 pub const MAX_RATING: u8 = 5;
 
-pub const APP_STORE_AUTHORITY: Pubkey = Pubkey::new_from_array([
-    55, 148, 128, 59, 198, 61, 138, 232, 36, 100, 197, 35, 105, 19, 192, 26, 74, 55, 57, 251, 48,
-    208, 246, 141, 152, 108, 233, 4, 115, 109, 234, 156,
-]);
-
 #[program]
 pub mod xnft {
     use super::*;
@@ -53,10 +48,10 @@ pub mod xnft {
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
+        curation_authority: Option<Pubkey>,
         params: CreateXnftParams,
-        update_review_authority: Option<Pubkey>,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params, update_review_authority)
+        instructions::create_xnft_handler(ctx, name, curation_authority, params)
     }
 
     /// Updates the code of an xNFT.
@@ -115,14 +110,14 @@ pub mod xnft {
 
 #[error_code]
 pub enum CustomError {
-    #[msg("App store was provided as the update authority on creation without its signature")]
-    AppStoreAuthoritySetWithoutSignature,
-
     #[msg("You cannot create a review for an xNFT that you currently own or published")]
     CannotReviewOwned,
 
     #[msg("A collection pubkey was provided without the collection Kind variant")]
     CollectionWithoutKind,
+
+    #[msg("Signing authority did not match the expected curator keypair")]
+    CurationAuthorityMismatch,
 
     #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,

@@ -74,24 +74,20 @@ describe("Account Creations", () => {
 
       try {
         await program.methods
-          .createXnft(
-            badName,
-            {
-              symbol,
-              tag,
-              kind,
-              uri,
-              sellerFeeBasisPoints,
-              installAuthority: null,
-              installPrice,
-              installVault,
-              supply,
-              l1,
-              collection: null,
-              creators: [{ address: authority.publicKey, share: 100 }],
-            },
-            null
-          )
+          .createXnft(badName, null, {
+            symbol,
+            tag,
+            kind,
+            uri,
+            sellerFeeBasisPoints,
+            installAuthority: null,
+            installPrice,
+            installVault,
+            supply,
+            l1,
+            collection: null,
+            creators: [{ address: authority.publicKey, share: 100 }],
+          })
           .accounts({ masterToken, metadataProgram })
           .rpc();
 
@@ -111,27 +107,23 @@ describe("Account Creations", () => {
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const ix = program.methods
-        .createXnft(
-          name,
-          {
-            symbol,
-            tag,
-            kind,
-            uri,
-            sellerFeeBasisPoints,
-            installAuthority: null,
-            installPrice,
-            installVault,
-            supply,
-            l1,
-            collection,
-            creators: [
-              { address: authority.publicKey, share: 50 },
-              { address: otherCreator.publicKey, share: 50 },
-            ],
-          },
-          appStoreAuthority.publicKey
-        )
+        .createXnft(name, appStoreAuthority.publicKey, {
+          symbol,
+          tag,
+          kind,
+          uri,
+          sellerFeeBasisPoints,
+          installAuthority: null,
+          installPrice,
+          installVault,
+          supply,
+          l1,
+          collection,
+          creators: [
+            { address: authority.publicKey, share: 50 },
+            { address: otherCreator.publicKey, share: 50 },
+          ],
+        })
         .accounts({
           authority: appStoreAuthority.publicKey,
           payer: authority.publicKey,
@@ -369,24 +361,20 @@ describe("Account Creations", () => {
       );
 
       const tx = program.methods
-        .createXnft(
-          name,
-          {
-            collection: null,
-            creators: [{ address: authority.publicKey, share: 100 }],
-            installAuthority: installAuthority.publicKey,
-            installPrice: new anchor.BN(0),
-            installVault: authority.publicKey,
-            kind: { app: {} } as never,
-            l1: { solana: {} } as never,
-            sellerFeeBasisPoints: 0,
-            supply: null,
-            symbol: "",
-            tag: { none: {} } as never,
-            uri: "my_uri",
-          },
-          null
-        )
+        .createXnft(name, null, {
+          collection: null,
+          creators: [{ address: authority.publicKey, share: 100 }],
+          installAuthority: installAuthority.publicKey,
+          installPrice: new anchor.BN(0),
+          installVault: authority.publicKey,
+          kind: { app: {} } as never,
+          l1: { solana: {} } as never,
+          sellerFeeBasisPoints: 0,
+          supply: null,
+          symbol: "",
+          tag: { none: {} } as never,
+          uri: "my_uri",
+        })
         .accounts({
           masterToken: privateMasterToken,
           metadataProgram,
