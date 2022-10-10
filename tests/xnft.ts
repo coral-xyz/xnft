@@ -18,6 +18,7 @@ export const metadataProgram = new anchor.web3.PublicKey(
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+const appStoreAuthority = anchor.web3.Keypair.generate();
 const authority = (
   (program.provider as anchor.AnchorProvider).wallet as NodeWallet
 ).payer;
@@ -109,7 +110,7 @@ describe("Account Creations", () => {
 
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
-      const tx = program.methods
+      const ix = program.methods
         .createXnft(
           name,
           {
@@ -129,15 +130,19 @@ describe("Account Creations", () => {
               { address: otherCreator.publicKey, share: 50 },
             ],
           },
-          null
+          appStoreAuthority.publicKey
         )
         .accounts({
+          authority: appStoreAuthority.publicKey,
+          payer: authority.publicKey,
+          publisher: authority.publicKey,
           masterToken,
           metadataProgram,
-        });
+        })
+        .signers([appStoreAuthority]);
 
-      const pubkeys = await tx.pubkeys();
-      await tx.rpc();
+      const pubkeys = await ix.pubkeys();
+      await ix.rpc();
 
       const accs = await program.account.xnft.all();
       assert.lengthOf(accs, 1);

@@ -10,7 +10,7 @@ use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
 use crate::state::{Kind, Tag, Xnft, L1};
-use crate::{CustomError, MAX_NAME_LEN};
+use crate::{CustomError, APP_STORE_AUTHORITY, MAX_NAME_LEN};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreatorsParam {
@@ -102,6 +102,7 @@ pub struct CreateXnft<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub publisher: Signer<'info>,
+    pub authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
@@ -204,12 +205,20 @@ pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
     params: CreateXnftParams,
-    update_review_authority: Option<Pubkey>,
+    update_authority: Option<Pubkey>,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
+    // Check provided name length against protocol defined maximum.
     if name.len() > MAX_NAME_LEN {
         return Err(error!(CustomError::NameTooLong));
+    }
+
+    // Assert that if the provided update authority is the app store pubkey, it matches the signer.
+    if let Some(auth) = update_authority {
+        if auth == APP_STORE_AUTHORITY && auth != *ctx.accounts.authority.key {
+            return Err(error!(CustomError::AppStoreAuthoritySetWithoutSignature));
+        }
     }
 
     // Mint the master token.
@@ -309,7 +318,7 @@ pub fn create_xnft_handler(
         master_edition: *ctx.accounts.master_edition.key,
         master_metadata: *ctx.accounts.master_metadata.key,
         master_mint: ctx.accounts.master_mint.key(),
-        update_review_authority,
+        update_authority,
         install_authority: params.install_authority,
         bump: xnft_bump,
         kind: params.kind,

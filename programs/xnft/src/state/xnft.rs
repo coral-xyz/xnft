@@ -47,7 +47,7 @@ pub struct Xnft {
     /// The optional finite supply of installations available for this xNFT (9).
     pub supply: Option<u64>,
     /// Optional pubkey of the global authority required for reviewing xNFT updates (33).
-    pub update_review_authority: Option<Pubkey>,
+    pub update_authority: Option<Pubkey>,
     /// Unused reserved byte space for additive future changes.
     pub _reserved: [u8; 27],
 }
@@ -64,7 +64,7 @@ impl Xnft {
 
     verify_optional_pubkey!(
         verify_update_authority,
-        update_review_authority,
+        update_authority,
         CustomError::UpdateReviewAuthorityMismatch
     );
 
