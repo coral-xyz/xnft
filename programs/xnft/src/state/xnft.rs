@@ -56,12 +56,6 @@ impl Xnft {
     pub const LEN: usize =
         8 + (32 * 5) + 33 + 1 + 1 + 1 + (4 + MAX_NAME_LEN) + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 34 + 26;
 
-    verify_optional_pubkey!(
-        verify_install_authority,
-        install_authority,
-        CustomError::InstallAuthorityMismatch
-    );
-
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {
         if let Some(supply) = self.supply {
             if supply > 0 && self.total_installs >= supply {
@@ -70,6 +64,12 @@ impl Xnft {
         }
         Ok(())
     }
+
+    verify_optional_pubkey!(
+        verify_install_authority,
+        install_authority,
+        CustomError::InstallAuthorityMismatch
+    );
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]

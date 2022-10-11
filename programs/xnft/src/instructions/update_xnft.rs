@@ -37,8 +37,8 @@ pub struct UpdateXnft<'info> {
 
     /// CHECK: is validated in the associated token constraint on `master_token`.
     pub xnft_authority: UncheckedAccount<'info>,
-
     pub update_authority: Signer<'info>,
+
     pub metadata_program: Program<'info, Metadata>,
 }
 
@@ -61,25 +61,12 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
 
     // Gates the processing of an xNFT update if there is a set update authority
     // on the account that does not match the signer of the transaction.
-    //
-    // To avoid duplicating instructions (one for verified curated and one unverfied or curated),
-    // the `Curator` program account can't be required in the context, so to validate, attempt
-    // to derive what the public key of a `Curator` owned by the current authority would be
-    // and check against that.
     if let Some(CuratorStatus {
         pubkey,
         verified: true,
     }) = ctx.accounts.xnft.curator
     {
-        let (expected, _) = Pubkey::find_program_address(
-            &[
-                "curator".as_bytes(),
-                ctx.accounts.update_authority.key().as_ref(),
-            ],
-            &crate::ID,
-        );
-
-        if pubkey != expected {
+        if pubkey != *ctx.accounts.update_authority.key {
             return Err(error!(CustomError::CuratorAuthorityMismatch));
         }
     }

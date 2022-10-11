@@ -35,17 +35,6 @@ pub const MAX_RATING: u8 = 5;
 pub mod xnft {
     use super::*;
 
-    /// Creates a "curator" account that can be assigned to require signatures for
-    /// xNFT lifecycle management events.
-    pub fn create_curator(
-        ctx: Context<CreateCurator>,
-        sign_on_create: bool,
-        sign_on_update: bool,
-        sign_on_delete: bool,
-    ) -> Result<()> {
-        instructions::create_curator_handler(ctx, sign_on_create, sign_on_update, sign_on_delete)
-    }
-
     /// Creates all parts of an xNFT instance.
     ///
     /// * Master mint (supply 1).

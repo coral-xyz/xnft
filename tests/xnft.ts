@@ -34,7 +34,6 @@ const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
 const installAuthority = anchor.web3.Keypair.generate();
 
-let curator: anchor.web3.PublicKey;
 let privateXnft: anchor.web3.PublicKey;
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
@@ -54,32 +53,6 @@ describe("Account Creations", () => {
     await wait(500);
   });
 
-  describe("a curator can be created", () => {
-    it("when the accounts are currect", async () => {
-      const ix = program.methods
-        .createCurator(true, true, false)
-        .accounts({
-          authority: curatorAuthority.publicKey,
-          payer: curatorAuthority.publicKey,
-        })
-        .signers([curatorAuthority]);
-
-      const pubkeys = await ix.pubkeys();
-      curator = pubkeys.curator;
-
-      await ix.rpc();
-    });
-
-    it("and the data will be set", async () => {
-      const data = await program.account.curator.fetch(curator);
-      assert.deepEqual(data.signatureRequirements, [true, true, false]);
-      assert.strictEqual(
-        data.authority.toBase58(),
-        curatorAuthority.publicKey.toBase58()
-      );
-    });
-  });
-
   describe("an xNFT can be created", () => {
     const installPrice = new anchor.BN(0);
     const name = "test xnft";
@@ -92,6 +65,7 @@ describe("Account Creations", () => {
     const l1 = { solana: {} } as never;
     const collection = anchor.web3.Keypair.generate().publicKey;
 
+    let xnftData: anchor.IdlAccounts<Xnft>["xnft"];
     let meta: MetadataAccount;
 
     it("unless the name is too long", async () => {
@@ -177,12 +151,17 @@ describe("Account Creations", () => {
       assert.lengthOf(accs, 1);
 
       xnft = pubkeys.xnft;
+      xnftData = accs[0].account as any;
       masterMetadata = pubkeys.masterMetadata;
 
       const acc = (await metaplex
         .rpc()
         .getAccount(masterMetadata)) as UnparsedAccount;
       meta = parseMetadataAccount(acc);
+    });
+
+    it("and the curator is null if not provided on creation", () => {
+      assert.isNull(xnftData.curator);
     });
 
     it("and the creators are set in the metadata", () => {
@@ -225,33 +204,36 @@ describe("Account Creations", () => {
     });
   });
 
-  describe("a Curator can be set on an xNFT", () => {
+  describe("a curator can be set on an xNFT", () => {
     it("when the user provides a valid curator account", async () => {
       await program.methods
         .setCurator()
         .accounts({
           xnft,
           masterToken,
-          curator,
+          curator: curatorAuthority.publicKey,
         })
         .rpc();
     });
 
     it("and the curator account is set but unverified", async () => {
       const data = await program.account.xnft.fetch(xnft);
-      assert.strictEqual(data.curator.pubkey.toBase58(), curator.toBase58());
+      assert.strictEqual(
+        data.curator.pubkey.toBase58(),
+        curatorAuthority.publicKey.toBase58()
+      );
       assert.isFalse(data.curator.verified);
     });
   });
 
-  describe("the Curator on an xNFT can be verified", () => {
+  describe("the curator on an xNFT can be verified", () => {
     it("unless the signer does not match the curator authority", async () => {
       try {
         await program.methods
           .verifyCurator()
           .accounts({
             xnft,
-            curator,
+            curator: curatorAuthority.publicKey,
           })
           .rpc();
         assert.ok(false);
@@ -263,8 +245,7 @@ describe("Account Creations", () => {
         .verifyCurator()
         .accounts({
           xnft,
-          curator,
-          authority: curatorAuthority.publicKey,
+          curator: curatorAuthority.publicKey,
         })
         .signers([curatorAuthority])
         .rpc();

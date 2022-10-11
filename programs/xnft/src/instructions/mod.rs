@@ -1,6 +1,5 @@
 // Copyright (C) 2022 Blue Coral, Inc.
 
-mod create_curator;
 mod create_install;
 mod create_permissioned_install;
 mod create_review;
@@ -14,7 +13,6 @@ mod set_suspended;
 mod update_xnft;
 mod verify_curator;
 
-pub use create_curator::*;
 pub use create_install::*;
 pub use create_permissioned_install::*;
 pub use create_review::*;
