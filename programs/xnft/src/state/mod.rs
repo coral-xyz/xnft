@@ -3,11 +3,13 @@
 use anchor_lang::prelude::*;
 
 mod access;
+mod curator;
 mod install;
 mod review;
 mod xnft;
 
 pub use access::*;
+pub use curator::*;
 pub use install::*;
 pub use review::*;
 pub use xnft::*;

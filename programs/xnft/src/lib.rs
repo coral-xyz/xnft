@@ -35,6 +35,17 @@ pub const MAX_RATING: u8 = 5;
 pub mod xnft {
     use super::*;
 
+    /// Creates a "curator" account that can be assigned to require signatures for
+    /// xNFT lifecycle management events.
+    pub fn create_curator(
+        ctx: Context<CreateCurator>,
+        sign_on_create: bool,
+        sign_on_update: bool,
+        sign_on_delete: bool,
+    ) -> Result<()> {
+        instructions::create_curator_handler(ctx, sign_on_create, sign_on_update, sign_on_delete)
+    }
+
     /// Creates all parts of an xNFT instance.
     ///
     /// * Master mint (supply 1).
@@ -44,14 +55,13 @@ pub mod xnft {
     /// * xNFT PDA associated with the master edition.
     ///
     /// Once this is invoked, an xNFT exists and can be "installed" by users.
-    #[allow(clippy::too_many_arguments)]
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
-        curation_authority: Option<Pubkey>,
+        curator: Option<Pubkey>,
         params: CreateXnftParams,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, curation_authority, params)
+        instructions::create_xnft_handler(ctx, name, curator, params)
     }
 
     /// Updates the code of an xNFT.
@@ -59,6 +69,11 @@ pub mod xnft {
     /// This is simply a token metadata update cpi.
     pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
         instructions::update_xnft_handler(ctx, updates)
+    }
+
+    /// Assigns a specific "curator" account as the curation authority over an xNFT.
+    pub fn verify_curator(ctx: Context<VerifyCurator>) -> Result<()> {
+        instructions::verify_curator_handler(ctx)
     }
 
     /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
@@ -116,8 +131,11 @@ pub enum CustomError {
     #[msg("A collection pubkey was provided without the collection Kind variant")]
     CollectionWithoutKind,
 
-    #[msg("Signing authority did not match the expected curator keypair")]
-    CurationAuthorityMismatch,
+    #[msg("The provided curator account did not match the one assigned")]
+    CuratorMismatch,
+
+    #[msg("No curator was found on the xNFT")]
+    CuratorNotSet,
 
     #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,

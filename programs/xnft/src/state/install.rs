@@ -23,7 +23,7 @@ impl Install {
 
     pub fn new(xnft: &mut Account<'_, Xnft>, authority: &Pubkey) -> Self {
         let i = Self {
-            authority: authority.clone(),
+            authority: *authority,
             xnft: xnft.key(),
             master_metadata: xnft.master_metadata,
             edition: xnft.total_installs,

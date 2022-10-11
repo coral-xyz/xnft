@@ -1,3 +1,5 @@
+// Copyright (C) 2022 Blue Coral, Inc.
+
 import {
   keypairIdentity,
   Metaplex,
@@ -13,12 +15,13 @@ import type { Xnft } from "../target/types/xnft";
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
 export const metadataProgram = new anchor.web3.PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
-const appStoreAuthority = anchor.web3.Keypair.generate();
+const curatorAuthority = anchor.web3.Keypair.generate();
 const authority = (
   (program.provider as anchor.AnchorProvider).wallet as NodeWallet
 ).payer;
@@ -31,6 +34,7 @@ const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
 const installAuthority = anchor.web3.Keypair.generate();
 
+let curator: anchor.web3.PublicKey;
 let privateXnft: anchor.web3.PublicKey;
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
@@ -41,6 +45,41 @@ let authorInstallation: anchor.web3.PublicKey;
 let access: anchor.web3.PublicKey;
 
 describe("Account Creations", () => {
+  before(async () => {
+    await program.provider.connection.requestAirdrop(
+      curatorAuthority.publicKey,
+      2 * anchor.web3.LAMPORTS_PER_SOL
+    );
+
+    await wait(500);
+  });
+
+  describe("a curator can be created", () => {
+    it("when the accounts are currect", async () => {
+      const ix = program.methods
+        .createCurator(true, true, false)
+        .accounts({
+          authority: curatorAuthority.publicKey,
+          payer: curatorAuthority.publicKey,
+        })
+        .signers([curatorAuthority]);
+
+      const pubkeys = await ix.pubkeys();
+      curator = pubkeys.curator;
+
+      await ix.rpc();
+    });
+
+    it("and the data will be set", async () => {
+      const data = await program.account.curator.fetch(curator);
+      assert.deepEqual(data.signatureRequirements, [true, true, false]);
+      assert.strictEqual(
+        data.authority.toBase58(),
+        curatorAuthority.publicKey.toBase58()
+      );
+    });
+  });
+
   describe("an xNFT can be created", () => {
     const installPrice = new anchor.BN(0);
     const name = "test xnft";
@@ -53,6 +92,7 @@ describe("Account Creations", () => {
     const l1 = { solana: {} } as never;
     const collection = anchor.web3.Keypair.generate().publicKey;
 
+    let xnftData: anchor.IdlAccounts<Xnft>["xnft"];
     let meta: MetadataAccount;
 
     it("unless the name is too long", async () => {
@@ -107,7 +147,7 @@ describe("Account Creations", () => {
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const ix = program.methods
-        .createXnft(name, appStoreAuthority.publicKey, {
+        .createXnft(name, curator, {
           symbol,
           tag,
           kind,
@@ -125,30 +165,34 @@ describe("Account Creations", () => {
           ],
         })
         .accounts({
-          authority: appStoreAuthority.publicKey,
           payer: authority.publicKey,
           publisher: authority.publicKey,
           masterToken,
           metadataProgram,
-        })
-        .signers([appStoreAuthority]);
+        });
 
       const pubkeys = await ix.pubkeys();
       await ix.rpc();
 
       const accs = await program.account.xnft.all();
       assert.lengthOf(accs, 1);
+      xnftData = accs[0].account as any;
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
-      // meta = await metaplex
-      //   .nfts()
-      //   .findByMetadata({ metadata: masterMetadata })
-      //   .run();
+
       const acc = (await metaplex
         .rpc()
         .getAccount(masterMetadata)) as UnparsedAccount;
       meta = parseMetadataAccount(acc);
+    });
+
+    it("and the curator account is set but unverified", () => {
+      assert.strictEqual(
+        (xnftData.curator as any).pubkey.toBase58(),
+        curator.toBase58()
+      );
+      assert.isFalse((xnftData.curator as any).verified);
     });
 
     it("and the creators are set in the metadata", () => {
@@ -188,6 +232,38 @@ describe("Account Creations", () => {
     it("and the token account is not frozen after the mint", async () => {
       const acc = await getAccount(program.provider.connection, masterToken);
       assert.isTrue(!acc.isFrozen);
+    });
+  });
+
+  describe("the Curator on an xNFT can be verified", () => {
+    it("unless the signer does not match the curator authority", async () => {
+      try {
+        await program.methods
+          .verifyCurator()
+          .accounts({
+            xnft,
+            curator,
+          })
+          .rpc();
+        assert.ok(false);
+      } catch (_err) {}
+    });
+
+    it("if the curator authority signs the transaction", async () => {
+      await program.methods
+        .verifyCurator()
+        .accounts({
+          xnft,
+          curator,
+          authority: curatorAuthority.publicKey,
+        })
+        .signers([curatorAuthority])
+        .rpc();
+    });
+
+    it("and the xNFT curator data will show verified", async () => {
+      const acc = await program.account.xnft.fetch(xnft);
+      assert.isTrue(acc.curator.verified);
     });
   });
 
