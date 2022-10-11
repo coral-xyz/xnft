@@ -526,8 +526,11 @@ describe("Account Updates", () => {
         xnft,
         masterMetadata,
         masterToken,
+        xnftAuthority: authority.publicKey,
+        updateAuthority: curatorAuthority.publicKey,
         metadataProgram,
       })
+      .signers([curatorAuthority])
       .rpc();
 
     const acc = await program.account.xnft.fetch(xnft);
