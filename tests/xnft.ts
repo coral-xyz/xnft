@@ -92,7 +92,6 @@ describe("Account Creations", () => {
     const l1 = { solana: {} } as never;
     const collection = anchor.web3.Keypair.generate().publicKey;
 
-    let xnftData: anchor.IdlAccounts<Xnft>["xnft"];
     let meta: MetadataAccount;
 
     it("unless the name is too long", async () => {
@@ -147,7 +146,7 @@ describe("Account Creations", () => {
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const ix = program.methods
-        .createXnft(name, curator, {
+        .createXnft(name, null, {
           symbol,
           tag,
           kind,
@@ -176,7 +175,6 @@ describe("Account Creations", () => {
 
       const accs = await program.account.xnft.all();
       assert.lengthOf(accs, 1);
-      xnftData = accs[0].account as any;
 
       xnft = pubkeys.xnft;
       masterMetadata = pubkeys.masterMetadata;
@@ -185,14 +183,6 @@ describe("Account Creations", () => {
         .rpc()
         .getAccount(masterMetadata)) as UnparsedAccount;
       meta = parseMetadataAccount(acc);
-    });
-
-    it("and the curator account is set but unverified", () => {
-      assert.strictEqual(
-        (xnftData.curator as any).pubkey.toBase58(),
-        curator.toBase58()
-      );
-      assert.isFalse((xnftData.curator as any).verified);
     });
 
     it("and the creators are set in the metadata", () => {
@@ -232,6 +222,25 @@ describe("Account Creations", () => {
     it("and the token account is not frozen after the mint", async () => {
       const acc = await getAccount(program.provider.connection, masterToken);
       assert.isTrue(!acc.isFrozen);
+    });
+  });
+
+  describe("a Curator can be set on an xNFT", () => {
+    it("when the user provides a valid curator account", async () => {
+      await program.methods
+        .setCurator()
+        .accounts({
+          xnft,
+          masterToken,
+          curator,
+        })
+        .rpc();
+    });
+
+    it("and the curator account is set but unverified", async () => {
+      const data = await program.account.xnft.fetch(xnft);
+      assert.strictEqual(data.curator.pubkey.toBase58(), curator.toBase58());
+      assert.isFalse(data.curator.verified);
     });
   });
 

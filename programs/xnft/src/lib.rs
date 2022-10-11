@@ -71,7 +71,12 @@ pub mod xnft {
         instructions::update_xnft_handler(ctx, updates)
     }
 
-    /// Assigns a specific "curator" account as the curation authority over an xNFT.
+    /// Assigns a curator public key to the provided xNFT.
+    pub fn set_curator(ctx: Context<SetCurator>) -> Result<()> {
+        instructions::set_curator_handler(ctx)
+    }
+
+    /// Verifies the assignment of a curator to an xNFT, signed by the curator authority.
     pub fn verify_curator(ctx: Context<VerifyCurator>) -> Result<()> {
         instructions::verify_curator_handler(ctx)
     }
