@@ -9,8 +9,7 @@ use crate::CustomError;
 pub struct VerifyCurator<'info> {
     #[account(
         mut,
-        constraint = xnft.curator.is_some() @ CustomError::CuratorNotSet,
-        constraint = xnft.curator.as_ref().unwrap().pubkey == *curator.key @ CustomError::CuratorMismatch,
+        constraint = xnft.curator.as_ref().map(|c| c.pubkey) == Some(*curator.key) @ CustomError::CuratorMismatch,
     )]
     pub xnft: Account<'info, Xnft>,
 

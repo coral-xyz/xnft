@@ -131,9 +131,6 @@ pub enum CustomError {
     #[msg("The provided curator account did not match the one assigned")]
     CuratorMismatch,
 
-    #[msg("No curator was found on the xNFT")]
-    CuratorNotSet,
-
     #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,
 
