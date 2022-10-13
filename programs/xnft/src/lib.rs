@@ -135,6 +135,9 @@ pub enum CustomError {
     #[msg("A collection pubkey was provided without the collection Kind variant")]
     CollectionWithoutKind,
 
+    #[msg("There is already a verified curator assigned")]
+    CuratorAlreadySet,
+
     #[msg("The expected curator authority did not match expected")]
     CuratorAuthorityMismatch,
 
