@@ -16,6 +16,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use anchor_lang::prelude::*;
+use solana_security_txt::security_txt;
 
 mod events;
 mod instructions;
@@ -25,6 +26,15 @@ mod util;
 use instructions::*;
 
 declare_id!("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs");
+
+security_txt! {
+    name: "xNFT",
+    project_url: "https://coral.community",
+    contacts: "email:contact@200ms.io,twitter:@0xCoral",
+    policy: "https://github.com/coral-xyz/xnft/blob/master/SECURITY.md",
+    preferred_languages: "en",
+    source_code: "https://github.com/coral-xyz/xnft"
+}
 
 #[constant]
 pub const MAX_NAME_LEN: usize = 30;
