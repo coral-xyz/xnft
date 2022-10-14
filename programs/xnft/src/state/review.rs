@@ -28,7 +28,7 @@ impl Review {
         xnft.num_ratings += 1;
 
         Self {
-            author: author.clone(),
+            author: *author,
             xnft: xnft.key(),
             rating,
             uri,

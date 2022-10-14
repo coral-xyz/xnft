@@ -9,7 +9,7 @@ use anchor_spl::metadata::{
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
-use crate::state::{Kind, Tag, Xnft, L1};
+use crate::state::{CuratorStatus, Kind, Tag, Xnft, L1};
 use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
@@ -102,6 +102,7 @@ pub struct CreateXnft<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub publisher: Signer<'info>,
+    pub authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
@@ -203,11 +204,12 @@ impl<'info> CreateXnft<'info> {
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
+    curator: Option<Pubkey>,
     params: CreateXnftParams,
-    update_review_authority: Option<Pubkey>,
 ) -> Result<()> {
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
+    // Check provided name length against protocol defined maximum.
     if name.len() > MAX_NAME_LEN {
         return Err(error!(CustomError::NameTooLong));
     }
@@ -303,13 +305,18 @@ pub fn create_xnft_handler(
         return Err(error!(CustomError::CollectionWithoutKind));
     }
 
+    // Create the curator status struct for the xNFT if one was provided.
+    let curator_status = curator.map(|pubkey| CuratorStatus {
+        pubkey,
+        verified: false,
+    });
+
     ***xnft = Xnft {
         publisher: *ctx.accounts.publisher.key,
         install_vault: params.install_vault,
         master_edition: *ctx.accounts.master_edition.key,
         master_metadata: *ctx.accounts.master_metadata.key,
         master_mint: ctx.accounts.master_mint.key(),
-        update_review_authority,
         install_authority: params.install_authority,
         bump: xnft_bump,
         kind: params.kind,
@@ -324,7 +331,8 @@ pub fn create_xnft_handler(
         num_ratings: 0,
         l1: params.l1,
         supply: params.supply,
-        _reserved: [0; 27],
+        curator: curator_status,
+        _reserved: [0; 26],
     };
 
     Ok(())

@@ -46,27 +46,15 @@ pub struct Xnft {
     pub l1: L1,
     /// The optional finite supply of installations available for this xNFT (9).
     pub supply: Option<u64>,
-    /// Optional pubkey of the global authority required for reviewing xNFT updates (33).
-    pub update_review_authority: Option<Pubkey>,
+    /// Optional pubkey of the global authority required for reviewing xNFT updates (34).
+    pub curator: Option<CuratorStatus>,
     /// Unused reserved byte space for additive future changes.
-    pub _reserved: [u8; 27],
+    pub _reserved: [u8; 26],
 }
 
 impl Xnft {
     pub const LEN: usize =
-        8 + (32 * 5) + 33 + 1 + 1 + 1 + (4 + MAX_NAME_LEN) + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 33 + 27;
-
-    verify_optional_pubkey!(
-        verify_install_authority,
-        install_authority,
-        CustomError::InstallAuthorityMismatch
-    );
-
-    verify_optional_pubkey!(
-        verify_update_authority,
-        update_review_authority,
-        CustomError::UpdateReviewAuthorityMismatch
-    );
+        8 + (32 * 5) + 33 + 1 + 1 + 1 + (4 + MAX_NAME_LEN) + (8 * 4) + 1 + 8 + 4 + 1 + 9 + 34 + 26;
 
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {
         if let Some(supply) = self.supply {
@@ -76,4 +64,18 @@ impl Xnft {
         }
         Ok(())
     }
+
+    verify_optional_pubkey!(
+        verify_install_authority,
+        install_authority,
+        CustomError::InstallAuthorityMismatch
+    );
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct CuratorStatus {
+    /// The pubkey of the `Curator` program account (32).
+    pub pubkey: Pubkey,
+    /// Whether the curator's authority has verified the assignment (1).
+    pub verified: bool,
 }

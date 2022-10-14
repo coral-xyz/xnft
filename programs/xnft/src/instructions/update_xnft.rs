@@ -6,7 +6,8 @@ use anchor_spl::token::TokenAccount;
 use mpl_token_metadata::state::DataV2;
 
 use crate::events::XnftUpdated;
-use crate::state::{Tag, Xnft};
+use crate::state::{CuratorStatus, Tag, Xnft};
+use crate::CustomError;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
@@ -27,14 +28,17 @@ pub struct UpdateXnft<'info> {
 
     #[account(
         associated_token::mint = xnft.master_mint,
-        associated_token::authority = authority,
+        associated_token::authority = xnft_authority,
     )]
     pub master_token: Account<'info, TokenAccount>,
 
     #[account(mut)]
     pub master_metadata: Account<'info, MetadataAccount>,
 
-    pub authority: Signer<'info>,
+    /// CHECK: is validated in the associated token constraint on `master_token`.
+    pub xnft_authority: UncheckedAccount<'info>,
+    pub update_authority: Signer<'info>,
+
     pub metadata_program: Program<'info, Metadata>,
 }
 
@@ -56,10 +60,16 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     let md = &ctx.accounts.master_metadata;
 
     // Gates the processing of an xNFT update if there is a set update authority
-    // on the account that does not match the signer of the transaction
-    // ctx.accounts
-    //     .xnft
-    //     .verify_update_authority(ctx.accounts.authority.key)?;
+    // on the account that does not match the signer of the transaction.
+    if let Some(CuratorStatus {
+        pubkey,
+        verified: true,
+    }) = ctx.accounts.xnft.curator
+    {
+        if pubkey != *ctx.accounts.update_authority.key {
+            return Err(error!(CustomError::CuratorAuthorityMismatch));
+        }
+    }
 
     if let Some(u) = updates.uri.as_ref() {
         metadata::update_metadata_accounts_v2(

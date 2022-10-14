@@ -16,6 +16,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use anchor_lang::prelude::*;
+use solana_security_txt::security_txt;
 
 mod events;
 mod instructions;
@@ -25,6 +26,15 @@ mod util;
 use instructions::*;
 
 declare_id!("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs");
+
+security_txt! {
+    name: "xNFT",
+    project_url: "https://coral.community",
+    contacts: "email:contact@200ms.io,twitter:@0xCoral",
+    policy: "https://github.com/coral-xyz/xnft/blob/master/SECURITY.md",
+    preferred_languages: "en",
+    source_code: "https://github.com/coral-xyz/xnft"
+}
 
 #[constant]
 pub const MAX_NAME_LEN: usize = 30;
@@ -44,14 +54,13 @@ pub mod xnft {
     /// * xNFT PDA associated with the master edition.
     ///
     /// Once this is invoked, an xNFT exists and can be "installed" by users.
-    #[allow(clippy::too_many_arguments)]
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
+        curator: Option<Pubkey>,
         params: CreateXnftParams,
-        update_review_authority: Option<Pubkey>,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params, update_review_authority)
+        instructions::create_xnft_handler(ctx, name, curator, params)
     }
 
     /// Updates the code of an xNFT.
@@ -59,6 +68,16 @@ pub mod xnft {
     /// This is simply a token metadata update cpi.
     pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
         instructions::update_xnft_handler(ctx, updates)
+    }
+
+    /// Assigns a curator public key to the provided xNFT.
+    pub fn set_curator(ctx: Context<SetCurator>) -> Result<()> {
+        instructions::set_curator_handler(ctx)
+    }
+
+    /// Verifies the assignment of a curator to an xNFT, signed by the curator authority.
+    pub fn verify_curator(ctx: Context<VerifyCurator>) -> Result<()> {
+        instructions::verify_curator_handler(ctx)
     }
 
     /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
@@ -115,6 +134,15 @@ pub enum CustomError {
 
     #[msg("A collection pubkey was provided without the collection Kind variant")]
     CollectionWithoutKind,
+
+    #[msg("There is already a verified curator assigned")]
+    CuratorAlreadySet,
+
+    #[msg("The expected curator authority did not match expected")]
+    CuratorAuthorityMismatch,
+
+    #[msg("The provided curator account did not match the one assigned")]
+    CuratorMismatch,
 
     #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,
