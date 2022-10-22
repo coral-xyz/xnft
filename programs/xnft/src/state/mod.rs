@@ -12,7 +12,7 @@ pub use install::*;
 pub use review::*;
 pub use xnft::*;
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq)]
 pub enum Kind {
     App,
     Collection,

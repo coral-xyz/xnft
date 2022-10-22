@@ -13,7 +13,7 @@ defaults:
     shell: bash
 
 env:
-  SOLANA_VERSION: 1.14.3
+  SOLANA_VERSION: 1.10.40
 
 jobs:
   lint_and_test:
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          cache: npm
+          cache: yarn
 
       - name: Cache Cargo
         uses: actions/cache@v3
@@ -60,10 +60,10 @@ jobs:
       - run: solana config set --url localhost
 
       - name: Install Dependencies
-        run: npm ci && npm install -g @project-serum/anchor-cli
+        run: yarn install && yarn global add @project-serum/anchor-cli
 
       - name: Format Check
-        run: npm run fmt && cargo fmt -- --check
+        run: yarn fmt && cargo fmt -- --check
 
       - name: Clippy Check
         run: cargo clippy --all-targets -- -D warnings
