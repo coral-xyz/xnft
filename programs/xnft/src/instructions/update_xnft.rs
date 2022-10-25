@@ -12,7 +12,6 @@ use crate::CustomError;
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
     install_vault: Option<Pubkey>,
-    // name: Option<String>,
     price: Option<u64>,
     tag: Option<Tag>,
     uri: Option<String>,
@@ -36,8 +35,8 @@ pub struct UpdateXnft<'info> {
     pub master_metadata: Account<'info, MetadataAccount>,
 
     /// CHECK: is validated in the associated token constraint on `master_token`.
-    pub xnft_authority: UncheckedAccount<'info>,
-    pub update_authority: Signer<'info>,
+    pub curator: UncheckedAccount<'info>, // TODO: reverse for curator approval enforcement
+    pub xnft_authority: Signer<'info>,
 
     pub metadata_program: Program<'info, Metadata>,
 }
@@ -66,7 +65,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         verified: true,
     }) = ctx.accounts.xnft.curator
     {
-        if pubkey != *ctx.accounts.update_authority.key {
+        if pubkey != *ctx.accounts.curator.key {
             return Err(error!(CustomError::CuratorAuthorityMismatch));
         }
     }
@@ -98,15 +97,6 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     if let Some(vault) = updates.install_vault {
         xnft.install_vault = vault;
     }
-
-    // TODO:
-    // if let Some(name) = updates.name {
-    //     if name.len() > MAX_NAME_LEN {
-    //         return Err(error!(CustomError::NameTooLong));
-    //     }
-
-    //     xnft.name = name;
-    // }
 
     if let Some(price) = updates.price {
         xnft.install_price = price;

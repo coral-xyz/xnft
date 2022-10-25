@@ -498,7 +498,6 @@ describe("Account Updates", () => {
     await program.methods
       .updateXnft({
         installVault: null,
-        // name: null,
         price: new anchor.BN(100),
         tag: { none: {} } as never,
         uri: null,
@@ -508,10 +507,10 @@ describe("Account Updates", () => {
         masterMetadata,
         masterToken,
         xnftAuthority: authority.publicKey,
-        updateAuthority: curatorAuthority.publicKey,
+        curator: curatorAuthority.publicKey,
         metadataProgram,
       })
-      .signers([curatorAuthority])
+      // .signers([curatorAuthority])
       .rpc();
 
     const acc = await program.account.xnft.fetch(xnft);
