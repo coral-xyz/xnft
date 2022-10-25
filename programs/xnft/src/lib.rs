@@ -125,6 +125,11 @@ pub mod xnft {
     pub fn revoke_access(ctx: Context<RevokeAccess>) -> Result<()> {
         instructions::revoke_access_handler(ctx)
     }
+
+    /// Transfer the xNFT to the provided designation wallet.
+    pub fn transfer(ctx: Context<Transfer>) -> Result<()> {
+        instructions::transfer_handler(ctx)
+    }
 }
 
 #[error_code]

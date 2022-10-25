@@ -10,6 +10,7 @@ mod grant_access;
 mod revoke_access;
 mod set_curator;
 mod set_suspended;
+mod transfer;
 mod update_xnft;
 mod verify_curator;
 
@@ -23,5 +24,6 @@ pub use grant_access::*;
 pub use revoke_access::*;
 pub use set_curator::*;
 pub use set_suspended::*;
+pub use transfer::*;
 pub use update_xnft::*;
 pub use verify_curator::*;
