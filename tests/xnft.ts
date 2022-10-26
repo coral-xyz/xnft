@@ -533,7 +533,7 @@ describe("Account Creations", () => {
 
 describe("Account Updates", () => {
   it("the data in an xNFT account can be updated by the owner", async () => {
-    /* const ix = */ await program.methods
+    /*const ix =*/ await program.methods
       .updateXnft({
         installVault: null,
         price: new anchor.BN(100),
@@ -552,28 +552,15 @@ describe("Account Updates", () => {
     // .instruction();
 
     // const transaction = anchor.web3.Keypair.generate();
-    // await multisigProgram.methods
+    // const createIx = await multisigProgram.methods
     //   .createTransaction(ix.programId, ix.keys, ix.data)
     //   .accounts({
     //     multisig: multisig.publicKey,
     //     transaction: transaction.publicKey,
     //     proposer: curatorAuthority.publicKey,
     //   })
-    //   .preInstructions([
-    //     await multisigProgram.account.transaction.createInstruction(
-    //       transaction,
-    //       8 +
-    //         32 +
-    //         32 +
-    //         (4 + (32 + 1 + 1) * ix.keys.length) +
-    //         (4 + ix.data.length) +
-    //         (4 + 1) +
-    //         1 +
-    //         4
-    //     ),
-    //   ])
-    //   .signers([curatorAuthority, transaction])
-    //   .rpc();
+    //   .signers([curatorAuthority])
+    //   .instruction();
 
     // await multisigProgram.methods
     //   .executeTransaction()
@@ -589,7 +576,21 @@ describe("Account Updates", () => {
     //       isWritable: false,
     //     })
     //   )
-    //   .signers([multisig])
+    //   .preInstructions([
+    //     await multisigProgram.account.transaction.createInstruction(
+    //       transaction,
+    //       8 +
+    //         32 +
+    //         32 +
+    //         (4 + (32 + 1 + 1) * ix.keys.length) +
+    //         (4 + ix.data.length) +
+    //         (4 + 1) +
+    //         1 +
+    //         4
+    //     ),
+    //     createIx,
+    //   ])
+    //   .signers([curatorAuthority, multisig, transaction])
     //   .rpc();
 
     const acc = await program.account.xnft.fetch(xnft);
