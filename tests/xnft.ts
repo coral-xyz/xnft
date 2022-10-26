@@ -12,15 +12,29 @@ import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import { assert } from "chai";
 import type { Xnft } from "../target/types/xnft";
+import {
+  IDL,
+  type SerumMultisig,
+} from "../deps/multisig/target/types/serum_multisig";
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const multisigProgramId = new anchor.web3.PublicKey(
+  "6tbPiQLgTU4ySYWyZGXbnVSAEzLc1uF8t5kJPXXgBmRP"
+);
 
 export const metadataProgram = new anchor.web3.PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+const multisigProgram = new anchor.Program<SerumMultisig>(
+  IDL,
+  multisigProgramId,
+  program.provider
+);
+
 const curatorAuthority = anchor.web3.Keypair.generate();
 const authority = (
   (program.provider as anchor.AnchorProvider).wallet as NodeWallet
@@ -30,6 +44,7 @@ const metaplex = new Metaplex(program.provider.connection).use(
 );
 
 const installVault = authority.publicKey;
+const multisig = anchor.web3.Keypair.generate();
 const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
 const installAuthority = anchor.web3.Keypair.generate();
@@ -51,6 +66,26 @@ describe("Account Creations", () => {
     );
 
     await wait(500);
+
+    const [_multisigSigner, bump] =
+      await anchor.web3.PublicKey.findProgramAddress(
+        [multisig.publicKey.toBytes()],
+        multisigProgramId
+      );
+
+    await multisigProgram.methods
+      .createMultisig([curatorAuthority.publicKey], new anchor.BN(1), bump)
+      .accounts({
+        multisig: multisig.publicKey,
+      })
+      .preInstructions([
+        await multisigProgram.account.multisig.createInstruction(
+          multisig,
+          8 + (4 + 32) + 8 + 1 + 4
+        ),
+      ])
+      .signers([multisig])
+      .rpc();
   });
 
   describe("an xNFT can be created", () => {

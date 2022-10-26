@@ -44,20 +44,20 @@ jobs:
             ./target/
           key: cargo-${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Cache Solana
-        uses: actions/cache@v3
-        id: cache-solana
-        with:
-          path: |
-            ~/.cache/solana/
-            ~/.local/share/solana/
-          key: solana-${{ runner.os }}-${{ env.SOLANA_VERSION }}
+      # - name: Cache Solana
+      #   uses: actions/cache@v3
+      #   id: cache-solana
+      #   with:
+      #     path: |
+      #       ~/.cache/solana/
+      #       ~/.local/share/solana/
+      #     key: solana-${{ runner.os }}-${{ env.SOLANA_VERSION }}
 
-      - run: sudo apt-get update && sudo apt-get install -y pkg-config build-essential libudev-dev
-      - run: sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_VERSION }}/install)"
-      - run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-      - run: solana-keygen new --no-bip39-passphrase
-      - run: solana config set --url localhost
+      # - run: sudo apt-get update && sudo apt-get install -y pkg-config build-essential libudev-dev
+      # - run: sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_VERSION }}/install)"
+      # - run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      # - run: solana-keygen new --no-bip39-passphrase
+      # - run: solana config set --url localhost
 
       - name: Install Dependencies
         run: yarn install && yarn global add @project-serum/anchor-cli
@@ -67,6 +67,3 @@ jobs:
 
       - name: Clippy Check
         run: cargo clippy --all-targets -- -D warnings
-
-      - name: Test Contract
-        run: anchor test
