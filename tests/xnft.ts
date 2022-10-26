@@ -249,7 +249,7 @@ describe("Account Creations", () => {
         .accounts({
           xnft,
           masterToken,
-          curator: multisig.publicKey,
+          curator: multisigSigner,
         })
         .rpc();
     });
@@ -258,7 +258,7 @@ describe("Account Creations", () => {
       const data = await program.account.xnft.fetch(xnft);
       assert.strictEqual(
         data.curator.pubkey.toBase58(),
-        multisig.publicKey.toBase58()
+        multisigSigner.toBase58()
       );
       assert.isFalse(data.curator.verified);
     });
@@ -271,7 +271,7 @@ describe("Account Creations", () => {
           .verifyCurator()
           .accounts({
             xnft,
-            curator: multisig.publicKey,
+            curator: multisigSigner,
           })
           .rpc();
         assert.ok(false);
@@ -279,13 +279,60 @@ describe("Account Creations", () => {
     });
 
     it("if the curator authority signs the transaction", async () => {
-      await program.methods
+      const ix = await program.methods
         .verifyCurator()
         .accounts({
           xnft,
-          curator: multisig.publicKey,
+          curator: multisigSigner,
         })
-        .signers([multisig])
+        .instruction();
+
+      const transaction = anchor.web3.Keypair.generate();
+
+      const initTransactionAccountIx =
+        await multisigProgram.account.transaction.createInstruction(
+          transaction,
+          8 +
+            32 +
+            32 +
+            (4 + (32 + 1 + 1) * ix.keys.length) +
+            (4 + ix.data.length) +
+            (4 + 1) +
+            1 +
+            4
+        );
+
+      const createTransactionIx = await multisigProgram.methods
+        .createTransaction(ix.programId, ix.keys, ix.data)
+        .accounts({
+          multisig: multisig.publicKey,
+          transaction: transaction.publicKey,
+          proposer: curatorAuthority.publicKey,
+        })
+        .instruction();
+
+      await multisigProgram.methods
+        .executeTransaction()
+        .accounts({
+          multisig: multisig.publicKey,
+          multisigSigner,
+          transaction: transaction.publicKey,
+        })
+        .remainingAccounts(
+          ix.keys
+            .map((meta) =>
+              meta.pubkey.equals(multisigSigner)
+                ? { ...meta, isSigner: false }
+                : meta
+            )
+            .concat({
+              pubkey: program.programId,
+              isSigner: false,
+              isWritable: false,
+            })
+        )
+        .preInstructions([initTransactionAccountIx, createTransactionIx])
+        .signers([curatorAuthority, transaction])
         .rpc();
     });
 
@@ -545,22 +592,37 @@ describe("Account Updates", () => {
         masterMetadata,
         masterToken,
         xnftAuthority: authority.publicKey,
-        updateAuthority: multisig.publicKey,
+        updateAuthority: multisigSigner,
         metadataProgram,
       })
       .rpc();
     // .instruction();
 
     // const transaction = anchor.web3.Keypair.generate();
-    // const createIx = await multisigProgram.methods
+
+    // const initTransactionAccountIx =
+    //   await multisigProgram.account.transaction.createInstruction(
+    //     transaction,
+    //     8 +
+    //       32 +
+    //       32 +
+    //       (4 + (32 + 1 + 1) * ix.keys.length) +
+    //       (4 + ix.data.length) +
+    //       (4 + 1) +
+    //       1 +
+    //       4
+    //   );
+
+    // await multisigProgram.methods
     //   .createTransaction(ix.programId, ix.keys, ix.data)
     //   .accounts({
     //     multisig: multisig.publicKey,
     //     transaction: transaction.publicKey,
     //     proposer: curatorAuthority.publicKey,
     //   })
-    //   .signers([curatorAuthority])
-    //   .instruction();
+    //   .preInstructions([initTransactionAccountIx])
+    //   .signers([transaction, curatorAuthority])
+    //   .rpc();
 
     // await multisigProgram.methods
     //   .executeTransaction()
@@ -570,27 +632,18 @@ describe("Account Updates", () => {
     //     transaction: transaction.publicKey,
     //   })
     //   .remainingAccounts(
-    //     ix.keys.concat({
-    //       pubkey: program.programId,
-    //       isSigner: false,
-    //       isWritable: false,
-    //     })
+    //     ix.keys
+    //       .map((meta) =>
+    //         meta.pubkey.equals(multisigSigner)
+    //           ? { ...meta, isSigner: false }
+    //           : meta
+    //       )
+    //       .concat({
+    //         pubkey: program.programId,
+    //         isSigner: false,
+    //         isWritable: false,
+    //       })
     //   )
-    //   .preInstructions([
-    //     await multisigProgram.account.transaction.createInstruction(
-    //       transaction,
-    //       8 +
-    //         32 +
-    //         32 +
-    //         (4 + (32 + 1 + 1) * ix.keys.length) +
-    //         (4 + ix.data.length) +
-    //         (4 + 1) +
-    //         1 +
-    //         4
-    //     ),
-    //     createIx,
-    //   ])
-    //   .signers([curatorAuthority, multisig, transaction])
     //   .rpc();
 
     const acc = await program.account.xnft.fetch(xnft);
