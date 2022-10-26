@@ -507,7 +507,7 @@ describe("Account Updates", () => {
         masterMetadata,
         masterToken,
         xnftAuthority: authority.publicKey,
-        curator: curatorAuthority.publicKey,
+        updateAuthority: curatorAuthority.publicKey,
         metadataProgram,
       })
       // .signers([curatorAuthority])

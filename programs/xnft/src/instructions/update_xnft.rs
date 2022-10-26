@@ -35,7 +35,7 @@ pub struct UpdateXnft<'info> {
     pub master_metadata: Account<'info, MetadataAccount>,
 
     /// CHECK: is validated in the associated token constraint on `master_token`.
-    pub curator: UncheckedAccount<'info>, // TODO: reverse for curator approval enforcement
+    pub update_authority: UncheckedAccount<'info>, // TODO: reverse for curator approval enforcement
     pub xnft_authority: Signer<'info>,
 
     pub metadata_program: Program<'info, Metadata>,
@@ -65,7 +65,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         verified: true,
     }) = ctx.accounts.xnft.curator
     {
-        if pubkey != *ctx.accounts.curator.key {
+        if pubkey != *ctx.accounts.update_authority.key {
             return Err(error!(CustomError::CuratorAuthorityMismatch));
         }
     }
