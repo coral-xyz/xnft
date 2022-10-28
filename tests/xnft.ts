@@ -8,7 +8,11 @@ import {
   type MetadataAccount,
 } from "@metaplex-foundation/js";
 import * as anchor from "@project-serum/anchor";
-import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
+import {
+  getAssociatedTokenAddress,
+  getAccount,
+  createAssociatedTokenAccount,
+} from "@solana/spl-token";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import { assert } from "chai";
 import type { Xnft } from "../target/types/xnft";
@@ -54,6 +58,7 @@ let multisigSigner: anchor.web3.PublicKey;
 let privateXnft: anchor.web3.PublicKey;
 let xnft: anchor.web3.PublicKey;
 let masterMetadata: anchor.web3.PublicKey;
+let masterMint: anchor.web3.PublicKey;
 let masterToken: anchor.web3.PublicKey;
 let install: anchor.web3.PublicKey;
 let review: anchor.web3.PublicKey;
@@ -155,6 +160,7 @@ describe("Account Creations", () => {
         program.programId
       );
 
+      masterMint = mint;
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const ix = program.methods
@@ -579,6 +585,15 @@ describe("Account Creations", () => {
 });
 
 describe("Account Updates", () => {
+  const newAuthority = anchor.web3.Keypair.generate();
+
+  before(async () => {
+    await program.provider.connection.requestAirdrop(
+      newAuthority.publicKey,
+      anchor.web3.LAMPORTS_PER_SOL
+    );
+  });
+
   it("the data in an xNFT account can be updated by the owner", async () => {
     /*const ix =*/ await program.methods
       .updateXnft({
@@ -651,6 +666,39 @@ describe("Account Updates", () => {
     assert.strictEqual(acc.installPrice.toNumber(), 100);
     assert.deepEqual(acc.tag, { none: {} });
   });
+
+  it("an xNFT can be transferred to another authority", async () => {
+    const destination = await createAssociatedTokenAccount(
+      program.provider.connection,
+      authority,
+      masterMint,
+      newAuthority.publicKey
+    );
+
+    await program.methods
+      .transfer()
+      .accounts({
+        xnft,
+        masterMint,
+        source: masterToken,
+        destination,
+        recipient: newAuthority.publicKey,
+      })
+      .rpc();
+
+    const ata = await getAccount(program.provider.connection, destination);
+    assert.strictEqual(ata.amount.toString(), "1");
+    assert.isFalse(ata.isFrozen); // transferred xnft was a collection type which is not frozen
+    assert.strictEqual(ata.mint.toBase58(), masterMint.toBase58());
+    assert.strictEqual(ata.owner.toBase58(), newAuthority.publicKey.toBase58());
+
+    const oldAta = await program.provider.connection.getAccountInfo(
+      masterToken
+    );
+    assert.isNull(oldAta);
+  });
+
+  after(async () => {});
 });
 
 describe("Account Closure", () => {

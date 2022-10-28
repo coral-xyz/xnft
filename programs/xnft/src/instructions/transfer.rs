@@ -47,8 +47,8 @@ impl<'info> Transfer<'info> {
     pub fn close_account_ctx(&self) -> CpiContext<'_, '_, '_, 'info, CloseAccount<'info>> {
         let program = self.token_program.to_account_info();
         let accounts = CloseAccount {
-            account: self.destination.to_account_info(),
-            authority: self.xnft.to_account_info(),
+            account: self.source.to_account_info(),
+            authority: self.authority.to_account_info(),
             destination: self.authority.to_account_info(),
         };
         CpiContext::new(program, accounts)
@@ -87,10 +87,11 @@ impl<'info> Transfer<'info> {
 
 pub fn transfer_handler(ctx: Context<Transfer>) -> Result<()> {
     let xnft = &ctx.accounts.xnft;
-    let frozen = ctx.accounts.source.is_frozen();
+    let mut was_frozen = false;
 
     // Unfreeze the token account if it is frozen.
-    if frozen {
+    if ctx.accounts.source.is_frozen() {
+        was_frozen = true;
         token::thaw_account(ctx.accounts.thaw_account_ctx().with_signer(&[&[
             "xnft".as_bytes(),
             xnft.master_edition.as_ref(),
@@ -102,7 +103,7 @@ pub fn transfer_handler(ctx: Context<Transfer>) -> Result<()> {
     token::transfer(ctx.accounts.transfer_ctx(), ctx.accounts.source.amount)?;
 
     // Freeze the new account if necessary
-    if frozen {
+    if was_frozen {
         token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
             "xnft".as_bytes(),
             xnft.master_edition.as_ref(),
