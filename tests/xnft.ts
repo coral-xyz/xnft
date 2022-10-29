@@ -14,14 +14,14 @@ import { assert } from "chai";
 import type { Xnft } from "../target/types/xnft";
 import {
   IDL,
-  type SerumMultisig,
-} from "../deps/multisig/target/types/serum_multisig";
+  type CoralMultisig,
+} from "../deps/multisig/target/types/coral_multisig";
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 export const multisigProgramId = new anchor.web3.PublicKey(
-  "6tbPiQLgTU4ySYWyZGXbnVSAEzLc1uF8t5kJPXXgBmRP"
+  "msigUdDBsR4zSUYqYEDrc1LcgtmuSDDM7KxpRUXNC6U"
 );
 
 export const metadataProgram = new anchor.web3.PublicKey(
@@ -29,7 +29,7 @@ export const metadataProgram = new anchor.web3.PublicKey(
 );
 
 const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
-const multisigProgram = new anchor.Program<SerumMultisig>(
+const multisigProgram = new anchor.Program<CoralMultisig>(
   IDL,
   multisigProgramId,
   program.provider
