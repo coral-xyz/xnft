@@ -162,6 +162,9 @@ pub enum CustomError {
     #[msg("The installation provided for the review does not match the xNFT")]
     ReviewInstallMismatch,
 
+    #[msg("Updated supply is less than the original supply set on creation")]
+    SupplyReduction,
+
     #[msg("Attempting to install a currently suspended xNFT")]
     SuspendedInstallation,
 

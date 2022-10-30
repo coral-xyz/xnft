@@ -13,6 +13,7 @@ use crate::CustomError;
 pub struct UpdateParams {
     install_vault: Option<Pubkey>,
     price: Option<u64>,
+    supply: Option<u64>,
     tag: Option<Tag>,
     uri: Option<String>,
 }
@@ -100,6 +101,14 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
 
     if let Some(price) = updates.price {
         xnft.install_price = price;
+    }
+
+    if let Some(s) = updates.supply {
+        if xnft.supply.is_none() || xnft.supply.unwrap() > s {
+            return Err(error!(CustomError::SupplyReduction));
+        }
+
+        xnft.supply = Some(s);
     }
 
     if let Some(t) = updates.tag {

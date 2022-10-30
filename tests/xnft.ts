@@ -584,6 +584,7 @@ describe("Account Updates", () => {
       .updateXnft({
         installVault: null,
         price: new anchor.BN(100),
+        supply: new anchor.BN(200),
         tag: { none: {} } as never,
         uri: null,
       })
@@ -649,6 +650,7 @@ describe("Account Updates", () => {
     const acc = await program.account.xnft.fetch(xnft);
 
     assert.strictEqual(acc.installPrice.toNumber(), 100);
+    assert.strictEqual(acc.supply.toNumber(), 200);
     assert.deepEqual(acc.tag, { none: {} });
   });
 });
