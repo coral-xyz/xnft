@@ -4,7 +4,7 @@
 
 ### Install Anchor
 
-First install the Anchor dev tools. See book.anchor-lang.com.
+First install the Anchor dev tools. See [book.anchor-lang.com](https://book.anchor-lang.com).
 
 ### Installing and building submodules
 
