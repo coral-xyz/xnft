@@ -1,0 +1,69 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SOLANA_VERSION: 1.10.40
+
+jobs:
+  lint_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+
+      - name: Cache Cargo
+        uses: actions/cache@v3
+        id: cache-cargo-build
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ./target/
+          key: cargo-${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+
+      # - name: Cache Solana
+      #   uses: actions/cache@v3
+      #   id: cache-solana
+      #   with:
+      #     path: |
+      #       ~/.cache/solana/
+      #       ~/.local/share/solana/
+      #     key: solana-${{ runner.os }}-${{ env.SOLANA_VERSION }}
+
+      # - run: sudo apt-get update && sudo apt-get install -y pkg-config build-essential libudev-dev
+      # - run: sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_VERSION }}/install)"
+      # - run: echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      # - run: solana-keygen new --no-bip39-passphrase
+      # - run: solana config set --url localhost
+
+      - name: Install Dependencies
+        run: yarn install && yarn global add @project-serum/anchor-cli
+
+      - name: Format Check
+        run: yarn fmt && cargo fmt -- --check
+
+      - name: Clippy Check
+        run: cargo clippy --all-targets -- -D warnings

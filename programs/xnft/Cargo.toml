@@ -1,0 +1,23 @@
+[package]
+name = "xnft"
+version = "0.1.0"
+description = "Protocol for minting and managing xNFTs"
+license = "GPL-3.0-only"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "xnft"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { git = "https://github.com/coral-xyz/anchor" }
+anchor-spl = { git = "https://github.com/coral-xyz/anchor", features = ["metadata"] }
+mpl-token-metadata = { version = "1.3.4", features = ["no-entrypoint"] }
+solana-security-txt = "1.0.1"
