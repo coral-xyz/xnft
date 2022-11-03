@@ -25,7 +25,6 @@ pub struct RevokeAccess<'info> {
     pub xnft: Account<'info, Xnft>,
 
     /// CHECK: validated with has_one and seeding on `access`.
-    #[account(mut)]
     pub wallet: UncheckedAccount<'info>,
 
     ////////////////////////////////////////////////////////////////////////////

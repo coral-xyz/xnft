@@ -10,7 +10,7 @@
   </p>
 </div>
 
-### Disclaimer
+## Disclaimer
 
 - This protocol is under active development and is subject to change
 - The contract code is currently unaudited

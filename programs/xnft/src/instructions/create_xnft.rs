@@ -115,7 +115,6 @@ pub struct CreateXnft<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub publisher: Signer<'info>,
-    pub authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
