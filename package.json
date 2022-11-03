@@ -5,8 +5,8 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "docs": "docsify serve ./docs",
-    "fmt:fix": "prettier \"*/**/*{.js,.ts,.tsx,.json,.yaml}\" -w",
-    "fmt": "prettier \"*/**/*{.js,.ts,.tsx,.json,.yaml}\" --check"
+    "fmt:fix": "prettier \"*/**/*{.js,.ts,.tsx,.json,.yaml,.md}\" -w",
+    "fmt": "prettier \"*/**/*{.js,.ts,.tsx,.json,.yaml,.md}\" --check"
   },
   "devDependencies": {
     "@metaplex-foundation/js": "^0.16.1",
