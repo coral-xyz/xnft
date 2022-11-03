@@ -25,7 +25,7 @@ pub struct Xnft {
     pub publisher: Pubkey,
     /// The pubkey of the account to receive install payments (32).
     pub install_vault: Pubkey,
-    /// The pubkey of the ML master edition account (32).
+    /// The pubkey of the MPL master edition account (32).
     pub master_edition: Pubkey,
     /// The pubkey of the MPL master metadata account (32).
     pub master_metadata: Pubkey,
