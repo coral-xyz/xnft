@@ -5,8 +5,9 @@
   </p>
   <p>
     <a href="https://github.com/coral-xyz/xnft/actions"><img alt="Build Status" src="https://github.com/coral-xyz/xnft/actions/workflows/test.yaml/badge.svg" /></a>
-    <a href="https://discord.com/invite/RSpSuKp9"><img alt="Discord Chat" src="https://img.shields.io/badge/chat-discord-blueviolet" /></a>
-    <a href="https://github.com/coral-xyz/xnft/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/coral-xyz/xnft?color=blue" /></a>
+    <a target="_blank" href="https://discord.com/invite/RSpSuKp9"><img alt="Discord Chat" src="https://img.shields.io/badge/chat-discord-blueviolet" /></a>
+    <a target="_blank" href="https://github.com/coral-xyz/xnft/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/coral-xyz/xnft?color=red" /></a>
+    <a target="_blank" href="https://coral-xyz.github.io/xnft"><img alt="Docs" src="https://img.shields.io/badge/docs-protocol-blue" /></a>
   </p>
 </div>
 
