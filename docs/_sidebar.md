@@ -1,3 +1,3 @@
-* [Overview](/)
-* [Instructions](instructions.md)
-* [State](state.md)
+* [Overview](./)
+* [Instructions](./instructions)
+* [State](./state)
