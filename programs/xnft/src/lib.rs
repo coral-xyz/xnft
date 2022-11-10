@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#![allow(clippy::result_large_err)]
+
 use anchor_lang::prelude::*;
 use solana_security_txt::security_txt;
 
