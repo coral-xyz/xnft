@@ -26,6 +26,7 @@ pub struct SetSuspended<'info> {
     #[account(
         associated_token::mint = xnft.master_mint,
         associated_token::authority = authority,
+        constraint = master_token.amount == 1,
     )]
     pub master_token: Account<'info, TokenAccount>,
 

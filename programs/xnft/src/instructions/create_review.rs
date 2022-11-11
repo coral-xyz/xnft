@@ -30,6 +30,7 @@ pub struct CreateReview<'info> {
     pub install: Account<'info, Install>,
 
     #[account(
+        constraint = master_token.amount == 1,
         constraint = master_token.mint == xnft.master_mint,
         constraint = master_token.owner != *author.key @ CustomError::CannotReviewOwned,
     )]
