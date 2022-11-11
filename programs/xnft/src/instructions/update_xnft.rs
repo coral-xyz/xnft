@@ -48,6 +48,7 @@ pub struct UpdateXnft<'info> {
     #[account(
         associated_token::mint = xnft.master_mint,
         associated_token::authority = xnft_authority,
+        constraint = master_token.amount == 1,
     )]
     pub master_token: Account<'info, TokenAccount>,
 
