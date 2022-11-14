@@ -113,7 +113,7 @@ describe("Account Creations", () => {
     const kind = { collection: {} } as never;
     const uri = "https://arweave.net/abc123";
     const sellerFeeBasisPoints = 0;
-    const supply = new anchor.BN(100);
+    const supply = null;
     const l1 = { solana: {} } as never;
     const collection = anchor.web3.Keypair.generate().publicKey;
 
