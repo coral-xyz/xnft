@@ -21,11 +21,7 @@ import {
   type MetadataAccount,
 } from "@metaplex-foundation/js";
 import * as anchor from "@project-serum/anchor";
-import {
-  getAssociatedTokenAddress,
-  getAccount,
-  createAssociatedTokenAccount,
-} from "@solana/spl-token";
+import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import { assert } from "chai";
 import type { Xnft } from "../target/types/xnft";
@@ -683,9 +679,7 @@ describe("Account Updates", () => {
   });
 
   it("an xNFT can be transferred to another authority", async () => {
-    const destination = await createAssociatedTokenAccount(
-      program.provider.connection,
-      authority,
+    const destination = await getAssociatedTokenAddress(
       masterMint,
       newAuthority.publicKey
     );

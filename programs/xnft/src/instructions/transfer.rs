@@ -14,6 +14,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{
     self, CloseAccount, FreezeAccount, Mint, ThawAccount, Token, TokenAccount,
     Transfer as TokenTransfer,
@@ -42,7 +43,8 @@ pub struct Transfer<'info> {
     pub source: Account<'info, TokenAccount>,
 
     #[account(
-        mut,
+        init,
+        payer = authority,
         associated_token::mint = master_mint,
         associated_token::authority = recipient,
     )]
@@ -53,7 +55,10 @@ pub struct Transfer<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 
+    pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub rent: Sysvar<'info, Rent>,
 }
 
 impl<'info> Transfer<'info> {
