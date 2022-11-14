@@ -1,5 +1,7 @@
 # Review
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/review.rs)
+
 | Name   | Type     | Offset | Size         | Description                                               |
 | :----- | :------- | :----- | :----------- | :-------------------------------------------------------- |
 | Author | `Pubkey` | 8      | 32           | The account that created the review                       |

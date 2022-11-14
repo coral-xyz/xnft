@@ -1,5 +1,7 @@
 # xNFT
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/xnft.rs)
+
 | Name              | Type                    | Offset | Size     | Description                                                                                                 |
 | :---------------- | :---------------------- | :----- | :------- | :---------------------------------------------------------------------------------------------------------- |
 | Publisher         | `Pubkey`                | 8      | 32       | The account that originally published the xNFT                                                              |

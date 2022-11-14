@@ -1,5 +1,7 @@
 # Install
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/install.rs)
+
 | Name            | Type     | Offset | Size | Description                                                                                                          |
 | :-------------- | :------- | :----- | :--- | :------------------------------------------------------------------------------------------------------------------- |
 | Authority       | `Pubkey` | 8      | 32   | The owning account of the installation                                                                               |

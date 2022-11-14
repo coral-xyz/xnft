@@ -1,4 +1,6 @@
 - [**Overview**](/)
+- [**Errors**](/errors.md)
+- [**Events**](/events.md)
 - **Instructions**
   - [Create an Install](/instructions/create-an-install.md)
   - [Create a Permissioned Install](/instructions/create-a-permissioned-install.md)

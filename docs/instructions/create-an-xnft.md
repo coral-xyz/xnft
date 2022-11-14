@@ -1,23 +1,25 @@
 # Create an xNFT
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_xnft.rs)
+
 TODO:
 
 ## Accounts
 
 | Name                     | Signer | Writable | Description                                                  |
 | :----------------------- | :----: | :------: | :----------------------------------------------------------- |
-| Master Mint              |   ❌   |    ✅    | The master mint for the xNFT token to be initialized         |
-| Master Token             |   ❌   |    ✅    | The master token account for the xNFT mint to be initialized |
-| Master Metadata          |   ❌   |    ✅    | The MPL master metadata account initialized via CPI          |
-| Master Edition           |   ❌   |    ✅    | The xNFT master edition initialized via CPI                  |
-| xNFT                     |   ❌   |    ✅    | The `Xnft` program account being initialized and populated   |
-| Payer                    |   ✅   |    ✅    | The wallet paying for the initialization rent fees           |
-| Publisher                |   ✅   |    ❌    | The account who is the original publisher and creator        |
-| System Program           |   ❌   |    ❌    | ---                                                          |
-| Token Program            |   ❌   |    ❌    | ---                                                          |
-| Associated Token Program |   ❌   |    ❌    | ---                                                          |
-| Token Metadata Program   |   ❌   |    ❌    | ---                                                          |
-| Rent Sysvar              |   ❌   |    ❌    | ---                                                          |
+| Master Mint              |   ❌    |    ✅     | The master mint for the xNFT token to be initialized         |
+| Master Token             |   ❌    |    ✅     | The master token account for the xNFT mint to be initialized |
+| Master Metadata          |   ❌    |    ✅     | The MPL master metadata account initialized via CPI          |
+| Master Edition           |   ❌    |    ✅     | The xNFT master edition initialized via CPI                  |
+| xNFT                     |   ❌    |    ✅     | The `Xnft` program account being initialized and populated   |
+| Payer                    |   ✅    |    ✅     | The wallet paying for the initialization rent fees           |
+| Publisher                |   ✅    |    ❌     | The account who is the original publisher and creator        |
+| System Program           |   ❌    |    ❌     | ---                                                          |
+| Token Program            |   ❌    |    ❌     | ---                                                          |
+| Associated Token Program |   ❌    |    ❌     | ---                                                          |
+| Token Metadata Program   |   ❌    |    ❌     | ---                                                          |
+| Rent Sysvar              |   ❌    |    ❌     | ---                                                          |
 
 ## Arguments
 

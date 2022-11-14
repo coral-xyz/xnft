@@ -1,5 +1,7 @@
 # Access
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/access.rs)
+
 | Name   | Type     | Offset | Size | Description                                   |
 | :----- | :------- | :----- | :--- | :-------------------------------------------- |
 | Wallet | `Pubkey` | 8      | 32   | The wallet that is granted access             |
