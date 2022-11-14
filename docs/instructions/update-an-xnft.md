@@ -22,16 +22,13 @@ TODO:
 ### Updates Struct
 
 ```rust
+#[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
-    install_vault: Option<Pubkey>,
-    price: Option<u64>,
-    supply: Option<SupplyType>,
-    tag: Option<Tag>,
+    install_authority: Option<Pubkey>,
+    install_price: u64,
+    install_vault: Pubkey,
+    supply: Option<u64>,
+    tag: Tag,
     uri: Option<String>,
-}
-
-pub enum SupplyType {
-    Infinite,
-    Limited { value: u64 },
 }
 ```

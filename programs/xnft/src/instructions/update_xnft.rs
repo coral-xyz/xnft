@@ -23,17 +23,12 @@ use crate::state::{CuratorStatus, Tag, Xnft};
 use crate::CustomError;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
-pub enum SupplyType {
-    Infinite,
-    Limited { value: u64 },
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
-    install_vault: Option<Pubkey>,
-    price: Option<u64>,
-    supply: Option<SupplyType>,
-    tag: Option<Tag>,
+    install_authority: Option<Pubkey>,
+    install_price: u64,
+    install_vault: Pubkey,
+    supply: Option<u64>,
+    tag: Tag,
     uri: Option<String>,
 }
 
@@ -114,32 +109,23 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     }
 
     let xnft = &mut ctx.accounts.xnft;
+    xnft.install_authority = updates.install_authority;
+    xnft.install_price = updates.install_price;
+    xnft.install_vault = updates.install_vault;
+    xnft.tag = updates.tag;
 
-    if let Some(vault) = updates.install_vault {
-        xnft.install_vault = vault;
-    }
-
-    if let Some(price) = updates.price {
-        xnft.install_price = price;
-    }
-
-    if let Some(s) = updates.supply {
-        match s {
-            SupplyType::Infinite => {
-                xnft.supply = None;
-            }
-            SupplyType::Limited { value } => {
-                if xnft.supply.is_none() || xnft.supply.unwrap() > value {
-                    return Err(error!(CustomError::SupplyReduction));
-                }
-
-                xnft.supply = Some(value);
-            }
+    // Only update the supply if a new supply value was given and
+    // its an additive change from the original value. If there was no
+    // original supply value, indicating that there's an unlimited supply,
+    // ensure that the new supply value proposed is more than the current
+    // amount of installations that have been created.
+    if let Some(new_supply) = updates.supply {
+        if (xnft.supply.is_none() && xnft.total_installs > new_supply)
+            || xnft.supply.unwrap() > new_supply
+        {
+            return Err(error!(CustomError::SupplyReduction));
         }
-    }
-
-    if let Some(t) = updates.tag {
-        xnft.tag = t;
+        xnft.supply = Some(new_supply);
     }
 
     xnft.updated_ts = clock.unix_timestamp;
