@@ -606,9 +606,10 @@ describe("Account Updates", () => {
   it("the data in an xNFT account can be updated by the owner", async () => {
     /*const ix =*/ await program.methods
       .updateXnft({
-        installVault: null,
-        price: new anchor.BN(100),
-        supply: { limited: { value: new anchor.BN(200) } } as never,
+        installAuthority: null,
+        installPrice: new anchor.BN(100),
+        installVault,
+        supply: new anchor.BN(200),
         tag: { none: {} } as never,
         uri: null,
       })
