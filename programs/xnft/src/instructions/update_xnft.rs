@@ -119,13 +119,18 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
     // original supply value, indicating that there's an unlimited supply,
     // ensure that the new supply value proposed is more than the current
     // amount of installations that have been created.
-    if let Some(new_supply) = updates.supply {
-        if (xnft.supply.is_none() && xnft.total_installs > new_supply)
-            || xnft.supply.unwrap() > new_supply
-        {
-            return Err(error!(CustomError::SupplyReduction));
+    match updates.supply {
+        Some(new_supply) => {
+            if (xnft.supply.is_none() && xnft.total_installs > new_supply)
+                || xnft.supply.unwrap() > new_supply
+            {
+                return Err(error!(CustomError::SupplyReduction));
+            }
+            xnft.supply = Some(new_supply);
         }
-        xnft.supply = Some(new_supply);
+        None => {
+            xnft.supply = None;
+        }
     }
 
     xnft.updated_ts = clock.unix_timestamp;
