@@ -67,3 +67,7 @@ jobs:
 
       - name: Clippy Check
         run: cargo clippy --all-targets -- -D warnings
+
+      - name: SDK Build Check
+        working-directory: typescript
+        run: yarn build && yarn clean
