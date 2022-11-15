@@ -2,7 +2,13 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_review.rs)
 
-TODO:
+This allows user's who have an active installation of an xNFT to leave a review (containing an optional comment and 0-5 rating).
+
+The master token is provided in order to prevent the owner of the xNFT from leaving their own review.
+
+Currently, if you want a comment associated with the `Review`, the comment should be processed and uploaded to a storage backend out-of-band of the instruction processing and then provide a deterministic URI to the comment data/JSON blob as an instruction parameter to be added to the account data of the `Review` program account.
+
+(This comment handling is subject to change in the near future)
 
 ## Accounts
 

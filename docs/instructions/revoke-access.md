@@ -2,7 +2,7 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/revoke_access.rs)
 
-TODO:
+Allows an install authority of a "private" xNFT to close the delegated `Access` program account of a wallet - effectively revoking their asynchronous installation permission/access to the xNFT.
 
 ## Accounts
 

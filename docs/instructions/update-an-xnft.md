@@ -2,7 +2,9 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/update_xnft.rs)
 
-TODO:
+Allows the authority of an xNFT to update certain values on the xNFT program account and the master metadata account as defined by the [`UpdateParams` argument structure below](#updates-struct).
+
+!> If the xNFT has a verified curator associated with it, the instruction requires a signature from the curator account in order to be accepted.
 
 ## Accounts
 

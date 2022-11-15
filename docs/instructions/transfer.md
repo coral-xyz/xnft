@@ -2,7 +2,9 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/transfer.rs)
 
-TODO:
+Transfers the xNFT master token between authorities.
+
+The current authority that is signing for the instruction will pay for the initialization of the recipient's new associated token account, but will be a net `0 SOL` transaction (minus the transaction processing fee) since their own associated token account will be closed at the end of the instruction.
 
 ## Accounts
 

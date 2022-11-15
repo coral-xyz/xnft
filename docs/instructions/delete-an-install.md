@@ -2,7 +2,7 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/delete_install.rs)
 
-TODO:
+Allows a user to uninstall and xNFT that they have an active installation of under their account.
 
 ## Accounts
 

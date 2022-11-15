@@ -2,7 +2,23 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_xnft.rs)
 
-TODO:
+Create the xNFT and the supporting accounts required for meeting the MPL standard:
+
+- Master mint
+- Master token
+- Master metadata
+- Master edition
+
+!> If the xNFT is created as being of `Kind::Collection`, there must be a valid collection public key also provided in the instruction arguments and the master token account will not be frozen.
+
+The uploading of the metadata JSON blob and associated files (bundle code, icons, screenshots, etc) must be handled prior to invoke this instruction such that the content URI(s) are available to provide as instruction arguments.
+
+### MPL Standardization
+
+- The master mint will mint a total supply of `1` to the master token account with the xNFT PDA being the authority of the mint
+- The metadata account will be populated with the relevant values as providing in the instruction arguments and primary sale happened
+- The master edition will be created with a `0` max supply to disable NFT printing post-initialization
+- Once the master edition is created via CPI, mint and metadata authorities will be transferred as defined by the MPL protocol
 
 ## Accounts
 
@@ -32,6 +48,11 @@ TODO:
 ### Parameters Struct
 
 ```rust
+pub struct CreatorsParam {
+    address: Pubkey,
+    share: u8,
+}
+
 pub struct CreateXnftParams {
     collection: Option<Pubkey>,
     creators: Vec<CreatorsParam>,
