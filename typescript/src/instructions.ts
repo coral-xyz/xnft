@@ -1,4 +1,3 @@
-import { PROGRAM_ID as METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
 import { Program } from "@project-serum/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import {
@@ -6,7 +5,7 @@ import {
   Transaction,
   TransactionInstruction,
 } from "@solana/web3.js";
-import { deriveMasterMintAddress } from "./addresses";
+import { deriveMasterMintAddress, METADATA_PROGRAM_ID } from "./addresses";
 import type { CreateXnftParameters, UpdateXnftParameters } from "./types";
 import type { Xnft } from "./xnft";
 
