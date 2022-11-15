@@ -3,7 +3,30 @@
   "version": "0.1.0",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
-  "repository": "https://github.com/coral-xyz/xnft",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coral-xyz/xnft.git"
+  },
+  "homepage": "https://github.com/coral-xyz/xnft#readme",
+  "bugs": {
+    "url" : "https://github.com/coral-xyz/xnft/issues"
+  },
+  "keywords": [
+    "solana",
+    "xnft",
+    "protocol",
+    "coral",
+    "web3"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=11"
+  },
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
