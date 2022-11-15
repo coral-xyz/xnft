@@ -1,8 +1,9 @@
 {
-  "name": "@coral-xyz/xnft",
-  "version": "1.0.0",
   "private": true,
   "license": "GPL-3.0-only",
+  "workspaces": [
+    "typescript"
+  ],
   "scripts": {
     "docs": "docsify serve ./docs",
     "fmt:fix": "prettier \"*/**/*{.js,.ts,.tsx,.json,.yaml,.md}\" -w",
