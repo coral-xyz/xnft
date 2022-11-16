@@ -105,29 +105,23 @@ impl<'info> Transfer<'info> {
 
 pub fn transfer_handler(ctx: Context<Transfer>) -> Result<()> {
     let xnft = &ctx.accounts.xnft;
-    let mut was_frozen = false;
 
     // Unfreeze the token account if it is frozen.
-    if ctx.accounts.source.is_frozen() {
-        was_frozen = true;
-        token::thaw_account(ctx.accounts.thaw_account_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            xnft.master_edition.as_ref(),
-            &[xnft.bump],
-        ]]))?;
-    }
+    token::thaw_account(ctx.accounts.thaw_account_ctx().with_signer(&[&[
+        "xnft".as_bytes(),
+        xnft.master_edition.as_ref(),
+        &[xnft.bump],
+    ]]))?;
 
     // Transfer the token in the source account to the recipient's destination token account.
     token::transfer(ctx.accounts.transfer_ctx(), ctx.accounts.source.amount)?;
 
     // Freeze the new account if necessary
-    if was_frozen {
-        token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            xnft.master_edition.as_ref(),
-            &[xnft.bump],
-        ]]))?;
-    }
+    token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
+        "xnft".as_bytes(),
+        xnft.master_edition.as_ref(),
+        &[xnft.bump],
+    ]]))?;
 
     token::close_account(ctx.accounts.close_account_ctx())?;
 

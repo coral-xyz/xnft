@@ -2,7 +2,7 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/transfer.rs)
 
-Transfers the xNFT master token between authorities.
+Transfers the xNFT master token between authorities. The instruction manages the thrawing and refreezing of the source and destination token accounts respectively in order to maintain the frozen state of the master token.
 
 The current authority that is signing for the instruction will pay for the initialization of the recipient's new associated token account, but will be a net `0 SOL` transaction (minus the transaction processing fee) since their own associated token account will be closed at the end of the instruction.
 
