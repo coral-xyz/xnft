@@ -111,7 +111,7 @@ mod tests {
     #[test]
     fn install_authority_checks() {
         let mut x = Xnft::default();
-        assert_eq!(x.verify_install_authority(&Pubkey::default()).unwrap(), ());
+        assert!(x.verify_install_authority(&Pubkey::default()).unwrap() == ());
 
         x.install_authority =
             Some(Pubkey::from_str("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs").unwrap());
@@ -121,17 +121,17 @@ mod tests {
             anchor_lang::error::Error::from(CustomError::InstallAuthorityMismatch),
         );
 
-        assert_eq!(
+        assert!(
             x.verify_install_authority(&x.install_authority.unwrap())
-                .unwrap(),
-            ()
+                .unwrap()
+                == ()
         );
     }
 
     #[test]
     fn over_supplied_installed_checks() {
         let mut x = Xnft::default();
-        assert_eq!(x.verify_supply().unwrap(), ());
+        assert!(x.verify_supply().unwrap() == ());
 
         x.supply = Some(1);
         x.total_installs = 1;
