@@ -9,8 +9,6 @@ Create the xNFT and the supporting accounts required for meeting the MPL standar
 - Master metadata
 - Master edition
 
-!> If the xNFT is created as being of `Kind::Collection`, there must be a valid collection public key also provided in the instruction arguments and the master token account will not be frozen.
-
 The uploading of the metadata JSON blob and associated files (bundle code, icons, screenshots, etc) must be handled prior to invoke this instruction such that the content URI(s) are available to provide as instruction arguments.
 
 ### MPL Standardization

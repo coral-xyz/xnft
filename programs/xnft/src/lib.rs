@@ -26,7 +26,7 @@ mod util;
 
 use instructions::*;
 
-declare_id!("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs");
+declare_id!("xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55");
 
 security_txt! {
     name: "xNFT",
@@ -153,11 +153,14 @@ pub enum CustomError {
     #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,
 
-    #[msg("The asserted authority/owner did not match that of the Install account")]
-    InstallOwnerMismatch,
-
     #[msg("The max supply has been reached for the xNFT")]
     InstallExceedsSupply,
+
+    #[msg("You can only install an xNFT of with `Kind::App`")]
+    InstallingNonApp,
+
+    #[msg("The asserted authority/owner did not match that of the Install account")]
+    InstallOwnerMismatch,
 
     #[msg("The name provided for creating the xNFT exceeded the byte limit")]
     NameTooLong,
