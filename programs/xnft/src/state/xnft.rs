@@ -20,6 +20,7 @@ use crate::util::verify_optional_pubkey;
 use crate::{CustomError, MAX_NAME_LEN};
 
 #[account]
+#[cfg_attr(test, derive(Default))]
 pub struct Xnft {
     /// The pubkey of the original xNFT creator (32).
     pub publisher: Pubkey,
@@ -91,4 +92,52 @@ pub struct CuratorStatus {
     pub pubkey: Pubkey,
     /// Whether the curator's authority has verified the assignment (1).
     pub verified: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use anchor_lang::prelude::Pubkey;
+    use std::str::FromStr;
+
+    use crate::CustomError;
+
+    use super::Xnft;
+
+    #[test]
+    fn account_size_matches() {
+        assert_eq!(Xnft::LEN, 353);
+    }
+
+    #[test]
+    fn install_authority_checks() {
+        let mut x = Xnft::default();
+        assert_eq!(x.verify_install_authority(&Pubkey::default()).unwrap(), ());
+
+        x.install_authority =
+            Some(Pubkey::from_str("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs").unwrap());
+
+        assert_eq!(
+            x.verify_install_authority(&Pubkey::default()).unwrap_err(),
+            anchor_lang::error::Error::from(CustomError::InstallAuthorityMismatch),
+        );
+
+        assert_eq!(
+            x.verify_install_authority(&x.install_authority.unwrap())
+                .unwrap(),
+            ()
+        );
+    }
+
+    #[test]
+    fn over_supplied_installed_checks() {
+        let mut x = Xnft::default();
+        assert_eq!(x.verify_supply().unwrap(), ());
+
+        x.supply = Some(1);
+        x.total_installs = 1;
+        assert_eq!(
+            x.verify_supply().unwrap_err(),
+            anchor_lang::error::Error::from(CustomError::InstallExceedsSupply),
+        );
+    }
 }

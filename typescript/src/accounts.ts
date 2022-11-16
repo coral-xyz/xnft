@@ -48,7 +48,7 @@ export async function getXnftAccount(
   connection: Connection,
   publicKey: PublicKey
 ): Promise<xNFT> {
-  return (await buildAnonymousProgram(connection).account.review.fetch(
+  return (await buildAnonymousProgram(connection).account.xnft.fetch(
     publicKey
   )) as any;
 }

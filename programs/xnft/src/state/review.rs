@@ -49,3 +49,13 @@ impl Review {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Review;
+
+    #[test]
+    fn account_size_matches() {
+        assert_eq!(Review::len("tests".into()), 114);
+    }
+}

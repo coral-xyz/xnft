@@ -16,7 +16,7 @@
  */
 
 import { Program, AnchorProvider } from "@project-serum/anchor";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { PROGRAM_ID } from ".";
 import { type Xnft, IDL } from "./xnft";
 

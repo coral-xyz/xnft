@@ -39,3 +39,13 @@ impl Access {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Access;
+
+    #[test]
+    fn account_size_matches() {
+        assert_eq!(Access::LEN, 105);
+    }
+}

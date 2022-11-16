@@ -46,3 +46,13 @@ impl Install {
         i
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Install;
+
+    #[test]
+    fn account_size_matches() {
+        assert_eq!(Install::LEN, 176);
+    }
+}

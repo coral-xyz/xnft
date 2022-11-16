@@ -20,25 +20,31 @@ mod install;
 mod review;
 mod xnft;
 
+pub use self::xnft::*; // use `self::` prefix to remove crate vs module ambiguity during builds
 pub use access::*;
 pub use install::*;
 pub use review::*;
-pub use xnft::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(test, derive(Default))]
 pub enum Kind {
+    #[cfg_attr(test, default)]
     App,
     Collection,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+#[cfg_attr(test, derive(Default))]
 pub enum L1 {
+    #[cfg_attr(test, default)]
     Solana,
     Ethereum,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+#[cfg_attr(test, derive(Default))]
 pub enum Tag {
+    #[cfg_attr(test, default)]
     None,
     Defi,
     Game,
