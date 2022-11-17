@@ -16,13 +16,13 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::metadata::{
-    self, CreateMasterEditionV3, CreateMetadataAccountsV3, Metadata, SetCollectionSize,
-    SignMetadata, UpdatePrimarySaleHappenedViaToken,
+    self, CreateMetadataAccountsV3, Metadata, SetCollectionSize, SignMetadata,
+    UpdatePrimarySaleHappenedViaToken,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
-use crate::state::{CuratorStatus, Kind, Tag, Xnft, L1};
+use crate::state::{CuratorStatus, Kind, Tag, Xnft};
 use crate::{CustomError, MAX_NAME_LEN};
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
@@ -33,13 +33,12 @@ pub struct CreatorsParam {
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateXnftParams {
-    collection: Option<Pubkey>,
     creators: Vec<CreatorsParam>,
+    curator: Option<Pubkey>,
     install_authority: Option<Pubkey>,
     install_price: u64,
     install_vault: Pubkey,
     kind: Kind,
-    l1: L1,
     seller_fee_basis_points: u16,
     supply: Option<u64>,
     symbol: String,
@@ -48,13 +47,14 @@ pub struct CreateXnftParams {
 }
 
 #[derive(Accounts)]
-#[instruction(name: String)]
+#[instruction(name: String, params: CreateXnftParams)]
 pub struct CreateXnft<'info> {
     #[account(
         init,
         payer = payer,
         seeds = [
             "mint".as_bytes(),
+            params.kind.as_pubkey().as_ref(),
             publisher.key().as_ref(),
             name.as_bytes(),
         ],
@@ -86,27 +86,13 @@ pub struct CreateXnft<'info> {
     )]
     pub master_metadata: UncheckedAccount<'info>,
 
-    /// CHECK: Account allocation and initialization is done via CPI to the metadata program.
-    #[account(
-        mut,
-        seeds = [
-            "metadata".as_bytes(),
-            metadata_program.key().as_ref(),
-            master_mint.key().as_ref(),
-            "edition".as_bytes(),
-        ],
-        seeds::program = metadata_program.key(),
-        bump,
-    )]
-    pub master_edition: UncheckedAccount<'info>,
-
     #[account(
         init,
         payer = payer,
         space = Xnft::LEN,
         seeds = [
             "xnft".as_bytes(),
-            master_edition.key().as_ref(),
+            master_mint.key().as_ref(),
         ],
         bump,
     )]
@@ -163,24 +149,6 @@ impl<'info> CreateXnft<'info> {
         CpiContext::new(program, accounts)
     }
 
-    pub fn create_master_edition_v3_ctx(
-        &self,
-    ) -> CpiContext<'_, '_, '_, 'info, CreateMasterEditionV3<'info>> {
-        let program = self.metadata_program.to_account_info();
-        let accounts = CreateMasterEditionV3 {
-            edition: self.master_edition.to_account_info(),
-            mint: self.master_mint.to_account_info(),
-            update_authority: self.xnft.to_account_info(),
-            mint_authority: self.xnft.to_account_info(),
-            payer: self.payer.to_account_info(),
-            metadata: self.master_metadata.to_account_info(),
-            token_program: self.token_program.to_account_info(),
-            system_program: self.system_program.to_account_info(),
-            rent: self.rent.to_account_info(),
-        };
-        CpiContext::new(program, accounts)
-    }
-
     pub fn freeze_account_ctx(&self) -> CpiContext<'_, '_, '_, 'info, FreezeAccount<'info>> {
         let program = self.token_program.to_account_info();
         let accounts = FreezeAccount {
@@ -216,9 +184,9 @@ impl<'info> CreateXnft<'info> {
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
-    curator: Option<Pubkey>,
     params: CreateXnftParams,
 ) -> Result<()> {
+    let clock = Clock::get()?;
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
     // Check provided name length against protocol defined maximum.
@@ -226,28 +194,60 @@ pub fn create_xnft_handler(
         return Err(error!(CustomError::NameTooLong));
     }
 
+    // Create the curator status struct for the xNFT if one was provided.
+    let curator_status = params.curator.map(|pubkey| CuratorStatus {
+        pubkey,
+        verified: false,
+    });
+
+    let xnft = &mut ctx.accounts.xnft;
+    ***xnft = Xnft {
+        bump: [xnft_bump],
+        publisher: *ctx.accounts.publisher.key,
+        install_vault: params.install_vault,
+        master_metadata: *ctx.accounts.master_metadata.key,
+        master_mint: ctx.accounts.master_mint.key(),
+        install_authority: params.install_authority,
+        curator: curator_status,
+        name: name.clone(),
+        kind: params.kind.clone(),
+        tag: params.tag,
+        supply: params.supply,
+        total_installs: 0,
+        install_price: params.install_price,
+        created_ts: clock.unix_timestamp,
+        updated_ts: clock.unix_timestamp,
+        total_rating: 0,
+        num_ratings: 0,
+        suspended: false,
+        _reserved: [0; 64],
+    };
+
     // Mint the master token.
     token::mint_to(
-        ctx.accounts.mint_to_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            ctx.accounts.master_edition.key().as_ref(),
-            &[xnft_bump],
-        ]]),
+        ctx.accounts
+            .mint_to_ctx()
+            .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
         1,
     )?;
 
     // Freeze the token account after minting.
-    if params.collection.is_none() {
-        token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            ctx.accounts.master_edition.key().as_ref(),
-            &[xnft_bump],
-        ]]))?;
-    }
+    token::freeze_account(
+        ctx.accounts
+            .freeze_account_ctx()
+            .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
+    )?;
 
-    // Create metadata.
+    // Set field values for unnamed or calculated MPL metadata properties.
     let is_mutable = true;
     let update_authority_is_signer = true;
+    let collection = match params.kind {
+        Kind::Collection { pubkey } => Some(Collection {
+            verified: false,
+            key: pubkey,
+        }),
+        _ => None,
+    };
 
     // Validation that share percentage splits sums up to 100 is
     // done by MPL in the `create_metadata_accounts_v3` CPI call
@@ -266,21 +266,16 @@ pub fn create_xnft_handler(
     );
 
     metadata::create_metadata_accounts_v3(
-        ctx.accounts.create_metadata_accounts_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            ctx.accounts.master_edition.key().as_ref(),
-            &[xnft_bump],
-        ]]),
+        ctx.accounts
+            .create_metadata_accounts_ctx()
+            .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
         DataV2 {
-            name: name.clone(),
+            name,
             symbol: params.symbol,
             uri: params.uri,
             seller_fee_basis_points: params.seller_fee_basis_points,
             creators,
-            collection: params.collection.map(|c| Collection {
-                key: c,
-                verified: false,
-            }),
+            collection,
             uses: None,
         },
         is_mutable,
@@ -293,59 +288,10 @@ pub fn create_xnft_handler(
     // `sign_metadata` on their own so that they are the signers of the tx.
     metadata::sign_metadata(ctx.accounts.sign_metadata_ctx())?;
 
-    // Create master edition.
-    metadata::create_master_edition_v3(
-        ctx.accounts.create_master_edition_v3_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            ctx.accounts.master_edition.key().as_ref(),
-            &[xnft_bump],
-        ]]),
-        Some(0), // max supply of 0 disables NFT printing
-    )?;
-
     // Set the primary sale has happened flag to true on metadata.
     metadata::update_primary_sale_happened_via_token(
         ctx.accounts.update_primary_sale_happened_ctx(),
     )?;
-
-    // Initialize xNFT.
-    let clock = Clock::get()?;
-    let xnft = &mut ctx.accounts.xnft;
-
-    // Assert that the kind provided is `Collection` if a collection pubkey was given.
-    if params.collection.is_some() && params.kind != Kind::Collection {
-        return Err(error!(CustomError::CollectionWithoutKind));
-    }
-
-    // Create the curator status struct for the xNFT if one was provided.
-    let curator_status = curator.map(|pubkey| CuratorStatus {
-        pubkey,
-        verified: false,
-    });
-
-    ***xnft = Xnft {
-        publisher: *ctx.accounts.publisher.key,
-        install_vault: params.install_vault,
-        master_edition: *ctx.accounts.master_edition.key,
-        master_metadata: *ctx.accounts.master_metadata.key,
-        master_mint: ctx.accounts.master_mint.key(),
-        install_authority: params.install_authority,
-        bump: xnft_bump,
-        kind: params.kind,
-        tag: params.tag,
-        name,
-        total_installs: 0,
-        install_price: params.install_price,
-        created_ts: clock.unix_timestamp,
-        updated_ts: clock.unix_timestamp,
-        suspended: false,
-        total_rating: 0,
-        num_ratings: 0,
-        l1: params.l1,
-        supply: params.supply,
-        curator: curator_status,
-        _reserved: [0; 26],
-    };
 
     Ok(())
 }

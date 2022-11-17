@@ -42,6 +42,13 @@ export type Xnft = {
                 value: "mint";
               },
               {
+                kind: "arg";
+                type: {
+                  defined: "CreateXnftParams";
+                };
+                path: "params.kind";
+              },
+              {
                 kind: "account";
                 type: "publicKey";
                 path: "publisher";
@@ -90,41 +97,6 @@ export type Xnft = {
           };
         },
         {
-          name: "masterEdition";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "metadata";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                path: "metadata_program";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Mint";
-                path: "master_mint";
-              },
-              {
-                kind: "const";
-                type: "string";
-                value: "edition";
-              }
-            ];
-            programId: {
-              kind: "account";
-              type: "publicKey";
-              path: "metadata_program";
-            };
-          };
-        },
-        {
           name: "xnft";
           isMut: true;
           isSigner: false;
@@ -138,7 +110,8 @@ export type Xnft = {
               {
                 kind: "account";
                 type: "publicKey";
-                path: "master_edition";
+                account: "Mint";
+                path: "master_mint";
               }
             ];
           };
@@ -183,12 +156,6 @@ export type Xnft = {
         {
           name: "name";
           type: "string";
-        },
-        {
-          name: "curator";
-          type: {
-            option: "publicKey";
-          };
         },
         {
           name: "params";
@@ -695,11 +662,6 @@ export type Xnft = {
           isSigner: false;
         },
         {
-          name: "masterMint";
-          isMut: false;
-          isSigner: false;
-        },
-        {
           name: "source";
           isMut: true;
           isSigner: false;
@@ -707,6 +669,11 @@ export type Xnft = {
         {
           name: "destination";
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterMint";
+          isMut: false;
           isSigner: false;
         },
         {
@@ -852,6 +819,13 @@ export type Xnft = {
         kind: "struct";
         fields: [
           {
+            name: "bump";
+            docs: ["The bump nonce for the xNFT's PDA (1)."];
+            type: {
+              array: ["u8", 1];
+            };
+          },
+          {
             name: "publisher";
             docs: ["The pubkey of the original xNFT creator (32)."];
             type: "publicKey";
@@ -861,11 +835,6 @@ export type Xnft = {
             docs: [
               "The pubkey of the account to receive install payments (32)."
             ];
-            type: "publicKey";
-          },
-          {
-            name: "masterEdition";
-            docs: ["The pubkey of the MPL master edition account (32)."];
             type: "publicKey";
           },
           {
@@ -888,13 +857,26 @@ export type Xnft = {
             };
           },
           {
-            name: "bump";
-            docs: ["The bump nonce for the xNFT's PDA (1)."];
-            type: "u8";
+            name: "curator";
+            docs: [
+              "Optional pubkey of the global authority required for reviewing xNFT updates (34)."
+            ];
+            type: {
+              option: {
+                defined: "CuratorStatus";
+              };
+            };
+          },
+          {
+            name: "name";
+            docs: ["The display name of the xNFT account (4 + MAX_NAME_LEN)."];
+            type: "string";
           },
           {
             name: "kind";
-            docs: ["The `Kind` enum variant describing the type of xNFT (1)."];
+            docs: [
+              "The `Kind` enum variant describing the type of xNFT (1 + 32)."
+            ];
             type: {
               defined: "Kind";
             };
@@ -909,9 +891,13 @@ export type Xnft = {
             };
           },
           {
-            name: "name";
-            docs: ["The display name of the xNFT account (MAX_NAME_LEN)."];
-            type: "string";
+            name: "supply";
+            docs: [
+              "The optional finite supply of installations available for this xNFT (9)."
+            ];
+            type: {
+              option: "u64";
+            };
           },
           {
             name: "totalInstalls";
@@ -938,13 +924,6 @@ export type Xnft = {
             type: "i64";
           },
           {
-            name: "suspended";
-            docs: [
-              "Flag to determine whether new installations of the xNFT should be halted (1)."
-            ];
-            type: "bool";
-          },
-          {
             name: "totalRating";
             docs: ["The total cumulative rating value of all reviews (8)."];
             type: "u64";
@@ -957,39 +936,17 @@ export type Xnft = {
             type: "u32";
           },
           {
-            name: "l1";
+            name: "suspended";
             docs: [
-              "The `L1` enum variant to designate the associated blockchain (1)."
+              "Flag to determine whether new installations of the xNFT should be halted (1)."
             ];
-            type: {
-              defined: "L1";
-            };
-          },
-          {
-            name: "supply";
-            docs: [
-              "The optional finite supply of installations available for this xNFT (9)."
-            ];
-            type: {
-              option: "u64";
-            };
-          },
-          {
-            name: "curator";
-            docs: [
-              "Optional pubkey of the global authority required for reviewing xNFT updates (34)."
-            ];
-            type: {
-              option: {
-                defined: "CuratorStatus";
-              };
-            };
+            type: "bool";
           },
           {
             name: "reserved";
             docs: ["Unused reserved byte space for additive future changes."];
             type: {
-              array: ["u8", 26];
+              array: ["u8", 64];
             };
           }
         ];
@@ -1019,17 +976,17 @@ export type Xnft = {
         kind: "struct";
         fields: [
           {
-            name: "collection";
-            type: {
-              option: "publicKey";
-            };
-          },
-          {
             name: "creators";
             type: {
               vec: {
                 defined: "CreatorsParam";
               };
+            };
+          },
+          {
+            name: "curator";
+            type: {
+              option: "publicKey";
             };
           },
           {
@@ -1050,12 +1007,6 @@ export type Xnft = {
             name: "kind";
             type: {
               defined: "Kind";
-            };
-          },
-          {
-            name: "l1";
-            type: {
-              defined: "L1";
             };
           },
           {
@@ -1155,20 +1106,21 @@ export type Xnft = {
           },
           {
             name: "Collection";
-          }
-        ];
-      };
-    },
-    {
-      name: "L1";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "Solana";
+            fields: [
+              {
+                name: "pubkey";
+                type: "publicKey";
+              }
+            ];
           },
           {
-            name: "Ethereum";
+            name: "Nft";
+            fields: [
+              {
+                name: "pubkey";
+                type: "publicKey";
+              }
+            ];
           }
         ];
       };
@@ -1188,7 +1140,7 @@ export type Xnft = {
             name: "Game";
           },
           {
-            name: "Nft";
+            name: "Nfts";
           }
         ];
       };
@@ -1289,46 +1241,51 @@ export type Xnft = {
     },
     {
       code: 6006;
-      name: "InstallOwnerMismatch";
-      msg: "The asserted authority/owner did not match that of the Install account";
-    },
-    {
-      code: 6007;
       name: "InstallExceedsSupply";
       msg: "The max supply has been reached for the xNFT";
     },
     {
+      code: 6007;
+      name: "InstallingNonApp";
+      msg: "You can only install an xNFT of with `Kind::App`";
+    },
+    {
       code: 6008;
+      name: "InstallOwnerMismatch";
+      msg: "The asserted authority/owner did not match that of the Install account";
+    },
+    {
+      code: 6009;
       name: "NameTooLong";
       msg: "The name provided for creating the xNFT exceeded the byte limit";
     },
     {
-      code: 6009;
+      code: 6010;
       name: "RatingOutOfBounds";
       msg: "The rating for a review must be between 0 and 5";
     },
     {
-      code: 6010;
+      code: 6011;
       name: "ReviewInstallMismatch";
       msg: "The installation provided for the review does not match the xNFT";
     },
     {
-      code: 6011;
+      code: 6012;
       name: "SupplyReduction";
       msg: "Updated supply is less than the original supply set on creation";
     },
     {
-      code: 6012;
+      code: 6013;
       name: "SuspendedInstallation";
       msg: "Attempting to install a currently suspended xNFT";
     },
     {
-      code: 6013;
+      code: 6014;
       name: "UnauthorizedInstall";
       msg: "The access account provided is not associated with the wallet";
     },
     {
-      code: 6014;
+      code: 6015;
       name: "UpdateReviewAuthorityMismatch";
       msg: "The signing authority for the xNFT update did not match the review authority";
     }
@@ -1379,6 +1336,13 @@ export const IDL: Xnft = {
                 value: "mint",
               },
               {
+                kind: "arg",
+                type: {
+                  defined: "CreateXnftParams",
+                },
+                path: "params.kind",
+              },
+              {
                 kind: "account",
                 type: "publicKey",
                 path: "publisher",
@@ -1427,41 +1391,6 @@ export const IDL: Xnft = {
           },
         },
         {
-          name: "masterEdition",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "metadata",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                path: "metadata_program",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Mint",
-                path: "master_mint",
-              },
-              {
-                kind: "const",
-                type: "string",
-                value: "edition",
-              },
-            ],
-            programId: {
-              kind: "account",
-              type: "publicKey",
-              path: "metadata_program",
-            },
-          },
-        },
-        {
           name: "xnft",
           isMut: true,
           isSigner: false,
@@ -1475,7 +1404,8 @@ export const IDL: Xnft = {
               {
                 kind: "account",
                 type: "publicKey",
-                path: "master_edition",
+                account: "Mint",
+                path: "master_mint",
               },
             ],
           },
@@ -1520,12 +1450,6 @@ export const IDL: Xnft = {
         {
           name: "name",
           type: "string",
-        },
-        {
-          name: "curator",
-          type: {
-            option: "publicKey",
-          },
         },
         {
           name: "params",
@@ -2032,11 +1956,6 @@ export const IDL: Xnft = {
           isSigner: false,
         },
         {
-          name: "masterMint",
-          isMut: false,
-          isSigner: false,
-        },
-        {
           name: "source",
           isMut: true,
           isSigner: false,
@@ -2044,6 +1963,11 @@ export const IDL: Xnft = {
         {
           name: "destination",
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterMint",
+          isMut: false,
           isSigner: false,
         },
         {
@@ -2189,6 +2113,13 @@ export const IDL: Xnft = {
         kind: "struct",
         fields: [
           {
+            name: "bump",
+            docs: ["The bump nonce for the xNFT's PDA (1)."],
+            type: {
+              array: ["u8", 1],
+            },
+          },
+          {
             name: "publisher",
             docs: ["The pubkey of the original xNFT creator (32)."],
             type: "publicKey",
@@ -2198,11 +2129,6 @@ export const IDL: Xnft = {
             docs: [
               "The pubkey of the account to receive install payments (32).",
             ],
-            type: "publicKey",
-          },
-          {
-            name: "masterEdition",
-            docs: ["The pubkey of the MPL master edition account (32)."],
             type: "publicKey",
           },
           {
@@ -2225,13 +2151,26 @@ export const IDL: Xnft = {
             },
           },
           {
-            name: "bump",
-            docs: ["The bump nonce for the xNFT's PDA (1)."],
-            type: "u8",
+            name: "curator",
+            docs: [
+              "Optional pubkey of the global authority required for reviewing xNFT updates (34).",
+            ],
+            type: {
+              option: {
+                defined: "CuratorStatus",
+              },
+            },
+          },
+          {
+            name: "name",
+            docs: ["The display name of the xNFT account (4 + MAX_NAME_LEN)."],
+            type: "string",
           },
           {
             name: "kind",
-            docs: ["The `Kind` enum variant describing the type of xNFT (1)."],
+            docs: [
+              "The `Kind` enum variant describing the type of xNFT (1 + 32).",
+            ],
             type: {
               defined: "Kind",
             },
@@ -2246,9 +2185,13 @@ export const IDL: Xnft = {
             },
           },
           {
-            name: "name",
-            docs: ["The display name of the xNFT account (MAX_NAME_LEN)."],
-            type: "string",
+            name: "supply",
+            docs: [
+              "The optional finite supply of installations available for this xNFT (9).",
+            ],
+            type: {
+              option: "u64",
+            },
           },
           {
             name: "totalInstalls",
@@ -2275,13 +2218,6 @@ export const IDL: Xnft = {
             type: "i64",
           },
           {
-            name: "suspended",
-            docs: [
-              "Flag to determine whether new installations of the xNFT should be halted (1).",
-            ],
-            type: "bool",
-          },
-          {
             name: "totalRating",
             docs: ["The total cumulative rating value of all reviews (8)."],
             type: "u64",
@@ -2294,39 +2230,17 @@ export const IDL: Xnft = {
             type: "u32",
           },
           {
-            name: "l1",
+            name: "suspended",
             docs: [
-              "The `L1` enum variant to designate the associated blockchain (1).",
+              "Flag to determine whether new installations of the xNFT should be halted (1).",
             ],
-            type: {
-              defined: "L1",
-            },
-          },
-          {
-            name: "supply",
-            docs: [
-              "The optional finite supply of installations available for this xNFT (9).",
-            ],
-            type: {
-              option: "u64",
-            },
-          },
-          {
-            name: "curator",
-            docs: [
-              "Optional pubkey of the global authority required for reviewing xNFT updates (34).",
-            ],
-            type: {
-              option: {
-                defined: "CuratorStatus",
-              },
-            },
+            type: "bool",
           },
           {
             name: "reserved",
             docs: ["Unused reserved byte space for additive future changes."],
             type: {
-              array: ["u8", 26],
+              array: ["u8", 64],
             },
           },
         ],
@@ -2356,17 +2270,17 @@ export const IDL: Xnft = {
         kind: "struct",
         fields: [
           {
-            name: "collection",
-            type: {
-              option: "publicKey",
-            },
-          },
-          {
             name: "creators",
             type: {
               vec: {
                 defined: "CreatorsParam",
               },
+            },
+          },
+          {
+            name: "curator",
+            type: {
+              option: "publicKey",
             },
           },
           {
@@ -2387,12 +2301,6 @@ export const IDL: Xnft = {
             name: "kind",
             type: {
               defined: "Kind",
-            },
-          },
-          {
-            name: "l1",
-            type: {
-              defined: "L1",
             },
           },
           {
@@ -2492,20 +2400,21 @@ export const IDL: Xnft = {
           },
           {
             name: "Collection",
-          },
-        ],
-      },
-    },
-    {
-      name: "L1",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "Solana",
+            fields: [
+              {
+                name: "pubkey",
+                type: "publicKey",
+              },
+            ],
           },
           {
-            name: "Ethereum",
+            name: "Nft",
+            fields: [
+              {
+                name: "pubkey",
+                type: "publicKey",
+              },
+            ],
           },
         ],
       },
@@ -2525,7 +2434,7 @@ export const IDL: Xnft = {
             name: "Game",
           },
           {
-            name: "Nft",
+            name: "Nfts",
           },
         ],
       },
@@ -2626,46 +2535,51 @@ export const IDL: Xnft = {
     },
     {
       code: 6006,
-      name: "InstallOwnerMismatch",
-      msg: "The asserted authority/owner did not match that of the Install account",
-    },
-    {
-      code: 6007,
       name: "InstallExceedsSupply",
       msg: "The max supply has been reached for the xNFT",
     },
     {
+      code: 6007,
+      name: "InstallingNonApp",
+      msg: "You can only install an xNFT of with `Kind::App`",
+    },
+    {
       code: 6008,
+      name: "InstallOwnerMismatch",
+      msg: "The asserted authority/owner did not match that of the Install account",
+    },
+    {
+      code: 6009,
       name: "NameTooLong",
       msg: "The name provided for creating the xNFT exceeded the byte limit",
     },
     {
-      code: 6009,
+      code: 6010,
       name: "RatingOutOfBounds",
       msg: "The rating for a review must be between 0 and 5",
     },
     {
-      code: 6010,
+      code: 6011,
       name: "ReviewInstallMismatch",
       msg: "The installation provided for the review does not match the xNFT",
     },
     {
-      code: 6011,
+      code: 6012,
       name: "SupplyReduction",
       msg: "Updated supply is less than the original supply set on creation",
     },
     {
-      code: 6012,
+      code: 6013,
       name: "SuspendedInstallation",
       msg: "Attempting to install a currently suspended xNFT",
     },
     {
-      code: 6013,
+      code: 6014,
       name: "UnauthorizedInstall",
       msg: "The access account provided is not associated with the wallet",
     },
     {
-      code: 6014,
+      code: 6015,
       name: "UpdateReviewAuthorityMismatch",
       msg: "The signing authority for the xNFT update did not match the review authority",
     },

@@ -88,11 +88,9 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
 
     if let Some(u) = updates.uri.as_ref() {
         metadata::update_metadata_accounts_v2(
-            ctx.accounts.update_metadata_accounts_ctx().with_signer(&[&[
-                "xnft".as_bytes(),
-                ctx.accounts.xnft.master_edition.as_ref(),
-                &[ctx.accounts.xnft.bump],
-            ]]),
+            ctx.accounts
+                .update_metadata_accounts_ctx()
+                .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
             Some(md.update_authority),
             Some(DataV2 {
                 name: ctx.accounts.xnft.name.clone(),

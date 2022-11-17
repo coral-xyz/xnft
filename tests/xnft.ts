@@ -61,8 +61,8 @@ const multisig = anchor.web3.Keypair.generate();
 const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
 const installAuthority = anchor.web3.Keypair.generate();
+const mockCollection = anchor.web3.Keypair.generate().publicKey;
 
-// @ts-ignore
 let multisigSigner: anchor.web3.PublicKey;
 let privateXnft: anchor.web3.PublicKey;
 let xnft: anchor.web3.PublicKey;
@@ -110,12 +110,10 @@ describe("Account Creations", () => {
     const name = "test xnft";
     const symbol = "";
     const tag = { defi: {} } as never;
-    const kind = { collection: {} } as never;
+    const kind = { app: {} } as never;
     const uri = "https://arweave.net/abc123";
     const sellerFeeBasisPoints = 0;
     const supply = null;
-    const l1 = { solana: {} } as never;
-    const collection = anchor.web3.Keypair.generate().publicKey;
 
     let xnftData: anchor.IdlAccounts<Xnft>["xnft"];
     let meta: MetadataAccount;
@@ -126,6 +124,7 @@ describe("Account Creations", () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
         [
           Buffer.from("mint"),
+          anchor.web3.PublicKey.default.toBytes(),
           authority.publicKey.toBytes(),
           Buffer.from(badName),
         ],
@@ -139,7 +138,7 @@ describe("Account Creations", () => {
 
       try {
         await program.methods
-          .createXnft(badName, null, {
+          .createXnft(badName, {
             symbol,
             tag,
             kind,
@@ -149,11 +148,10 @@ describe("Account Creations", () => {
             installPrice,
             installVault,
             supply,
-            l1,
-            collection: null,
             creators: [{ address: authority.publicKey, share: 100 }],
+            curator: null,
           })
-          .accounts({ masterToken, metadataProgram })
+          .accounts({ masterMint: mint, masterToken, metadataProgram })
           .rpc();
 
         assert.ok(false);
@@ -165,7 +163,12 @@ describe("Account Creations", () => {
 
     it("when the arguments are within the bounds", async () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
+        [
+          Buffer.from("mint"),
+          anchor.web3.PublicKey.default.toBytes(),
+          authority.publicKey.toBytes(),
+          Buffer.from(name),
+        ],
         program.programId
       );
 
@@ -173,7 +176,7 @@ describe("Account Creations", () => {
       masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       const ix = program.methods
-        .createXnft(name, null, {
+        .createXnft(name, {
           symbol,
           tag,
           kind,
@@ -183,14 +186,14 @@ describe("Account Creations", () => {
           installPrice,
           installVault,
           supply,
-          l1,
-          collection,
           creators: [
             { address: authority.publicKey, share: 50 },
             { address: otherCreator.publicKey, share: 50 },
           ],
+          curator: null,
         })
         .accounts({
+          masterMint,
           payer: authority.publicKey,
           publisher: authority.publicKey,
           masterToken,
@@ -239,21 +242,65 @@ describe("Account Creations", () => {
       assert.isTrue(meta.data.data.creators[0].verified);
     });
 
-    it("and the collection public key can be attached but not verified", () => {
-      assert.strictEqual(
-        meta.data.collection.key.toBase58(),
-        collection.toBase58()
-      );
-      assert.isFalse(meta.data.collection.verified);
-    });
-
     it("and the metadata is marked with the primary sale already happened", () => {
       assert.isTrue(meta.data.primarySaleHappened);
     });
 
-    it("and the token account is not frozen after the mint", async () => {
+    it("and the token account is frozen after the mint", async () => {
       const acc = await getAccount(program.provider.connection, masterToken);
-      assert.isTrue(!acc.isFrozen);
+      assert.isTrue(acc.isFrozen);
+    });
+
+    it("an xNFT can be created and associated with an external entity via the kind enum", async () => {
+      const [mint] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          Buffer.from("mint"),
+          mockCollection.toBytes(),
+          authority.publicKey.toBytes(),
+          Buffer.from("Associated xNFT"),
+        ],
+        program.programId
+      );
+
+      const masterToken = await getAssociatedTokenAddress(
+        mint,
+        authority.publicKey
+      );
+
+      const ix = program.methods
+        .createXnft("Associated xNFT", {
+          creators: [{ address: authority.publicKey, share: 100 }],
+          curator: null,
+          installAuthority: null,
+          installPrice: new anchor.BN(0),
+          installVault: authority.publicKey,
+          kind: { collection: { pubkey: mockCollection } } as never,
+          sellerFeeBasisPoints: 0,
+          supply: null,
+          symbol: "",
+          tag: { none: {} } as never,
+          uri: "https://google.com",
+        })
+        .accounts({
+          masterMint: mint,
+          masterToken,
+          metadataProgram,
+        });
+
+      const pk = await ix.pubkeys();
+      await ix.rpc();
+
+      const acc = await program.account.xnft.fetch(pk.xnft);
+      assert.deepEqual(acc.kind, { collection: { pubkey: mockCollection } });
+
+      const m = (await metaplex
+        .rpc()
+        .getAccount(pk.masterMetadata)) as UnparsedAccount;
+      const meta = parseMetadataAccount(m);
+      assert.deepEqual(meta.data.collection, {
+        key: mockCollection,
+        verified: false,
+      });
     });
   });
 
@@ -517,7 +564,12 @@ describe("Account Creations", () => {
     it("when an install authority is provided to the instruction params", async () => {
       const name = "private xnft";
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
+        [
+          Buffer.from("mint"),
+          anchor.web3.PublicKey.default.toBytes(),
+          authority.publicKey.toBytes(),
+          Buffer.from(name),
+        ],
         program.programId
       );
 
@@ -527,14 +579,13 @@ describe("Account Creations", () => {
       );
 
       const tx = program.methods
-        .createXnft(name, null, {
-          collection: null,
+        .createXnft(name, {
           creators: [{ address: authority.publicKey, share: 100 }],
+          curator: null,
           installAuthority: installAuthority.publicKey,
           installPrice: new anchor.BN(0),
           installVault: authority.publicKey,
           kind: { app: {} } as never,
-          l1: { solana: {} } as never,
           sellerFeeBasisPoints: 0,
           supply: null,
           symbol: "",
@@ -542,6 +593,7 @@ describe("Account Creations", () => {
           uri: "my_uri",
         })
         .accounts({
+          masterMint: mint,
           masterToken: privateMasterToken,
           metadataProgram,
         });
@@ -698,7 +750,7 @@ describe("Account Updates", () => {
 
     const ata = await getAccount(program.provider.connection, destination);
     assert.strictEqual(ata.amount.toString(), "1");
-    assert.isFalse(ata.isFrozen); // transferred xnft was a collection type which is not frozen
+    assert.isTrue(ata.isFrozen);
     assert.strictEqual(ata.mint.toBase58(), masterMint.toBase58());
     assert.strictEqual(ata.owner.toBase58(), newAuthority.publicKey.toBase58());
 

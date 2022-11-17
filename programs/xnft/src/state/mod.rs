@@ -26,27 +26,46 @@ pub use install::*;
 pub use review::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq)]
-#[cfg_attr(test, derive(Default))]
 pub enum Kind {
-    #[cfg_attr(test, default)]
     App,
-    Collection,
+    Collection { pubkey: Pubkey },
+    Nft { pubkey: Pubkey },
+}
+
+impl Kind {
+    pub fn as_pubkey(&self) -> Pubkey {
+        match self {
+            Kind::App => Pubkey::default(),
+            Kind::Collection { pubkey } | Kind::Nft { pubkey } => *pubkey,
+        }
+    }
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
-#[cfg_attr(test, derive(Default))]
-pub enum L1 {
-    #[cfg_attr(test, default)]
-    Solana,
-    Ethereum,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
-#[cfg_attr(test, derive(Default))]
 pub enum Tag {
-    #[cfg_attr(test, default)]
     None,
     Defi,
     Game,
-    Nft,
+    Nfts,
+}
+
+#[cfg(test)]
+mod tests {
+    use anchor_lang::prelude::Pubkey;
+    use std::str::FromStr;
+
+    use super::Kind;
+
+    #[test]
+    fn kind_variant_as_bytes() {
+        let pk = Pubkey::from_str("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs").unwrap();
+        let x = Kind::App.as_pubkey();
+        assert_eq!(x.as_ref(), Pubkey::default().as_ref());
+
+        let y = Kind::Collection { pubkey: pk }.as_pubkey();
+        assert_eq!(y.as_ref(), pk.as_ref());
+
+        let z = Kind::Nft { pubkey: pk }.as_pubkey();
+        assert_eq!(z.as_ref(), pk.as_ref());
+    }
 }

@@ -152,22 +152,25 @@ export async function createCreateXnftTransaction(
  * @param {Program<Xnft>} program
  * @param {string} name
  * @param {CreateXnftParams} params
- * @param {PublicKey} [curator]
  * @returns {Promise<TransactionInstruction>}
  */
 export async function createCreateXnftInstruction(
   program: Program<Xnft>,
   name: string,
-  params: CreateXnftParameters,
-  curator?: PublicKey
+  params: CreateXnftParameters
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error("no public key found on the program provider");
   }
 
+  const kindVariantKey = Object.keys(params.kind)[0];
+
   const masterMint = await deriveMasterMintAddress(
     name,
-    program.provider.publicKey
+    program.provider.publicKey,
+    kindVariantKey === "app"
+      ? undefined
+      : (params.kind[kindVariantKey] as { pubkey: PublicKey }).pubkey
   );
 
   const masterToken = await getAssociatedTokenAddress(
@@ -176,7 +179,7 @@ export async function createCreateXnftInstruction(
   );
 
   return await program.methods
-    .createXnft(name, curator ?? null, params)
+    .createXnft(name, params)
     .accounts({
       masterToken,
       metadataProgram: METADATA_PROGRAM_ID,

@@ -23,9 +23,9 @@ export async function getAccessAccount(
   connection: Connection,
   publicKey: PublicKey
 ): Promise<Access> {
-  return await buildAnonymousProgram(connection).account.access.fetch(
+  return (await buildAnonymousProgram(connection).account.access.fetch(
     publicKey
-  );
+  )) as any;
 }
 
 export async function getInstallAccount(

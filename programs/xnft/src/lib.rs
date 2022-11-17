@@ -58,10 +58,9 @@ pub mod xnft {
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
-        curator: Option<Pubkey>,
         params: CreateXnftParams,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, curator, params)
+        instructions::create_xnft_handler(ctx, name, params)
     }
 
     /// Updates the code of an xNFT.

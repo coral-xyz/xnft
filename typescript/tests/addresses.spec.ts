@@ -13,7 +13,7 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("BZ6YRowFVJ69gQRF5nbP4F4uUxukCKS2Lvez5pP6eA75")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "D7VQcUZpWn8DynLNoRWT3ogT8ppUm61hbVcpwhQQNcEe"
+      "GV6XT7kGRkq4CgGZodjtcyakSEUuvx29uJjLRWtnbKz2"
     );
   });
 
@@ -23,7 +23,16 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P"
+      "9kV7nkH2pJe6UFzaidn8MM6z4Q1eJsG8e86L8Y5P1Tb"
+    );
+
+    const pk2 = await deriveMasterMintAddress(
+      "Sample xNFT",
+      new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd"),
+      new PublicKey("3f1Ypov9Lv1Lmr4arkjY2fTMHcj4dRWP7BcpiDW6PTe3")
+    );
+    expect(pk2.toBase58()).toStrictEqual(
+      "F9iDvSqm9vJ6eysfz9EVUybh8v6SEyacaSFX5xWVKk1J"
     );
   });
 
@@ -32,7 +41,7 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "6zMGSegJQC6AG7ndspUoyDHoGQPTkwZf8q3yvEFA2vjf"
+      "BEu8zcBFcSgj48rgwzXyPEmuKq9sBXhARSLtAeFiUc3g"
     );
   });
 });
