@@ -15,10 +15,12 @@
 
 mod access;
 mod install;
+mod parameters;
 mod review;
 mod xnft;
 
 pub use self::xnft::*; // use `self::` prefix to remove crate vs module ambiguity during builds
 pub use access::*;
 pub use install::*;
+pub use parameters::*;
 pub use review::*;

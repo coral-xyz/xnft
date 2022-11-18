@@ -21,10 +21,11 @@ use solana_security_txt::security_txt;
 
 mod events;
 mod instructions;
-pub mod state;
+mod state;
 mod util;
 
 use instructions::*;
+use state::*;
 
 declare_id!("xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55");
 

@@ -15,6 +15,7 @@
 
 use anchor_lang::prelude::*;
 
+use super::CreateXnftParams;
 use crate::util::verify_optional_pubkey;
 use crate::{CustomError, MAX_NAME_LEN};
 
@@ -63,6 +64,41 @@ pub struct Xnft {
 impl Xnft {
     pub const LEN: usize =
         8 + 1 + (32 * 4) + 33 + 34 + (4 + MAX_NAME_LEN) + 33 + 1 + 9 + (8 * 5) + 4 + 1 + 64;
+
+    pub fn try_new(
+        name: String,
+        bump: u8,
+        publisher: Pubkey,
+        master_metadata: Pubkey,
+        master_mint: Pubkey,
+        params: &CreateXnftParams,
+    ) -> anchor_lang::Result<Self> {
+        let now = Clock::get()?.unix_timestamp;
+        Ok(Self {
+            bump: [bump],
+            publisher,
+            install_vault: params.install_vault,
+            master_metadata,
+            master_mint,
+            install_authority: params.install_authority,
+            curator: params.curator.map(|pubkey| CuratorStatus {
+                pubkey,
+                verified: false,
+            }),
+            name,
+            kind: params.kind.clone(),
+            tag: params.tag.clone(),
+            supply: params.supply,
+            total_installs: 0,
+            install_price: params.install_price,
+            created_ts: now,
+            updated_ts: now,
+            total_rating: 0,
+            num_ratings: 0,
+            suspended: false,
+            _reserved: [0; 64],
+        })
+    }
 
     pub fn as_seeds(&self) -> [&[u8]; 3] {
         ["xnft".as_bytes(), self.master_mint.as_ref(), &self.bump]

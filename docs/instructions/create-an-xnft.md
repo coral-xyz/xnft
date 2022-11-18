@@ -43,25 +43,27 @@ The uploading of the metadata JSON blob and associated files (bundle code, icons
 
 ### Parameters Struct
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/parameters.rs)
+
 ```rust
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreatorsParam {
-    address: Pubkey,
-    share: u8,
+    pub address: Pubkey,
+    pub share: u8,
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreateXnftParams {
-    creators: Vec<CreatorsParam>,
-    curator: Option<Pubkey>,
-    install_authority: Option<Pubkey>,
-    install_price: u64,
-    install_vault: Pubkey,
-    kind: Kind,
-    seller_fee_basis_points: u16,
-    supply: Option<u64>,
-    symbol: String,
-    tag: Tag,
-    uri: String,
+    pub creators: Vec<CreatorsParam>,
+    pub curator: Option<Pubkey>,
+    pub install_authority: Option<Pubkey>,
+    pub install_price: u64,
+    pub install_vault: Pubkey,
+    pub kind: Kind,
+    pub seller_fee_basis_points: u16,
+    pub supply: Option<u64>,
+    pub symbol: String,
+    pub tag: Tag,
+    pub uri: String,
 }
 ```

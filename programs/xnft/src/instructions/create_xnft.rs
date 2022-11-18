@@ -22,29 +22,8 @@ use anchor_spl::metadata::{
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{Collection, Creator, DataV2};
 
-use crate::state::{CuratorStatus, Kind, Tag, Xnft};
+use crate::state::{CreateXnftParams, Kind, Xnft};
 use crate::{CustomError, MAX_NAME_LEN};
-
-#[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreatorsParam {
-    address: Pubkey,
-    share: u8,
-}
-
-#[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreateXnftParams {
-    creators: Vec<CreatorsParam>,
-    curator: Option<Pubkey>,
-    install_authority: Option<Pubkey>,
-    install_price: u64,
-    install_vault: Pubkey,
-    kind: Kind,
-    seller_fee_basis_points: u16,
-    supply: Option<u64>,
-    symbol: String,
-    tag: Tag,
-    uri: String,
-}
 
 #[derive(Accounts)]
 #[instruction(name: String, params: CreateXnftParams)]
@@ -186,7 +165,6 @@ pub fn create_xnft_handler(
     name: String,
     params: CreateXnftParams,
 ) -> Result<()> {
-    let clock = Clock::get()?;
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
     // Check provided name length against protocol defined maximum.
@@ -194,34 +172,16 @@ pub fn create_xnft_handler(
         return Err(error!(CustomError::NameTooLong));
     }
 
-    // Create the curator status struct for the xNFT if one was provided.
-    let curator_status = params.curator.map(|pubkey| CuratorStatus {
-        pubkey,
-        verified: false,
-    });
-
+    // Initialize and populate the new xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;
-    ***xnft = Xnft {
-        bump: [xnft_bump],
-        publisher: *ctx.accounts.publisher.key,
-        install_vault: params.install_vault,
-        master_metadata: *ctx.accounts.master_metadata.key,
-        master_mint: ctx.accounts.master_mint.key(),
-        install_authority: params.install_authority,
-        curator: curator_status,
-        name: name.clone(),
-        kind: params.kind.clone(),
-        tag: params.tag,
-        supply: params.supply,
-        total_installs: 0,
-        install_price: params.install_price,
-        created_ts: clock.unix_timestamp,
-        updated_ts: clock.unix_timestamp,
-        total_rating: 0,
-        num_ratings: 0,
-        suspended: false,
-        _reserved: [0; 64],
-    };
+    ***xnft = Xnft::try_new(
+        name.clone(),
+        xnft_bump,
+        *ctx.accounts.publisher.key,
+        *ctx.accounts.master_metadata.key,
+        ctx.accounts.master_mint.key(),
+        &params,
+    )?;
 
     // Mint the master token.
     token::mint_to(

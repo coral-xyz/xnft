@@ -19,18 +19,8 @@ use anchor_spl::token::TokenAccount;
 use mpl_token_metadata::state::DataV2;
 
 use crate::events::XnftUpdated;
-use crate::state::{CuratorStatus, Tag, Xnft};
+use crate::state::{CuratorStatus, UpdateParams, Xnft};
 use crate::CustomError;
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct UpdateParams {
-    install_authority: Option<Pubkey>,
-    install_price: u64,
-    install_vault: Pubkey,
-    supply: Option<u64>,
-    tag: Tag,
-    uri: Option<String>,
-}
 
 #[derive(Accounts)]
 pub struct UpdateXnft<'info> {
