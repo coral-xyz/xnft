@@ -23,7 +23,7 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "9kV7nkH2pJe6UFzaidn8MM6z4Q1eJsG8e86L8Y5P1Tb"
+      "CUicwcR3dDndcTCeJy95GPFTPqQzgVV4xPKrZSzscwX3"
     );
 
     const pk2 = await deriveMasterMintAddress(

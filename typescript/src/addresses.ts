@@ -57,7 +57,7 @@ export async function deriveMasterMintAddress(
   const [masterMint] = await PublicKey.findProgramAddress(
     [
       Buffer.from("mint"),
-      associatedEntity?.toBytes() ?? PublicKey.default.toBytes(),
+      associatedEntity?.toBytes() ?? PROGRAM_ID.toBytes(),
       publisher.toBytes(),
       Buffer.from(name),
     ],

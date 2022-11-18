@@ -54,7 +54,7 @@ pub struct CreateXnft<'info> {
         payer = payer,
         seeds = [
             "mint".as_bytes(),
-            params.kind.as_pubkey().as_ref(),
+            params.kind.as_pubkey().as_ref(), // cannot be auto-resolved
             publisher.key().as_ref(),
             name.as_bytes(),
         ],

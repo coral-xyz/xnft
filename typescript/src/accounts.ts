@@ -16,13 +16,18 @@
  */
 
 import { Connection, PublicKey } from "@solana/web3.js";
-import type { Access, Install, Review, xNFT } from "./types";
+import type {
+  AccessAccount,
+  InstallAccount,
+  ReviewAccount,
+  XnftAccount,
+} from "./types";
 import { buildAnonymousProgram } from "./util";
 
 export async function getAccessAccount(
   connection: Connection,
   publicKey: PublicKey
-): Promise<Access> {
+): Promise<AccessAccount> {
   return (await buildAnonymousProgram(connection).account.access.fetch(
     publicKey
   )) as any;
@@ -31,14 +36,14 @@ export async function getAccessAccount(
 export async function getInstallAccount(
   connection: Connection,
   publicKey: PublicKey
-): Promise<Install> {
+): Promise<InstallAccount> {
   return buildAnonymousProgram(connection).account.install.fetch(publicKey);
 }
 
 export async function getReviewAccount(
   connection: Connection,
   publicKey: PublicKey
-): Promise<Review> {
+): Promise<ReviewAccount> {
   return await buildAnonymousProgram(connection).account.review.fetch(
     publicKey
   );
@@ -47,7 +52,7 @@ export async function getReviewAccount(
 export async function getXnftAccount(
   connection: Connection,
   publicKey: PublicKey
-): Promise<xNFT> {
+): Promise<XnftAccount> {
   return (await buildAnonymousProgram(connection).account.xnft.fetch(
     publicKey
   )) as any;

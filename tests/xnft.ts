@@ -124,7 +124,7 @@ describe("Account Creations", () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
         [
           Buffer.from("mint"),
-          anchor.web3.PublicKey.default.toBytes(),
+          program.programId.toBytes(),
           authority.publicKey.toBytes(),
           Buffer.from(badName),
         ],
@@ -165,7 +165,7 @@ describe("Account Creations", () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
         [
           Buffer.from("mint"),
-          anchor.web3.PublicKey.default.toBytes(),
+          program.programId.toBytes(),
           authority.publicKey.toBytes(),
           Buffer.from(name),
         ],
@@ -566,7 +566,7 @@ describe("Account Creations", () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
         [
           Buffer.from("mint"),
-          anchor.web3.PublicKey.default.toBytes(),
+          program.programId.toBytes(),
           authority.publicKey.toBytes(),
           Buffer.from(name),
         ],

@@ -15,7 +15,6 @@
 
 use anchor_lang::prelude::*;
 
-use super::{Kind, Tag};
 use crate::util::verify_optional_pubkey;
 use crate::{CustomError, MAX_NAME_LEN};
 
@@ -93,13 +92,36 @@ pub struct CuratorStatus {
     pub verified: bool,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq)]
+pub enum Kind {
+    App,
+    Collection { pubkey: Pubkey },
+    Nft { pubkey: Pubkey },
+}
+
+impl Kind {
+    pub fn as_pubkey(&self) -> Pubkey {
+        match self {
+            Kind::App => crate::ID,
+            Kind::Collection { pubkey } | Kind::Nft { pubkey } => *pubkey,
+        }
+    }
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
+pub enum Tag {
+    None,
+    Defi,
+    Game,
+    Nfts,
+}
+
 #[cfg(test)]
 mod tests {
     use anchor_lang::prelude::Pubkey;
     use std::str::FromStr;
 
-    use super::Xnft;
-    use crate::state::{Kind, Tag};
+    use super::*;
     use crate::CustomError;
 
     #[test]
@@ -144,6 +166,19 @@ mod tests {
         assert!(x
             .verify_install_authority(&x.install_authority.unwrap())
             .is_ok());
+    }
+
+    #[test]
+    fn kind_variant_as_bytes() {
+        let x = Kind::App.as_pubkey();
+        assert_eq!(x.as_ref(), crate::ID.as_ref());
+
+        let pk = Pubkey::from_str("xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55").unwrap();
+        let y = Kind::Collection { pubkey: pk }.as_pubkey();
+        assert_eq!(y.as_ref(), pk.as_ref());
+
+        let z = Kind::Nft { pubkey: pk }.as_pubkey();
+        assert_eq!(z.as_ref(), pk.as_ref());
     }
 
     #[test]
