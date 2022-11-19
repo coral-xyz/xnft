@@ -61,7 +61,6 @@ const multisig = anchor.web3.Keypair.generate();
 const author = anchor.web3.Keypair.generate();
 const otherCreator = anchor.web3.Keypair.generate();
 const installAuthority = anchor.web3.Keypair.generate();
-const mockCollection = anchor.web3.Keypair.generate().publicKey;
 
 let multisigSigner: anchor.web3.PublicKey;
 let privateXnft: anchor.web3.PublicKey;
@@ -110,7 +109,6 @@ describe("Account Creations", () => {
     const name = "test xnft";
     const symbol = "";
     const tag = { defi: {} } as never;
-    const kind = { app: {} } as never;
     const uri = "https://arweave.net/abc123";
     const sellerFeeBasisPoints = 0;
     const supply = null;
@@ -118,16 +116,9 @@ describe("Account Creations", () => {
     let xnftData: anchor.IdlAccounts<Xnft>["xnft"];
     let meta: MetadataAccount;
 
-    it("unless the name is too long", async () => {
-      const badName = "this title is way too long use!";
-
+    it("unless the uri is too long", async () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("mint"),
-          program.programId.toBytes(),
-          authority.publicKey.toBytes(),
-          Buffer.from(badName),
-        ],
+        [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
         program.programId
       );
 
@@ -138,11 +129,10 @@ describe("Account Creations", () => {
 
       try {
         await program.methods
-          .createXnft(badName, {
+          .createXnft(name, {
             symbol,
             tag,
-            kind,
-            uri,
+            uri: "this sample uri is too long according to metaplex and should break the serialization of the accounts + this sample uri is too long according to metaplex and should break the serialization of the accounts",
             sellerFeeBasisPoints,
             installAuthority: null,
             installPrice,
@@ -157,18 +147,13 @@ describe("Account Creations", () => {
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
-        assert.strictEqual(e.error.errorCode.code, "NameTooLong");
+        assert.strictEqual(e.error.errorCode.code, "UriExceedsMaxLength");
       }
     });
 
     it("when the arguments are within the bounds", async () => {
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("mint"),
-          program.programId.toBytes(),
-          authority.publicKey.toBytes(),
-          Buffer.from(name),
-        ],
+        [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
         program.programId
       );
 
@@ -179,7 +164,6 @@ describe("Account Creations", () => {
         .createXnft(name, {
           symbol,
           tag,
-          kind,
           uri,
           sellerFeeBasisPoints,
           installAuthority: null,
@@ -251,57 +235,58 @@ describe("Account Creations", () => {
       assert.isTrue(acc.isFrozen);
     });
 
-    it("an xNFT can be created and associated with an external entity via the kind enum", async () => {
-      const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("mint"),
-          mockCollection.toBytes(),
-          authority.publicKey.toBytes(),
-          Buffer.from("Associated xNFT"),
-        ],
-        program.programId
-      );
+    // FIXME:
+    // it("an xNFT can be created and associated with an external entity via the kind enum", async () => {
+    //   const [mint] = await anchor.web3.PublicKey.findProgramAddress(
+    //     [
+    //       Buffer.from("mint"),
+    //       mockCollection.toBytes(),
+    //       authority.publicKey.toBytes(),
+    //       Buffer.from("Associated xNFT"),
+    //     ],
+    //     program.programId
+    //   );
 
-      const masterToken = await getAssociatedTokenAddress(
-        mint,
-        authority.publicKey
-      );
+    //   const masterToken = await getAssociatedTokenAddress(
+    //     mint,
+    //     authority.publicKey
+    //   );
 
-      const ix = program.methods
-        .createXnft("Associated xNFT", {
-          creators: [{ address: authority.publicKey, share: 100 }],
-          curator: null,
-          installAuthority: null,
-          installPrice: new anchor.BN(0),
-          installVault: authority.publicKey,
-          kind: { collection: { pubkey: mockCollection } } as never,
-          sellerFeeBasisPoints: 0,
-          supply: null,
-          symbol: "",
-          tag: { none: {} } as never,
-          uri: "https://google.com",
-        })
-        .accounts({
-          masterMint: mint,
-          masterToken,
-          metadataProgram,
-        });
+    //   const ix = program.methods
+    //     .createXnft("Associated xNFT", {
+    //       creators: [{ address: authority.publicKey, share: 100 }],
+    //       curator: null,
+    //       installAuthority: null,
+    //       installPrice: new anchor.BN(0),
+    //       installVault: authority.publicKey,
+    //       kind: { collection: { pubkey: mockCollection } } as never,
+    //       sellerFeeBasisPoints: 0,
+    //       supply: null,
+    //       symbol: "",
+    //       tag: { none: {} } as never,
+    //       uri: "https://google.com",
+    //     })
+    //     .accounts({
+    //       masterMint: mint,
+    //       masterToken,
+    //       metadataProgram,
+    //     });
 
-      const pk = await ix.pubkeys();
-      await ix.rpc();
+    //   const pk = await ix.pubkeys();
+    //   await ix.rpc();
 
-      const acc = await program.account.xnft.fetch(pk.xnft);
-      assert.deepEqual(acc.kind, { collection: { pubkey: mockCollection } });
+    //   const acc = await program.account.xnft.fetch(pk.xnft);
+    //   assert.deepEqual(acc.kind, { collection: { pubkey: mockCollection } });
 
-      const m = (await metaplex
-        .rpc()
-        .getAccount(pk.masterMetadata)) as UnparsedAccount;
-      const meta = parseMetadataAccount(m);
-      assert.deepEqual(meta.data.collection, {
-        key: mockCollection,
-        verified: false,
-      });
-    });
+    //   const m = (await metaplex
+    //     .rpc()
+    //     .getAccount(pk.masterMetadata)) as UnparsedAccount;
+    //   const meta = parseMetadataAccount(m);
+    //   assert.deepEqual(meta.data.collection, {
+    //     key: mockCollection,
+    //     verified: false,
+    //   });
+    // });
   });
 
   describe("a curator can be set on an xNFT", () => {
@@ -564,12 +549,7 @@ describe("Account Creations", () => {
     it("when an install authority is provided to the instruction params", async () => {
       const name = "private xnft";
       const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("mint"),
-          program.programId.toBytes(),
-          authority.publicKey.toBytes(),
-          Buffer.from(name),
-        ],
+        [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
         program.programId
       );
 
@@ -585,7 +565,6 @@ describe("Account Creations", () => {
           installAuthority: installAuthority.publicKey,
           installPrice: new anchor.BN(0),
           installVault: authority.publicKey,
-          kind: { app: {} } as never,
           sellerFeeBasisPoints: 0,
           supply: null,
           symbol: "",
@@ -663,14 +642,14 @@ describe("Account Updates", () => {
         installVault,
         supply: new anchor.BN(200),
         tag: { none: {} } as never,
-        uri: null,
+        uri: "new uri update",
       })
       .accounts({
         xnft,
         masterMetadata,
         masterToken,
         xnftAuthority: authority.publicKey,
-        updateAuthority: multisigSigner,
+        curationAuthority: multisigSigner,
         metadataProgram,
       })
       .rpc();
@@ -729,6 +708,12 @@ describe("Account Updates", () => {
     assert.strictEqual(acc.installPrice.toNumber(), 100);
     assert.strictEqual(acc.supply.toNumber(), 200);
     assert.deepEqual(acc.tag, { none: {} });
+    assert.strictEqual(acc.uri, "new uri update");
+
+    const meta = parseMetadataAccount(
+      (await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount
+    );
+    assert.strictEqual(meta.data.data.uri.replace(/\0/g, ""), acc.uri);
   });
 
   it("an xNFT can be transferred to another authority", async () => {

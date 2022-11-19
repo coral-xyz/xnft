@@ -39,13 +39,20 @@ security_txt! {
 }
 
 #[constant]
-pub const MAX_NAME_LEN: usize = 30;
-#[constant]
 pub const MAX_RATING: u8 = 5;
 
 #[program]
 pub mod xnft {
     use super::*;
+
+    /// TODO:
+    pub fn create_associated_xnft(
+        ctx: Context<CreateAssociatedXnft>,
+        kind: Kind,
+        params: CreateXnftParams,
+    ) -> Result<()> {
+        instructions::create_associated_xnft_handler(ctx, kind, params)
+    }
 
     /// Creates all parts of an xNFT instance.
     ///
@@ -138,9 +145,6 @@ pub enum CustomError {
     #[msg("You cannot create a review for an xNFT that you currently own or published")]
     CannotReviewOwned,
 
-    #[msg("A collection pubkey was provided without the collection Kind variant")]
-    CollectionWithoutKind,
-
     #[msg("There is already a verified curator assigned")]
     CuratorAlreadySet,
 
@@ -165,9 +169,6 @@ pub enum CustomError {
     #[msg("The metadata of the xNFT is marked as immutable")]
     MetadataIsImmutable,
 
-    #[msg("The name provided for creating the xNFT exceeded the byte limit")]
-    NameTooLong,
-
     #[msg("The rating for a review must be between 0 and 5")]
     RatingOutOfBounds,
 
@@ -183,6 +184,12 @@ pub enum CustomError {
     #[msg("The access account provided is not associated with the wallet")]
     UnauthorizedInstall,
 
+    #[msg("The signer did not match the update authority of the metadata account")]
+    UpdateAuthorityMismatch,
+
     #[msg("The signing authority for the xNFT update did not match the review authority")]
     UpdateReviewAuthorityMismatch,
+
+    #[msg("The metadata URI provided exceeds the maximum length")]
+    UriExceedsMaxLength,
 }

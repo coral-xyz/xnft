@@ -16,24 +16,22 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::metadata::{
-    self, CreateMetadataAccountsV3, Metadata, SetCollectionSize, SignMetadata,
-    UpdatePrimarySaleHappenedViaToken,
+    self, CreateMetadataAccountsV3, Metadata, SignMetadata, UpdatePrimarySaleHappenedViaToken,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{Creator, DataV2};
+use mpl_token_metadata::state::{Creator, DataV2, MAX_URI_LENGTH};
 
 use crate::state::{CreateXnftParams, Kind, Xnft};
-use crate::{CustomError, MAX_NAME_LEN};
+use crate::CustomError;
 
 #[derive(Accounts)]
-#[instruction(name: String, params: CreateXnftParams)]
+#[instruction(name: String)]
 pub struct CreateXnft<'info> {
     #[account(
         init,
         payer = payer,
         seeds = [
             "mint".as_bytes(),
-            crate::ID.as_ref(),
             publisher.key().as_ref(),
             name.as_bytes(),
         ],
@@ -71,7 +69,7 @@ pub struct CreateXnft<'info> {
         space = Xnft::LEN,
         seeds = [
             "xnft".as_bytes(),
-            master_mint.key().as_ref(),
+            master_metadata.key().as_ref(),
         ],
         bump,
     )]
@@ -95,19 +93,6 @@ impl<'info> CreateXnft<'info> {
             mint: self.master_mint.to_account_info(),
             to: self.master_token.to_account_info(),
             authority: self.xnft.to_account_info(),
-        };
-        CpiContext::new(program, accounts)
-    }
-
-    pub fn set_collection_size_ctx(
-        &self,
-    ) -> CpiContext<'_, '_, '_, 'info, SetCollectionSize<'info>> {
-        let program = self.metadata_program.to_account_info();
-        let accounts = SetCollectionSize {
-            metadata: self.master_metadata.to_account_info(),
-            mint: self.master_mint.to_account_info(),
-            update_authority: self.xnft.to_account_info(),
-            system_program: self.system_program.to_account_info(),
         };
         CpiContext::new(program, accounts)
     }
@@ -165,17 +150,18 @@ pub fn create_xnft_handler(
     name: String,
     params: CreateXnftParams,
 ) -> Result<()> {
-    let xnft_bump = *ctx.bumps.get("xnft").unwrap();
-
-    // Check provided name length against protocol defined maximum.
-    require!(name.len() <= MAX_NAME_LEN, CustomError::NameTooLong);
+    // Check the length of the metadata uri provided.
+    require!(
+        params.uri.len() <= MAX_URI_LENGTH,
+        CustomError::UriExceedsMaxLength,
+    );
 
     // Initialize and populate the new xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;
     ***xnft = Xnft::try_new(
         name.clone(),
         Kind::App,
-        xnft_bump,
+        *ctx.bumps.get("xnft").unwrap(),
         *ctx.accounts.publisher.key,
         *ctx.accounts.master_metadata.key,
         ctx.accounts.master_mint.key(),

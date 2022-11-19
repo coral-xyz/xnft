@@ -14,15 +14,14 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anchor_lang::prelude::*;
+use mpl_token_metadata::state::{MAX_NAME_LENGTH, MAX_URI_LENGTH};
 
 use super::CreateXnftParams;
 use crate::util::verify_optional_pubkey;
-use crate::{CustomError, MAX_NAME_LEN};
+use crate::CustomError;
 
 #[account]
 pub struct Xnft {
-    /// The bump nonce for the xNFT's PDA (1).
-    pub bump: [u8; 1],
     /// The pubkey of the original xNFT creator (32).
     pub publisher: Pubkey,
     /// The pubkey of the account to receive install payments (32).
@@ -35,7 +34,9 @@ pub struct Xnft {
     pub install_authority: Option<Pubkey>,
     /// Optional pubkey of the global authority required for reviewing xNFT updates (34).
     pub curator: Option<CuratorStatus>,
-    /// The display name of the xNFT account (4 + MAX_NAME_LEN).
+    /// The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH).
+    pub uri: String,
+    /// The display name of the xNFT account (4 + mpl_token_metadata::state::MAX_NAME_LENGTH).
     pub name: String,
     /// The `Kind` enum variant describing the type of xNFT (1 + 32).
     pub kind: Kind,
@@ -57,13 +58,27 @@ pub struct Xnft {
     pub num_ratings: u32,
     /// Flag to determine whether new installations of the xNFT should be halted (1).
     pub suspended: bool,
+    /// The bump nonce for the xNFT's PDA (1).
+    pub bump: [u8; 1],
     /// Unused reserved byte space for additive future changes.
     pub _reserved: [u8; 64],
 }
 
 impl Xnft {
-    pub const LEN: usize =
-        8 + 1 + (32 * 4) + 33 + 34 + (4 + MAX_NAME_LEN) + 33 + 1 + 9 + (8 * 5) + 4 + 1 + 64;
+    pub const LEN: usize = 8
+        + (32 * 4)
+        + 33
+        + 34
+        + (4 + MAX_URI_LENGTH)
+        + (4 + MAX_NAME_LENGTH)
+        + 33
+        + 1
+        + 9
+        + (8 * 5)
+        + 4
+        + 1
+        + 1
+        + 64;
 
     pub fn try_new(
         name: String,
@@ -76,7 +91,6 @@ impl Xnft {
     ) -> anchor_lang::Result<Self> {
         let now = Clock::get()?.unix_timestamp;
         Ok(Self {
-            bump: [bump],
             publisher,
             install_vault: params.install_vault,
             master_metadata,
@@ -86,6 +100,7 @@ impl Xnft {
                 pubkey,
                 verified: false,
             }),
+            uri: params.uri.clone(),
             name,
             kind,
             tag: params.tag.clone(),
@@ -97,12 +112,13 @@ impl Xnft {
             total_rating: 0,
             num_ratings: 0,
             suspended: false,
+            bump: [bump],
             _reserved: [0; 64],
         })
     }
 
     pub fn as_seeds(&self) -> [&[u8]; 3] {
-        ["xnft".as_bytes(), self.master_mint.as_ref(), &self.bump]
+        ["xnft".as_bytes(), self.master_metadata.as_ref(), &self.bump]
     }
 
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {
@@ -163,7 +179,7 @@ mod tests {
 
     #[test]
     fn account_size_matches() {
-        assert_eq!(Xnft::LEN, 390);
+        assert_eq!(Xnft::LEN, 596);
     }
 
     #[test]
@@ -177,6 +193,7 @@ mod tests {
             bump: Default::default(),
             kind: Kind::App,
             tag: Tag::None,
+            uri: Default::default(),
             name: Default::default(),
             total_installs: Default::default(),
             install_price: Default::default(),
@@ -229,6 +246,7 @@ mod tests {
             bump: Default::default(),
             kind: Kind::App,
             tag: Tag::None,
+            uri: Default::default(),
             name: Default::default(),
             total_installs: Default::default(),
             install_price: Default::default(),
