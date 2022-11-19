@@ -38,7 +38,7 @@ pub struct Xnft {
     pub uri: String,
     /// The display name of the xNFT account (4 + mpl_token_metadata::state::MAX_NAME_LENGTH).
     pub name: String,
-    /// The `Kind` enum variant describing the type of xNFT (1 + 32).
+    /// The `Kind` enum variant describing the type of xNFT (1).
     pub kind: Kind,
     /// The `Tag` enum variant to assign the category of xNFT (1).
     pub tag: Tag,
@@ -71,7 +71,7 @@ impl Xnft {
         + 34
         + (4 + MAX_URI_LENGTH)
         + (4 + MAX_NAME_LENGTH)
-        + 33
+        + 1
         + 1
         + 9
         + (8 * 5)
@@ -148,17 +148,8 @@ pub struct CuratorStatus {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq)]
 pub enum Kind {
     App,
-    Collection { pubkey: Pubkey },
-    Nft { pubkey: Pubkey },
-}
-
-impl Kind {
-    pub fn as_pubkey(&self) -> Pubkey {
-        match self {
-            Kind::App => crate::ID,
-            Kind::Collection { pubkey } | Kind::Nft { pubkey } => *pubkey,
-        }
-    }
+    Collection,
+    Nft,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
@@ -179,7 +170,7 @@ mod tests {
 
     #[test]
     fn account_size_matches() {
-        assert_eq!(Xnft::LEN, 596);
+        assert_eq!(Xnft::LEN, 564);
     }
 
     #[test]
@@ -220,19 +211,6 @@ mod tests {
         assert!(x
             .verify_install_authority(&x.install_authority.unwrap())
             .is_ok());
-    }
-
-    #[test]
-    fn kind_variant_as_bytes() {
-        let x = Kind::App.as_pubkey();
-        assert_eq!(x.as_ref(), crate::ID.as_ref());
-
-        let pk = Pubkey::from_str("xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55").unwrap();
-        let y = Kind::Collection { pubkey: pk }.as_pubkey();
-        assert_eq!(y.as_ref(), pk.as_ref());
-
-        let z = Kind::Nft { pubkey: pk }.as_pubkey();
-        assert_eq!(z.as_ref(), pk.as_ref());
     }
 
     #[test]

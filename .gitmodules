@@ -1,6 +1,3 @@
 [submodule "deps/metaplex-program-library"]
 	path = deps/metaplex-program-library
 	url = https://github.com/metaplex-foundation/metaplex-program-library
-[submodule "deps/multisig"]
-	path = deps/multisig
-	url = https://github.com/coral-xyz/multisig
