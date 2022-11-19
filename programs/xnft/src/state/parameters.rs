@@ -15,7 +15,7 @@
 
 use anchor_lang::prelude::*;
 
-use super::{Kind, Tag};
+use super::Tag;
 
 #[derive(AnchorDeserialize, AnchorSerialize)]
 pub struct CreatorsParam {
@@ -30,7 +30,6 @@ pub struct CreateXnftParams {
     pub install_authority: Option<Pubkey>,
     pub install_price: u64,
     pub install_vault: Pubkey,
-    pub kind: Kind,
     pub seller_fee_basis_points: u16,
     pub supply: Option<u64>,
     pub symbol: String,

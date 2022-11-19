@@ -67,6 +67,7 @@ impl Xnft {
 
     pub fn try_new(
         name: String,
+        kind: Kind,
         bump: u8,
         publisher: Pubkey,
         master_metadata: Pubkey,
@@ -86,7 +87,7 @@ impl Xnft {
                 verified: false,
             }),
             name,
-            kind: params.kind.clone(),
+            kind,
             tag: params.tag.clone(),
             supply: params.supply,
             total_installs: 0,

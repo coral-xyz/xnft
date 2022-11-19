@@ -162,6 +162,9 @@ pub enum CustomError {
     #[msg("The asserted authority/owner did not match that of the Install account")]
     InstallOwnerMismatch,
 
+    #[msg("The metadata of the xNFT is marked as immutable")]
+    MetadataIsImmutable,
+
     #[msg("The name provided for creating the xNFT exceeded the byte limit")]
     NameTooLong,
 

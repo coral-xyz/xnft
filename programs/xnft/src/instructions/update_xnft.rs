@@ -37,7 +37,10 @@ pub struct UpdateXnft<'info> {
     )]
     pub master_token: Account<'info, TokenAccount>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = master_metadata.is_mutable @ CustomError::MetadataIsImmutable,
+    )]
     pub master_metadata: Account<'info, MetadataAccount>,
 
     /// CHECK: is validated in the associated token constraint on `master_token`.

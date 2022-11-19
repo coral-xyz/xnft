@@ -20,7 +20,7 @@ use anchor_spl::metadata::{
     UpdatePrimarySaleHappenedViaToken,
 };
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
-use mpl_token_metadata::state::{Collection, Creator, DataV2};
+use mpl_token_metadata::state::{Creator, DataV2};
 
 use crate::state::{CreateXnftParams, Kind, Xnft};
 use crate::{CustomError, MAX_NAME_LEN};
@@ -33,7 +33,7 @@ pub struct CreateXnft<'info> {
         payer = payer,
         seeds = [
             "mint".as_bytes(),
-            params.kind.as_pubkey().as_ref(), // cannot be auto-resolved
+            crate::ID.as_ref(),
             publisher.key().as_ref(),
             name.as_bytes(),
         ],
@@ -168,14 +168,13 @@ pub fn create_xnft_handler(
     let xnft_bump = *ctx.bumps.get("xnft").unwrap();
 
     // Check provided name length against protocol defined maximum.
-    if name.len() > MAX_NAME_LEN {
-        return Err(error!(CustomError::NameTooLong));
-    }
+    require!(name.len() <= MAX_NAME_LEN, CustomError::NameTooLong);
 
     // Initialize and populate the new xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;
     ***xnft = Xnft::try_new(
         name.clone(),
+        Kind::App,
         xnft_bump,
         *ctx.accounts.publisher.key,
         *ctx.accounts.master_metadata.key,
@@ -201,13 +200,6 @@ pub fn create_xnft_handler(
     // Set field values for unnamed or calculated MPL metadata properties.
     let is_mutable = true;
     let update_authority_is_signer = true;
-    let collection = match params.kind {
-        Kind::Collection { pubkey } => Some(Collection {
-            verified: false,
-            key: pubkey,
-        }),
-        _ => None,
-    };
 
     // Validation that share percentage splits sums up to 100 is
     // done by MPL in the `create_metadata_accounts_v3` CPI call
@@ -235,7 +227,7 @@ pub fn create_xnft_handler(
             uri: params.uri,
             seller_fee_basis_points: params.seller_fee_basis_points,
             creators,
-            collection,
+            collection: None,
             uses: None,
         },
         is_mutable,
