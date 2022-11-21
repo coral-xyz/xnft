@@ -23,73 +23,55 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import { deriveMasterMintAddress, METADATA_PROGRAM_ID } from "./addresses";
-import type { CreateXnftParameters, UpdateXnftParameters } from "./types";
+import type { CreateXnftParameters, Kind, UpdateXnftParameters } from "./types";
 import type { Xnft } from "./xnft";
 
 /**
- * Create a full transaction for `delete_install`.
+ * Create a full transaction for `create_associated_xnft`.
  * @export
- * @param {...Parameters<typeof createDeleteInstallInstruction>} args
+ * @param {...Parameters<typeof createXnftInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createDeleteInstallTransaction(
-  ...args: Parameters<typeof createDeleteInstallInstruction>
+export async function createAssociatedXnftTransaction(
+  ...args: Parameters<typeof createAssociatedXnftInstruction>
 ): Promise<Transaction> {
-  const ix = await createDeleteInstallInstruction(...args);
+  const ix = await createAssociatedXnftInstruction(...args);
   return new Transaction().add(ix);
 }
 
 /**
- * Create an ix instance for the `delete_install` instruction.
+ * Create the ix instance for the `create_associated_xnft` instruction.
  * @export
  * @param {Program<Xnft>} program
- * @param {PublicKey} install
- * @param {PublicKey} [receiver]
+ * @param {Kind} kind
+ * @param {CreateXnftParameters} params
+ * @param {PublicKey} metadata
+ * @param {PublicKey} mint
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createDeleteInstallInstruction(
+export async function createAssociatedXnftInstruction(
   program: Program<Xnft>,
-  install: PublicKey,
-  receiver?: PublicKey
+  kind: Kind,
+  metadata: PublicKey,
+  mint: PublicKey,
+  params: CreateXnftParameters
 ): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error("no public key found on the program provider");
+  }
+
+  const associatedToken = await getAssociatedTokenAddress(
+    mint,
+    program.provider.publicKey
+  );
+
   return await program.methods
-    .deleteInstall()
+    .createAssociatedXnft({ [kind.toLowerCase()]: {} }, params)
     .accounts({
-      install,
-      receiver: receiver ?? program.provider.publicKey,
+      associatedMetadata: metadata,
+      associatedMint: mint,
+      associatedToken,
     })
-    .instruction();
-}
-
-/**
- * Create a full transaction for `grant_access`.
- * @export
- * @param {...Parameters<typeof createGrantAccessInstruction>} args
- * @returns {Promise<Transaction>}
- */
-export async function createGrantAccessTransaction(
-  ...args: Parameters<typeof createGrantAccessInstruction>
-): Promise<Transaction> {
-  const ix = await createGrantAccessInstruction(...args);
-  return new Transaction().add(ix);
-}
-
-/**
- * Create an ix instance for the `grant_access` instruction.
- * @export
- * @param {Program<Xnft>} program
- * @param {PublicKey} xnft
- * @param {PublicKey} wallet
- * @returns {Promise<TransactionInstruction>}
- */
-export async function createGrantAccessInstruction(
-  program: Program<Xnft>,
-  xnft: PublicKey,
-  wallet: PublicKey
-): Promise<TransactionInstruction> {
-  return await program.methods
-    .grantAccess()
-    .accounts({ xnft, wallet })
     .instruction();
 }
 
@@ -97,13 +79,13 @@ export async function createGrantAccessInstruction(
  * Create a full transaction for `create_install` or `create_permissioned_install`
  * based on the value of the `permissioned` argument.
  * @export
- * @param {...Parameters<typeof createCreateInstallInstruction>} args
+ * @param {...Parameters<typeof createInstallInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createCreateInstallTransaction(
-  ...args: Parameters<typeof createCreateInstallInstruction>
+export async function createInstallTransaction(
+  ...args: Parameters<typeof createInstallInstruction>
 ): Promise<Transaction> {
-  const ix = await createCreateInstallInstruction(...args);
+  const ix = await createInstallInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -116,7 +98,7 @@ export async function createCreateInstallTransaction(
  * @param {PublicKey} installVault
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createCreateInstallInstruction(
+export async function createInstallInstruction(
   program: Program<Xnft>,
   xnft: PublicKey,
   installVault: PublicKey,
@@ -134,15 +116,15 @@ export async function createCreateInstallInstruction(
 }
 
 /**
- * Create a full transaction for `create_install`.
+ * Create a full transaction for `create_xnft`.
  * @export
- * @param {...Parameters<typeof createCreateXnftInstruction>} args
+ * @param {...Parameters<typeof createXnftInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createCreateXnftTransaction(
-  ...args: Parameters<typeof createCreateXnftInstruction>
+export async function createXnftTransaction(
+  ...args: Parameters<typeof createXnftInstruction>
 ): Promise<Transaction> {
-  const ix = await createCreateXnftInstruction(...args);
+  const ix = await createXnftInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -154,7 +136,7 @@ export async function createCreateXnftTransaction(
  * @param {CreateXnftParams} params
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createCreateXnftInstruction(
+export async function createXnftInstruction(
   program: Program<Xnft>,
   name: string,
   params: CreateXnftParameters
@@ -163,14 +145,9 @@ export async function createCreateXnftInstruction(
     throw new Error("no public key found on the program provider");
   }
 
-  const kindVariantKey = Object.keys(params.kind)[0];
-
   const masterMint = await deriveMasterMintAddress(
     name,
-    program.provider.publicKey,
-    kindVariantKey === "app"
-      ? undefined
-      : (params.kind[kindVariantKey] as { pubkey: PublicKey }).pubkey
+    program.provider.publicKey
   );
 
   const masterToken = await getAssociatedTokenAddress(
@@ -188,15 +165,82 @@ export async function createCreateXnftInstruction(
 }
 
 /**
- * Create a full transaction for `revoke_access`.
+ * Create a full transaction for `delete_install`.
  * @export
- * @param {...Parameters<typeof createRevokeAccessInstruction>} args
+ * @param {...Parameters<typeof deleteInstallInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createRevokeAccessTransaction(
-  ...args: Parameters<typeof createRevokeAccessInstruction>
+export async function deleteInstallTransaction(
+  ...args: Parameters<typeof deleteInstallInstruction>
 ): Promise<Transaction> {
-  const ix = await createRevokeAccessInstruction(...args);
+  const ix = await deleteInstallInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create an ix instance for the `delete_install` instruction.
+ * @export
+ * @param {Program<Xnft>} program
+ * @param {PublicKey} install
+ * @param {PublicKey} [receiver]
+ * @returns {Promise<TransactionInstruction>}
+ */
+export async function deleteInstallInstruction(
+  program: Program<Xnft>,
+  install: PublicKey,
+  receiver?: PublicKey
+): Promise<TransactionInstruction> {
+  return await program.methods
+    .deleteInstall()
+    .accounts({
+      install,
+      receiver: receiver ?? program.provider.publicKey,
+    })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for `grant_access`.
+ * @export
+ * @param {...Parameters<typeof grantAccessInstruction>} args
+ * @returns {Promise<Transaction>}
+ */
+export async function grantAccessTransaction(
+  ...args: Parameters<typeof grantAccessInstruction>
+): Promise<Transaction> {
+  const ix = await grantAccessInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create an ix instance for the `grant_access` instruction.
+ * @export
+ * @param {Program<Xnft>} program
+ * @param {PublicKey} xnft
+ * @param {PublicKey} wallet
+ * @returns {Promise<TransactionInstruction>}
+ */
+export async function grantAccessInstruction(
+  program: Program<Xnft>,
+  xnft: PublicKey,
+  wallet: PublicKey
+): Promise<TransactionInstruction> {
+  return await program.methods
+    .grantAccess()
+    .accounts({ xnft, wallet })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for `revoke_access`.
+ * @export
+ * @param {...Parameters<typeof revokeAccessInstruction>} args
+ * @returns {Promise<Transaction>}
+ */
+export async function revokeAccessTransaction(
+  ...args: Parameters<typeof revokeAccessInstruction>
+): Promise<Transaction> {
+  const ix = await revokeAccessInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -208,7 +252,7 @@ export async function createRevokeAccessTransaction(
  * @param {PublicKey} wallet
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createRevokeAccessInstruction(
+export async function revokeAccessInstruction(
   program: Program<Xnft>,
   xnft: PublicKey,
   wallet: PublicKey
@@ -222,13 +266,13 @@ export async function createRevokeAccessInstruction(
 /**
  * Create a full transaction for `set_curator`.
  * @export
- * @param {...Parameters<typeof createSetCuratorInstruction>} args
+ * @param {...Parameters<typeof setCuratorInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createSetCuratorTransaction(
-  ...args: Parameters<typeof createSetCuratorInstruction>
+export async function setCuratorTransaction(
+  ...args: Parameters<typeof setCuratorInstruction>
 ): Promise<Transaction> {
-  const ix = await createSetCuratorInstruction(...args);
+  const ix = await setCuratorInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -241,7 +285,7 @@ export async function createSetCuratorTransaction(
  * @param {PublicKey} curator
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createSetCuratorInstruction(
+export async function setCuratorInstruction(
   program: Program<Xnft>,
   xnft: PublicKey,
   masterToken: PublicKey,
@@ -260,13 +304,13 @@ export async function createSetCuratorInstruction(
 /**
  * Create a full transaction for `set_suspended`.
  * @export
- * @param {...Parameters<typeof createSetSuspendedInstruction>} args
+ * @param {...Parameters<typeof setSuspendedInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createSetSuspendedTransaction(
-  ...args: Parameters<typeof createSetSuspendedInstruction>
+export async function setSuspendedTransaction(
+  ...args: Parameters<typeof setSuspendedInstruction>
 ): Promise<Transaction> {
-  const ix = await createSetSuspendedInstruction(...args);
+  const ix = await setSuspendedInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -279,7 +323,7 @@ export async function createSetSuspendedTransaction(
  * @param {boolean} value
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createSetSuspendedInstruction(
+export async function setSuspendedInstruction(
   program: Program<Xnft>,
   xnft: PublicKey,
   masterToken: PublicKey,
@@ -294,13 +338,13 @@ export async function createSetSuspendedInstruction(
 /**
  * Create a full transaction for `transfer`.
  * @export
- * @param {...Parameters<typeof createTransferInstruction>} args
+ * @param {...Parameters<typeof transferInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createTransferTransaction(
-  ...args: Parameters<typeof createTransferInstruction>
+export async function transferTransaction(
+  ...args: Parameters<typeof transferInstruction>
 ): Promise<Transaction> {
-  const ix = await createTransferInstruction(...args);
+  const ix = await transferInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -313,7 +357,7 @@ export async function createTransferTransaction(
  * @param {PublicKey} recipient
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createTransferInstruction(
+export async function transferInstruction(
   program: Program<Xnft>,
   xnft: PublicKey,
   masterMint: PublicKey,
@@ -344,13 +388,13 @@ export async function createTransferInstruction(
 /**
  * Create a full transaction for `update_xnft`.
  * @export
- * @param {...Parameters<typeof createUpdateXnftInstruction>} args
+ * @param {...Parameters<typeof updateXnftInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createUpdateXnftTransaction(
-  ...args: Parameters<typeof createUpdateXnftInstruction>
+export async function updateXnftTransaction(
+  ...args: Parameters<typeof updateXnftInstruction>
 ): Promise<Transaction> {
-  const ix = await createUpdateXnftInstruction(...args);
+  const ix = await updateXnftInstruction(...args);
   return new Transaction().add(ix);
 }
 
@@ -365,7 +409,7 @@ export async function createUpdateXnftTransaction(
  * @param {PublicKey} [curator]
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createUpdateXnftInstruction(
+export async function updateXnftInstruction(
   program: Program<Xnft>,
   params: UpdateXnftParameters,
   xnft: PublicKey,
@@ -378,7 +422,7 @@ export async function createUpdateXnftInstruction(
     .accounts({
       masterMetadata,
       masterToken,
-      updateAuthority: curator ?? program.provider.publicKey,
+      curationAuthority: curator ?? program.provider.publicKey,
       xnft,
       metadataProgram: METADATA_PROGRAM_ID,
     })

@@ -46,21 +46,14 @@ export async function deriveInstallAddress(
  * @export
  * @param {string} name
  * @param {PublicKey} publisher
- * @param {PublicKey} [associatedEntity]
  * @returns {Promise<PublicKey>}
  */
 export async function deriveMasterMintAddress(
   name: string,
-  publisher: PublicKey,
-  associatedEntity?: PublicKey
+  publisher: PublicKey
 ): Promise<PublicKey> {
   const [masterMint] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("mint"),
-      associatedEntity?.toBytes() ?? PROGRAM_ID.toBytes(),
-      publisher.toBytes(),
-      Buffer.from(name),
-    ],
+    [Buffer.from("mint"), publisher.toBytes(), Buffer.from(name)],
     PROGRAM_ID
   );
   return masterMint;
@@ -69,14 +62,14 @@ export async function deriveMasterMintAddress(
 /**
  * Derive the PDA of the associated xNFT program account.
  * @export
- * @param {PublicKey} masterMint
+ * @param {PublicKey} masterMetadata
  * @returns {Promise<PublicKey>}
  */
 export async function deriveXnftAddress(
-  masterMint: PublicKey
+  masterMetadata: PublicKey
 ): Promise<PublicKey> {
   const [xnft] = await PublicKey.findProgramAddress(
-    [Buffer.from("xnft"), masterMint.toBytes()],
+    [Buffer.from("xnft"), masterMetadata.toBytes()],
     PROGRAM_ID
   );
   return xnft;

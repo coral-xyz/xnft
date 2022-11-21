@@ -1,14 +1,7 @@
 export type Xnft = {
-  version: "0.1.0";
+  version: "0.2.0";
   name: "xnft";
   constants: [
-    {
-      name: "MAX_NAME_LEN";
-      type: {
-        defined: "usize";
-      };
-      value: "30";
-    },
     {
       name: "MAX_RATING";
       type: "u8";
@@ -16,6 +9,76 @@ export type Xnft = {
     }
   ];
   instructions: [
+    {
+      name: "createAssociatedXnft";
+      docs: ["TODO:"];
+      accounts: [
+        {
+          name: "associatedMetadata";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedToken";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "xnft";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "MetadataAccount";
+                path: "associated_metadata";
+              }
+            ];
+          };
+        },
+        {
+          name: "payer";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "publisher";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "kind";
+          type: {
+            defined: "Kind";
+          };
+        },
+        {
+          name: "params";
+          type: {
+            defined: "CreateXnftParams";
+          };
+        }
+      ];
+    },
     {
       name: "createXnft";
       docs: [
@@ -40,13 +103,6 @@ export type Xnft = {
                 kind: "const";
                 type: "string";
                 value: "mint";
-              },
-              {
-                kind: "arg";
-                type: {
-                  defined: "CreateXnftParams";
-                };
-                path: "params.kind";
               },
               {
                 kind: "account";
@@ -110,8 +166,7 @@ export type Xnft = {
               {
                 kind: "account";
                 type: "publicKey";
-                account: "Mint";
-                path: "master_mint";
+                path: "master_metadata";
               }
             ];
           };
@@ -189,7 +244,7 @@ export type Xnft = {
           isSigner: false;
         },
         {
-          name: "updateAuthority";
+          name: "curationAuthority";
           isMut: false;
           isSigner: false;
         },
@@ -819,13 +874,6 @@ export type Xnft = {
         kind: "struct";
         fields: [
           {
-            name: "bump";
-            docs: ["The bump nonce for the xNFT's PDA (1)."];
-            type: {
-              array: ["u8", 1];
-            };
-          },
-          {
             name: "publisher";
             docs: ["The pubkey of the original xNFT creator (32)."];
             type: "publicKey";
@@ -868,15 +916,22 @@ export type Xnft = {
             };
           },
           {
+            name: "uri";
+            docs: [
+              "The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH)."
+            ];
+            type: "string";
+          },
+          {
             name: "name";
-            docs: ["The display name of the xNFT account (4 + MAX_NAME_LEN)."];
+            docs: [
+              "The display name of the xNFT account (4 + mpl_token_metadata::state::MAX_NAME_LENGTH)."
+            ];
             type: "string";
           },
           {
             name: "kind";
-            docs: [
-              "The `Kind` enum variant describing the type of xNFT (1 + 32)."
-            ];
+            docs: ["The `Kind` enum variant describing the type of xNFT (1)."];
             type: {
               defined: "Kind";
             };
@@ -943,6 +998,13 @@ export type Xnft = {
             type: "bool";
           },
           {
+            name: "bump";
+            docs: ["The bump nonce for the xNFT's PDA (1)."];
+            type: {
+              array: ["u8", 1];
+            };
+          },
+          {
             name: "reserved";
             docs: ["Unused reserved byte space for additive future changes."];
             type: {
@@ -1002,12 +1064,6 @@ export type Xnft = {
           {
             name: "installVault";
             type: "publicKey";
-          },
-          {
-            name: "kind";
-            type: {
-              defined: "Kind";
-            };
           },
           {
             name: "sellerFeeBasisPoints";
@@ -1106,21 +1162,9 @@ export type Xnft = {
           },
           {
             name: "Collection";
-            fields: [
-              {
-                name: "pubkey";
-                type: "publicKey";
-              }
-            ];
           },
           {
             name: "Nft";
-            fields: [
-              {
-                name: "pubkey";
-                type: "publicKey";
-              }
-            ];
           }
         ];
       };
@@ -1216,93 +1260,91 @@ export type Xnft = {
     },
     {
       code: 6001;
-      name: "CollectionWithoutKind";
-      msg: "A collection pubkey was provided without the collection Kind variant";
-    },
-    {
-      code: 6002;
       name: "CuratorAlreadySet";
       msg: "There is already a verified curator assigned";
     },
     {
-      code: 6003;
+      code: 6002;
       name: "CuratorAuthorityMismatch";
       msg: "The expected curator authority did not match expected";
     },
     {
-      code: 6004;
+      code: 6003;
       name: "CuratorMismatch";
       msg: "The provided curator account did not match the one assigned";
     },
     {
-      code: 6005;
+      code: 6004;
       name: "InstallAuthorityMismatch";
       msg: "The provided xNFT install authority did not match";
     },
     {
-      code: 6006;
+      code: 6005;
       name: "InstallExceedsSupply";
       msg: "The max supply has been reached for the xNFT";
     },
     {
-      code: 6007;
+      code: 6006;
       name: "InstallingNonApp";
       msg: "You can only install an xNFT of with `Kind::App`";
     },
     {
-      code: 6008;
+      code: 6007;
       name: "InstallOwnerMismatch";
       msg: "The asserted authority/owner did not match that of the Install account";
     },
     {
-      code: 6009;
-      name: "NameTooLong";
-      msg: "The name provided for creating the xNFT exceeded the byte limit";
+      code: 6008;
+      name: "MetadataIsImmutable";
+      msg: "The metadata of the xNFT is marked as immutable";
     },
     {
-      code: 6010;
+      code: 6009;
       name: "RatingOutOfBounds";
       msg: "The rating for a review must be between 0 and 5";
     },
     {
-      code: 6011;
+      code: 6010;
       name: "ReviewInstallMismatch";
       msg: "The installation provided for the review does not match the xNFT";
     },
     {
-      code: 6012;
+      code: 6011;
       name: "SupplyReduction";
       msg: "Updated supply is less than the original supply set on creation";
     },
     {
-      code: 6013;
+      code: 6012;
       name: "SuspendedInstallation";
       msg: "Attempting to install a currently suspended xNFT";
     },
     {
-      code: 6014;
+      code: 6013;
       name: "UnauthorizedInstall";
       msg: "The access account provided is not associated with the wallet";
+    },
+    {
+      code: 6014;
+      name: "UpdateAuthorityMismatch";
+      msg: "The signer did not match the update authority of the metadata account";
     },
     {
       code: 6015;
       name: "UpdateReviewAuthorityMismatch";
       msg: "The signing authority for the xNFT update did not match the review authority";
+    },
+    {
+      code: 6016;
+      name: "UriExceedsMaxLength";
+      msg: "The metadata URI provided exceeds the maximum length";
     }
   ];
 };
 
 export const IDL: Xnft = {
-  version: "0.1.0",
+  version: "0.2.0",
   name: "xnft",
   constants: [
-    {
-      name: "MAX_NAME_LEN",
-      type: {
-        defined: "usize",
-      },
-      value: "30",
-    },
     {
       name: "MAX_RATING",
       type: "u8",
@@ -1310,6 +1352,76 @@ export const IDL: Xnft = {
     },
   ],
   instructions: [
+    {
+      name: "createAssociatedXnft",
+      docs: ["TODO:"],
+      accounts: [
+        {
+          name: "associatedMetadata",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedToken",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "xnft",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "MetadataAccount",
+                path: "associated_metadata",
+              },
+            ],
+          },
+        },
+        {
+          name: "payer",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "publisher",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "kind",
+          type: {
+            defined: "Kind",
+          },
+        },
+        {
+          name: "params",
+          type: {
+            defined: "CreateXnftParams",
+          },
+        },
+      ],
+    },
     {
       name: "createXnft",
       docs: [
@@ -1334,13 +1446,6 @@ export const IDL: Xnft = {
                 kind: "const",
                 type: "string",
                 value: "mint",
-              },
-              {
-                kind: "arg",
-                type: {
-                  defined: "CreateXnftParams",
-                },
-                path: "params.kind",
               },
               {
                 kind: "account",
@@ -1404,8 +1509,7 @@ export const IDL: Xnft = {
               {
                 kind: "account",
                 type: "publicKey",
-                account: "Mint",
-                path: "master_mint",
+                path: "master_metadata",
               },
             ],
           },
@@ -1483,7 +1587,7 @@ export const IDL: Xnft = {
           isSigner: false,
         },
         {
-          name: "updateAuthority",
+          name: "curationAuthority",
           isMut: false,
           isSigner: false,
         },
@@ -2113,13 +2217,6 @@ export const IDL: Xnft = {
         kind: "struct",
         fields: [
           {
-            name: "bump",
-            docs: ["The bump nonce for the xNFT's PDA (1)."],
-            type: {
-              array: ["u8", 1],
-            },
-          },
-          {
             name: "publisher",
             docs: ["The pubkey of the original xNFT creator (32)."],
             type: "publicKey",
@@ -2162,15 +2259,22 @@ export const IDL: Xnft = {
             },
           },
           {
+            name: "uri",
+            docs: [
+              "The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH).",
+            ],
+            type: "string",
+          },
+          {
             name: "name",
-            docs: ["The display name of the xNFT account (4 + MAX_NAME_LEN)."],
+            docs: [
+              "The display name of the xNFT account (4 + mpl_token_metadata::state::MAX_NAME_LENGTH).",
+            ],
             type: "string",
           },
           {
             name: "kind",
-            docs: [
-              "The `Kind` enum variant describing the type of xNFT (1 + 32).",
-            ],
+            docs: ["The `Kind` enum variant describing the type of xNFT (1)."],
             type: {
               defined: "Kind",
             },
@@ -2237,6 +2341,13 @@ export const IDL: Xnft = {
             type: "bool",
           },
           {
+            name: "bump",
+            docs: ["The bump nonce for the xNFT's PDA (1)."],
+            type: {
+              array: ["u8", 1],
+            },
+          },
+          {
             name: "reserved",
             docs: ["Unused reserved byte space for additive future changes."],
             type: {
@@ -2296,12 +2407,6 @@ export const IDL: Xnft = {
           {
             name: "installVault",
             type: "publicKey",
-          },
-          {
-            name: "kind",
-            type: {
-              defined: "Kind",
-            },
           },
           {
             name: "sellerFeeBasisPoints",
@@ -2400,21 +2505,9 @@ export const IDL: Xnft = {
           },
           {
             name: "Collection",
-            fields: [
-              {
-                name: "pubkey",
-                type: "publicKey",
-              },
-            ],
           },
           {
             name: "Nft",
-            fields: [
-              {
-                name: "pubkey",
-                type: "publicKey",
-              },
-            ],
           },
         ],
       },
@@ -2510,78 +2603,83 @@ export const IDL: Xnft = {
     },
     {
       code: 6001,
-      name: "CollectionWithoutKind",
-      msg: "A collection pubkey was provided without the collection Kind variant",
-    },
-    {
-      code: 6002,
       name: "CuratorAlreadySet",
       msg: "There is already a verified curator assigned",
     },
     {
-      code: 6003,
+      code: 6002,
       name: "CuratorAuthorityMismatch",
       msg: "The expected curator authority did not match expected",
     },
     {
-      code: 6004,
+      code: 6003,
       name: "CuratorMismatch",
       msg: "The provided curator account did not match the one assigned",
     },
     {
-      code: 6005,
+      code: 6004,
       name: "InstallAuthorityMismatch",
       msg: "The provided xNFT install authority did not match",
     },
     {
-      code: 6006,
+      code: 6005,
       name: "InstallExceedsSupply",
       msg: "The max supply has been reached for the xNFT",
     },
     {
-      code: 6007,
+      code: 6006,
       name: "InstallingNonApp",
       msg: "You can only install an xNFT of with `Kind::App`",
     },
     {
-      code: 6008,
+      code: 6007,
       name: "InstallOwnerMismatch",
       msg: "The asserted authority/owner did not match that of the Install account",
     },
     {
-      code: 6009,
-      name: "NameTooLong",
-      msg: "The name provided for creating the xNFT exceeded the byte limit",
+      code: 6008,
+      name: "MetadataIsImmutable",
+      msg: "The metadata of the xNFT is marked as immutable",
     },
     {
-      code: 6010,
+      code: 6009,
       name: "RatingOutOfBounds",
       msg: "The rating for a review must be between 0 and 5",
     },
     {
-      code: 6011,
+      code: 6010,
       name: "ReviewInstallMismatch",
       msg: "The installation provided for the review does not match the xNFT",
     },
     {
-      code: 6012,
+      code: 6011,
       name: "SupplyReduction",
       msg: "Updated supply is less than the original supply set on creation",
     },
     {
-      code: 6013,
+      code: 6012,
       name: "SuspendedInstallation",
       msg: "Attempting to install a currently suspended xNFT",
     },
     {
-      code: 6014,
+      code: 6013,
       name: "UnauthorizedInstall",
       msg: "The access account provided is not associated with the wallet",
+    },
+    {
+      code: 6014,
+      name: "UpdateAuthorityMismatch",
+      msg: "The signer did not match the update authority of the metadata account",
     },
     {
       code: 6015,
       name: "UpdateReviewAuthorityMismatch",
       msg: "The signing authority for the xNFT update did not match the review authority",
+    },
+    {
+      code: 6016,
+      name: "UriExceedsMaxLength",
+      msg: "The metadata URI provided exceeds the maximum length",
     },
   ],
 };

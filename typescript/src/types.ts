@@ -16,7 +16,7 @@
  */
 
 import type { IdlAccounts, IdlTypes } from "@project-serum/anchor";
-import type { Xnft } from "./xnft";
+import { IDL, type Xnft } from "./xnft";
 
 export type AccessAccount = IdlAccounts<Xnft>["access"];
 export type InstallAccount = IdlAccounts<Xnft>["install"];
@@ -25,3 +25,6 @@ export type XnftAccount = IdlAccounts<Xnft>["xnft"];
 
 export type CreateXnftParameters = IdlTypes<Xnft>["CreateXnftParams"];
 export type UpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
+
+export type Kind = typeof IDL.types[4]["type"]["variants"][number]["name"];
+console.assert(IDL.types[4].type.variants.map((v) => v.name).includes("App"));
