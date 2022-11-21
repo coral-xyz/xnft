@@ -4,6 +4,7 @@
 pub enum Kind {
     App,
     Collection,
+    Nft,
 }
 
 pub enum L1 {

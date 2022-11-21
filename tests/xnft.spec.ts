@@ -31,7 +31,7 @@ let install: anchor.web3.PublicKey;
 let review: anchor.web3.PublicKey;
 let authorInstallation: anchor.web3.PublicKey;
 
-describe("Account Creations", () => {
+describe("A standard xNFT", () => {
   before(async () => {
     await program.provider.connection.requestAirdrop(
       curatorAuthority.publicKey,
@@ -39,7 +39,7 @@ describe("Account Creations", () => {
     );
   });
 
-  describe("an xNFT can be created", () => {
+  describe("can be created", () => {
     const installPrice = new anchor.BN(0);
     const name = "test xnft";
     const symbol = "";
@@ -168,59 +168,6 @@ describe("Account Creations", () => {
       const acc = await getAccount(program.provider.connection, masterToken);
       assert.isTrue(acc.isFrozen);
     });
-
-    // FIXME:
-    // it("an xNFT can be created and associated with an external entity via the kind enum", async () => {
-    //   const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-    //     [
-    //       Buffer.from("mint"),
-    //       mockCollection.toBytes(),
-    //       authority.publicKey.toBytes(),
-    //       Buffer.from("Associated xNFT"),
-    //     ],
-    //     program.programId
-    //   );
-
-    //   const masterToken = await getAssociatedTokenAddress(
-    //     mint,
-    //     authority.publicKey
-    //   );
-
-    //   const ix = program.methods
-    //     .createXnft("Associated xNFT", {
-    //       creators: [{ address: authority.publicKey, share: 100 }],
-    //       curator: null,
-    //       installAuthority: null,
-    //       installPrice: new anchor.BN(0),
-    //       installVault: authority.publicKey,
-    //       kind: { collection: { pubkey: mockCollection } } as never,
-    //       sellerFeeBasisPoints: 0,
-    //       supply: null,
-    //       symbol: "",
-    //       tag: { none: {} } as never,
-    //       uri: "https://google.com",
-    //     })
-    //     .accounts({
-    //       masterMint: mint,
-    //       masterToken,
-    //       metadataProgram,
-    //     });
-
-    //   const pk = await ix.pubkeys();
-    //   await ix.rpc();
-
-    //   const acc = await program.account.xnft.fetch(pk.xnft);
-    //   assert.deepEqual(acc.kind, { collection: { pubkey: mockCollection } });
-
-    //   const m = (await metaplex
-    //     .rpc()
-    //     .getAccount(pk.masterMetadata)) as UnparsedAccount;
-    //   const meta = parseMetadataAccount(m);
-    //   assert.deepEqual(meta.data.collection, {
-    //     key: mockCollection,
-    //     verified: false,
-    //   });
-    // });
   });
 
   describe("a curator can be set on an xNFT", () => {
@@ -432,7 +379,7 @@ describe("Account Updates", () => {
   });
 
   it("the data in an xNFT account can be updated by the owner", async () => {
-    /*const ix =*/ await program.methods
+    await program.methods
       .updateXnft({
         installAuthority: null,
         installPrice: new anchor.BN(100),
@@ -450,55 +397,6 @@ describe("Account Updates", () => {
         metadataProgram,
       })
       .rpc();
-    // .instruction();
-
-    // const transaction = anchor.web3.Keypair.generate();
-
-    // const initTransactionAccountIx =
-    //   await multisigProgram.account.transaction.createInstruction(
-    //     transaction,
-    //     8 +
-    //       32 +
-    //       32 +
-    //       (4 + (32 + 1 + 1) * ix.keys.length) +
-    //       (4 + ix.data.length) +
-    //       (4 + 1) +
-    //       1 +
-    //       4
-    //   );
-
-    // await multisigProgram.methods
-    //   .createTransaction(ix.programId, ix.keys, ix.data)
-    //   .accounts({
-    //     multisig: multisig.publicKey,
-    //     transaction: transaction.publicKey,
-    //     proposer: curatorAuthority.publicKey,
-    //   })
-    //   .preInstructions([initTransactionAccountIx])
-    //   .signers([transaction, curatorAuthority])
-    //   .rpc();
-
-    // await multisigProgram.methods
-    //   .executeTransaction()
-    //   .accounts({
-    //     multisig: multisig.publicKey,
-    //     multisigSigner,
-    //     transaction: transaction.publicKey,
-    //   })
-    //   .remainingAccounts(
-    //     ix.keys
-    //       .map((meta) =>
-    //         meta.pubkey.equals(multisigSigner)
-    //           ? { ...meta, isSigner: false }
-    //           : meta
-    //       )
-    //       .concat({
-    //         pubkey: program.programId,
-    //         isSigner: false,
-    //         isWritable: false,
-    //       })
-    //   )
-    //   .rpc();
 
     const acc = await program.account.xnft.fetch(xnft);
 

@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+mod create_associated_xnft;
 mod create_install;
 mod create_permissioned_install;
 mod create_review;
@@ -27,6 +28,7 @@ mod transfer;
 mod update_xnft;
 mod verify_curator;
 
+pub use create_associated_xnft::*;
 pub use create_install::*;
 pub use create_permissioned_install::*;
 pub use create_review::*;
