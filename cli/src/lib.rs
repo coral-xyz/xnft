@@ -13,16 +13,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use anchor_client::solana_client::rpc_config::RpcSendTransactionConfig;
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use anchor_client::Program;
 use anyhow::Result;
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 
 mod config;
 mod util;
 
 use config::{Config, GlobalArgs};
-use util::{create_program_client, AccountType};
+use util::{create_program_client, print_serializable};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -33,15 +34,36 @@ pub struct Cli {
     command: Command,
 }
 
+#[derive(Clone, ValueEnum)]
+enum AccountType {
+    Access,
+    Install,
+    Review,
+    // Xnft,
+}
+
 #[derive(Subcommand)]
 enum Command {
-    /// Read and parse account data from on-chain
+    /// Read and parse the account data for a program account
     Account {
-        /// The public key of the account to fetch and serialize
+        /// The public key of the target xNFT
         address: Pubkey,
-        /// The type of program account for the read data
+        /// The program account type
         #[arg(short = 't', long = "type", value_enum)]
         account_type: AccountType,
+        /// Display the account data as JSON
+        #[arg(long)]
+        json: bool,
+    },
+    /// Uninstall an xNFT from your wallet
+    Uninstall {
+        /// The public key of the xNFT to uninstall
+        address: Pubkey,
+    },
+    /// Verify a curator's assignment to an xNFT
+    Verify {
+        /// The public key of the xNFT being verified
+        address: Pubkey,
     },
 }
 
@@ -53,16 +75,66 @@ pub fn run(args: Cli) -> Result<()> {
         Command::Account {
             address,
             account_type,
-        } => process_account_read(program, account_type, address),
+            json,
+        } => process_get_account(program, account_type, address, json),
+        Command::Uninstall { address } => process_uninstall(program, address),
+        Command::Verify { address } => process_verify(program, address),
     }
 }
 
-fn process_account_read(
+fn process_get_account(
     program: Program,
     account_type: AccountType,
     address: Pubkey,
+    json: bool,
 ) -> Result<()> {
-    println!("{:?}", account_type);
-    println!("{:?}", address);
+    match account_type {
+        AccountType::Access => {
+            print_serializable!(program.account::<xnft::state::Access>(address)?, json)
+        }
+        AccountType::Install => {
+            print_serializable!(program.account::<xnft::state::Install>(address)?, json)
+        }
+        AccountType::Review => {
+            print_serializable!(program.account::<xnft::state::Review>(address)?, json)
+        } // AccountType::Xnft => {
+          //     print_serializable!(program.account::<xnft::state::Xnft>(address)?, json)
+          // }
+    };
+    Ok(())
+}
+
+fn process_uninstall(program: Program, address: Pubkey) -> Result<()> {
+    let authority = program.payer();
+    let (install, _) = Pubkey::find_program_address(
+        &["install".as_bytes(), authority.as_ref(), address.as_ref()],
+        &program.id(),
+    );
+
+    let sig = program
+        .request()
+        .accounts(xnft::accounts::DeleteInstall {
+            authority,
+            install,
+            receiver: authority,
+        })
+        .args(xnft::instruction::DeleteInstall {})
+        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+
+    println!("Signature: {}", sig);
+    Ok(())
+}
+
+fn process_verify(program: Program, address: Pubkey) -> Result<()> {
+    let sig = program
+        .request()
+        .accounts(xnft::accounts::VerifyCurator {
+            curator: program.payer(),
+            xnft: address,
+        })
+        .args(xnft::instruction::VerifyCurator {})
+        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+
+    println!("Signature: {}", sig);
     Ok(())
 }

@@ -17,18 +17,9 @@ use anchor_client::solana_sdk::commitment_config::CommitmentConfig;
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use anchor_client::solana_sdk::signature::Keypair;
 use anchor_client::{Client, Program};
-use clap::ValueEnum;
 use std::rc::Rc;
 
 use crate::config::Config;
-
-#[derive(Clone, Debug, ValueEnum)]
-pub enum AccountType {
-    Access,
-    Install,
-    Review,
-    Xnft,
-}
 
 pub fn create_program_client(config: &Config) -> (Program, Rc<Keypair>) {
     (
@@ -37,9 +28,21 @@ pub fn create_program_client(config: &Config) -> (Program, Rc<Keypair>) {
             config.keypair.clone(),
             CommitmentConfig::confirmed(),
         )
-        .program(Pubkey::new(
-            "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55".as_bytes(),
-        )),
+        .program(Pubkey::new(&[
+            157, 27, 158, 173, 41, 154, 191, 73, 36, 1, 30, 183, 61, 240, 32, 120, 43, 111, 171,
+            57, 66, 118, 214, 8, 115, 206, 129, 138, 58, 41, 87, 194,
+        ])),
         config.keypair.clone(),
     )
 }
+
+macro_rules! print_serializable {
+    ($acc:expr,$json:expr) => {
+        if $json {
+            println!("{}", serde_json::to_string(&$acc)?);
+        } else {
+            println!("{:#?}", $acc);
+        }
+    };
+}
+pub(crate) use print_serializable;

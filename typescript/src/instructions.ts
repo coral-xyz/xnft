@@ -22,7 +22,10 @@ import {
   Transaction,
   TransactionInstruction,
 } from "@solana/web3.js";
-import { deriveMasterMintAddress, METADATA_PROGRAM_ID } from "./addresses";
+import {
+  deriveMasterMintAddress,
+  TOKEN_METADATA_PROGRAM_ID,
+} from "./addresses";
 import type { CreateXnftParameters, Kind, UpdateXnftParameters } from "./types";
 import type { Xnft } from "./xnft";
 
@@ -159,7 +162,7 @@ export async function createXnftInstruction(
     .createXnft(name, params)
     .accounts({
       masterToken,
-      metadataProgram: METADATA_PROGRAM_ID,
+      metadataProgram: TOKEN_METADATA_PROGRAM_ID,
     })
     .instruction();
 }
@@ -424,7 +427,7 @@ export async function updateXnftInstruction(
       masterToken,
       curationAuthority: curator ?? program.provider.publicKey,
       xnft,
-      metadataProgram: METADATA_PROGRAM_ID,
+      metadataProgram: TOKEN_METADATA_PROGRAM_ID,
     })
     .instruction();
 }

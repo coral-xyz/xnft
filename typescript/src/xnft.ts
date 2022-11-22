@@ -226,6 +226,7 @@ export type Xnft = {
           name: "xnft";
           isMut: true;
           isSigner: false;
+          relations: ["master_metadata"];
         },
         {
           name: "masterToken";
@@ -318,6 +319,7 @@ export type Xnft = {
           name: "install";
           isMut: false;
           isSigner: false;
+          relations: ["xnft"];
         },
         {
           name: "masterToken";
@@ -388,6 +390,7 @@ export type Xnft = {
           name: "xnft";
           isMut: true;
           isSigner: false;
+          relations: ["install_vault"];
         },
         {
           name: "installVault";
@@ -448,6 +451,7 @@ export type Xnft = {
           name: "xnft";
           isMut: true;
           isSigner: false;
+          relations: ["install_vault"];
         },
         {
           name: "installVault";
@@ -503,6 +507,7 @@ export type Xnft = {
               }
             ];
           };
+          relations: ["xnft"];
         },
         {
           name: "authority";
@@ -525,6 +530,7 @@ export type Xnft = {
           name: "install";
           isMut: true;
           isSigner: false;
+          relations: ["authority"];
         },
         {
           name: "receiver";
@@ -549,6 +555,7 @@ export type Xnft = {
           name: "review";
           isMut: true;
           isSigner: false;
+          relations: ["author", "xnft"];
         },
         {
           name: "xnft";
@@ -691,6 +698,7 @@ export type Xnft = {
               }
             ];
           };
+          relations: ["wallet", "xnft"];
         },
         {
           name: "authority";
@@ -708,6 +716,7 @@ export type Xnft = {
           name: "xnft";
           isMut: false;
           isSigner: false;
+          relations: ["master_mint"];
         },
         {
           name: "source";
@@ -1562,6 +1571,7 @@ export const IDL: Xnft = {
           name: "xnft",
           isMut: true,
           isSigner: false,
+          relations: ["master_metadata"],
         },
         {
           name: "masterToken",
@@ -1654,6 +1664,7 @@ export const IDL: Xnft = {
           name: "install",
           isMut: false,
           isSigner: false,
+          relations: ["xnft"],
         },
         {
           name: "masterToken",
@@ -1724,6 +1735,7 @@ export const IDL: Xnft = {
           name: "xnft",
           isMut: true,
           isSigner: false,
+          relations: ["install_vault"],
         },
         {
           name: "installVault",
@@ -1784,6 +1796,7 @@ export const IDL: Xnft = {
           name: "xnft",
           isMut: true,
           isSigner: false,
+          relations: ["install_vault"],
         },
         {
           name: "installVault",
@@ -1839,6 +1852,7 @@ export const IDL: Xnft = {
               },
             ],
           },
+          relations: ["xnft"],
         },
         {
           name: "authority",
@@ -1861,6 +1875,7 @@ export const IDL: Xnft = {
           name: "install",
           isMut: true,
           isSigner: false,
+          relations: ["authority"],
         },
         {
           name: "receiver",
@@ -1885,6 +1900,7 @@ export const IDL: Xnft = {
           name: "review",
           isMut: true,
           isSigner: false,
+          relations: ["author", "xnft"],
         },
         {
           name: "xnft",
@@ -2027,6 +2043,7 @@ export const IDL: Xnft = {
               },
             ],
           },
+          relations: ["wallet", "xnft"],
         },
         {
           name: "authority",
@@ -2044,6 +2061,7 @@ export const IDL: Xnft = {
           name: "xnft",
           isMut: false,
           isSigner: false,
+          relations: ["master_mint"],
         },
         {
           name: "source",
