@@ -24,7 +24,11 @@ export type ReviewAccount = IdlAccounts<Xnft>["review"];
 export type XnftAccount = IdlAccounts<Xnft>["xnft"];
 
 export type CreateXnftParameters = IdlTypes<Xnft>["CreateXnftParams"];
+export type CreatorsParam = IdlTypes<Xnft>["CreatorsParam"];
+export type CuratorStatus = IdlTypes<Xnft>["CuratorStatus"];
 export type UpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 
 export type Kind = typeof IDL.types[4]["type"]["variants"][number]["name"];
-console.assert(IDL.types[4].type.variants.map((v) => v.name).includes("App"));
+console.assert(IDL.types[4].type.variants.map(v => v.name).includes("App"));
+export type Tag = typeof IDL.types[5]["type"]["variants"][number]["name"];
+console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));

@@ -15,14 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PublicKey } from "@solana/web3.js";
-
 export * from "./accounts";
 export * from "./addresses";
 export * from "./instructions";
 export * from "./types";
 export * from "./xnft";
-
-export const PROGRAM_ID = new PublicKey(
-  "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
-);

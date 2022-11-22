@@ -24,19 +24,15 @@ use std::rc::Rc;
 
 #[derive(Args)]
 pub struct GlobalArgs {
-    /// Auto approve transactions sent through the tool
-    #[arg(global = true, long)]
-    auto_approve: bool,
     /// Path to the keypair to be used as signer
     #[clap(global = true, long, value_parser, value_hint = ValueHint::FilePath)]
     keypair: Option<String>,
-    /// Cluster or RPC URL to use (or their first letter) ["mainnet-beta", "devnet", "testnet", "localnet"]
+    /// Cluster or RPC URL to use (or their first letter) ["mainnet", "devnet", "testnet", "localnet"]
     #[arg(global = true, long, value_parser)]
     url: Option<Cluster>,
 }
 
 pub struct Config {
-    pub auto_approved: bool,
     pub cluster: Cluster,
     pub keypair: Rc<Keypair>,
 }
@@ -68,7 +64,6 @@ impl TryFrom<GlobalArgs> for Config {
             .to_owned();
 
         Ok(Self {
-            auto_approved: value.auto_approve,
             cluster,
             keypair: Rc::new(keypair),
         })

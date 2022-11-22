@@ -21,7 +21,7 @@ use solana_security_txt::security_txt;
 
 mod events;
 mod instructions;
-mod state;
+pub mod state;
 mod util;
 
 use instructions::*;
