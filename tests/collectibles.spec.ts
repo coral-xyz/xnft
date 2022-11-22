@@ -66,9 +66,9 @@ describe("Digital collectible xNFTs", () => {
             }
           )
           .accounts({
-            associatedMetadata: invalidNft.metadataAddress,
-            associatedToken: invalidNft.tokenAddress,
-            associatedMint: invalidNft.mintAddress,
+            masterMint: invalidNft.mintAddress,
+            masterToken: invalidNft.tokenAddress,
+            masterMetadata: invalidNft.metadataAddress,
           })
           .rpc();
 
@@ -94,9 +94,9 @@ describe("Digital collectible xNFTs", () => {
           uri: "https://arweave.net/abc123",
         })
         .accounts({
-          associatedMetadata: validNft.metadataAddress,
-          associatedToken: validNft.tokenAddress,
-          associatedMint: validNft.mintAddress,
+          masterMint: validNft.mintAddress,
+          masterToken: validNft.tokenAddress,
+          masterMetadata: validNft.metadataAddress,
         });
 
       xnft = (await method.pubkeys()).xnft;

@@ -11,10 +11,12 @@ export type Xnft = {
   instructions: [
     {
       name: "createAssociatedXnft";
-      docs: ["TODO:"];
+      docs: [
+        "Creates an xNFT instance on top of an existing digital collectible that is MPL compliant."
+      ];
       accounts: [
         {
-          name: "masterMetadata";
+          name: "masterMint";
           isMut: false;
           isSigner: false;
         },
@@ -24,7 +26,7 @@ export type Xnft = {
           isSigner: false;
         },
         {
-          name: "masterMint";
+          name: "masterMetadata";
           isMut: false;
           isSigner: false;
         },
@@ -83,13 +85,6 @@ export type Xnft = {
       name: "createXnft";
       docs: [
         "Creates all parts of an xNFT instance.",
-        "",
-        "* Master mint (supply 1).",
-        "* Master token.",
-        "* Master metadata PDA associated with the master mint.",
-        "* Master edition PDA associated with the master mint.",
-        "* xNFT PDA associated with the master edition.",
-        "",
         'Once this is invoked, an xNFT exists and can be "installed" by users.'
       ];
       accounts: [
@@ -224,7 +219,6 @@ export type Xnft = {
       name: "updateXnft";
       docs: [
         "Updates the code of an xNFT.",
-        "",
         "This is simply a token metadata update cpi."
       ];
       accounts: [
@@ -386,7 +380,6 @@ export type Xnft = {
       name: "createInstall";
       docs: [
         'Creates an "installation" of an xNFT.',
-        "",
         "Installation is just a synonym for minting an xNFT edition for a given",
         "user."
       ];
@@ -1354,10 +1347,12 @@ export const IDL: Xnft = {
   instructions: [
     {
       name: "createAssociatedXnft",
-      docs: ["TODO:"],
+      docs: [
+        "Creates an xNFT instance on top of an existing digital collectible that is MPL compliant.",
+      ],
       accounts: [
         {
-          name: "masterMetadata",
+          name: "masterMint",
           isMut: false,
           isSigner: false,
         },
@@ -1367,7 +1362,7 @@ export const IDL: Xnft = {
           isSigner: false,
         },
         {
-          name: "masterMint",
+          name: "masterMetadata",
           isMut: false,
           isSigner: false,
         },
@@ -1426,13 +1421,6 @@ export const IDL: Xnft = {
       name: "createXnft",
       docs: [
         "Creates all parts of an xNFT instance.",
-        "",
-        "* Master mint (supply 1).",
-        "* Master token.",
-        "* Master metadata PDA associated with the master mint.",
-        "* Master edition PDA associated with the master mint.",
-        "* xNFT PDA associated with the master edition.",
-        "",
         'Once this is invoked, an xNFT exists and can be "installed" by users.',
       ],
       accounts: [
@@ -1567,7 +1555,6 @@ export const IDL: Xnft = {
       name: "updateXnft",
       docs: [
         "Updates the code of an xNFT.",
-        "",
         "This is simply a token metadata update cpi.",
       ],
       accounts: [
@@ -1729,7 +1716,6 @@ export const IDL: Xnft = {
       name: "createInstall",
       docs: [
         'Creates an "installation" of an xNFT.',
-        "",
         "Installation is just a synonym for minting an xNFT edition for a given",
         "user.",
       ],
