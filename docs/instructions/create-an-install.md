@@ -8,6 +8,13 @@ If the xNFT is "private" (meaning there is an assigned install authority on the 
 
 !> This can only be successfully processed if the target xNFT is of `Kind::App`.
 
+## Additional Constraints
+
+- xNFT is of `Kind::App`
+- xNFT is not suspended
+- If the xNFT has a finite supply, the new installation does not exceed it
+- If the xNFT has an install authority, the signing `authority` is the same as the install authority
+
 ## Accounts
 
 | Name           | Signer | Writable | Description                                                                                                                 |

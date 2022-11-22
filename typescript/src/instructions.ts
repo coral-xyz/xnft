@@ -60,7 +60,7 @@ export async function createAssociatedXnftInstruction(
     throw new Error("no public key found on the program provider");
   }
 
-  const associatedToken = await getAssociatedTokenAddress(
+  const masterToken = await getAssociatedTokenAddress(
     mint,
     program.provider.publicKey
   );
@@ -68,9 +68,9 @@ export async function createAssociatedXnftInstruction(
   return await program.methods
     .createAssociatedXnft({ [kind.toLowerCase()]: {} }, params)
     .accounts({
-      associatedMetadata: metadata,
-      associatedMint: mint,
-      associatedToken,
+      masterMint: mint,
+      masterToken,
+      masterMetadata: metadata,
     })
     .instruction();
 }

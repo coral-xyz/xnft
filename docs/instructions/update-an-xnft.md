@@ -6,6 +6,12 @@ Allows the authority of an xNFT to update certain values on the xNFT program acc
 
 !> If the xNFT has a verified curator associated with it, the instruction requires a signature from the curator account in order to be accepted.
 
+## Additional Constraints
+
+- The master metadata account is mutable
+- If the xNFT has a verified curator associated with it, the signing authority must be the curator
+- New supply values must be additive, or not exceed the current number of installations if updating from infinite to finite
+
 ## Accounts
 
 | Name                   | Signer | Writable | Description                                                                                                                 |

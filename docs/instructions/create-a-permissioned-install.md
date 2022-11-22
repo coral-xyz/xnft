@@ -8,6 +8,13 @@ The account receiving the installation should be the one signing for the transac
 
 !> This can only be successfully processed if the target xNFT is of `Kind::App`.
 
+## Additional Constraints
+
+- xNFT is of `Kind::App`
+- xNFT is not suspended
+- The `Access` account's associated wallet is the signing authority
+- If the xNFT has a finite supply, the new installation does not exceed it
+
 ## Accounts
 
 | Name           | Signer | Writable | Description                                                              |
