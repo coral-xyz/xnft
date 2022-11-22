@@ -25,22 +25,22 @@ use crate::CustomError;
 
 pub struct CreateAssociatedXnft<'info> {
     #[account(
-        constraint = associated_metadata.is_mutable @ CustomError::MetadataIsImmutable,
-        constraint = associated_metadata.update_authority == *publisher.key @ CustomError::UpdateAuthorityMismatch,
+        constraint = master_mint.decimals == 0,
+        constraint = master_mint.supply == 1,
     )]
-    pub associated_metadata: Account<'info, MetadataAccount>,
+    pub master_mint: Account<'info, Mint>,
 
     #[account(
         associated_token::authority = publisher,
-        associated_token::mint = associated_mint,
+        associated_token::mint = master_mint,
     )]
-    pub associated_token: Account<'info, TokenAccount>,
+    pub master_token: Account<'info, TokenAccount>,
 
     #[account(
-        constraint = associated_mint.decimals == 0,
-        constraint = associated_mint.supply == 1,
+        constraint = master_metadata.is_mutable @ CustomError::MetadataIsImmutable,
+        constraint = master_metadata.update_authority == *publisher.key @ CustomError::UpdateAuthorityMismatch,
     )]
-    pub associated_mint: Account<'info, Mint>,
+    pub master_metadata: Account<'info, MetadataAccount>,
 
     #[account(
         init,
@@ -48,7 +48,7 @@ pub struct CreateAssociatedXnft<'info> {
         space = Xnft::LEN,
         seeds = [
             "xnft".as_bytes(),
-            associated_metadata.key().as_ref(),
+            master_metadata.key().as_ref(),
         ],
         bump,
     )]
@@ -79,8 +79,8 @@ pub fn create_associated_xnft_handler(
         kind,
         *ctx.bumps.get("xnft").unwrap(),
         *ctx.accounts.publisher.key,
-        ctx.accounts.associated_metadata.key(),
-        ctx.accounts.associated_mint.key(),
+        ctx.accounts.master_metadata.key(),
+        ctx.accounts.master_mint.key(),
         &params,
     )?;
 

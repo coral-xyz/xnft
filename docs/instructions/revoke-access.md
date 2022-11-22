@@ -4,6 +4,10 @@
 
 Allows an install authority of a "private" xNFT to close the delegated `Access` program account of a wallet - effectively revoking their asynchronous installation permission/access to the xNFT.
 
+## Additional Constraints
+
+- The signing authority is the install authority of the xNFT
+
 ## Accounts
 
 | Name      | Signer | Writable | Description                                                                          |

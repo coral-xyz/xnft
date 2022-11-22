@@ -8,6 +8,10 @@ This process is initiated by the authority of the xNFT through the [`set_curator
 
 !> The association with a curator on an xNFT should only be respected if the `verified` subfield of the `CuratorStatus` xNFT account field is `true` and has protocol-enforced implications on xNFT updates as defined in the the [Update an xNFT](/instructions/update-an-xnft.md) section.
 
+## Additional Constraints
+
+- The signing authority matches the public key of the curator being verified on the xNFT
+
 ### Accounts
 
 | Name    | Signer | Writable | Description                                                        |

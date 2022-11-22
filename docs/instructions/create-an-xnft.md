@@ -36,34 +36,7 @@ The uploading of the metadata JSON blob and associated files (bundle code, icons
 
 ## Arguments
 
-| Name   | Type     | Description                            |
-| :----- | :------- | :------------------------------------- |
-| Name   | `String` | The name of the newly initialized xNFT |
-| Params | `struct` | Schema defined below                   |
-
-### Parameters Struct
-
-[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/parameters.rs)
-
-```rust
-#[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreatorsParam {
-    pub address: Pubkey,
-    pub share: u8,
-}
-
-#[derive(AnchorDeserialize, AnchorSerialize)]
-pub struct CreateXnftParams {
-    pub creators: Vec<CreatorsParam>,
-    pub curator: Option<Pubkey>,
-    pub install_authority: Option<Pubkey>,
-    pub install_price: u64,
-    pub install_vault: Pubkey,
-    pub kind: Kind,
-    pub seller_fee_basis_points: u16,
-    pub supply: Option<u64>,
-    pub symbol: String,
-    pub tag: Tag,
-    pub uri: String,
-}
-```
+| Name   | Type     | Description                                                          |
+| :----- | :------- | :------------------------------------------------------------------- |
+| Name   | `String` | The name of the newly initialized xNFT                               |
+| Params | `struct` | Schema defined in the [auxiliary state section](/state/auxiliary.md) |

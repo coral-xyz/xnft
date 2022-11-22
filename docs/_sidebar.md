@@ -2,6 +2,7 @@
 - [**Errors**](/errors.md)
 - [**Events**](/events.md)
 - **Instructions**
+  - [Create an Associated xNFT](/instructions/create-an-associated-xnft.md)
   - [Create an Install](/instructions/create-an-install.md)
   - [Create a Permissioned Install](/instructions/create-a-permissioned-install.md)
   - [Create a Review](/instructions/create-a-review.md)
