@@ -14,6 +14,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anyhow::Result;
+use clap::Parser;
 
 pub fn run() -> Result<()> {
     Ok(())

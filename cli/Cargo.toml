@@ -18,4 +18,6 @@ opt-level = "s"
 [dependencies]
 anchor-client = { git = "https://github.com/coral-xyz/anchor" }
 anyhow = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+solana-cli-config = "1.14"
 xnft = { path = "../programs/xnft", features = ["cli"] }
