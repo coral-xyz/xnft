@@ -14,7 +14,9 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anyhow::Result;
+use clap::Parser;
+use xnft_cli::Cli;
 
 fn main() -> Result<()> {
-    xnft_cli::run()
+    xnft_cli::run(Cli::parse())
 }
