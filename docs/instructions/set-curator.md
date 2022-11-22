@@ -8,6 +8,10 @@ This value should not be respected until the corresponding curator have used [`v
 
 !> Once assigned and verified, further updates to the xNFT or its metadata via [`update_xnft`](/instructions/update-an-xnft.md) will be gated by requiring a signature from the curator account.
 
+## Additional Constraints
+
+- There is not already a verified curator assigned to the xNFT
+
 ## Accounts
 
 | Name         | Signer | Writable | Description                                                                  |

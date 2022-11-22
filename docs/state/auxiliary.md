@@ -25,4 +25,24 @@ pub struct CuratorStatus {
     /// Whether the curator's authority has verified the assignment (1).
     pub verified: bool,
 }
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreatorsParam {
+    pub address: Pubkey,
+    pub share: u8,
+}
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreateXnftParams {
+    pub creators: Vec<CreatorsParam>,
+    pub curator: Option<Pubkey>,
+    pub install_authority: Option<Pubkey>,
+    pub install_price: u64,
+    pub install_vault: Pubkey,
+    pub seller_fee_basis_points: u16,
+    pub supply: Option<u64>,
+    pub symbol: String,
+    pub tag: Tag,
+    pub uri: String,
+}
 ```

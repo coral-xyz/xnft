@@ -14,17 +14,17 @@ export type Xnft = {
       docs: ["TODO:"];
       accounts: [
         {
-          name: "associatedMetadata";
+          name: "masterMetadata";
           isMut: false;
           isSigner: false;
         },
         {
-          name: "associatedToken";
+          name: "masterToken";
           isMut: false;
           isSigner: false;
         },
         {
-          name: "associatedMint";
+          name: "masterMint";
           isMut: false;
           isSigner: false;
         },
@@ -43,7 +43,7 @@ export type Xnft = {
                 kind: "account";
                 type: "publicKey";
                 account: "MetadataAccount";
-                path: "associated_metadata";
+                path: "master_metadata";
               }
             ];
           };
@@ -1357,17 +1357,17 @@ export const IDL: Xnft = {
       docs: ["TODO:"],
       accounts: [
         {
-          name: "associatedMetadata",
+          name: "masterMetadata",
           isMut: false,
           isSigner: false,
         },
         {
-          name: "associatedToken",
+          name: "masterToken",
           isMut: false,
           isSigner: false,
         },
         {
-          name: "associatedMint",
+          name: "masterMint",
           isMut: false,
           isSigner: false,
         },
@@ -1386,7 +1386,7 @@ export const IDL: Xnft = {
                 kind: "account",
                 type: "publicKey",
                 account: "MetadataAccount",
-                path: "associated_metadata",
+                path: "master_metadata",
               },
             ],
           },

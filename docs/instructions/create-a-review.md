@@ -10,6 +10,11 @@ Currently, if you want a comment associated with the `Review`, the comment shoul
 
 (This comment handling is subject to change in the near future)
 
+## Additional Constraints
+
+- The provided `Install` account is owned by the author (signer)
+- The author does not own the xNFT/master token account being reviewed
+
 ## Accounts
 
 | Name           | Signer | Writable | Description                                                                       |
