@@ -19,18 +19,8 @@ use anchor_spl::token::TokenAccount;
 use mpl_token_metadata::state::DataV2;
 
 use crate::events::XnftUpdated;
-use crate::state::{CuratorStatus, Tag, Xnft};
+use crate::state::{CuratorStatus, Kind, UpdateParams, Xnft};
 use crate::CustomError;
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct UpdateParams {
-    install_authority: Option<Pubkey>,
-    install_price: u64,
-    install_vault: Pubkey,
-    supply: Option<u64>,
-    tag: Tag,
-    uri: Option<String>,
-}
 
 #[derive(Accounts)]
 pub struct UpdateXnft<'info> {
@@ -47,11 +37,14 @@ pub struct UpdateXnft<'info> {
     )]
     pub master_token: Account<'info, TokenAccount>,
 
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = master_metadata.is_mutable @ CustomError::MetadataIsImmutable,
+    )]
     pub master_metadata: Account<'info, MetadataAccount>,
 
     /// CHECK: is validated in the associated token constraint on `master_token`.
-    pub update_authority: UncheckedAccount<'info>, // TODO: reverse for curator approval enforcement
+    pub curation_authority: UncheckedAccount<'info>, // TODO: reverse for curator approval enforcement
     pub xnft_authority: Signer<'info>,
 
     pub metadata_program: Program<'info, Metadata>,
@@ -81,31 +74,34 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         verified: true,
     }) = ctx.accounts.xnft.curator
     {
-        if pubkey != *ctx.accounts.update_authority.key {
+        if pubkey != *ctx.accounts.curation_authority.key {
             return Err(error!(CustomError::CuratorAuthorityMismatch));
         }
     }
 
     if let Some(u) = updates.uri.as_ref() {
-        metadata::update_metadata_accounts_v2(
-            ctx.accounts.update_metadata_accounts_ctx().with_signer(&[&[
-                "xnft".as_bytes(),
-                ctx.accounts.xnft.master_edition.as_ref(),
-                &[ctx.accounts.xnft.bump],
-            ]]),
-            Some(md.update_authority),
-            Some(DataV2 {
-                name: ctx.accounts.xnft.name.clone(),
-                symbol: md.data.symbol.clone(),
-                uri: u.clone(),
-                seller_fee_basis_points: md.data.seller_fee_basis_points,
-                creators: md.data.creators.clone(),
-                collection: md.collection.clone(),
-                uses: md.uses.clone(),
-            }),
-            Some(md.primary_sale_happened),
-            Some(md.is_mutable),
-        )?;
+        if ctx.accounts.xnft.kind == Kind::App {
+            metadata::update_metadata_accounts_v2(
+                ctx.accounts
+                    .update_metadata_accounts_ctx()
+                    .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
+                Some(md.update_authority),
+                Some(DataV2 {
+                    name: ctx.accounts.xnft.name.clone(),
+                    symbol: md.data.symbol.clone(),
+                    uri: u.clone(),
+                    seller_fee_basis_points: md.data.seller_fee_basis_points,
+                    creators: md.data.creators.clone(),
+                    collection: md.collection.clone(),
+                    uses: md.uses.clone(),
+                }),
+                Some(md.primary_sale_happened),
+                Some(md.is_mutable),
+            )?;
+        }
+
+        let xnft = &mut ctx.accounts.xnft;
+        xnft.uri = u.clone();
     }
 
     let xnft = &mut ctx.accounts.xnft;

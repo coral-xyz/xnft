@@ -16,8 +16,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{
-    self, CloseAccount, FreezeAccount, Mint, ThawAccount, Token, TokenAccount,
-    Transfer as TokenTransfer,
+    self, CloseAccount, FreezeAccount, ThawAccount, Token, TokenAccount, Transfer as TokenTransfer,
 };
 
 use crate::state::Xnft;
@@ -28,11 +27,6 @@ pub struct Transfer<'info> {
         has_one = master_mint,
     )]
     pub xnft: Account<'info, Xnft>,
-
-    #[account(
-        constraint = master_mint.decimals == 0,
-    )]
-    pub master_mint: Account<'info, Mint>,
 
     #[account(
         mut,
@@ -49,6 +43,9 @@ pub struct Transfer<'info> {
         associated_token::authority = recipient,
     )]
     pub destination: Account<'info, TokenAccount>,
+
+    /// CHECK: validated with `has_one` on the xNFT account
+    pub master_mint: UncheckedAccount<'info>,
 
     pub recipient: SystemAccount<'info>,
 
@@ -105,29 +102,23 @@ impl<'info> Transfer<'info> {
 
 pub fn transfer_handler(ctx: Context<Transfer>) -> Result<()> {
     let xnft = &ctx.accounts.xnft;
-    let mut was_frozen = false;
 
     // Unfreeze the token account if it is frozen.
-    if ctx.accounts.source.is_frozen() {
-        was_frozen = true;
-        token::thaw_account(ctx.accounts.thaw_account_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            xnft.master_edition.as_ref(),
-            &[xnft.bump],
-        ]]))?;
-    }
+    token::thaw_account(
+        ctx.accounts
+            .thaw_account_ctx()
+            .with_signer(&[&xnft.as_seeds()]),
+    )?;
 
     // Transfer the token in the source account to the recipient's destination token account.
     token::transfer(ctx.accounts.transfer_ctx(), ctx.accounts.source.amount)?;
 
     // Freeze the new account if necessary
-    if was_frozen {
-        token::freeze_account(ctx.accounts.freeze_account_ctx().with_signer(&[&[
-            "xnft".as_bytes(),
-            xnft.master_edition.as_ref(),
-            &[xnft.bump],
-        ]]))?;
-    }
+    token::freeze_account(
+        ctx.accounts
+            .freeze_account_ctx()
+            .with_signer(&[&xnft.as_seeds()]),
+    )?;
 
     token::close_account(ctx.accounts.close_account_ctx())?;
 

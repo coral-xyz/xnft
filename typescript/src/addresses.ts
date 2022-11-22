@@ -62,27 +62,15 @@ export async function deriveMasterMintAddress(
 /**
  * Derive the PDA of the associated xNFT program account.
  * @export
- * @param {PublicKey} masterMint
+ * @param {PublicKey} masterMetadata
  * @returns {Promise<PublicKey>}
  */
 export async function deriveXnftAddress(
-  masterMint: PublicKey
+  masterMetadata: PublicKey
 ): Promise<PublicKey> {
-  const [masterEditionPdaAddress] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("metadata"),
-      METADATA_PROGRAM_ID.toBytes(),
-      masterMint.toBytes(),
-      Buffer.from("edition"),
-    ],
-    METADATA_PROGRAM_ID
-  );
-
-  // xnft PDA (needed to install)
-  const [xnftPdaAddress] = await PublicKey.findProgramAddress(
-    [Buffer.from("xnft"), masterEditionPdaAddress.toBytes()],
+  const [xnft] = await PublicKey.findProgramAddress(
+    [Buffer.from("xnft"), masterMetadata.toBytes()],
     PROGRAM_ID
   );
-
-  return xnftPdaAddress;
+  return xnft;
 }

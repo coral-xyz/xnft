@@ -25,14 +25,16 @@ Allows the authority of an xNFT to update certain values on the xNFT program acc
 
 ### Updates Struct
 
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/parameters.rs)
+
 ```rust
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpdateParams {
-    install_authority: Option<Pubkey>,
-    install_price: u64,
-    install_vault: Pubkey,
-    supply: Option<u64>,
-    tag: Tag,
-    uri: Option<String>,
+    pub install_authority: Option<Pubkey>,
+    pub install_price: u64,
+    pub install_vault: Pubkey,
+    pub supply: Option<u64>,
+    pub tag: Tag,
+    pub uri: Option<String>,
 }
 ```
