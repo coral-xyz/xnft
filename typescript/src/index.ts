@@ -21,7 +21,8 @@ export * from "./accounts";
 export * from "./addresses";
 export * from "./instructions";
 export * from "./types";
+export * from "./xnft";
 
 export const PROGRAM_ID = new PublicKey(
-  "BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs"
+  "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
 );

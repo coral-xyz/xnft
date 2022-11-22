@@ -16,7 +16,7 @@
 use anchor_lang::prelude::*;
 
 use crate::events::InstallationCreated;
-use crate::state::{Access, Install, Xnft};
+use crate::state::{Access, Install, Kind, Xnft};
 use crate::util::send_payment;
 use crate::CustomError;
 
@@ -25,6 +25,7 @@ pub struct CreatePermissionedInstall<'info> {
     #[account(
         mut,
         has_one = install_vault,
+        constraint = xnft.kind == Kind::App @ CustomError::InstallingNonApp,
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
     pub xnft: Account<'info, Xnft>,

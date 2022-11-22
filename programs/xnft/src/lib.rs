@@ -21,12 +21,13 @@ use solana_security_txt::security_txt;
 
 mod events;
 mod instructions;
-pub mod state;
+mod state;
 mod util;
 
 use instructions::*;
+use state::*;
 
-declare_id!("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs");
+declare_id!("xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55");
 
 #[cfg(not(feature = "no-entrypoint"))]
 security_txt! {
@@ -39,13 +40,20 @@ security_txt! {
 }
 
 #[constant]
-pub const MAX_NAME_LEN: usize = 30;
-#[constant]
 pub const MAX_RATING: u8 = 5;
 
 #[program]
 pub mod xnft {
     use super::*;
+
+    /// TODO:
+    pub fn create_associated_xnft(
+        ctx: Context<CreateAssociatedXnft>,
+        kind: Kind,
+        params: CreateXnftParams,
+    ) -> Result<()> {
+        instructions::create_associated_xnft_handler(ctx, kind, params)
+    }
 
     /// Creates all parts of an xNFT instance.
     ///
@@ -59,10 +67,9 @@ pub mod xnft {
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
-        curator: Option<Pubkey>,
         params: CreateXnftParams,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, curator, params)
+        instructions::create_xnft_handler(ctx, name, params)
     }
 
     /// Updates the code of an xNFT.
@@ -139,9 +146,6 @@ pub enum CustomError {
     #[msg("You cannot create a review for an xNFT that you currently own or published")]
     CannotReviewOwned,
 
-    #[msg("A collection pubkey was provided without the collection Kind variant")]
-    CollectionWithoutKind,
-
     #[msg("There is already a verified curator assigned")]
     CuratorAlreadySet,
 
@@ -154,14 +158,17 @@ pub enum CustomError {
     #[msg("The provided xNFT install authority did not match")]
     InstallAuthorityMismatch,
 
-    #[msg("The asserted authority/owner did not match that of the Install account")]
-    InstallOwnerMismatch,
-
     #[msg("The max supply has been reached for the xNFT")]
     InstallExceedsSupply,
 
-    #[msg("The name provided for creating the xNFT exceeded the byte limit")]
-    NameTooLong,
+    #[msg("You can only install an xNFT of with `Kind::App`")]
+    InstallingNonApp,
+
+    #[msg("The asserted authority/owner did not match that of the Install account")]
+    InstallOwnerMismatch,
+
+    #[msg("The metadata of the xNFT is marked as immutable")]
+    MetadataIsImmutable,
 
     #[msg("The rating for a review must be between 0 and 5")]
     RatingOutOfBounds,
@@ -178,6 +185,12 @@ pub enum CustomError {
     #[msg("The access account provided is not associated with the wallet")]
     UnauthorizedInstall,
 
+    #[msg("The signer did not match the update authority of the metadata account")]
+    UpdateAuthorityMismatch,
+
     #[msg("The signing authority for the xNFT update did not match the review authority")]
     UpdateReviewAuthorityMismatch,
+
+    #[msg("The metadata URI provided exceeds the maximum length")]
+    UriExceedsMaxLength,
 }
