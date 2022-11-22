@@ -1,0 +1,21 @@
+[package]
+name = "xnft-cli"
+version = "0.2.0"
+description = "CLI to interact with the xNFT protocol"
+license = "GPL-3.0-only"
+edition = "2021"
+
+[[bin]]
+name = "xnft"
+path ="src/bin/main.rs"
+
+[features]
+default = []
+
+[profile.release]
+opt-level = "s"
+
+[dependencies]
+anchor-client = { git = "https://github.com/coral-xyz/anchor" }
+anyhow = "1.0"
+xnft = { path = "../programs/xnft", features = ["cli"] }
