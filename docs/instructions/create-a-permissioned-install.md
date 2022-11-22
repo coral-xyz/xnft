@@ -6,6 +6,8 @@ Similar to [Create an Install](#create-an-install) but is meant for the installa
 
 The account receiving the installation should be the one signing for the transaction, and uses their associated `Access` program account as a permissioning gateway to initialize the `Install` (similar to the purpose of an authentication token or API key for HTTP requests). This requires the install authority of the xNFT to create an `Access` program account for the wallet prior to this instruction via the [`grant_access`](/instructions/grant-access.md) instruction.
 
+!> This can only be successfully processed if the target xNFT is of `Kind::App`.
+
 ## Accounts
 
 | Name           | Signer | Writable | Description                                                              |

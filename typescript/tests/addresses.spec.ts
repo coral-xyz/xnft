@@ -13,7 +13,7 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("BZ6YRowFVJ69gQRF5nbP4F4uUxukCKS2Lvez5pP6eA75")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "D7VQcUZpWn8DynLNoRWT3ogT8ppUm61hbVcpwhQQNcEe"
+      "GV6XT7kGRkq4CgGZodjtcyakSEUuvx29uJjLRWtnbKz2"
     );
   });
 
@@ -23,7 +23,7 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P"
+      "6D3F4cbYj7RK3s6JiLMwBdozz7Jfna8zNKFjdjEqGDd9"
     );
   });
 
@@ -32,7 +32,7 @@ describe("Program account public keys should be derivable for", () => {
       new PublicKey("3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P")
     );
     expect(pk.toBase58()).toStrictEqual(
-      "6zMGSegJQC6AG7ndspUoyDHoGQPTkwZf8q3yvEFA2vjf"
+      "BEu8zcBFcSgj48rgwzXyPEmuKq9sBXhARSLtAeFiUc3g"
     );
   });
 });
