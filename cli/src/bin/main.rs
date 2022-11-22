@@ -13,16 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-mod access;
-mod install;
-mod parameters;
-mod review;
-#[cfg(any(test, feature = "cli"))]
-mod serialization;
-mod xnft;
+use anyhow::Result;
 
-pub use self::xnft::*; // use `self::` prefix to remove crate vs module ambiguity during builds
-pub use access::*;
-pub use install::*;
-pub use parameters::*;
-pub use review::*;
+fn main() -> Result<()> {
+    xnft_cli::run()
+}
