@@ -46,7 +46,7 @@ pub const MAX_RATING: u8 = 5;
 pub mod xnft {
     use super::*;
 
-    /// TODO:
+    /// Creates an xNFT instance on top of an existing digital collectible that is MPL compliant.
     pub fn create_associated_xnft(
         ctx: Context<CreateAssociatedXnft>,
         kind: Kind,
@@ -56,13 +56,6 @@ pub mod xnft {
     }
 
     /// Creates all parts of an xNFT instance.
-    ///
-    /// * Master mint (supply 1).
-    /// * Master token.
-    /// * Master metadata PDA associated with the master mint.
-    /// * Master edition PDA associated with the master mint.
-    /// * xNFT PDA associated with the master edition.
-    ///
     /// Once this is invoked, an xNFT exists and can be "installed" by users.
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
@@ -73,7 +66,6 @@ pub mod xnft {
     }
 
     /// Updates the code of an xNFT.
-    ///
     /// This is simply a token metadata update cpi.
     pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
         instructions::update_xnft_handler(ctx, updates)
@@ -95,7 +87,6 @@ pub mod xnft {
     }
 
     /// Creates an "installation" of an xNFT.
-    ///
     /// Installation is just a synonym for minting an xNFT edition for a given
     /// user.
     pub fn create_install(ctx: Context<CreateInstall>) -> Result<()> {
