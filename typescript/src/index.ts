@@ -17,6 +17,14 @@
 
 export * from "./accounts";
 export * from "./addresses";
+export * from "./client";
 export * from "./instructions";
-export * from "./types";
-export * from "./xnft";
+
+export type {
+  CreateAssociatedXnftOptions,
+  CreatorsParam,
+  CreateXnftAppOptions,
+  Kind,
+  Tag,
+  UpdateXnftOptions,
+} from "./types";

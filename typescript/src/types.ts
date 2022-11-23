@@ -15,20 +15,64 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { IdlAccounts, IdlTypes } from "@project-serum/anchor";
+import { BN, type IdlAccounts, type IdlTypes } from "@project-serum/anchor";
+import { PublicKey } from "@solana/web3.js";
 import { IDL, type Xnft } from "./xnft";
 
+// ==================
+// INTERNAL IDL TYPES
+// ==================
 export type AccessAccount = IdlAccounts<Xnft>["access"];
 export type InstallAccount = IdlAccounts<Xnft>["install"];
 export type ReviewAccount = IdlAccounts<Xnft>["review"];
 export type XnftAccount = IdlAccounts<Xnft>["xnft"];
 
-export type CreateXnftParameters = IdlTypes<Xnft>["CreateXnftParams"];
-export type CreatorsParam = IdlTypes<Xnft>["CreatorsParam"];
-export type CuratorStatus = IdlTypes<Xnft>["CuratorStatus"];
-export type UpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
+export type IdlCreateXnftParameters = IdlTypes<Xnft>["CreateXnftParams"];
+export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 
-export type Kind = typeof IDL.types[4]["type"]["variants"][number]["name"];
+// ==============
+// EXTERNAL TYPES
+// ==============
+export type Kind = Lowercase<
+  typeof IDL.types[4]["type"]["variants"][number]["name"]
+>;
 console.assert(IDL.types[4].type.variants.map(v => v.name).includes("App"));
-export type Tag = typeof IDL.types[5]["type"]["variants"][number]["name"];
+
+export type Tag = Lowercase<
+  typeof IDL.types[5]["type"]["variants"][number]["name"]
+>;
 console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));
+
+type CreateXnftCommonParameters = {
+  creators: CreatorsParam[];
+  curator?: PublicKey;
+  installAuthority?: PublicKey;
+  installPrice: BN;
+  installVault?: PublicKey;
+  sellerFeeBasisPoints?: number;
+  supply?: BN;
+  tag: Tag;
+  uri: string;
+};
+
+export type CreatorsParam = {
+  address: PublicKey;
+  share: number;
+};
+
+export type CreateAssociatedXnftOptions = CreateXnftCommonParameters & {
+  kind: Kind;
+};
+
+export type CreateXnftAppOptions = CreateXnftCommonParameters & {
+  name: string;
+};
+
+export type UpdateXnftOptions = {
+  installAuthority?: PublicKey;
+  installPrice: BN;
+  installVault: PublicKey;
+  supply?: BN;
+  tag: Tag;
+  uri?: string;
+};
