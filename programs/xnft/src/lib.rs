@@ -28,6 +28,7 @@ use instructions::*;
 
 declare_id!("BaHSGaf883GA3u8qSC5wNigcXyaScJLSBJZbALWvPcjs");
 
+#[cfg(not(feature = "no-entrypoint"))]
 security_txt! {
     name: "xNFT",
     project_url: "https://coral.community",
