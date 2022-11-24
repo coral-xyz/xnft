@@ -19,12 +19,4 @@ export * from "./accounts";
 export * from "./addresses";
 export * from "./client";
 export * from "./instructions";
-
-export type {
-  CreateAssociatedXnftOptions,
-  CreatorsParam,
-  CreateXnftAppOptions,
-  Kind,
-  Tag,
-  UpdateXnftOptions,
-} from "./types";
+export * from "./types";

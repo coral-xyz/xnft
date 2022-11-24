@@ -60,7 +60,7 @@ jobs:
       # - run: solana config set --url localhost
 
       - name: Install Dependencies
-        run: yarn install && yarn global add @project-serum/anchor-cli
+        run: yarn install #&& yarn global add @project-serum/anchor-cli
 
       - name: Format Check
         run: yarn fmt && cargo fmt -- --check
@@ -71,10 +71,10 @@ jobs:
       - name: Cargo Tests
         run: cargo test
 
+      - name: SDK Lint and Test
+        working-directory: typescript
+        run: yarn prepublishOnly
+
       - name: SDK Build Check
         working-directory: typescript
         run: yarn build && yarn clean
-
-      - name: SDK Tests
-        working-directory: typescript
-        run: yarn test

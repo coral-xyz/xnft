@@ -23,6 +23,7 @@ import { type Xnft, IDL } from "./xnft";
 export function buildAnonymousProgram(connection: Connection): Program<Xnft> {
   const provider = new AnchorProvider(
     connection,
+    /* eslint @typescript-eslint/ban-ts-comment: 0 */
     // @ts-ignore
     { publicKey: PublicKey.default },
     {}
