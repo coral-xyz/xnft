@@ -30,23 +30,25 @@ export async function getAccessAccount(
 ): Promise<AccessAccount> {
   return (await buildAnonymousProgram(connection).account.access.fetch(
     publicKey
-  )) as any;
+  )) as unknown as AccessAccount;
 }
 
 export async function getInstallAccount(
   connection: Connection,
   publicKey: PublicKey
 ): Promise<InstallAccount> {
-  return buildAnonymousProgram(connection).account.install.fetch(publicKey);
+  return (await buildAnonymousProgram(connection).account.install.fetch(
+    publicKey
+  )) as unknown as InstallAccount;
 }
 
 export async function getReviewAccount(
   connection: Connection,
   publicKey: PublicKey
 ): Promise<ReviewAccount> {
-  return await buildAnonymousProgram(connection).account.review.fetch(
+  return (await buildAnonymousProgram(connection).account.review.fetch(
     publicKey
-  );
+  )) as unknown as ReviewAccount;
 }
 
 export async function getXnftAccount(
@@ -55,5 +57,5 @@ export async function getXnftAccount(
 ): Promise<XnftAccount> {
   return (await buildAnonymousProgram(connection).account.xnft.fetch(
     publicKey
-  )) as any;
+  )) as unknown as XnftAccount;
 }

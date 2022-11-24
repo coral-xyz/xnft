@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/coral-xyz/xnft.git"
   },
-  "homepage": "https://github.com/coral-xyz/xnft#readme",
+  "homepage": "https://github.com/coral-xyz/xnft/blob/master/typescript#readme",
   "bugs": {
     "url": "https://github.com/coral-xyz/xnft/issues"
   },
@@ -33,7 +33,11 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf ./dist",
-    "test": "jest"
+    "lint": "eslint .",
+    "test": "jest",
+    "prepublishOnly": "yarn lint && yarn test",
+    "prepack": "yarn build && cp ../LICENSE . && cp ../README.md .",
+    "postpack": "rm LICENSE README.md"
   },
   "dependencies": {
     "@project-serum/anchor": "^0.25.0",
@@ -42,6 +46,10 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"

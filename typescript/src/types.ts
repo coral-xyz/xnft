@@ -19,9 +19,9 @@ import { BN, type IdlAccounts, type IdlTypes } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { IDL, type Xnft } from "./xnft";
 
-// ==================
-// INTERNAL IDL TYPES
-// ==================
+// ================
+// IDL PARSED TYPES
+// ================
 export type AccessAccount = IdlAccounts<Xnft>["access"];
 export type InstallAccount = IdlAccounts<Xnft>["install"];
 export type ReviewAccount = IdlAccounts<Xnft>["review"];
@@ -30,9 +30,9 @@ export type XnftAccount = IdlAccounts<Xnft>["xnft"];
 export type IdlCreateXnftParameters = IdlTypes<Xnft>["CreateXnftParams"];
 export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 
-// ==============
-// EXTERNAL TYPES
-// ==============
+// =================
+// ABSTRACTION TYPES
+// =================
 export type Kind = Lowercase<
   typeof IDL.types[4]["type"]["variants"][number]["name"]
 >;
