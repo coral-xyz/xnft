@@ -38,6 +38,7 @@ import {
 import type {
   CreateAssociatedXnftOptions,
   CreateXnftAppOptions,
+  IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
   UpdateXnftOptions,
@@ -189,6 +190,37 @@ export class xNFT {
       publicKey: pubkey,
       token: tokenAccount,
     };
+  }
+
+  /**
+   * Get the installed xNFTs for the argued wallet public key.
+   * @param {PublicKey} wallet
+   * @returns {Promise<{ install: IdlInstallAccount; xnft: XnftAccount }[]>}
+   * @memberof xNFT
+   */
+  async getInstallations(
+    wallet: PublicKey
+  ): Promise<{ install: IdlInstallAccount; xnft: XnftAccount }[]> {
+    const installations = await this.#program.account.install.all([
+      {
+        memcmp: {
+          offset: 8,
+          bytes: wallet.toBase58(),
+        },
+      },
+    ]);
+
+    const items: { install: IdlInstallAccount; xnft: XnftAccount }[] = [];
+
+    for await (const i of installations) {
+      const xnft = await this.getAccount(i.account.xnft);
+      items.push({
+        install: i.account,
+        xnft,
+      });
+    }
+
+    return items;
   }
 
   /**
