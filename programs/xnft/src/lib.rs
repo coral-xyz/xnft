@@ -17,6 +17,7 @@
 #![allow(clippy::result_large_err)]
 
 use anchor_lang::prelude::*;
+#[cfg(not(feature = "no-entrypoint"))]
 use solana_security_txt::security_txt;
 
 mod events;

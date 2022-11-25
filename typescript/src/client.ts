@@ -16,6 +16,7 @@
  */
 
 import { Program, Provider } from "@project-serum/anchor";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import {
   deriveInstallAddress,
@@ -54,7 +55,7 @@ export class xNFT {
    * @memberof xNFT
    */
   constructor(provider: Provider) {
-    if (!provider.publicKey) {
+    if (!provider.publicKey || provider.publicKey.equals(PublicKey.default)) {
       throw new Error("no public key found on the argued provider");
     } else if (!provider.sendAndConfirm) {
       throw new Error(
@@ -64,6 +65,16 @@ export class xNFT {
 
     this.#program = new Program(IDL, PROGRAM_ID, provider);
     this.#provider = provider;
+  }
+
+  /**
+   * Readonly accessor for the internal provider instance.
+   * @readonly
+   * @type {Provider}
+   * @memberof xNFT
+   */
+  get provider(): Provider {
+    return this.#provider;
   }
 
   /**
@@ -294,7 +305,7 @@ export class xNFT {
    * from a curation entity. All values provided to the options parameter are
    * binding and should be populated with the previous values to be unchanged.
    * @param {PublicKey} masterMetadata
-   * @param {PublicKey} masterToken
+   * @param {PublicKey} masterMint
    * @param {UpdateXnftOptions} opts
    * @param {PublicKey} [curator]
    * @returns {Promise<string>}
@@ -302,11 +313,16 @@ export class xNFT {
    */
   async update(
     masterMetadata: PublicKey,
-    masterToken: PublicKey,
+    masterMint: PublicKey,
     opts: UpdateXnftOptions,
     curator?: PublicKey
   ): Promise<string> {
-    const xnft = await deriveXnftAddress(masterMetadata);
+    const xnft = await deriveXnftAddress(masterMint);
+    const masterToken = await getAssociatedTokenAddress(
+      masterMint,
+      this.#provider.publicKey!
+    );
+
     const tx = await createUpdateXnftTransaction(
       this.#program,
       {

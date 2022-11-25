@@ -48,7 +48,7 @@ pub struct CreateAssociatedXnft<'info> {
         space = Xnft::LEN,
         seeds = [
             "xnft".as_bytes(),
-            master_metadata.key().as_ref(),
+            master_mint.key().as_ref(),
         ],
         bump,
     )]
