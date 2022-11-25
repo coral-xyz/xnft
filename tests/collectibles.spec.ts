@@ -1,8 +1,4 @@
-import {
-  type CreateNftOutput,
-  Metaplex,
-  keypairIdentity,
-} from "@metaplex-foundation/js";
+import { type CreateNftOutput, Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 import * as anchor from "@project-serum/anchor";
 import { assert } from "chai";
 import { program, wait } from "./common";
@@ -50,21 +46,18 @@ describe("Digital collectible xNFTs", () => {
     it("unless the digital collectible metadata is immutable", async () => {
       try {
         await program.methods
-          .createAssociatedXnft(
-            { nft: { pubkey: invalidNft.metadataAddress } } as never,
-            {
-              creators: [{ address: program.provider.publicKey, share: 100 }],
-              curator: null,
-              installAuthority: null,
-              installPrice: new anchor.BN(0),
-              installVault: program.provider.publicKey,
-              sellerFeeBasisPoints: 0,
-              supply: null,
-              symbol: "",
-              tag: { none: {} } as never,
-              uri: "https://arweave.net/abc123",
-            }
-          )
+          .createAssociatedXnft({ nft: { pubkey: invalidNft.metadataAddress } } as never, {
+            creators: [{ address: program.provider.publicKey, share: 100 }],
+            curator: null,
+            installAuthority: null,
+            installPrice: new anchor.BN(0),
+            installVault: program.provider.publicKey,
+            sellerFeeBasisPoints: 0,
+            supply: null,
+            symbol: "",
+            tag: { none: {} } as never,
+            uri: "https://arweave.net/abc123",
+          })
           .accounts({
             masterMint: invalidNft.mintAddress,
             masterToken: invalidNft.tokenAddress,
@@ -105,14 +98,8 @@ describe("Digital collectible xNFTs", () => {
 
     it("and the NFT pubkeys on the xNFT account match the collectible", async () => {
       const acc = await program.account.xnft.fetch(xnft);
-      assert.strictEqual(
-        acc.masterMetadata.toBase58(),
-        validNft.metadataAddress.toBase58()
-      );
-      assert.strictEqual(
-        acc.masterMint.toBase58(),
-        validNft.mintAddress.toBase58()
-      );
+      assert.strictEqual(acc.masterMetadata.toBase58(), validNft.metadataAddress.toBase58());
+      assert.strictEqual(acc.masterMint.toBase58(), validNft.mintAddress.toBase58());
     });
 
     it("and installation cannot be created against a collectibles xNFT", async () => {

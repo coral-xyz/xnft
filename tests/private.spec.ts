@@ -24,18 +24,11 @@ describe("Private xNFTs", () => {
     it("when an install authority is provided to the create xNFT instruction", async () => {
       const name = "my private xnft";
       const [masterMint] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("mint"),
-          program.provider.publicKey.toBytes(),
-          Buffer.from(name),
-        ],
+        [Buffer.from("mint"), program.provider.publicKey.toBytes(), Buffer.from(name)],
         program.programId
       );
 
-      const masterToken = await getAssociatedTokenAddress(
-        masterMint,
-        program.provider.publicKey
-      );
+      const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
 
       const method = program.methods
         .createXnft(name, {

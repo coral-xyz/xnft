@@ -12,12 +12,8 @@ import type { Xnft } from "../target/types/xnft";
 import { metadataProgram, program, wait } from "./common";
 
 const curatorAuthority = anchor.web3.Keypair.generate();
-const authority = (
-  (program.provider as anchor.AnchorProvider).wallet as anchor.Wallet
-).payer;
-const metaplex = new Metaplex(program.provider.connection).use(
-  keypairIdentity(authority)
-);
+const authority = ((program.provider as anchor.AnchorProvider).wallet as anchor.Wallet).payer;
+const metaplex = new Metaplex(program.provider.connection).use(keypairIdentity(authority));
 
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
@@ -57,10 +53,7 @@ describe("A standard xNFT", () => {
         program.programId
       );
 
-      const masterToken = await getAssociatedTokenAddress(
-        mint,
-        authority.publicKey
-      );
+      const masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
 
       try {
         await program.methods
@@ -92,10 +85,7 @@ describe("A standard xNFT", () => {
         program.programId
       );
 
-      masterToken = await getAssociatedTokenAddress(
-        masterMint,
-        authority.publicKey
-      );
+      masterToken = await getAssociatedTokenAddress(masterMint, authority.publicKey);
 
       const ix = program.methods
         .createXnft(name, {
@@ -128,9 +118,7 @@ describe("A standard xNFT", () => {
       xnftData = (await program.account.xnft.fetch(xnft)) as any;
       masterMetadata = pubkeys.masterMetadata;
 
-      const acc = (await metaplex
-        .rpc()
-        .getAccount(masterMetadata)) as UnparsedAccount;
+      const acc = (await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount;
       meta = parseMetadataAccount(acc);
     });
 
@@ -184,10 +172,7 @@ describe("A standard xNFT", () => {
 
     it("and the curator account is set but unverified", async () => {
       const data = await program.account.xnft.fetch(xnft);
-      assert.strictEqual(
-        data.curator.pubkey.toBase58(),
-        curatorAuthority.publicKey.toBase58()
-      );
+      assert.strictEqual(data.curator.pubkey.toBase58(), curatorAuthority.publicKey.toBase58());
       assert.isFalse(data.curator.verified);
     });
   });
@@ -225,10 +210,7 @@ describe("A standard xNFT", () => {
 
   describe("an Install can be created", () => {
     it("unless the xNFT is suspended", async () => {
-      await program.methods
-        .setSuspended(true)
-        .accounts({ xnft, masterToken })
-        .rpc();
+      await program.methods.setSuspended(true).accounts({ xnft, masterToken }).rpc();
 
       try {
         await program.methods
@@ -244,10 +226,7 @@ describe("A standard xNFT", () => {
         const e = err as anchor.AnchorError;
         assert.strictEqual(e.error.errorCode.code, "SuspendedInstallation");
       } finally {
-        await program.methods
-          .setSuspended(false)
-          .accounts({ xnft, masterToken })
-          .rpc();
+        await program.methods.setSuspended(false).accounts({ xnft, masterToken }).rpc();
       }
     });
 
@@ -412,10 +391,7 @@ describe("Account Updates", () => {
   });
 
   it("an xNFT can be transferred to another authority", async () => {
-    const destination = await getAssociatedTokenAddress(
-      masterMint,
-      newAuthority.publicKey
-    );
+    const destination = await getAssociatedTokenAddress(masterMint, newAuthority.publicKey);
 
     await program.methods
       .transfer()
@@ -434,9 +410,7 @@ describe("Account Updates", () => {
     assert.strictEqual(ata.mint.toBase58(), masterMint.toBase58());
     assert.strictEqual(ata.owner.toBase58(), newAuthority.publicKey.toBase58());
 
-    const oldAta = await program.provider.connection.getAccountInfo(
-      masterToken
-    );
+    const oldAta = await program.provider.connection.getAccountInfo(masterToken);
     assert.isNull(oldAta);
   });
 

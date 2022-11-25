@@ -23,6 +23,7 @@
     "typescript": "^4.8.4"
   },
   "prettier": {
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "printWidth": 100
   }
 }
