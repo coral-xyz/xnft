@@ -22,10 +22,10 @@ import { IDL, type Xnft } from "./xnft";
 // ================
 // IDL PARSED TYPES
 // ================
-export type AccessAccount = IdlAccounts<Xnft>["access"];
-export type InstallAccount = IdlAccounts<Xnft>["install"];
-export type ReviewAccount = IdlAccounts<Xnft>["review"];
-export type XnftAccount = IdlAccounts<Xnft>["xnft"];
+export type IdlAccessAccount = IdlAccounts<Xnft>["access"];
+export type IdlInstallAccount = IdlAccounts<Xnft>["install"];
+export type IdlReviewAccount = IdlAccounts<Xnft>["review"];
+export type IdlXnftAccount = IdlAccounts<Xnft>["xnft"];
 
 export type IdlCreateXnftParameters = IdlTypes<Xnft>["CreateXnftParams"];
 export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
@@ -33,14 +33,10 @@ export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 // =================
 // ABSTRACTION TYPES
 // =================
-export type Kind = Lowercase<
-  typeof IDL.types[4]["type"]["variants"][number]["name"]
->;
+export type Kind = Lowercase<typeof IDL.types[4]["type"]["variants"][number]["name"]>;
 console.assert(IDL.types[4].type.variants.map(v => v.name).includes("App"));
 
-export type Tag = Lowercase<
-  typeof IDL.types[5]["type"]["variants"][number]["name"]
->;
+export type Tag = Lowercase<typeof IDL.types[5]["type"]["variants"][number]["name"]>;
 console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));
 
 type CreateXnftCommonParameters = {
@@ -75,4 +71,14 @@ export type UpdateXnftOptions = {
   supply?: BN;
   tag: Tag;
   uri?: string;
+};
+
+export type XnftAccount = {
+  data: IdlXnftAccount;
+  json: any; // TODO:
+  publicKey: PublicKey;
+  token: {
+    address: PublicKey;
+    owner: PublicKey;
+  };
 };

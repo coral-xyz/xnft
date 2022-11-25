@@ -17,9 +17,7 @@
 
 import { PublicKey } from "@solana/web3.js";
 
-export const PROGRAM_ID = new PublicKey(
-  "xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55"
-);
+export const PROGRAM_ID = new PublicKey("xnft5aaToUM4UFETUQfj7NUDUBdvYHTVhNFThEYTm55");
 
 export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
@@ -68,9 +66,7 @@ export async function deriveMasterMintAddress(
  * @param {PublicKey} masterMint
  * @returns {Promise<PublicKey>}
  */
-export async function deriveXnftAddress(
-  masterMint: PublicKey
-): Promise<PublicKey> {
+export async function deriveXnftAddress(masterMint: PublicKey): Promise<PublicKey> {
   const [xnft] = await PublicKey.findProgramAddress(
     [Buffer.from("xnft"), masterMint.toBytes()],
     PROGRAM_ID

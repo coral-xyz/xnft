@@ -15,14 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Program, Provider } from "@project-serum/anchor";
+import { Metaplex, toMetadataAccount } from "@metaplex-foundation/js";
+import { Program, type ProgramAccount, type Provider } from "@project-serum/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
-import { PublicKey } from "@solana/web3.js";
-import {
-  deriveInstallAddress,
-  deriveXnftAddress,
-  PROGRAM_ID,
-} from "./addresses";
+import { GetProgramAccountsFilter, PublicKey } from "@solana/web3.js";
+import { deriveInstallAddress, deriveXnftAddress, PROGRAM_ID } from "./addresses";
 import {
   createCreateAssociatedXnftTransaction,
   createCreateInstallTransaction,
@@ -41,11 +38,16 @@ import {
 import type {
   CreateAssociatedXnftOptions,
   CreateXnftAppOptions,
+  IdlReviewAccount,
+  IdlXnftAccount,
   UpdateXnftOptions,
+  XnftAccount,
 } from "./types";
+import { getTokenAccountForMint } from "./util";
 import { IDL, type Xnft } from "./xnft";
 
 export class xNFT {
+  #mpl: Metaplex;
   #program: Program<Xnft>;
   #provider: Provider;
 
@@ -58,11 +60,10 @@ export class xNFT {
     if (!provider.publicKey || provider.publicKey.equals(PublicKey.default)) {
       throw new Error("no public key found on the argued provider");
     } else if (!provider.sendAndConfirm) {
-      throw new Error(
-        "no sendAndConfirm function found on the argued provider"
-      );
+      throw new Error("no sendAndConfirm function found on the argued provider");
     }
 
+    this.#mpl = Metaplex.make(provider.connection);
     this.#program = new Program(IDL, PROGRAM_ID, provider);
     this.#provider = provider;
   }
@@ -120,11 +121,7 @@ export class xNFT {
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async install(
-    xnft: PublicKey,
-    installVault: PublicKey,
-    permissioned?: boolean
-  ): Promise<string> {
+  async install(xnft: PublicKey, installVault: PublicKey, permissioned?: boolean): Promise<string> {
     const tx = await createCreateInstallTransaction(
       this.#program,
       xnft,
@@ -164,18 +161,88 @@ export class xNFT {
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async deleteReview(
-    review: PublicKey,
-    xnft: PublicKey,
-    receiver?: PublicKey
-  ): Promise<string> {
-    const tx = await createDeleteReviewTransaction(
-      this.#program,
-      review,
-      xnft,
-      receiver
-    );
+  async deleteReview(review: PublicKey, xnft: PublicKey, receiver?: PublicKey): Promise<string> {
+    const tx = await createDeleteReviewTransaction(this.#program, review, xnft, receiver);
     return await this.#provider.sendAndConfirm!(tx);
+  }
+
+  /**
+   * Get the data for the argued xNFT public key and its peripheral accounts.
+   * @param {PublicKey} pubkey
+   * @returns {Promise<XnftAccount>}
+   * @memberof xNFT
+   */
+  async getAccount(pubkey: PublicKey): Promise<XnftAccount> {
+    const account = (await this.#program.account.xnft.fetch(pubkey)) as unknown as IdlXnftAccount;
+    const nft = await this.#mpl
+      .nfts()
+      .findByMint({ mintAddress: account.masterMint, loadJsonMetadata: true });
+
+    const tokenAccount = await getTokenAccountForMint(
+      this.#provider.connection,
+      account.masterMint
+    );
+
+    return {
+      data: account,
+      json: nft.json,
+      publicKey: pubkey,
+      token: tokenAccount,
+    };
+  }
+
+  /**
+   * Get multiple xNFT program accounts and peripheral data based on the optionally
+   * provided program account filters.
+   * @param {GetProgramAccountsFilter[]} [filters]
+   * @returns {Promise<XnftAccount[]>}
+   * @memberof xNFT
+   */
+  async getMultipleAccounts(filters?: GetProgramAccountsFilter[]): Promise<XnftAccount[]> {
+    const xnfts = (await this.#program.account.xnft.all(
+      filters
+    )) as unknown as ProgramAccount<IdlXnftAccount>[];
+
+    const metadatas = (
+      await this.#mpl.rpc().getMultipleAccounts(xnfts.map(x => x.account.masterMetadata))
+    ).map(m => toMetadataAccount(m));
+
+    const jsonBlobs = await Promise.all(
+      metadatas.map(m => this.#mpl.storage().downloadJson(m.data.data.uri))
+    );
+
+    const tokenAccounts = await Promise.all(
+      metadatas.map(m => getTokenAccountForMint(this.#provider.connection, m.data.mint))
+    );
+
+    const response: XnftAccount[] = [];
+    for (let i = 0; i < xnfts.length; i++) {
+      response.push({
+        data: xnfts[i].account,
+        json: jsonBlobs[i],
+        publicKey: xnfts[i].publicKey,
+        token: tokenAccounts[i],
+      });
+    }
+
+    return response;
+  }
+
+  /**
+   * Get all Review program accounts associated with the argued xNFT.
+   * @param {PublicKey} xnft
+   * @returns {Promise<ProgramAccount<IdlReviewAccount>[]>}
+   * @memberof xNFT
+   */
+  async getReviews(xnft: PublicKey): Promise<ProgramAccount<IdlReviewAccount>[]> {
+    return await this.#program.account.review.all([
+      {
+        memcmp: {
+          offset: 40,
+          bytes: xnft.toBase58(),
+        },
+      },
+    ]);
   }
 
   /**
@@ -242,17 +309,8 @@ export class xNFT {
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async setCurator(
-    xnft: PublicKey,
-    masterToken: PublicKey,
-    curator: PublicKey
-  ): Promise<string> {
-    const tx = await createSetCuratorTransaction(
-      this.#program,
-      xnft,
-      masterToken,
-      curator
-    );
+  async setCurator(xnft: PublicKey, masterToken: PublicKey, curator: PublicKey): Promise<string> {
+    const tx = await createSetCuratorTransaction(this.#program, xnft, masterToken, curator);
     return await this.#provider.sendAndConfirm!(tx);
   }
 
@@ -264,17 +322,8 @@ export class xNFT {
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async setSuspended(
-    xnft: PublicKey,
-    masterToken: PublicKey,
-    value: boolean
-  ): Promise<string> {
-    const tx = await createSetSuspendedTransaction(
-      this.#program,
-      xnft,
-      masterToken,
-      value
-    );
+  async setSuspended(xnft: PublicKey, masterToken: PublicKey, value: boolean): Promise<string> {
+    const tx = await createSetSuspendedTransaction(this.#program, xnft, masterToken, value);
     return await this.#provider.sendAndConfirm!(tx);
   }
 
@@ -286,17 +335,8 @@ export class xNFT {
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async transfer(
-    xnft: PublicKey,
-    masterMint: PublicKey,
-    recipient: PublicKey
-  ): Promise<string> {
-    const tx = await createTransferTransaction(
-      this.#program,
-      xnft,
-      masterMint,
-      recipient
-    );
+  async transfer(xnft: PublicKey, masterMint: PublicKey, recipient: PublicKey): Promise<string> {
+    const tx = await createTransferTransaction(this.#program, xnft, masterMint, recipient);
     return await this.#provider.sendAndConfirm!(tx);
   }
 
@@ -318,10 +358,7 @@ export class xNFT {
     curator?: PublicKey
   ): Promise<string> {
     const xnft = await deriveXnftAddress(masterMint);
-    const masterToken = await getAssociatedTokenAddress(
-      masterMint,
-      this.#provider.publicKey!
-    );
+    const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
 
     const tx = await createUpdateXnftTransaction(
       this.#program,
@@ -352,11 +389,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async uninstall(install: PublicKey, receiver?: PublicKey): Promise<string> {
-    const tx = await createDeleteInstallTransaction(
-      this.#program,
-      install,
-      receiver
-    );
+    const tx = await createDeleteInstallTransaction(this.#program, install, receiver);
     return await this.#provider.sendAndConfirm!(tx);
   }
 

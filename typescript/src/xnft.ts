@@ -218,10 +218,7 @@ export type Xnft = {
     },
     {
       name: "updateXnft";
-      docs: [
-        "Updates the code of an xNFT.",
-        "This is simply a token metadata update cpi."
-      ];
+      docs: ["Updates the code of an xNFT.", "This is simply a token metadata update cpi."];
       accounts: [
         {
           name: "xnft";
@@ -293,9 +290,7 @@ export type Xnft = {
     },
     {
       name: "verifyCurator";
-      docs: [
-        "Verifies the assignment of a curator to an xNFT, signed by the curator authority."
-      ];
+      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."];
       accounts: [
         {
           name: "xnft";
@@ -312,9 +307,7 @@ export type Xnft = {
     },
     {
       name: "createReview";
-      docs: [
-        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'
-      ];
+      docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'];
       accounts: [
         {
           name: "install";
@@ -548,9 +541,7 @@ export type Xnft = {
     },
     {
       name: "deleteReview";
-      docs: [
-        "Closes the review account and removes metrics from xNFT account."
-      ];
+      docs: ["Closes the review account and removes metrics from xNFT account."];
       accounts: [
         {
           name: "review";
@@ -856,9 +847,7 @@ export type Xnft = {
           },
           {
             name: "uri";
-            docs: [
-              "The URI of the off-chain JSON data that holds the comment (4 + len)."
-            ];
+            docs: ["The URI of the off-chain JSON data that holds the comment (4 + len)."];
             type: "string";
           },
           {
@@ -883,9 +872,7 @@ export type Xnft = {
           },
           {
             name: "installVault";
-            docs: [
-              "The pubkey of the account to receive install payments (32)."
-            ];
+            docs: ["The pubkey of the account to receive install payments (32)."];
             type: "publicKey";
           },
           {
@@ -900,9 +887,7 @@ export type Xnft = {
           },
           {
             name: "installAuthority";
-            docs: [
-              "The optional pubkey of the xNFT installation authority (33)."
-            ];
+            docs: ["The optional pubkey of the xNFT installation authority (33)."];
             type: {
               option: "publicKey";
             };
@@ -941,27 +926,21 @@ export type Xnft = {
           },
           {
             name: "tag";
-            docs: [
-              "The `Tag` enum variant to assign the category of xNFT (1)."
-            ];
+            docs: ["The `Tag` enum variant to assign the category of xNFT (1)."];
             type: {
               defined: "Tag";
             };
           },
           {
             name: "supply";
-            docs: [
-              "The optional finite supply of installations available for this xNFT (9)."
-            ];
+            docs: ["The optional finite supply of installations available for this xNFT (9)."];
             type: {
               option: "u64";
             };
           },
           {
             name: "totalInstalls";
-            docs: [
-              "Total amount of install accounts that have been created for this xNFT (8)."
-            ];
+            docs: ["Total amount of install accounts that have been created for this xNFT (8)."];
             type: "u64";
           },
           {
@@ -976,9 +955,7 @@ export type Xnft = {
           },
           {
             name: "updatedTs";
-            docs: [
-              "The unix timestamp of the last time the account was updated (8)."
-            ];
+            docs: ["The unix timestamp of the last time the account was updated (8)."];
             type: "i64";
           },
           {
@@ -988,16 +965,12 @@ export type Xnft = {
           },
           {
             name: "numRatings";
-            docs: [
-              "The number of ratings created used to calculate the average (4)."
-            ];
+            docs: ["The number of ratings created used to calculate the average (4)."];
             type: "u32";
           },
           {
             name: "suspended";
-            docs: [
-              "Flag to determine whether new installations of the xNFT should be halted (1)."
-            ];
+            docs: ["Flag to determine whether new installations of the xNFT should be halted (1)."];
             type: "bool";
           },
           {
@@ -1147,9 +1120,7 @@ export type Xnft = {
           },
           {
             name: "verified";
-            docs: [
-              "Whether the curator's authority has verified the assignment (1)."
-            ];
+            docs: ["Whether the curator's authority has verified the assignment (1)."];
             type: "bool";
           }
         ];
@@ -1564,10 +1535,7 @@ export const IDL: Xnft = {
     },
     {
       name: "updateXnft",
-      docs: [
-        "Updates the code of an xNFT.",
-        "This is simply a token metadata update cpi.",
-      ],
+      docs: ["Updates the code of an xNFT.", "This is simply a token metadata update cpi."],
       accounts: [
         {
           name: "xnft",
@@ -1639,9 +1607,7 @@ export const IDL: Xnft = {
     },
     {
       name: "verifyCurator",
-      docs: [
-        "Verifies the assignment of a curator to an xNFT, signed by the curator authority.",
-      ],
+      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."],
       accounts: [
         {
           name: "xnft",
@@ -1658,9 +1624,7 @@ export const IDL: Xnft = {
     },
     {
       name: "createReview",
-      docs: [
-        'Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.',
-      ],
+      docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'],
       accounts: [
         {
           name: "install",
@@ -1894,9 +1858,7 @@ export const IDL: Xnft = {
     },
     {
       name: "deleteReview",
-      docs: [
-        "Closes the review account and removes metrics from xNFT account.",
-      ],
+      docs: ["Closes the review account and removes metrics from xNFT account."],
       accounts: [
         {
           name: "review",
@@ -2202,9 +2164,7 @@ export const IDL: Xnft = {
           },
           {
             name: "uri",
-            docs: [
-              "The URI of the off-chain JSON data that holds the comment (4 + len).",
-            ],
+            docs: ["The URI of the off-chain JSON data that holds the comment (4 + len)."],
             type: "string",
           },
           {
@@ -2229,9 +2189,7 @@ export const IDL: Xnft = {
           },
           {
             name: "installVault",
-            docs: [
-              "The pubkey of the account to receive install payments (32).",
-            ],
+            docs: ["The pubkey of the account to receive install payments (32)."],
             type: "publicKey",
           },
           {
@@ -2246,9 +2204,7 @@ export const IDL: Xnft = {
           },
           {
             name: "installAuthority",
-            docs: [
-              "The optional pubkey of the xNFT installation authority (33).",
-            ],
+            docs: ["The optional pubkey of the xNFT installation authority (33)."],
             type: {
               option: "publicKey",
             },
@@ -2287,27 +2243,21 @@ export const IDL: Xnft = {
           },
           {
             name: "tag",
-            docs: [
-              "The `Tag` enum variant to assign the category of xNFT (1).",
-            ],
+            docs: ["The `Tag` enum variant to assign the category of xNFT (1)."],
             type: {
               defined: "Tag",
             },
           },
           {
             name: "supply",
-            docs: [
-              "The optional finite supply of installations available for this xNFT (9).",
-            ],
+            docs: ["The optional finite supply of installations available for this xNFT (9)."],
             type: {
               option: "u64",
             },
           },
           {
             name: "totalInstalls",
-            docs: [
-              "Total amount of install accounts that have been created for this xNFT (8).",
-            ],
+            docs: ["Total amount of install accounts that have been created for this xNFT (8)."],
             type: "u64",
           },
           {
@@ -2322,9 +2272,7 @@ export const IDL: Xnft = {
           },
           {
             name: "updatedTs",
-            docs: [
-              "The unix timestamp of the last time the account was updated (8).",
-            ],
+            docs: ["The unix timestamp of the last time the account was updated (8)."],
             type: "i64",
           },
           {
@@ -2334,16 +2282,12 @@ export const IDL: Xnft = {
           },
           {
             name: "numRatings",
-            docs: [
-              "The number of ratings created used to calculate the average (4).",
-            ],
+            docs: ["The number of ratings created used to calculate the average (4)."],
             type: "u32",
           },
           {
             name: "suspended",
-            docs: [
-              "Flag to determine whether new installations of the xNFT should be halted (1).",
-            ],
+            docs: ["Flag to determine whether new installations of the xNFT should be halted (1)."],
             type: "bool",
           },
           {
@@ -2493,9 +2437,7 @@ export const IDL: Xnft = {
           },
           {
             name: "verified",
-            docs: [
-              "Whether the curator's authority has verified the assignment (1).",
-            ],
+            docs: ["Whether the curator's authority has verified the assignment (1)."],
             type: "bool",
           },
         ],
