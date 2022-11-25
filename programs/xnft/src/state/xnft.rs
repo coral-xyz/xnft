@@ -118,7 +118,7 @@ impl Xnft {
     }
 
     pub fn as_seeds(&self) -> [&[u8]; 3] {
-        ["xnft".as_bytes(), self.master_metadata.as_ref(), &self.bump]
+        ["xnft".as_bytes(), self.master_mint.as_ref(), &self.bump]
     }
 
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {

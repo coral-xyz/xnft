@@ -44,8 +44,8 @@ export type Xnft = {
               {
                 kind: "account";
                 type: "publicKey";
-                account: "MetadataAccount";
-                path: "master_metadata";
+                account: "Mint";
+                path: "master_mint";
               }
             ];
           };
@@ -161,7 +161,8 @@ export type Xnft = {
               {
                 kind: "account";
                 type: "publicKey";
-                path: "master_metadata";
+                account: "Mint";
+                path: "master_mint";
               }
             ];
           };
@@ -1389,8 +1390,8 @@ export const IDL: Xnft = {
               {
                 kind: "account",
                 type: "publicKey",
-                account: "MetadataAccount",
-                path: "master_metadata",
+                account: "Mint",
+                path: "master_mint",
               },
             ],
           },
@@ -1506,7 +1507,8 @@ export const IDL: Xnft = {
               {
                 kind: "account",
                 type: "publicKey",
-                path: "master_metadata",
+                account: "Mint",
+                path: "master_mint",
               },
             ],
           },

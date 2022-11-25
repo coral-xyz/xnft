@@ -65,14 +65,14 @@ export async function deriveMasterMintAddress(
 /**
  * Derive the PDA of the associated xNFT program account.
  * @export
- * @param {PublicKey} masterMetadata
+ * @param {PublicKey} masterMint
  * @returns {Promise<PublicKey>}
  */
 export async function deriveXnftAddress(
-  masterMetadata: PublicKey
+  masterMint: PublicKey
 ): Promise<PublicKey> {
   const [xnft] = await PublicKey.findProgramAddress(
-    [Buffer.from("xnft"), masterMetadata.toBytes()],
+    [Buffer.from("xnft"), masterMint.toBytes()],
     PROGRAM_ID
   );
   return xnft;

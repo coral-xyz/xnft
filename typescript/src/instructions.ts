@@ -208,6 +208,7 @@ export async function createCreateXnftInstruction(
   return await program.methods
     .createXnft(name, params)
     .accounts({
+      masterMint,
       masterToken,
       metadataProgram: TOKEN_METADATA_PROGRAM_ID,
     })
