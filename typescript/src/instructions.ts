@@ -99,10 +99,7 @@ export async function createCreateInstallInstruction(
   permissioned?: boolean
 ): Promise<TransactionInstruction> {
   return permissioned
-    ? await program.methods
-        .createPermissionedInstall()
-        .accounts({ xnft, installVault })
-        .instruction()
+    ? await program.methods.createPermissionedInstall().accounts({ xnft, installVault }).instruction()
     : await program.methods.createInstall().accounts({ xnft, installVault }).instruction();
 }
 

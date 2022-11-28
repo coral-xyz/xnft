@@ -20,9 +20,7 @@ describe("Program account public keys should be derivable for", () => {
   });
 
   test("xnft accounts", async () => {
-    const pk = await deriveXnftAddress(
-      new PublicKey("3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P")
-    );
+    const pk = await deriveXnftAddress(new PublicKey("3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P"));
     expect(pk.toBase58()).toStrictEqual("BEu8zcBFcSgj48rgwzXyPEmuKq9sBXhARSLtAeFiUc3g");
   });
 });

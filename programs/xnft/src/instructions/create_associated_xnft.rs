@@ -75,7 +75,6 @@ pub fn create_associated_xnft_handler(
     // Instantiate and populate the xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;
     ***xnft = Xnft::try_new(
-        "".to_owned(),
         kind,
         *ctx.bumps.get("xnft").unwrap(),
         *ctx.accounts.publisher.key,

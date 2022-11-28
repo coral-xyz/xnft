@@ -87,7 +87,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                     .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
                 Some(md.update_authority),
                 Some(DataV2 {
-                    name: ctx.accounts.xnft.name.clone(),
+                    name: md.data.name.clone(),
                     symbol: md.data.symbol.clone(),
                     uri: u.clone(),
                     seller_fee_basis_points: md.data.seller_fee_basis_points,

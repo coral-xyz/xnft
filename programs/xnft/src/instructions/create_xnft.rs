@@ -159,7 +159,6 @@ pub fn create_xnft_handler(
     // Initialize and populate the new xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;
     ***xnft = Xnft::try_new(
-        name.clone(),
         Kind::App,
         *ctx.bumps.get("xnft").unwrap(),
         *ctx.accounts.publisher.key,

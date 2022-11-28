@@ -14,10 +14,7 @@ describe("Digital collectible xNFTs", () => {
   let validNft: CreateNftOutput;
 
   before(async () => {
-    await program.provider.connection.requestAirdrop(
-      program.provider.publicKey,
-      5 * anchor.web3.LAMPORTS_PER_SOL
-    );
+    await program.provider.connection.requestAirdrop(program.provider.publicKey, 5 * anchor.web3.LAMPORTS_PER_SOL);
 
     await wait(500);
 
