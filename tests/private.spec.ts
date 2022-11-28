@@ -14,10 +14,7 @@ let privateXnftData: anchor.IdlAccounts<Xnft>["xnft"];
 describe("Private xNFTs", () => {
   describe("a private xNFT can be created", () => {
     before(async () => {
-      await program.provider.connection.requestAirdrop(
-        installAuthority.publicKey,
-        1 * anchor.web3.LAMPORTS_PER_SOL
-      );
+      await program.provider.connection.requestAirdrop(installAuthority.publicKey, 1 * anchor.web3.LAMPORTS_PER_SOL);
       await wait(500);
     });
 
@@ -56,19 +53,13 @@ describe("Private xNFTs", () => {
     });
 
     it("and it is created with a set install authority", () => {
-      assert.strictEqual(
-        privateXnftData.installAuthority.toBase58(),
-        installAuthority.publicKey.toBase58()
-      );
+      assert.strictEqual(privateXnftData.installAuthority.toBase58(), installAuthority.publicKey.toBase58());
     });
   });
 
   describe("an Access grant can be created", () => {
     before(async () => {
-      await program.provider.connection.requestAirdrop(
-        grantee.publicKey,
-        1 * anchor.web3.LAMPORTS_PER_SOL
-      );
+      await program.provider.connection.requestAirdrop(grantee.publicKey, 1 * anchor.web3.LAMPORTS_PER_SOL);
       await wait(500);
     });
 

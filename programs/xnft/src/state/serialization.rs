@@ -106,7 +106,6 @@ impl Serialize for Xnft {
         )?;
         s.serialize_field("curator", &self.curator)?;
         s.serialize_field("uri", &self.uri)?;
-        s.serialize_field("name", &self.name)?;
         s.serialize_field("kind", &self.kind)?;
         s.serialize_field("tag", &self.tag)?;
         s.serialize_field("supply", &self.supply)?;
@@ -132,7 +131,6 @@ impl std::fmt::Debug for Xnft {
             .field("install_authority", &self.install_authority)
             .field("curator", &self.curator)
             .field("uri", &self.uri)
-            .field("name", &self.name)
             .field("kind", &self.kind)
             .field("tag", &self.tag)
             .field("supply", &self.supply)
@@ -243,7 +241,6 @@ mod tests {
                 verified: true,
             }),
             uri: "sample".to_owned(),
-            name: "MyApp".to_owned(),
             kind: Kind::App,
             tag: Tag::None,
             supply: Some(1),
@@ -384,7 +381,6 @@ mod tests {
                 verified: true
             }),
             uri: \"sample\",
-            name: \"MyApp\",
             kind: App,
             tag: None,
             supply: Some(1),
@@ -436,8 +432,6 @@ mod tests {
                 Token::StructEnd,
                 Token::Str("uri"),
                 Token::Str("sample"),
-                Token::Str("name"),
-                Token::Str("MyApp"),
                 Token::Str("kind"),
                 Token::UnitVariant {
                     name: "Kind",

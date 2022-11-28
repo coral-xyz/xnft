@@ -11,9 +11,7 @@ export type Xnft = {
   instructions: [
     {
       name: "createAssociatedXnft";
-      docs: [
-        "Creates an xNFT instance on top of an existing digital collectible that is MPL compliant."
-      ];
+      docs: ["Creates an xNFT instance on top of an existing digital collectible that is MPL compliant."];
       accounts: [
         {
           name: "masterMint";
@@ -894,9 +892,7 @@ export type Xnft = {
           },
           {
             name: "curator";
-            docs: [
-              "Optional pubkey of the global authority required for reviewing xNFT updates (34)."
-            ];
+            docs: ["Optional pubkey of the global authority required for reviewing xNFT updates (34)."];
             type: {
               option: {
                 defined: "CuratorStatus";
@@ -905,16 +901,7 @@ export type Xnft = {
           },
           {
             name: "uri";
-            docs: [
-              "The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH)."
-            ];
-            type: "string";
-          },
-          {
-            name: "name";
-            docs: [
-              "The display name of the xNFT account (4 + mpl_token_metadata::state::MAX_NAME_LENGTH)."
-            ];
+            docs: ["The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH)."];
             type: "string";
           },
           {
@@ -1328,9 +1315,7 @@ export const IDL: Xnft = {
   instructions: [
     {
       name: "createAssociatedXnft",
-      docs: [
-        "Creates an xNFT instance on top of an existing digital collectible that is MPL compliant.",
-      ],
+      docs: ["Creates an xNFT instance on top of an existing digital collectible that is MPL compliant."],
       accounts: [
         {
           name: "masterMint",
@@ -2211,9 +2196,7 @@ export const IDL: Xnft = {
           },
           {
             name: "curator",
-            docs: [
-              "Optional pubkey of the global authority required for reviewing xNFT updates (34).",
-            ],
+            docs: ["Optional pubkey of the global authority required for reviewing xNFT updates (34)."],
             type: {
               option: {
                 defined: "CuratorStatus",
@@ -2222,16 +2205,7 @@ export const IDL: Xnft = {
           },
           {
             name: "uri",
-            docs: [
-              "The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH).",
-            ],
-            type: "string",
-          },
-          {
-            name: "name",
-            docs: [
-              "The display name of the xNFT account (4 + mpl_token_metadata::state::MAX_NAME_LENGTH).",
-            ],
+            docs: ["The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH)."],
             type: "string",
           },
           {

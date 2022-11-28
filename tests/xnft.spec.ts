@@ -29,10 +29,7 @@ let authorInstallation: anchor.web3.PublicKey;
 
 describe("A standard xNFT", () => {
   before(async () => {
-    await program.provider.connection.requestAirdrop(
-      curatorAuthority.publicKey,
-      2 * anchor.web3.LAMPORTS_PER_SOL
-    );
+    await program.provider.connection.requestAirdrop(curatorAuthority.publicKey, 2 * anchor.web3.LAMPORTS_PER_SOL);
   });
 
   describe("can be created", () => {
@@ -128,23 +125,14 @@ describe("A standard xNFT", () => {
 
     it("and the creators are set in the metadata", () => {
       assert.lengthOf(meta.data.data.creators, 2);
-      assert.strictEqual(
-        meta.data.data.creators[0].address.toBase58(),
-        authority.publicKey.toBase58()
-      );
+      assert.strictEqual(meta.data.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
       assert.isTrue(meta.data.data.creators[0].verified);
-      assert.strictEqual(
-        meta.data.data.creators[1].address.toBase58(),
-        otherCreator.publicKey.toBase58()
-      );
+      assert.strictEqual(meta.data.data.creators[1].address.toBase58(), otherCreator.publicKey.toBase58());
       assert.isFalse(meta.data.data.creators[1].verified);
     });
 
     it("and the publisher is verified", () => {
-      assert.strictEqual(
-        meta.data.data.creators[0].address.toBase58(),
-        authority.publicKey.toBase58()
-      );
+      assert.strictEqual(meta.data.data.creators[0].address.toBase58(), authority.publicKey.toBase58());
       assert.isTrue(meta.data.data.creators[0].verified);
     });
 
@@ -250,10 +238,7 @@ describe("A standard xNFT", () => {
 
   describe("a Review can be created", () => {
     before(async () => {
-      await program.provider.connection.requestAirdrop(
-        author.publicKey,
-        anchor.web3.LAMPORTS_PER_SOL
-      );
+      await program.provider.connection.requestAirdrop(author.publicKey, anchor.web3.LAMPORTS_PER_SOL);
 
       await wait(500);
 
@@ -273,10 +258,7 @@ describe("A standard xNFT", () => {
 
     it("unless the signing wallet owns the xNFT", async () => {
       try {
-        await program.methods
-          .createReview("https://google.com", 4)
-          .accounts({ install, xnft, masterToken })
-          .rpc();
+        await program.methods.createReview("https://google.com", 4).accounts({ install, xnft, masterToken }).rpc();
 
         assert.ok(false);
       } catch (err) {
@@ -351,10 +333,7 @@ describe("Account Updates", () => {
   const newAuthority = anchor.web3.Keypair.generate();
 
   before(async () => {
-    await program.provider.connection.requestAirdrop(
-      newAuthority.publicKey,
-      anchor.web3.LAMPORTS_PER_SOL
-    );
+    await program.provider.connection.requestAirdrop(newAuthority.publicKey, anchor.web3.LAMPORTS_PER_SOL);
   });
 
   it("the data in an xNFT account can be updated by the owner", async () => {
@@ -384,9 +363,7 @@ describe("Account Updates", () => {
     assert.deepEqual(acc.tag, { none: {} });
     assert.strictEqual(acc.uri, "new uri update");
 
-    const meta = parseMetadataAccount(
-      (await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount
-    );
+    const meta = parseMetadataAccount((await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount);
     assert.strictEqual(meta.data.data.uri.replace(/\0/g, ""), acc.uri);
   });
 

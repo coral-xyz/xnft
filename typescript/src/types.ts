@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { JsonMetadata } from "@metaplex-foundation/js";
 import { BN, type IdlAccounts, type IdlTypes } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { IDL, type Xnft } from "./xnft";
@@ -64,6 +65,23 @@ export type CreateXnftAppOptions = CreateXnftCommonParameters & {
   name: string;
 };
 
+export type BundleVersion = {
+  created_at: string;
+  semver: `${number}.${number}.${number}`;
+  uri: string;
+};
+
+export type Screenshot = {
+  type: string;
+  uri: string;
+};
+
+export type CustomJsonMetadata = {
+  bundle: string;
+  screenshots: Screenshot[];
+  versions: BundleVersion[];
+};
+
 export type UpdateXnftOptions = {
   installAuthority?: PublicKey;
   installPrice: BN;
@@ -75,7 +93,10 @@ export type UpdateXnftOptions = {
 
 export type XnftAccount = {
   data: IdlXnftAccount;
-  json: any; // TODO:
+  metadata: {
+    mpl: JsonMetadata<string>;
+    xnft: CustomJsonMetadata;
+  };
   publicKey: PublicKey;
   token: {
     address: PublicKey;

@@ -16,7 +16,6 @@
  */
 
 import { Program, AnchorProvider } from "@project-serum/anchor";
-import { AccountLayout, ACCOUNT_SIZE, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { PROGRAM_ID } from ".";
 import { type Xnft, IDL } from "./xnft";
@@ -34,38 +33,4 @@ export function buildAnonymousProgram(connection: Connection): Program<Xnft> {
 
 export function gatewayUri(uri: string): string {
   return uri.replace("ipfs://", "https://nftstorage.link/ipfs/");
-}
-
-export async function getTokenAccountForMint(
-  connection: Connection,
-  mint: PublicKey
-): Promise<{ address: PublicKey; owner: PublicKey }> {
-  const tokenAccounts = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
-    filters: [
-      { dataSize: ACCOUNT_SIZE },
-      {
-        memcmp: {
-          offset: 0,
-          bytes: mint.toBase58(),
-        },
-      },
-      {
-        memcmp: {
-          offset: 64,
-          bytes: "2", // base-58 encoding of Buffer.from([1]) for a balance of 1
-        },
-      },
-    ],
-  });
-
-  if (tokenAccounts.length === 0) {
-    throw new Error(`no token accounts found for mint ${mint.toBase58()}`);
-  }
-
-  const ata = AccountLayout.decode(tokenAccounts[0].account.data);
-
-  return {
-    address: tokenAccounts[0].pubkey,
-    owner: ata.owner,
-  };
 }
