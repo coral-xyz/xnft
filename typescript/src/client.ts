@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { type Metadata, Metaplex, type JsonMetadata } from "@metaplex-foundation/js";
+import { Metaplex, type JsonMetadata, type Metadata } from "@metaplex-foundation/js";
 import { Program, type ProgramAccount, type Provider } from "@project-serum/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { type GetProgramAccountsFilter, PublicKey, Connection } from "@solana/web3.js";
@@ -39,12 +39,13 @@ import { getNftTokenAccountForMint } from "./tokens";
 import type {
   CreateAssociatedXnftOptions,
   CreateXnftAppOptions,
-  CustomJsonMetadata,
+  CustomMetadata,
   IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
   UpdateXnftOptions,
   XnftAccount,
+  XnftJsonMetadata,
 } from "./types";
 import { buildAnonymousProvider, gatewayUri } from "./util";
 import { IDL, type Xnft } from "./xnft";
@@ -196,20 +197,22 @@ export class xNFT {
 
     const [tokenAccount, xnftBlob, metadata] = await Promise.all([
       getNftTokenAccountForMint(this.#provider.connection, account.masterMint),
-      this.#mpl.storage().downloadJson(gatewayUri(account.uri)) as Promise<CustomJsonMetadata>,
-      this.#mpl.nfts().findByMetadata({ metadata: account.masterMetadata, loadJsonMetadata: true }),
+      this.#mpl.storage().downloadJson(gatewayUri(account.uri)) as Promise<XnftJsonMetadata>,
+      this.#mpl.nfts().findAllByMintList({ mints: [account.masterMint] }) as Promise<Metadata[]>,
     ]);
 
-    if (!metadata.jsonLoaded) {
-      throw new Error(`failed to load mpl json for ${account.masterMetadata.toBase58()}`);
-    }
+    const md = metadata[0];
+    const customMetadata: CustomMetadata = {
+      ...md,
+      json: {
+        ...md.json,
+        ...xnftBlob,
+      },
+    };
 
     return {
       data: account,
-      metadata: {
-        mpl: metadata.json as JsonMetadata<string>,
-        xnft: xnftBlob,
-      },
+      metadata: customMetadata,
       publicKey,
       token: {
         address: tokenAccount.publicKey,
@@ -257,7 +260,7 @@ export class xNFT {
     );
 
     const xnftBlobs = await Promise.all(
-      validXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
+      validXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<XnftJsonMetadata>)
     );
 
     const tokenAccounts = await Promise.all(
@@ -269,8 +272,11 @@ export class xNFT {
       owned.push({
         data: x.account,
         metadata: {
-          mpl: mplBlobs[idx],
-          xnft: xnftBlobs[idx],
+          ...x.metadata,
+          json: {
+            ...mplBlobs[idx],
+            ...xnftBlobs[idx],
+          },
         },
         publicKey: x.publicKey,
         token: {
@@ -330,7 +336,7 @@ export class xNFT {
     );
 
     const xnftBlobs = await Promise.all(
-      xnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
+      xnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<XnftJsonMetadata>)
     );
 
     const tokenAccounts = await Promise.all(
@@ -342,8 +348,11 @@ export class xNFT {
       response.push({
         data: acc.account,
         metadata: {
-          mpl: mplBlobs[idx],
-          xnft: xnftBlobs[idx],
+          ...metadatas[idx],
+          json: {
+            ...mplBlobs[idx],
+            ...xnftBlobs[idx],
+          },
         },
         publicKey: acc.publicKey,
         token: {
@@ -500,12 +509,13 @@ export class xNFT {
    * Delete and remove an installed xNFT from the provider wallet and return
    * the rent lamports to the wallet, or to the argued receiver public key
    * if one is provided.
-   * @param {PublicKey} install
+   * @param {PublicKey} xnft
    * @param {PublicKey} [receiver]
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async uninstall(install: PublicKey, receiver?: PublicKey): Promise<string> {
+  async uninstall(xnft: PublicKey, receiver?: PublicKey): Promise<string> {
+    const install = await deriveInstallAddress(this.#provider.publicKey!, xnft);
     const tx = await createDeleteInstallTransaction(this.#program, install, receiver);
     return await this.#provider.sendAndConfirm!(tx);
   }

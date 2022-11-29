@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { JsonMetadata } from "@metaplex-foundation/js";
+import type { JsonMetadata, Metadata } from "@metaplex-foundation/js";
 import { BN, type IdlAccounts, type IdlTypes } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { IDL, type Xnft } from "./xnft";
@@ -35,9 +35,11 @@ export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 // ABSTRACTION TYPES
 // =================
 export type Kind = Lowercase<typeof IDL.types[4]["type"]["variants"][number]["name"]>;
+export const KindOptions = IDL.types[4].type.variants.map(v => v.name);
 console.assert(IDL.types[4].type.variants.map(v => v.name).includes("App"));
 
 export type Tag = Lowercase<typeof IDL.types[5]["type"]["variants"][number]["name"]>;
+export const TagOptions = IDL.types[5].type.variants.map(v => v.name);
 console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));
 
 type CreateXnftCommonParameters = {
@@ -76,11 +78,17 @@ export type Screenshot = {
   uri: string;
 };
 
-export type CustomJsonMetadata = {
-  bundle: string;
-  screenshots: Screenshot[];
-  versions: BundleVersion[];
+export type XnftJsonMetadata = {
+  xnft: {
+    bundle: string;
+    screenshots: Screenshot[];
+    versions: BundleVersion[];
+  };
 };
+
+export type CustomJsonMetadata = JsonMetadata<string> & XnftJsonMetadata;
+
+export type CustomMetadata = Metadata<CustomJsonMetadata>;
 
 export type UpdateXnftOptions = {
   installAuthority?: PublicKey;
@@ -93,10 +101,7 @@ export type UpdateXnftOptions = {
 
 export type XnftAccount = {
   data: IdlXnftAccount;
-  metadata: {
-    mpl: JsonMetadata<string>;
-    xnft: CustomJsonMetadata;
-  };
+  metadata: CustomMetadata;
   publicKey: PublicKey;
   token: {
     address: PublicKey;
