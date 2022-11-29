@@ -46,7 +46,7 @@ import type {
   UpdateXnftOptions,
   XnftAccount,
 } from "./types";
-import { buildAnonymousProgram, gatewayUri } from "./util";
+import { buildAnonymousProvider, gatewayUri } from "./util";
 import { IDL, type Xnft } from "./xnft";
 
 export class xNFT {
@@ -60,7 +60,7 @@ export class xNFT {
    * @memberof xNFT
    */
   constructor(provider: Provider) {
-    if (!provider.publicKey || provider.publicKey.equals(PublicKey.default)) {
+    if (!provider.publicKey) {
       throw new Error("no public key found on the argued provider");
     } else if (!provider.sendAndConfirm) {
       throw new Error("no sendAndConfirm function found on the argued provider");
@@ -72,14 +72,14 @@ export class xNFT {
   }
 
   /**
-   * Create an identity agnostic instance of the client.
+   * Create an instance of the client without a full provider.
    * @static
    * @param {Connection} connection
    * @returns {xNFT}
    * @memberof xNFT
    */
   static anonymous(connection: Connection): xNFT {
-    return new xNFT(buildAnonymousProgram(connection).provider);
+    return new xNFT(buildAnonymousProvider(connection));
   }
 
   /**
