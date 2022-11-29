@@ -15,10 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Program, AnchorProvider } from "@project-serum/anchor";
+import { Program, AnchorProvider, type Provider } from "@project-serum/anchor";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { PROGRAM_ID } from ".";
 import { type Xnft, IDL } from "./xnft";
+
+export function buildAnonymousProvider(connection: Connection): Provider {
+  return new AnchorProvider(
+    connection,
+    /* eslint @typescript-eslint/ban-ts-comment: 0 */
+    // @ts-ignore
+    { publicKey: PublicKey.default },
+    {}
+  );
+}
 
 export function buildAnonymousProgram(connection: Connection): Program<Xnft> {
   const provider = new AnchorProvider(
