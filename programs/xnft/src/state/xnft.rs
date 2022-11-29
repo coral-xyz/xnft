@@ -14,7 +14,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anchor_lang::prelude::*;
-use mpl_token_metadata::state::MAX_URI_LENGTH;
+use mpl_token_metadata::state::{MAX_NAME_LENGTH, MAX_URI_LENGTH};
 
 use super::CreateXnftParams;
 use crate::util::verify_optional_pubkey;
@@ -36,6 +36,8 @@ pub struct Xnft {
     pub curator: Option<CuratorStatus>,
     /// The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH).
     pub uri: String,
+    /// The original name used to seed the master mint if it was a standalone (1 + 4 + mpl_token_metadata::state::MAX_NAME_LENGTH).
+    pub mint_seed_name: Option<String>,
     /// The `Kind` enum variant describing the type of xNFT (1).
     pub kind: Kind,
     /// The `Tag` enum variant to assign the category of xNFT (1).
@@ -63,8 +65,20 @@ pub struct Xnft {
 }
 
 impl Xnft {
-    pub const LEN: usize =
-        8 + (32 * 4) + 33 + 34 + (4 + MAX_URI_LENGTH) + 1 + 1 + 9 + (8 * 5) + 4 + 1 + 1 + 64;
+    pub const LEN: usize = 8
+        + (32 * 4)
+        + 33
+        + 34
+        + (4 + MAX_URI_LENGTH)
+        + (1 + 4 + MAX_NAME_LENGTH)
+        + 1
+        + 1
+        + 9
+        + (8 * 5)
+        + 4
+        + 1
+        + 1
+        + 64;
 
     pub fn try_new(
         kind: Kind,
@@ -72,6 +86,7 @@ impl Xnft {
         publisher: Pubkey,
         master_metadata: Pubkey,
         master_mint: Pubkey,
+        seed_name: Option<String>,
         params: &CreateXnftParams,
     ) -> anchor_lang::Result<Self> {
         let now = Clock::get()?.unix_timestamp;
@@ -86,6 +101,7 @@ impl Xnft {
                 verified: false,
             }),
             uri: params.uri.clone(),
+            mint_seed_name: seed_name,
             kind,
             tag: params.tag.clone(),
             supply: params.supply,
@@ -154,7 +170,7 @@ mod tests {
 
     #[test]
     fn account_size_matches() {
-        assert_eq!(Xnft::LEN, 528);
+        assert_eq!(Xnft::LEN, 565);
     }
 
     #[test]
@@ -169,6 +185,7 @@ mod tests {
             kind: Kind::App,
             tag: Tag::None,
             uri: Default::default(),
+            mint_seed_name: None,
             total_installs: Default::default(),
             install_price: Default::default(),
             created_ts: Default::default(),
@@ -208,6 +225,7 @@ mod tests {
             kind: Kind::App,
             tag: Tag::None,
             uri: Default::default(),
+            mint_seed_name: None,
             total_installs: Default::default(),
             install_price: Default::default(),
             created_ts: Default::default(),

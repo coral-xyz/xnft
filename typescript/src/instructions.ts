@@ -18,7 +18,7 @@
 import { Program } from "@project-serum/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
-import { deriveMasterMintAddress, TOKEN_METADATA_PROGRAM_ID } from "./addresses";
+import { deriveInstallAddress, deriveMasterMintAddress, TOKEN_METADATA_PROGRAM_ID } from "./addresses";
 import type { IdlCreateXnftParameters, IdlUpdateXnftParameters, Kind } from "./types";
 import type { Xnft } from "./xnft";
 
@@ -176,7 +176,6 @@ export async function createCreateXnftInstruction(
   }
 
   const masterMint = await deriveMasterMintAddress(name, program.provider.publicKey);
-
   const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
 
   return await program.methods
@@ -206,15 +205,16 @@ export async function createDeleteInstallTransaction(
  * Create an ix instance for the `delete_install` instruction.
  * @export
  * @param {Program<Xnft>} program
- * @param {PublicKey} install
+ * @param {PublicKey} xnft
  * @param {PublicKey} [receiver]
  * @returns {Promise<TransactionInstruction>}
  */
 export async function createDeleteInstallInstruction(
   program: Program<Xnft>,
-  install: PublicKey,
+  xnft: PublicKey,
   receiver?: PublicKey
 ): Promise<TransactionInstruction> {
+  const install = await deriveInstallAddress(program.provider.publicKey!, xnft);
   return await program.methods
     .deleteInstall()
     .accounts({

@@ -80,6 +80,7 @@ pub fn create_associated_xnft_handler(
         *ctx.accounts.publisher.key,
         ctx.accounts.master_metadata.key(),
         ctx.accounts.master_mint.key(),
+        None,
         &params,
     )?;
 
