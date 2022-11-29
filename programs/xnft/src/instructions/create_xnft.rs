@@ -164,6 +164,7 @@ pub fn create_xnft_handler(
         *ctx.accounts.publisher.key,
         *ctx.accounts.master_metadata.key,
         ctx.accounts.master_mint.key(),
+        Some(name.clone()),
         &params,
     )?;
 

@@ -905,6 +905,15 @@ export type Xnft = {
             type: "string";
           },
           {
+            name: "mintSeedName";
+            docs: [
+              "The original name used to seed the master mint if it was a standalone (1 + 4 + mpl_token_metadata::state::MAX_NAME_LENGTH)."
+            ];
+            type: {
+              option: "string";
+            };
+          },
+          {
             name: "kind";
             docs: ["The `Kind` enum variant describing the type of xNFT (1)."];
             type: {
@@ -2207,6 +2216,15 @@ export const IDL: Xnft = {
             name: "uri",
             docs: ["The URI of the custom metadata blob for the xNFT (4 + mpl_token_metadata::state::MAX_URI_LENGTH)."],
             type: "string",
+          },
+          {
+            name: "mintSeedName",
+            docs: [
+              "The original name used to seed the master mint if it was a standalone (1 + 4 + mpl_token_metadata::state::MAX_NAME_LENGTH).",
+            ],
+            type: {
+              option: "string",
+            },
           },
           {
             name: "kind",
