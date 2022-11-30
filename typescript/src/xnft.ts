@@ -1084,6 +1084,12 @@ export type Xnft = {
             type: "publicKey";
           },
           {
+            name: "mplUri";
+            type: {
+              option: "string";
+            };
+          },
+          {
             name: "supply";
             type: {
               option: "u64";
@@ -1096,7 +1102,7 @@ export type Xnft = {
             };
           },
           {
-            name: "uri";
+            name: "xnftUri";
             type: {
               option: "string";
             };
@@ -2397,6 +2403,12 @@ export const IDL: Xnft = {
             type: "publicKey",
           },
           {
+            name: "mplUri",
+            type: {
+              option: "string",
+            },
+          },
+          {
             name: "supply",
             type: {
               option: "u64",
@@ -2409,7 +2421,7 @@ export const IDL: Xnft = {
             },
           },
           {
-            name: "uri",
+            name: "xnftUri",
             type: {
               option: "string",
             },

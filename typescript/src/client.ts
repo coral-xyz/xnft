@@ -39,7 +39,6 @@ import { getNftTokenAccountForMint } from "./tokens";
 import type {
   CreateAssociatedXnftOptions,
   CreateXnftAppOptions,
-  CustomMetadata,
   IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
@@ -202,17 +201,16 @@ export class xNFT {
     ]);
 
     const md = metadata[0];
-    const customMetadata: CustomMetadata = {
-      ...md,
-      json: {
-        ...md.json,
-        ...xnftBlob,
-      },
-    };
 
     return {
       data: account,
-      metadata: customMetadata,
+      metadata: {
+        ...md,
+        json: {
+          ...md.json,
+          xnft: xnftBlob,
+        },
+      },
       publicKey,
       token: {
         address: tokenAccount.publicKey,
@@ -275,7 +273,7 @@ export class xNFT {
           ...x.metadata,
           json: {
             ...mplBlobs[idx],
-            ...xnftBlobs[idx],
+            xnft: xnftBlobs[idx],
           },
         },
         publicKey: x.publicKey,
@@ -351,7 +349,7 @@ export class xNFT {
           ...metadatas[idx],
           json: {
             ...mplBlobs[idx],
-            ...xnftBlobs[idx],
+            xnft: xnftBlobs[idx],
           },
         },
         publicKey: acc.publicKey,
@@ -492,9 +490,10 @@ export class xNFT {
         installAuthority: opts.installAuthority ?? null,
         installPrice: opts.installPrice,
         installVault: opts.installVault,
+        mplUri: opts.metaplexUri ?? null,
         supply: opts.supply ?? null,
         tag: { [opts.tag]: {} } as never,
-        uri: opts.uri ?? null,
+        xnftUri: opts.xnftUri ?? null,
       },
       xnft,
       masterMetadata,
