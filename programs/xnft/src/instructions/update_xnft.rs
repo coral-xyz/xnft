@@ -79,7 +79,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         }
     }
 
-    if let Some(u) = updates.uri.as_ref() {
+    if let Some(u) = updates.mpl_uri.as_ref() {
         if ctx.accounts.xnft.kind == Kind::App {
             metadata::update_metadata_accounts_v2(
                 ctx.accounts
@@ -99,12 +99,14 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                 Some(md.is_mutable),
             )?;
         }
-
-        let xnft = &mut ctx.accounts.xnft;
-        xnft.uri = u.clone();
     }
 
     let xnft = &mut ctx.accounts.xnft;
+
+    if let Some(u) = updates.xnft_uri.as_ref() {
+        xnft.uri = u.clone();
+    }
+
     xnft.install_authority = updates.install_authority;
     xnft.install_price = updates.install_price;
     xnft.install_vault = updates.install_vault;

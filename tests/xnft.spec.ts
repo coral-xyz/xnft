@@ -344,7 +344,8 @@ describe("Account Updates", () => {
         installVault,
         supply: new anchor.BN(200),
         tag: { none: {} } as never,
-        uri: "new uri update",
+        mplUri: "new mpl uri update",
+        xnftUri: "new xnft uri update",
       })
       .accounts({
         xnft,
@@ -361,10 +362,10 @@ describe("Account Updates", () => {
     assert.strictEqual(acc.installPrice.toNumber(), 100);
     assert.strictEqual(acc.supply.toNumber(), 200);
     assert.deepEqual(acc.tag, { none: {} });
-    assert.strictEqual(acc.uri, "new uri update");
+    assert.strictEqual(acc.uri, "new xnft uri update");
 
     const meta = parseMetadataAccount((await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount);
-    assert.strictEqual(meta.data.data.uri.replace(/\0/g, ""), acc.uri);
+    assert.strictEqual(meta.data.data.uri.replace(/\0/g, ""), "new mpl uri update");
   });
 
   it("an xNFT can be transferred to another authority", async () => {

@@ -67,26 +67,35 @@ export type CreateXnftAppOptions = CreateXnftCommonParameters & {
   name: string;
 };
 
-export type BundleVersion = {
-  created_at: string;
-  semver: `${number}.${number}.${number}`;
+export type ManifestHistory = {
+  version: string;
   uri: string;
-};
+}[];
 
 export type Screenshot = {
   type: string;
   uri: string;
 };
 
-export type XnftJsonMetadata = {
-  xnft: {
-    bundle: string;
-    screenshots: Screenshot[];
-    versions: BundleVersion[];
-  };
+export type ManifestEntrypoints = {
+  [id: string]: Record<"android" | "ios" | "web", string>;
 };
 
-export type CustomJsonMetadata = JsonMetadata<string> & XnftJsonMetadata;
+export type Manifest = {
+  name: string;
+  description: string;
+  icon: string;
+  entrypoints: ManifestEntrypoints;
+  screenshots: Screenshot[];
+};
+
+export type XnftJsonMetadata = {
+  version: string;
+  manifest: Manifest;
+  history: ManifestHistory;
+};
+
+export type CustomJsonMetadata = JsonMetadata<string> & { xnft: XnftJsonMetadata };
 
 export type CustomMetadata = Metadata<CustomJsonMetadata>;
 
@@ -94,9 +103,10 @@ export type UpdateXnftOptions = {
   installAuthority?: PublicKey;
   installPrice: BN;
   installVault: PublicKey;
+  metaplexUri?: string;
   supply?: BN;
   tag: Tag;
-  uri?: string;
+  xnftUri?: string;
 };
 
 export type XnftAccount = {
