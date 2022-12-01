@@ -13,8 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use anchor_client::solana_client::rpc_config::RpcSendTransactionConfig;
 use anchor_client::solana_sdk::pubkey::Pubkey;
+use anchor_client::{
+    solana_client::rpc_config::RpcSendTransactionConfig, solana_sdk::system_program,
+};
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
 
@@ -42,6 +44,12 @@ enum AccountType {
     Xnft,
 }
 
+#[derive(Clone, ValueEnum)]
+enum AccessManagementOperation {
+    Grant,
+    Revoke,
+}
+
 #[derive(Subcommand)]
 enum Command {
     /// Read and parse the account data for a program account
@@ -55,6 +63,18 @@ enum Command {
         /// Display the account data as JSON
         #[arg(long)]
         json: bool,
+    },
+    /// Grant or revoke access to a wallet for a private xNFT
+    ManageAccess {
+        /// The public key of the target wallet
+        #[arg(value_parser)]
+        wallet: Pubkey,
+        /// Either grant or revoke for what action is desired
+        #[arg(short, long, value_enum)]
+        operation: AccessManagementOperation,
+        /// The public key of the private xNFT
+        #[arg(short, long, value_parser)]
+        xnft: Pubkey,
     },
     /// Assign a curation account to the xNFT
     SetCurator {
@@ -94,6 +114,11 @@ pub fn run(args: Cli) -> Result<()> {
             account_type,
             json,
         } => process_get_account(cfg, account_type, address, json),
+        Command::ManageAccess {
+            wallet,
+            operation,
+            xnft,
+        } => process_grant_access(cfg, wallet, operation, xnft),
         Command::SetCurator { address, curator } => process_set_curator(cfg, address, curator),
         Command::ToggleSuspended { address } => process_toggle_suspend(cfg, address),
         Command::Uninstall { address } => process_uninstall(cfg, address),
@@ -122,6 +147,48 @@ fn process_get_account(
             print_serializable!(program.account::<xnft::state::Xnft>(address)?, json)
         }
     };
+    Ok(())
+}
+
+fn process_grant_access(
+    cfg: Config,
+    wallet: Pubkey,
+    operation: AccessManagementOperation,
+    xnft: Pubkey,
+) -> Result<()> {
+    let (program, signer) = create_program_client(&cfg);
+    let (access, _) = Pubkey::find_program_address(
+        &["access".as_bytes(), wallet.as_ref(), xnft.as_ref()],
+        &program.id(),
+    );
+
+    let request = match operation {
+        AccessManagementOperation::Grant => program
+            .request()
+            .accounts(xnft::accounts::GrantAccess {
+                access,
+                authority: program.payer(),
+                system_program: system_program::ID,
+                wallet,
+                xnft,
+            })
+            .args(xnft::instruction::GrantAccess {}),
+        AccessManagementOperation::Revoke => program
+            .request()
+            .accounts(xnft::accounts::RevokeAccess {
+                access,
+                authority: program.payer(),
+                wallet,
+                xnft,
+            })
+            .args(xnft::instruction::RevokeAccess {}),
+    };
+
+    let sig = request
+        .signer(signer.as_ref())
+        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+
+    println!("Signature: {}", sig);
     Ok(())
 }
 
