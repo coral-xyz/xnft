@@ -4429,6 +4429,7 @@ dependencies = [
  "serde_json",
  "shellexpand",
  "solana-cli-config",
+ "spl-associated-token-account",
  "xnft",
 ]
 
