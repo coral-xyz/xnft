@@ -157,7 +157,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async createXnft(opts: CreateXnftAppOptions): Promise<string> {
-    const tx = await createCreateXnftTransaction(this.#program, opts.name, {
+    const tx = await createCreateXnftTransaction(this.#program, opts.name, opts.metaplexMetadataUri, {
       creators: opts.creators,
       curator: opts.curator ?? null,
       installAuthority: opts.installAuthority ?? null,
