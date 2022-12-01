@@ -4426,6 +4426,7 @@ dependencies = [
  "anchor-client",
  "anyhow",
  "clap 4.0.26",
+ "dialoguer",
  "serde_json",
  "shellexpand",
  "solana-cli-config",

@@ -36,6 +36,10 @@ pub fn create_program_client(config: &Config) -> (Program, Rc<Keypair>) {
     )
 }
 
+pub fn type_name_of_value<T>(_: &T) -> String {
+    std::any::type_name::<T>().to_owned()
+}
+
 macro_rules! print_serializable {
     ($acc:expr,$json:expr) => {
         if $json {
@@ -46,3 +50,31 @@ macro_rules! print_serializable {
     };
 }
 pub(crate) use print_serializable;
+
+macro_rules! send_with_approval {
+    ($program:ident, $signer:expr, $accs:expr, $args:expr) => {{
+        let __req = $program
+            .request()
+            .accounts($accs)
+            .args($args)
+            .signer($signer.as_ref());
+
+        println!("Transactions:");
+        println!("[0] {}", $crate::util::type_name_of_value(&$args));
+        println!();
+
+        let approved = dialoguer::Confirm::new()
+            .with_prompt("Do you approve this transaction?")
+            .default(false)
+            .interact()?;
+
+        if !approved {
+            return Err(anyhow::anyhow!("Transaction aborted"));
+        }
+
+        __req.send_with_spinner_and_config(
+            anchor_client::solana_client::rpc_config::RpcSendTransactionConfig::default(),
+        )
+    }};
+}
+pub(crate) use send_with_approval;

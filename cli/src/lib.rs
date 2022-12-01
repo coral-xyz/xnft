@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use anchor_client::solana_client::rpc_config::RpcSendTransactionConfig;
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use anchor_client::solana_sdk::system_program;
 use anchor_client::solana_sdk::sysvar::rent;
@@ -25,7 +24,7 @@ mod config;
 mod util;
 
 use config::{Config, GlobalArgs};
-use util::{create_program_client, print_serializable};
+use util::{create_program_client, print_serializable, send_with_approval};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -172,31 +171,31 @@ fn process_grant_access(
         &program.id(),
     );
 
-    let request = match operation {
-        AccessManagementOperation::Grant => program
-            .request()
-            .accounts(xnft::accounts::GrantAccess {
+    let sig = match operation {
+        AccessManagementOperation::Grant => send_with_approval!(
+            program,
+            signer,
+            xnft::accounts::GrantAccess {
                 access,
                 authority: program.payer(),
                 system_program: system_program::ID,
                 wallet,
                 xnft,
-            })
-            .args(xnft::instruction::GrantAccess {}),
-        AccessManagementOperation::Revoke => program
-            .request()
-            .accounts(xnft::accounts::RevokeAccess {
+            },
+            xnft::instruction::GrantAccess {}
+        )?,
+        AccessManagementOperation::Revoke => send_with_approval!(
+            program,
+            signer,
+            xnft::accounts::RevokeAccess {
                 access,
                 authority: program.payer(),
                 wallet,
                 xnft,
-            })
-            .args(xnft::instruction::RevokeAccess {}),
+            },
+            xnft::instruction::RevokeAccess {}
+        )?,
     };
-
-    let sig = request
-        .signer(signer.as_ref())
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
 
     println!("Signature: {}", sig);
     Ok(())
@@ -207,17 +206,17 @@ fn process_set_curator(cfg: Config, address: Pubkey, curator: Pubkey) -> Result<
     let account: xnft::state::Xnft = program.account(address)?;
     let master_token = get_associated_token_address(&program.payer(), &account.master_mint);
 
-    let sig = program
-        .request()
-        .accounts(xnft::accounts::SetCurator {
+    let sig = send_with_approval!(
+        program,
+        signer,
+        xnft::accounts::SetCurator {
             authority: program.payer(),
             curator,
             master_token,
             xnft: address,
-        })
-        .args(xnft::instruction::SetCurator {})
-        .signer(signer.as_ref())
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+        },
+        xnft::instruction::SetCurator {}
+    )?;
 
     println!("Signature: {}", sig);
     Ok(())
@@ -228,18 +227,18 @@ fn process_toggle_suspend(cfg: Config, address: Pubkey) -> Result<()> {
     let account: xnft::state::Xnft = program.account(address)?;
     let master_token = get_associated_token_address(&program.payer(), &account.master_mint);
 
-    let sig = program
-        .request()
-        .accounts(xnft::accounts::SetSuspended {
+    let sig = send_with_approval!(
+        program,
+        signer,
+        xnft::accounts::SetSuspended {
             authority: program.payer(),
             master_token,
             xnft: address,
-        })
-        .args(xnft::instruction::SetSuspended {
+        },
+        xnft::instruction::SetSuspended {
             flag: !account.suspended,
-        })
-        .signer(signer.as_ref())
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+        }
+    )?;
 
     println!("Signature: {}", sig);
     Ok(())
@@ -252,9 +251,10 @@ fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> 
     let destination = get_associated_token_address(&recipient, &account.master_mint);
     let source = get_associated_token_address(&program.payer(), &account.master_mint);
 
-    let sig = program
-        .request()
-        .accounts(xnft::accounts::Transfer {
+    let sig = send_with_approval!(
+        program,
+        signer,
+        xnft::accounts::Transfer {
             associated_token_program: spl_associated_token_account::ID,
             authority: program.payer(),
             destination,
@@ -265,10 +265,9 @@ fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> 
             system_program: system_program::ID,
             token_program: spl_token::ID,
             xnft,
-        })
-        .args(xnft::instruction::Transfer {})
-        .signer(signer.as_ref())
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+        },
+        xnft::instruction::Transfer {}
+    )?;
 
     println!("Signature: {}", sig);
     Ok(())
@@ -277,21 +276,22 @@ fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> 
 fn process_uninstall(cfg: Config, address: Pubkey) -> Result<()> {
     let (program, signer) = create_program_client(&cfg);
     let authority = program.payer();
+
     let (install, _) = Pubkey::find_program_address(
         &["install".as_bytes(), authority.as_ref(), address.as_ref()],
         &program.id(),
     );
 
-    let sig = program
-        .request()
-        .accounts(xnft::accounts::DeleteInstall {
+    let sig = send_with_approval!(
+        program,
+        signer,
+        xnft::accounts::DeleteInstall {
             authority,
             install,
             receiver: authority,
-        })
-        .args(xnft::instruction::DeleteInstall {})
-        .signer(signer.as_ref())
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+        },
+        xnft::instruction::DeleteInstall {}
+    )?;
 
     println!("Signature: {}", sig);
     Ok(())
@@ -299,15 +299,15 @@ fn process_uninstall(cfg: Config, address: Pubkey) -> Result<()> {
 
 fn process_verify(cfg: Config, address: Pubkey) -> Result<()> {
     let (program, signer) = create_program_client(&cfg);
-    let sig = program
-        .request()
-        .accounts(xnft::accounts::VerifyCurator {
+    let sig = send_with_approval!(
+        program,
+        signer,
+        xnft::accounts::VerifyCurator {
             curator: program.payer(),
             xnft: address,
-        })
-        .args(xnft::instruction::VerifyCurator {})
-        .signer(signer.as_ref())
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+        },
+        xnft::instruction::VerifyCurator {}
+    )?;
 
     println!("Signature: {}", sig);
     Ok(())
