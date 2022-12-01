@@ -163,12 +163,14 @@ export async function createCreateXnftTransaction(
  * @export
  * @param {Program<Xnft>} program
  * @param {string} name
+ * @param {string} metaplexMetadataUri
  * @param {IdlCreateXnftParameters} params
  * @returns {Promise<TransactionInstruction>}
  */
 export async function createCreateXnftInstruction(
   program: Program<Xnft>,
   name: string,
+  metaplexMetadataUri: string,
   params: IdlCreateXnftParameters
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
@@ -179,7 +181,7 @@ export async function createCreateXnftInstruction(
   const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
 
   return await program.methods
-    .createXnft(name, params)
+    .createXnft(name, metaplexMetadataUri, params)
     .accounts({
       masterMint,
       masterToken,

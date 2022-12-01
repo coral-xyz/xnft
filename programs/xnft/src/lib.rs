@@ -61,9 +61,10 @@ pub mod xnft {
     pub fn create_xnft(
         ctx: Context<CreateXnft>,
         name: String,
+        mpl_metadata_uri: String,
         params: CreateXnftParams,
     ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params)
+        instructions::create_xnft_handler(ctx, name, mpl_metadata_uri, params)
     }
 
     /// Updates the code of an xNFT.

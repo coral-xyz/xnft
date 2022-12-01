@@ -65,6 +65,7 @@ export type CreateAssociatedXnftOptions = CreateXnftCommonParameters & {
 
 export type CreateXnftAppOptions = CreateXnftCommonParameters & {
   name: string;
+  metaplexMetadataUri: string;
 };
 
 export type ManifestHistory = {

@@ -207,6 +207,10 @@ export type Xnft = {
           type: "string";
         },
         {
+          name: "mplMetadataUri";
+          type: "string";
+        },
+        {
           name: "params";
           type: {
             defined: "CreateXnftParams";
@@ -1523,6 +1527,10 @@ export const IDL: Xnft = {
       args: [
         {
           name: "name",
+          type: "string",
+        },
+        {
+          name: "mplMetadataUri",
           type: "string",
         },
         {

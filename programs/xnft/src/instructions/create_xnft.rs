@@ -148,6 +148,7 @@ impl<'info> CreateXnft<'info> {
 pub fn create_xnft_handler(
     ctx: Context<CreateXnft>,
     name: String,
+    mpl_metadata_uri: String,
     params: CreateXnftParams,
 ) -> Result<()> {
     // Check the length of the metadata uri provided.
@@ -210,7 +211,7 @@ pub fn create_xnft_handler(
         DataV2 {
             name,
             symbol: params.symbol,
-            uri: params.uri,
+            uri: mpl_metadata_uri,
             seller_fee_basis_points: params.seller_fee_basis_points,
             creators,
             collection: None,

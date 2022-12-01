@@ -23,4 +23,5 @@ serde_json = "1.0"
 shellexpand = "2.1"
 solana-cli-config = "1.14"
 spl-associated-token-account = { version = "1.1", features = ["no-entrypoint"] }
+spl-token = { version = "3.5", features = ["no-entrypoint"] }
 xnft = { path = "../programs/xnft", features = ["cli"] }

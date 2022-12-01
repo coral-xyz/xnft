@@ -13,18 +13,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+use anchor_client::solana_client::rpc_config::RpcSendTransactionConfig;
 use anchor_client::solana_sdk::pubkey::Pubkey;
-use anchor_client::{
-    solana_client::rpc_config::RpcSendTransactionConfig, solana_sdk::system_program,
-};
+use anchor_client::solana_sdk::system_program;
+use anchor_client::solana_sdk::sysvar::rent;
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
+use spl_associated_token_account::get_associated_token_address;
 
 mod config;
 mod util;
 
 use config::{Config, GlobalArgs};
-use spl_associated_token_account::get_associated_token_address;
 use util::{create_program_client, print_serializable};
 
 #[derive(Parser)]
@@ -54,7 +54,7 @@ enum AccessManagementOperation {
 enum Command {
     /// Read and parse the account data for a program account
     Account {
-        /// The public key of the target xNFT
+        /// The public key of the target program account
         #[arg(value_parser)]
         address: Pubkey,
         /// The program account type
@@ -80,7 +80,7 @@ enum Command {
     SetCurator {
         /// The public key of the target xNFT
         #[arg(value_parser)]
-        address: Pubkey,
+        xnft: Pubkey,
         /// The public key of the curator to assign
         #[arg(short, long, value_parser)]
         curator: Pubkey,
@@ -89,19 +89,28 @@ enum Command {
     ToggleSuspended {
         /// The public key of the target xNFT
         #[arg(value_parser)]
-        address: Pubkey,
+        xnft: Pubkey,
+    },
+    /// Transfer ownership of an xNFT to another wallet
+    Transfer {
+        /// The public key of the xNFT being transferred
+        #[arg(value_parser)]
+        xnft: Pubkey,
+        /// The public key receiving the xNFT
+        #[arg(short, long, value_parser)]
+        recipient: Pubkey,
     },
     /// Uninstall an xNFT from your wallet
     Uninstall {
         /// The public key of the xNFT to uninstall
         #[arg(value_parser)]
-        address: Pubkey,
+        xnft: Pubkey,
     },
     /// Verify a curator's assignment to an xNFT
     Verify {
         /// The public key of the xNFT being verified
         #[arg(value_parser)]
-        address: Pubkey,
+        xnft: Pubkey,
     },
 }
 
@@ -119,10 +128,11 @@ pub fn run(args: Cli) -> Result<()> {
             operation,
             xnft,
         } => process_grant_access(cfg, wallet, operation, xnft),
-        Command::SetCurator { address, curator } => process_set_curator(cfg, address, curator),
-        Command::ToggleSuspended { address } => process_toggle_suspend(cfg, address),
-        Command::Uninstall { address } => process_uninstall(cfg, address),
-        Command::Verify { address } => process_verify(cfg, address),
+        Command::SetCurator { xnft, curator } => process_set_curator(cfg, xnft, curator),
+        Command::ToggleSuspended { xnft } => process_toggle_suspend(cfg, xnft),
+        Command::Transfer { xnft, recipient } => process_transfer(cfg, xnft, recipient),
+        Command::Uninstall { xnft } => process_uninstall(cfg, xnft),
+        Command::Verify { xnft } => process_verify(cfg, xnft),
     }
 }
 
@@ -228,6 +238,35 @@ fn process_toggle_suspend(cfg: Config, address: Pubkey) -> Result<()> {
         .args(xnft::instruction::SetSuspended {
             flag: !account.suspended,
         })
+        .signer(signer.as_ref())
+        .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
+
+    println!("Signature: {}", sig);
+    Ok(())
+}
+
+fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> {
+    let (program, signer) = create_program_client(&cfg);
+    let account: xnft::state::Xnft = program.account(xnft)?;
+
+    let destination = get_associated_token_address(&recipient, &account.master_mint);
+    let source = get_associated_token_address(&program.payer(), &account.master_mint);
+
+    let sig = program
+        .request()
+        .accounts(xnft::accounts::Transfer {
+            associated_token_program: spl_associated_token_account::ID,
+            authority: program.payer(),
+            destination,
+            master_mint: account.master_mint,
+            recipient,
+            rent: rent::ID,
+            source,
+            system_program: system_program::ID,
+            token_program: spl_token::ID,
+            xnft,
+        })
+        .args(xnft::instruction::Transfer {})
         .signer(signer.as_ref())
         .send_with_spinner_and_config(RpcSendTransactionConfig::default())?;
 
