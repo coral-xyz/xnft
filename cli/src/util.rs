@@ -52,7 +52,7 @@ macro_rules! print_serializable {
 pub(crate) use print_serializable;
 
 macro_rules! send_with_approval {
-    ($program:ident, $signer:expr, $accs:expr, $args:expr) => {{
+    ($program:ident, $signer:expr, $auto_approved:expr, $accs:expr, $args:expr) => {{
         let __req = $program
             .request()
             .accounts($accs)
@@ -63,13 +63,15 @@ macro_rules! send_with_approval {
         println!("[0] {}", $crate::util::type_name_of_value(&$args));
         println!();
 
-        let approved = dialoguer::Confirm::new()
-            .with_prompt("Do you approve this transaction?")
-            .default(false)
-            .interact()?;
+        if !$auto_approved {
+            let __approved = dialoguer::Confirm::new()
+                .with_prompt("Do you approve this transaction?")
+                .default(false)
+                .interact()?;
 
-        if !approved {
-            return Err(anyhow::anyhow!("Transaction aborted"));
+            if !__approved {
+                return Err(anyhow::anyhow!("Transaction aborted"));
+            }
         }
 
         __req.send_with_spinner_and_config(
