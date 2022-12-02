@@ -175,6 +175,7 @@ fn process_grant_access(
         AccessManagementOperation::Grant => send_with_approval!(
             program,
             signer,
+            cfg.auto_approved,
             xnft::accounts::GrantAccess {
                 access,
                 authority: program.payer(),
@@ -187,6 +188,7 @@ fn process_grant_access(
         AccessManagementOperation::Revoke => send_with_approval!(
             program,
             signer,
+            cfg.auto_approved,
             xnft::accounts::RevokeAccess {
                 access,
                 authority: program.payer(),
@@ -209,6 +211,7 @@ fn process_set_curator(cfg: Config, address: Pubkey, curator: Pubkey) -> Result<
     let sig = send_with_approval!(
         program,
         signer,
+        cfg.auto_approved,
         xnft::accounts::SetCurator {
             authority: program.payer(),
             curator,
@@ -230,6 +233,7 @@ fn process_toggle_suspend(cfg: Config, address: Pubkey) -> Result<()> {
     let sig = send_with_approval!(
         program,
         signer,
+        cfg.auto_approved,
         xnft::accounts::SetSuspended {
             authority: program.payer(),
             master_token,
@@ -254,6 +258,7 @@ fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> 
     let sig = send_with_approval!(
         program,
         signer,
+        cfg.auto_approved,
         xnft::accounts::Transfer {
             associated_token_program: spl_associated_token_account::ID,
             authority: program.payer(),
@@ -285,6 +290,7 @@ fn process_uninstall(cfg: Config, address: Pubkey) -> Result<()> {
     let sig = send_with_approval!(
         program,
         signer,
+        cfg.auto_approved,
         xnft::accounts::DeleteInstall {
             authority,
             install,
@@ -302,6 +308,7 @@ fn process_verify(cfg: Config, address: Pubkey) -> Result<()> {
     let sig = send_with_approval!(
         program,
         signer,
+        cfg.auto_approved,
         xnft::accounts::VerifyCurator {
             curator: program.payer(),
             xnft: address,
