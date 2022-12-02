@@ -163,25 +163,23 @@ export async function createCreateXnftTransaction(
  * @export
  * @param {Program<Xnft>} program
  * @param {string} name
- * @param {string} metaplexMetadataUri
  * @param {IdlCreateXnftParameters} params
  * @returns {Promise<TransactionInstruction>}
  */
 export async function createCreateXnftInstruction(
   program: Program<Xnft>,
   name: string,
-  metaplexMetadataUri: string,
   params: IdlCreateXnftParameters
 ): Promise<TransactionInstruction> {
   if (!program.provider.publicKey) {
     throw new Error("no public key found on the program provider");
   }
 
-  const masterMint = await deriveMasterMintAddress(name, program.provider.publicKey);
+  const [masterMint] = await deriveMasterMintAddress(name, program.provider.publicKey);
   const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
 
   return await program.methods
-    .createXnft(name, metaplexMetadataUri, params)
+    .createXnft(name, params)
     .accounts({
       masterMint,
       masterToken,
@@ -216,7 +214,7 @@ export async function createDeleteInstallInstruction(
   xnft: PublicKey,
   receiver?: PublicKey
 ): Promise<TransactionInstruction> {
-  const install = await deriveInstallAddress(program.provider.publicKey!, xnft);
+  const [install] = await deriveInstallAddress(program.provider.publicKey!, xnft);
   return await program.methods
     .deleteInstall()
     .accounts({

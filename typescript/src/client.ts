@@ -157,7 +157,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async createXnft(opts: CreateXnftAppOptions): Promise<string> {
-    const tx = await createCreateXnftTransaction(this.#program, opts.name, opts.metaplexMetadataUri, {
+    const tx = await createCreateXnftTransaction(this.#program, opts.name, {
       creators: opts.creators,
       curator: opts.curator ?? null,
       installAuthority: opts.installAuthority ?? null,
@@ -233,7 +233,8 @@ export class xNFT {
       return [];
     }
 
-    const possibleXnftAddresses = await Promise.all(metadatas.map(m => deriveXnftAddress(m.mintAddress)));
+    const possibleXnftPdas = await Promise.all(metadatas.map(m => deriveXnftAddress(m.mintAddress)));
+    const possibleXnftAddresses = possibleXnftPdas.map(a => a[0]);
     const results = (await this.#program.account.xnft.fetchMultiple(
       possibleXnftAddresses
     )) as (IdlXnftAccount | null)[];
@@ -405,7 +406,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async review(uri: string, rating: number, xnft: PublicKey, masterMint: PublicKey): Promise<string> {
-    const install = await deriveInstallAddress(this.#provider.publicKey!, xnft);
+    const [install] = await deriveInstallAddress(this.#provider.publicKey!, xnft);
     const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
     const tx = await createCreateReviewTransaction(this.#program, uri, rating, install, masterToken, xnft);
     return await this.#provider.sendAndConfirm!(tx);
@@ -481,7 +482,7 @@ export class xNFT {
     opts: UpdateXnftOptions,
     curator?: PublicKey
   ): Promise<string> {
-    const xnft = await deriveXnftAddress(masterMint);
+    const [xnft] = await deriveXnftAddress(masterMint);
     const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
 
     const tx = await createUpdateXnftTransaction(
@@ -490,10 +491,9 @@ export class xNFT {
         installAuthority: opts.installAuthority ?? null,
         installPrice: opts.installPrice,
         installVault: opts.installVault,
-        mplUri: opts.metaplexUri ?? null,
         supply: opts.supply ?? null,
         tag: { [opts.tag]: {} } as never,
-        xnftUri: opts.xnftUri ?? null,
+        uri: opts.uri ?? null,
       },
       xnft,
       masterMetadata,
@@ -514,7 +514,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async uninstall(xnft: PublicKey, receiver?: PublicKey): Promise<string> {
-    const install = await deriveInstallAddress(this.#provider.publicKey!, xnft);
+    const [install] = await deriveInstallAddress(this.#provider.publicKey!, xnft);
     const tx = await createDeleteInstallTransaction(this.#program, install, receiver);
     return await this.#provider.sendAndConfirm!(tx);
   }

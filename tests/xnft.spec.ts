@@ -54,7 +54,7 @@ describe("A standard xNFT", () => {
 
       try {
         await program.methods
-          .createXnft(name, "my mpl metadata uri", {
+          .createXnft(name, {
             symbol,
             tag,
             uri: "this sample uri is too long according to metaplex and should break the serialization of the accounts + this sample uri is too long according to metaplex and should break the serialization of the accounts",
@@ -85,7 +85,7 @@ describe("A standard xNFT", () => {
       masterToken = await getAssociatedTokenAddress(masterMint, authority.publicKey);
 
       const ix = program.methods
-        .createXnft(name, "my mpl metadata uri", {
+        .createXnft(name, {
           symbol,
           tag,
           uri,
@@ -344,8 +344,7 @@ describe("Account Updates", () => {
         installVault,
         supply: new anchor.BN(200),
         tag: { none: {} } as never,
-        mplUri: "new mpl uri update",
-        xnftUri: "new xnft uri update",
+        uri: "new uri update",
       })
       .accounts({
         xnft,
@@ -362,10 +361,7 @@ describe("Account Updates", () => {
     assert.strictEqual(acc.installPrice.toNumber(), 100);
     assert.strictEqual(acc.supply.toNumber(), 200);
     assert.deepEqual(acc.tag, { none: {} });
-    assert.strictEqual(acc.uri, "new xnft uri update");
-
-    const meta = parseMetadataAccount((await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount);
-    assert.strictEqual(meta.data.data.uri.replace(/\0/g, ""), "new mpl uri update");
+    assert.strictEqual(acc.uri, "new uri update");
   });
 
   it("an xNFT can be transferred to another authority", async () => {

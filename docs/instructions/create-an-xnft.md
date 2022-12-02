@@ -36,10 +36,7 @@ The uploading of the metadata JSON blob and associated files (bundle code, icons
 
 ## Arguments
 
-| Name             | Type     | Description                                                          |
-| :--------------- | :------- | :------------------------------------------------------------------- |
-| Name             | `String` | The name of the newly initialized xNFT                               |
-| MPL Metadata URI | `String` | The URI of the Metaplex compliant metadata off-chain                 |
-| Params           | `struct` | Schema defined in the [auxiliary state section](/state/auxiliary.md) |
-
-!> The `uri` field of the `CreateXnftParams` struct is for the xNFT protocol specific metadata and should differ from the one provided for the Metaplex content.
+| Name   | Type     | Description                                                          |
+| :----- | :------- | :------------------------------------------------------------------- |
+| Name   | `String` | The name of the newly initialized xNFT                               |
+| Params | `struct` | Schema defined in the [auxiliary state section](/state/auxiliary.md) |
