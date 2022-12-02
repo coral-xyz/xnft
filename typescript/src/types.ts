@@ -65,7 +65,6 @@ export type CreateAssociatedXnftOptions = CreateXnftCommonParameters & {
 
 export type CreateXnftAppOptions = CreateXnftCommonParameters & {
   name: string;
-  metaplexMetadataUri: string;
 };
 
 export type ManifestHistory = {
@@ -104,10 +103,9 @@ export type UpdateXnftOptions = {
   installAuthority?: PublicKey;
   installPrice: BN;
   installVault: PublicKey;
-  metaplexUri?: string;
   supply?: BN;
   tag: Tag;
-  xnftUri?: string;
+  uri?: string;
 };
 
 export type XnftAccount = {

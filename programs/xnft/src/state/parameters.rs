@@ -42,8 +42,7 @@ pub struct UpdateParams {
     pub install_authority: Option<Pubkey>,
     pub install_price: u64,
     pub install_vault: Pubkey,
-    pub mpl_uri: Option<String>,
     pub supply: Option<u64>,
     pub tag: Tag,
-    pub xnft_uri: Option<String>,
+    pub uri: Option<String>,
 }

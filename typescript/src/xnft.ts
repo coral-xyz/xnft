@@ -207,10 +207,6 @@ export type Xnft = {
           type: "string";
         },
         {
-          name: "mplMetadataUri";
-          type: "string";
-        },
-        {
           name: "params";
           type: {
             defined: "CreateXnftParams";
@@ -1088,12 +1084,6 @@ export type Xnft = {
             type: "publicKey";
           },
           {
-            name: "mplUri";
-            type: {
-              option: "string";
-            };
-          },
-          {
             name: "supply";
             type: {
               option: "u64";
@@ -1106,7 +1096,7 @@ export type Xnft = {
             };
           },
           {
-            name: "xnftUri";
+            name: "uri";
             type: {
               option: "string";
             };
@@ -1527,10 +1517,6 @@ export const IDL: Xnft = {
       args: [
         {
           name: "name",
-          type: "string",
-        },
-        {
-          name: "mplMetadataUri",
           type: "string",
         },
         {
@@ -2411,12 +2397,6 @@ export const IDL: Xnft = {
             type: "publicKey",
           },
           {
-            name: "mplUri",
-            type: {
-              option: "string",
-            },
-          },
-          {
             name: "supply",
             type: {
               option: "u64",
@@ -2429,7 +2409,7 @@ export const IDL: Xnft = {
             },
           },
           {
-            name: "xnftUri",
+            name: "uri",
             type: {
               option: "string",
             },
