@@ -34,11 +34,11 @@ export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 // =================
 // ABSTRACTION TYPES
 // =================
-export type Kind = Lowercase<typeof IDL.types[4]["type"]["variants"][number]["name"]>;
+export type Kind = Uncapitalize<typeof IDL.types[4]["type"]["variants"][number]["name"]>;
 export const KindOptions = IDL.types[4].type.variants.map(v => v.name);
 console.assert(IDL.types[4].type.variants.map(v => v.name).includes("App"));
 
-export type Tag = Lowercase<typeof IDL.types[5]["type"]["variants"][number]["name"]>;
+export type Tag = Uncapitalize<typeof IDL.types[5]["type"]["variants"][number]["name"]>;
 export const TagOptions = IDL.types[5].type.variants.map(v => v.name);
 console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));
 
@@ -89,13 +89,14 @@ export type Manifest = {
   screenshots: Screenshot[];
 };
 
-export type XnftJsonMetadata = {
+export type XnftMetadataProperties = {
   version: string;
   manifest: Manifest;
+  programIds: string[];
   history: ManifestHistory;
 };
 
-export type CustomJsonMetadata = JsonMetadata<string> & { xnft: XnftJsonMetadata };
+export type CustomJsonMetadata = JsonMetadata<string> & { xnft: XnftMetadataProperties };
 
 export type CustomMetadata = Metadata<CustomJsonMetadata>;
 

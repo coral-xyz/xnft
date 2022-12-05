@@ -39,14 +39,15 @@ import { getNftTokenAccountForMint } from "./tokens";
 import type {
   CreateAssociatedXnftOptions,
   CreateXnftAppOptions,
+  CustomJsonMetadata,
   IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
+  Kind,
   UpdateXnftOptions,
   XnftAccount,
-  XnftJsonMetadata,
 } from "./types";
-import { buildAnonymousProvider, gatewayUri } from "./util";
+import { buildAnonymousProvider, enumsEqual, gatewayUri } from "./util";
 import { IDL, type Xnft } from "./xnft";
 
 export class xNFT {
@@ -194,21 +195,26 @@ export class xNFT {
   async getAccount(publicKey: PublicKey): Promise<XnftAccount> {
     const account = (await this.#program.account.xnft.fetch(publicKey)) as unknown as IdlXnftAccount;
 
-    const [tokenAccount, xnftBlob, metadata] = await Promise.all([
+    const [tokenAccount, xnftBlob, metadatas] = await Promise.all([
       getNftTokenAccountForMint(this.#provider.connection, account.masterMint),
-      this.#mpl.storage().downloadJson(gatewayUri(account.uri)) as Promise<XnftJsonMetadata>,
+      this.#mpl.storage().downloadJson(gatewayUri(account.uri)) as Promise<CustomJsonMetadata>,
       this.#mpl.nfts().findAllByMintList({ mints: [account.masterMint] }) as Promise<Metadata[]>,
     ]);
 
-    const md = metadata[0];
+    const md = metadatas[0];
+    let mplBlob: JsonMetadata<string> = {};
+
+    if (!enumsEqual<Kind>(account.kind, "app")) {
+      mplBlob = await this.#mpl.storage().downloadJson(gatewayUri(md.uri));
+    }
 
     return {
       data: account,
       metadata: {
         ...md,
         json: {
-          ...md.json,
-          xnft: xnftBlob,
+          ...xnftBlob,
+          ...mplBlob,
         },
       },
       publicKey,
@@ -254,12 +260,16 @@ export class xNFT {
       []
     );
 
-    const mplBlobs = await Promise.all(
-      validXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.metadata.uri)) as Promise<JsonMetadata<string>>)
+    const xnftBlobs = await Promise.all(
+      validXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
     );
 
-    const xnftBlobs = await Promise.all(
-      validXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<XnftJsonMetadata>)
+    const mplBlobs = await Promise.all(
+      validXnfts.map(x =>
+        enumsEqual<Kind>(x.account.kind, "app")
+          ? Promise.resolve({})
+          : (this.#mpl.storage().downloadJson(gatewayUri(x.metadata.uri)) as Promise<JsonMetadata<string>>)
+      )
     );
 
     const tokenAccounts = await Promise.all(
@@ -273,8 +283,8 @@ export class xNFT {
         metadata: {
           ...x.metadata,
           json: {
+            ...xnftBlobs[idx],
             ...mplBlobs[idx],
-            xnft: xnftBlobs[idx],
           },
         },
         publicKey: x.publicKey,
@@ -330,12 +340,16 @@ export class xNFT {
       .nfts()
       .findAllByMintList({ mints: xnfts.map(x => x.account.masterMint) })) as Metadata[];
 
-    const mplBlobs = await Promise.all(
-      metadatas.map(m => this.#mpl.storage().downloadJson(gatewayUri(m.uri)) as Promise<JsonMetadata<string>>)
+    const xnftBlobs = await Promise.all(
+      xnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
     );
 
-    const xnftBlobs = await Promise.all(
-      xnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<XnftJsonMetadata>)
+    const mplBlobs = await Promise.all(
+      xnfts.map((acc, idx) =>
+        enumsEqual<Kind>(acc.account.kind, "app")
+          ? Promise.resolve({})
+          : (this.#mpl.storage().downloadJson(gatewayUri(metadatas[idx].uri)) as Promise<JsonMetadata<string>>)
+      )
     );
 
     const tokenAccounts = await Promise.all(
@@ -349,8 +363,8 @@ export class xNFT {
         metadata: {
           ...metadatas[idx],
           json: {
+            ...xnftBlobs[idx],
             ...mplBlobs[idx],
-            xnft: xnftBlobs[idx],
           },
         },
         publicKey: acc.publicKey,
