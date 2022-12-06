@@ -82,9 +82,6 @@ export type ManifestEntrypoints = {
 };
 
 export type Manifest = {
-  name: string;
-  description: string;
-  icon: string;
   entrypoints: ManifestEntrypoints;
   screenshots: Screenshot[];
 };
