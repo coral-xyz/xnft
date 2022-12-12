@@ -80,297 +80,6 @@ export type Xnft = {
       ];
     },
     {
-      name: "createXnft";
-      docs: [
-        "Creates all parts of an xNFT instance.",
-        'Once this is invoked, an xNFT exists and can be "installed" by users.'
-      ];
-      accounts: [
-        {
-          name: "masterMint";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "mint";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                path: "publisher";
-              },
-              {
-                kind: "arg";
-                type: "string";
-                path: "name";
-              }
-            ];
-          };
-        },
-        {
-          name: "masterToken";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "masterMetadata";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "metadata";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                path: "metadata_program";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Mint";
-                path: "master_mint";
-              }
-            ];
-            programId: {
-              kind: "account";
-              type: "publicKey";
-              path: "metadata_program";
-            };
-          };
-        },
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "xnft";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Mint";
-                path: "master_mint";
-              }
-            ];
-          };
-        },
-        {
-          name: "payer";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "publisher";
-          isMut: false;
-          isSigner: true;
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "tokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "associatedTokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "metadataProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "rent";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "name";
-          type: "string";
-        },
-        {
-          name: "params";
-          type: {
-            defined: "CreateXnftParams";
-          };
-        }
-      ];
-    },
-    {
-      name: "updateXnft";
-      docs: ["Updates the code of an xNFT.", "This is simply a token metadata update cpi."];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-          relations: ["master_metadata"];
-        },
-        {
-          name: "masterToken";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "masterMetadata";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "curationAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "xnftAuthority";
-          isMut: false;
-          isSigner: true;
-        },
-        {
-          name: "metadataProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "updates";
-          type: {
-            defined: "UpdateParams";
-          };
-        }
-      ];
-    },
-    {
-      name: "setCurator";
-      docs: ["Assigns a curator public key to the provided xNFT."];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "masterToken";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "curator";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "authority";
-          isMut: false;
-          isSigner: true;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "verifyCurator";
-      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "curator";
-          isMut: false;
-          isSigner: true;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "createReview";
-      docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'];
-      accounts: [
-        {
-          name: "install";
-          isMut: false;
-          isSigner: false;
-          relations: ["xnft"];
-        },
-        {
-          name: "masterToken";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "review";
-          isMut: true;
-          isSigner: false;
-          pda: {
-            seeds: [
-              {
-                kind: "const";
-                type: "string";
-                value: "review";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                account: "Xnft";
-                path: "xnft";
-              },
-              {
-                kind: "account";
-                type: "publicKey";
-                path: "author";
-              }
-            ];
-          };
-        },
-        {
-          name: "author";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "uri";
-          type: "string";
-        },
-        {
-          name: "rating";
-          type: "u8";
-        }
-      ];
-    },
-    {
       name: "createInstall";
       docs: [
         'Creates an "installation" of an xNFT.',
@@ -515,6 +224,208 @@ export type Xnft = {
       args: [];
     },
     {
+      name: "createReview";
+      docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'];
+      accounts: [
+        {
+          name: "install";
+          isMut: false;
+          isSigner: false;
+          relations: ["xnft"];
+        },
+        {
+          name: "masterToken";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "review";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "review";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Xnft";
+                path: "xnft";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "author";
+              }
+            ];
+          };
+        },
+        {
+          name: "author";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "uri";
+          type: "string";
+        },
+        {
+          name: "rating";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "createXnft";
+      docs: [
+        "Creates all parts of an xNFT instance.",
+        'Once this is invoked, an xNFT exists and can be "installed" by users.'
+      ];
+      accounts: [
+        {
+          name: "masterMint";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "mint";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "publisher";
+              },
+              {
+                kind: "arg";
+                type: "string";
+                path: "name";
+              }
+            ];
+          };
+        },
+        {
+          name: "masterToken";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterMetadata";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "metadata";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                path: "metadata_program";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Mint";
+                path: "master_mint";
+              }
+            ];
+            programId: {
+              kind: "account";
+              type: "publicKey";
+              path: "metadata_program";
+            };
+          };
+        },
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                type: "string";
+                value: "xnft";
+              },
+              {
+                kind: "account";
+                type: "publicKey";
+                account: "Mint";
+                path: "master_mint";
+              }
+            ];
+          };
+        },
+        {
+          name: "payer";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "publisher";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "associatedTokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "metadataProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "rent";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "name";
+          type: "string";
+        },
+        {
+          name: "params";
+          type: {
+            defined: "CreateXnftParams";
+          };
+        }
+      ];
+    },
+    {
       name: "deleteInstall";
       docs: ["Closes the install account."];
       accounts: [
@@ -564,33 +475,6 @@ export type Xnft = {
         }
       ];
       args: [];
-    },
-    {
-      name: "setSuspended";
-      docs: ["Sets the install suspension flag on the xnft."];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "masterToken";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "authority";
-          isMut: false;
-          isSigner: true;
-        }
-      ];
-      args: [
-        {
-          name: "flag";
-          type: "bool";
-        }
-      ];
     },
     {
       name: "grantAccess";
@@ -699,6 +583,60 @@ export type Xnft = {
       args: [];
     },
     {
+      name: "setCurator";
+      docs: ["Assigns a curator public key to the provided xNFT."];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "curator";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "authority";
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "setSuspended";
+      docs: ["Sets the install suspension flag on the xnft."];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "authority";
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [
+        {
+          name: "flag";
+          type: "bool";
+        }
+      ];
+    },
+    {
       name: "transfer";
       docs: ["Transfer the xNFT to the provided designation wallet."];
       accounts: [
@@ -747,11 +685,68 @@ export type Xnft = {
           name: "associatedTokenProgram";
           isMut: false;
           isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "updateXnft";
+      docs: ["Updates the code of an xNFT.", "This is simply a token metadata update cpi."];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+          relations: ["master_metadata"];
         },
         {
-          name: "rent";
+          name: "masterToken";
           isMut: false;
           isSigner: false;
+        },
+        {
+          name: "masterMetadata";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "curationAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "updater";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "metadataProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "updates";
+          type: {
+            defined: "UpdateParams";
+          };
+        }
+      ];
+    },
+    {
+      name: "verifyCurator";
+      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "curator";
+          isMut: false;
+          isSigner: true;
         }
       ];
       args: [];
@@ -977,10 +972,22 @@ export type Xnft = {
             };
           },
           {
-            name: "reserved";
+            name: "reserved0";
             docs: ["Unused reserved byte space for additive future changes."];
             type: {
               array: ["u8", 64];
+            };
+          },
+          {
+            name: "reserved1";
+            type: {
+              array: ["u8", 24];
+            };
+          },
+          {
+            name: "reserved2";
+            type: {
+              array: ["u8", 9];
             };
           }
         ];
@@ -1255,18 +1262,18 @@ export type Xnft = {
     },
     {
       code: 6006;
-      name: "InstallingNonApp";
-      msg: "You can only install an xNFT of with `Kind::App`";
-    },
-    {
-      code: 6007;
       name: "InstallOwnerMismatch";
       msg: "The asserted authority/owner did not match that of the Install account";
     },
     {
-      code: 6008;
+      code: 6007;
       name: "MetadataIsImmutable";
       msg: "The metadata of the xNFT is marked as immutable";
+    },
+    {
+      code: 6008;
+      name: "MustBeApp";
+      msg: "The xNFT must be of `Kind::App` for this operation";
     },
     {
       code: 6009;
@@ -1296,7 +1303,7 @@ export type Xnft = {
     {
       code: 6014;
       name: "UpdateAuthorityMismatch";
-      msg: "The signer did not match the update authority of the metadata account";
+      msg: "The signer did not match the update authority of the metadata account or the owner";
     },
     {
       code: 6015;
@@ -1389,297 +1396,6 @@ export const IDL: Xnft = {
           type: {
             defined: "CreateXnftParams",
           },
-        },
-      ],
-    },
-    {
-      name: "createXnft",
-      docs: [
-        "Creates all parts of an xNFT instance.",
-        'Once this is invoked, an xNFT exists and can be "installed" by users.',
-      ],
-      accounts: [
-        {
-          name: "masterMint",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "mint",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                path: "publisher",
-              },
-              {
-                kind: "arg",
-                type: "string",
-                path: "name",
-              },
-            ],
-          },
-        },
-        {
-          name: "masterToken",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "masterMetadata",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "metadata",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                path: "metadata_program",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Mint",
-                path: "master_mint",
-              },
-            ],
-            programId: {
-              kind: "account",
-              type: "publicKey",
-              path: "metadata_program",
-            },
-          },
-        },
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "xnft",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Mint",
-                path: "master_mint",
-              },
-            ],
-          },
-        },
-        {
-          name: "payer",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "publisher",
-          isMut: false,
-          isSigner: true,
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "tokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "associatedTokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "metadataProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "rent",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "name",
-          type: "string",
-        },
-        {
-          name: "params",
-          type: {
-            defined: "CreateXnftParams",
-          },
-        },
-      ],
-    },
-    {
-      name: "updateXnft",
-      docs: ["Updates the code of an xNFT.", "This is simply a token metadata update cpi."],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-          relations: ["master_metadata"],
-        },
-        {
-          name: "masterToken",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "masterMetadata",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "curationAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "xnftAuthority",
-          isMut: false,
-          isSigner: true,
-        },
-        {
-          name: "metadataProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "updates",
-          type: {
-            defined: "UpdateParams",
-          },
-        },
-      ],
-    },
-    {
-      name: "setCurator",
-      docs: ["Assigns a curator public key to the provided xNFT."],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "masterToken",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "curator",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "authority",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "verifyCurator",
-      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "curator",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "createReview",
-      docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'],
-      accounts: [
-        {
-          name: "install",
-          isMut: false,
-          isSigner: false,
-          relations: ["xnft"],
-        },
-        {
-          name: "masterToken",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "review",
-          isMut: true,
-          isSigner: false,
-          pda: {
-            seeds: [
-              {
-                kind: "const",
-                type: "string",
-                value: "review",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                account: "Xnft",
-                path: "xnft",
-              },
-              {
-                kind: "account",
-                type: "publicKey",
-                path: "author",
-              },
-            ],
-          },
-        },
-        {
-          name: "author",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "uri",
-          type: "string",
-        },
-        {
-          name: "rating",
-          type: "u8",
         },
       ],
     },
@@ -1828,6 +1544,208 @@ export const IDL: Xnft = {
       args: [],
     },
     {
+      name: "createReview",
+      docs: ['Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.'],
+      accounts: [
+        {
+          name: "install",
+          isMut: false,
+          isSigner: false,
+          relations: ["xnft"],
+        },
+        {
+          name: "masterToken",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "review",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "review",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Xnft",
+                path: "xnft",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "author",
+              },
+            ],
+          },
+        },
+        {
+          name: "author",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "uri",
+          type: "string",
+        },
+        {
+          name: "rating",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "createXnft",
+      docs: [
+        "Creates all parts of an xNFT instance.",
+        'Once this is invoked, an xNFT exists and can be "installed" by users.',
+      ],
+      accounts: [
+        {
+          name: "masterMint",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "mint",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "publisher",
+              },
+              {
+                kind: "arg",
+                type: "string",
+                path: "name",
+              },
+            ],
+          },
+        },
+        {
+          name: "masterToken",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterMetadata",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "metadata",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                path: "metadata_program",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Mint",
+                path: "master_mint",
+              },
+            ],
+            programId: {
+              kind: "account",
+              type: "publicKey",
+              path: "metadata_program",
+            },
+          },
+        },
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+          pda: {
+            seeds: [
+              {
+                kind: "const",
+                type: "string",
+                value: "xnft",
+              },
+              {
+                kind: "account",
+                type: "publicKey",
+                account: "Mint",
+                path: "master_mint",
+              },
+            ],
+          },
+        },
+        {
+          name: "payer",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "publisher",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "associatedTokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "metadataProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "rent",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "name",
+          type: "string",
+        },
+        {
+          name: "params",
+          type: {
+            defined: "CreateXnftParams",
+          },
+        },
+      ],
+    },
+    {
       name: "deleteInstall",
       docs: ["Closes the install account."],
       accounts: [
@@ -1877,33 +1795,6 @@ export const IDL: Xnft = {
         },
       ],
       args: [],
-    },
-    {
-      name: "setSuspended",
-      docs: ["Sets the install suspension flag on the xnft."],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "masterToken",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "authority",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [
-        {
-          name: "flag",
-          type: "bool",
-        },
-      ],
     },
     {
       name: "grantAccess",
@@ -2012,6 +1903,60 @@ export const IDL: Xnft = {
       args: [],
     },
     {
+      name: "setCurator",
+      docs: ["Assigns a curator public key to the provided xNFT."],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "curator",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "authority",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "setSuspended",
+      docs: ["Sets the install suspension flag on the xnft."],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "authority",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [
+        {
+          name: "flag",
+          type: "bool",
+        },
+      ],
+    },
+    {
       name: "transfer",
       docs: ["Transfer the xNFT to the provided designation wallet."],
       accounts: [
@@ -2061,10 +2006,67 @@ export const IDL: Xnft = {
           isMut: false,
           isSigner: false,
         },
+      ],
+      args: [],
+    },
+    {
+      name: "updateXnft",
+      docs: ["Updates the code of an xNFT.", "This is simply a token metadata update cpi."],
+      accounts: [
         {
-          name: "rent",
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+          relations: ["master_metadata"],
+        },
+        {
+          name: "masterToken",
           isMut: false,
           isSigner: false,
+        },
+        {
+          name: "masterMetadata",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "curationAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "updater",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "metadataProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "updates",
+          type: {
+            defined: "UpdateParams",
+          },
+        },
+      ],
+    },
+    {
+      name: "verifyCurator",
+      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "curator",
+          isMut: false,
+          isSigner: true,
         },
       ],
       args: [],
@@ -2290,10 +2292,22 @@ export const IDL: Xnft = {
             },
           },
           {
-            name: "reserved",
+            name: "reserved0",
             docs: ["Unused reserved byte space for additive future changes."],
             type: {
               array: ["u8", 64],
+            },
+          },
+          {
+            name: "reserved1",
+            type: {
+              array: ["u8", 24],
+            },
+          },
+          {
+            name: "reserved2",
+            type: {
+              array: ["u8", 9],
             },
           },
         ],
@@ -2568,18 +2582,18 @@ export const IDL: Xnft = {
     },
     {
       code: 6006,
-      name: "InstallingNonApp",
-      msg: "You can only install an xNFT of with `Kind::App`",
-    },
-    {
-      code: 6007,
       name: "InstallOwnerMismatch",
       msg: "The asserted authority/owner did not match that of the Install account",
     },
     {
-      code: 6008,
+      code: 6007,
       name: "MetadataIsImmutable",
       msg: "The metadata of the xNFT is marked as immutable",
+    },
+    {
+      code: 6008,
+      name: "MustBeApp",
+      msg: "The xNFT must be of `Kind::App` for this operation",
     },
     {
       code: 6009,
@@ -2609,7 +2623,7 @@ export const IDL: Xnft = {
     {
       code: 6014,
       name: "UpdateAuthorityMismatch",
-      msg: "The signer did not match the update authority of the metadata account",
+      msg: "The signer did not match the update authority of the metadata account or the owner",
     },
     {
       code: 6015,

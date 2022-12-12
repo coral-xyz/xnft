@@ -7,7 +7,8 @@
   "scripts": {
     "docs": "docsify serve ./docs",
     "fmt:fix": "prettier \"*/**/*{.js,.cjs,.ts,.tsx,.json,.yaml,.md}\" -w",
-    "fmt": "prettier \"*/**/*{.js,.cjs,.ts,.tsx,.json,.yaml,.md}\" --check"
+    "fmt": "prettier \"*/**/*{.js,.cjs,.ts,.tsx,.json,.yaml,.md}\" --check",
+    "idl": "cp ./target/types/xnft.ts ./typescript/src && yarn fmt:fix"
   },
   "devDependencies": {
     "@metaplex-foundation/js": "^0.16.1",

@@ -17,7 +17,6 @@ use anchor_lang::prelude::*;
 use mpl_token_metadata::state::{MAX_NAME_LENGTH, MAX_URI_LENGTH};
 
 use super::CreateXnftParams;
-use crate::util::verify_optional_pubkey;
 use crate::CustomError;
 
 #[account]
@@ -61,7 +60,9 @@ pub struct Xnft {
     /// The bump nonce for the xNFT's PDA (1).
     pub bump: [u8; 1],
     /// Unused reserved byte space for additive future changes.
-    pub _reserved: [u8; 64],
+    pub _reserved0: [u8; 64],
+    pub _reserved1: [u8; 24],
+    pub _reserved2: [u8; 9],
 }
 
 impl Xnft {
@@ -78,7 +79,7 @@ impl Xnft {
         + 4
         + 1
         + 1
-        + 64;
+        + 97;
 
     pub fn try_new(
         kind: Kind,
@@ -113,12 +114,23 @@ impl Xnft {
             num_ratings: 0,
             suspended: false,
             bump: [bump],
-            _reserved: [0; 64],
+            _reserved0: [0; 64],
+            _reserved1: [0; 24],
+            _reserved2: [0; 9],
         })
     }
 
     pub fn as_seeds(&self) -> [&[u8]; 3] {
         ["xnft".as_bytes(), self.master_mint.as_ref(), &self.bump]
+    }
+
+    pub fn verify_install_authority(&self, pk: &Pubkey) -> Result<()> {
+        if let Some(key) = self.install_authority {
+            if key != *pk {
+                return Err(error!(CustomError::InstallAuthorityMismatch));
+            }
+        }
+        Ok(())
     }
 
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {
@@ -129,12 +141,6 @@ impl Xnft {
         }
         Ok(())
     }
-
-    verify_optional_pubkey!(
-        verify_install_authority,
-        install_authority,
-        CustomError::InstallAuthorityMismatch
-    );
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
@@ -170,7 +176,7 @@ mod tests {
 
     #[test]
     fn account_size_matches() {
-        assert_eq!(Xnft::LEN, 565);
+        assert_eq!(Xnft::LEN, 598);
     }
 
     #[test]
@@ -195,7 +201,9 @@ mod tests {
             num_ratings: Default::default(),
             supply: None,
             curator: None,
-            _reserved: [0; 64],
+            _reserved0: [0; 64],
+            _reserved1: [0; 24],
+            _reserved2: [0; 9],
         };
 
         assert!(x.verify_install_authority(&Pubkey::default()).is_ok());
@@ -235,7 +243,9 @@ mod tests {
             num_ratings: Default::default(),
             supply: None,
             curator: None,
-            _reserved: [0; 64],
+            _reserved0: [0; 64],
+            _reserved1: [0; 24],
+            _reserved2: [0; 9],
         };
 
         assert!(x.verify_supply().is_ok());

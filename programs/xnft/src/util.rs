@@ -28,17 +28,3 @@ pub fn send_payment<'info>(
     )
     .map_err(Into::into)
 }
-
-macro_rules! verify_optional_pubkey {
-    ($fn_name:ident, $field:ident, $err:expr) => {
-        pub fn $fn_name(&self, pk: &anchor_lang::prelude::Pubkey) -> anchor_lang::Result<()> {
-            if let Some(key) = self.$field {
-                if key != *pk {
-                    return Err(anchor_lang::prelude::error!($err));
-                }
-            }
-            Ok(())
-        }
-    };
-}
-pub(crate) use verify_optional_pubkey;

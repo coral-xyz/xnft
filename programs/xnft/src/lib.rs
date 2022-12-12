@@ -56,37 +56,6 @@ pub mod xnft {
         instructions::create_associated_xnft_handler(ctx, kind, params)
     }
 
-    /// Creates all parts of an xNFT instance.
-    /// Once this is invoked, an xNFT exists and can be "installed" by users.
-    pub fn create_xnft(
-        ctx: Context<CreateXnft>,
-        name: String,
-        params: CreateXnftParams,
-    ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params)
-    }
-
-    /// Updates the code of an xNFT.
-    /// This is simply a token metadata update cpi.
-    pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
-        instructions::update_xnft_handler(ctx, updates)
-    }
-
-    /// Assigns a curator public key to the provided xNFT.
-    pub fn set_curator(ctx: Context<SetCurator>) -> Result<()> {
-        instructions::set_curator_handler(ctx)
-    }
-
-    /// Verifies the assignment of a curator to an xNFT, signed by the curator authority.
-    pub fn verify_curator(ctx: Context<VerifyCurator>) -> Result<()> {
-        instructions::verify_curator_handler(ctx)
-    }
-
-    /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
-    pub fn create_review(ctx: Context<CreateReview>, uri: String, rating: u8) -> Result<()> {
-        instructions::create_review_handler(ctx, uri, rating)
-    }
-
     /// Creates an "installation" of an xNFT.
     /// Installation is just a synonym for minting an xNFT edition for a given
     /// user.
@@ -100,6 +69,21 @@ pub mod xnft {
         instructions::create_permissioned_install_handler(ctx)
     }
 
+    /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
+    pub fn create_review(ctx: Context<CreateReview>, uri: String, rating: u8) -> Result<()> {
+        instructions::create_review_handler(ctx, uri, rating)
+    }
+
+    /// Creates all parts of an xNFT instance.
+    /// Once this is invoked, an xNFT exists and can be "installed" by users.
+    pub fn create_xnft(
+        ctx: Context<CreateXnft>,
+        name: String,
+        params: CreateXnftParams,
+    ) -> Result<()> {
+        instructions::create_xnft_handler(ctx, name, params)
+    }
+
     /// Closes the install account.
     pub fn delete_install(ctx: Context<DeleteInstall>) -> Result<()> {
         instructions::delete_install_handler(ctx)
@@ -108,11 +92,6 @@ pub mod xnft {
     /// Closes the review account and removes metrics from xNFT account.
     pub fn delete_review(ctx: Context<DeleteReview>) -> Result<()> {
         instructions::delete_review_handler(ctx)
-    }
-
-    /// Sets the install suspension flag on the xnft.
-    pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
-        instructions::set_suspended_handler(ctx, flag)
     }
 
     /// Creates an access program account that indicates a wallet's
@@ -127,9 +106,30 @@ pub mod xnft {
         instructions::revoke_access_handler(ctx)
     }
 
+    /// Assigns a curator public key to the provided xNFT.
+    pub fn set_curator(ctx: Context<SetCurator>) -> Result<()> {
+        instructions::set_curator_handler(ctx)
+    }
+
+    /// Sets the install suspension flag on the xnft.
+    pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
+        instructions::set_suspended_handler(ctx, flag)
+    }
+
     /// Transfer the xNFT to the provided designation wallet.
     pub fn transfer(ctx: Context<Transfer>) -> Result<()> {
         instructions::transfer_handler(ctx)
+    }
+
+    /// Updates the code of an xNFT.
+    /// This is simply a token metadata update cpi.
+    pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
+        instructions::update_xnft_handler(ctx, updates)
+    }
+
+    /// Verifies the assignment of a curator to an xNFT, signed by the curator authority.
+    pub fn verify_curator(ctx: Context<VerifyCurator>) -> Result<()> {
+        instructions::verify_curator_handler(ctx)
     }
 }
 
@@ -153,14 +153,14 @@ pub enum CustomError {
     #[msg("The max supply has been reached for the xNFT")]
     InstallExceedsSupply,
 
-    #[msg("You can only install an xNFT of with `Kind::App`")]
-    InstallingNonApp,
-
     #[msg("The asserted authority/owner did not match that of the Install account")]
     InstallOwnerMismatch,
 
     #[msg("The metadata of the xNFT is marked as immutable")]
     MetadataIsImmutable,
+
+    #[msg("The xNFT must be of `Kind::App` for this operation")]
+    MustBeApp,
 
     #[msg("The rating for a review must be between 0 and 5")]
     RatingOutOfBounds,
@@ -177,7 +177,7 @@ pub enum CustomError {
     #[msg("The access account provided is not associated with the wallet")]
     UnauthorizedInstall,
 
-    #[msg("The signer did not match the update authority of the metadata account")]
+    #[msg("The signer did not match the update authority of the metadata account or the owner")]
     UpdateAuthorityMismatch,
 
     #[msg("The signing authority for the xNFT update did not match the review authority")]

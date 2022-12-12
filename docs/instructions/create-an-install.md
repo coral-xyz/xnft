@@ -19,7 +19,7 @@ If the xNFT is "private" (meaning there is an assigned install authority on the 
 
 | Name           | Signer | Writable | Description                                                                                                                 |
 | :------------- | :----: | :------: | :-------------------------------------------------------------------------------------------------------------------------- |
-| xNFT           |   ❌   |    ✅    | The `Xnft` that is being installed by the authority                                                                         |
+| xNFT           |   ❌   |    ✅    | The `Xnft` that is being installed by the authority (must be `Kind::App`)                                                   |
 | Install Vault  |   ❌   |    ✅    | The account that receives potential installation payments from the payer                                                    |
 | Install        |   ❌   |    ✅    | The `Install` program account being initialized                                                                             |
 | Authority      |   ✅   |    ✅    | The wallet created the installation for themselves or for a delegate - pays for `Install` initialization and potential fees |

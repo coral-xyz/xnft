@@ -19,8 +19,8 @@ Allows the authority of an xNFT to update certain values on the xNFT program acc
 | xNFT                   |   ❌   |    ✅    | The `Xnft` program account being updated                                                                                    |
 | Master Token           |   ❌   |    ❌    | The master token account of the xNFT to verify ownership                                                                    |
 | Master Metadata        |   ❌   |    ✅    | The MPL master metadata account of the xNFT master mint                                                                     |
-| Update Authority       |   ❌   |    ❌    | The account that acts as the xNFT's update gatekeeping authority - either the owner or the curator if assigned and verified |
-| xNFT Authority         |   ✅   |    ❌    | The owner of the xNFT and it's master token                                                                                 |
+| Curation Authority     |   ❌   |    ❌    | The account that acts as the xNFT's update gatekeeping authority - either the owner or the curator if assigned and verified |
+| Updater                |   ✅   |    ❌    | The owner of the xNFT and it's master token                                                                                 |
 | Token Metadata Program |   ❌   |    ❌    | ---                                                                                                                         |
 
 ## Arguments

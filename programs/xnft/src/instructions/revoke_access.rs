@@ -15,12 +15,14 @@
 
 use anchor_lang::prelude::*;
 
-use crate::state::{Access, Xnft};
+use crate::state::{Access, Kind, Xnft};
+use crate::CustomError;
 
 #[derive(Accounts)]
 pub struct RevokeAccess<'info> {
     #[account(
         constraint = xnft.install_authority == Some(*authority.key),
+        constraint = xnft.kind == Kind::App @ CustomError::MustBeApp,
     )]
     pub xnft: Account<'info, Xnft>,
 

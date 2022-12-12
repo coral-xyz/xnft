@@ -19,7 +19,7 @@ The account receiving the installation should be the one signing for the transac
 
 | Name           | Signer | Writable | Description                                                              |
 | :------------- | :----: | :------: | :----------------------------------------------------------------------- |
-| xNFT           |   ❌   |    ✅    | The `Xnft` being installed by the authority                              |
+| xNFT           |   ❌   |    ✅    | The `Xnft` being installed by the authority (must be `Kind::App`)        |
 | Install Vault  |   ❌   |    ✅    | The account that receives potential installation payments from the payer |
 | Install        |   ❌   |    ✅    | The `Install` program account being initialized                          |
 | Access         |   ❌   |    ❌    | The `Access` program account allocated to the signing authority          |

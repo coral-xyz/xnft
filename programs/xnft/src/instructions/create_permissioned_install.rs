@@ -25,7 +25,7 @@ pub struct CreatePermissionedInstall<'info> {
     #[account(
         mut,
         has_one = install_vault,
-        constraint = xnft.kind == Kind::App @ CustomError::InstallingNonApp,
+        constraint = xnft.kind == Kind::App @ CustomError::MustBeApp,
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
     )]
     pub xnft: Account<'info, Xnft>,

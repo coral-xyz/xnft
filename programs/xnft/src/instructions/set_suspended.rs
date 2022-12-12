@@ -16,11 +16,15 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::TokenAccount;
 
-use crate::state::Xnft;
+use crate::state::{Kind, Xnft};
+use crate::CustomError;
 
 #[derive(Accounts)]
 pub struct SetSuspended<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = xnft.kind == Kind::App @ CustomError::MustBeApp,
+    )]
     pub xnft: Account<'info, Xnft>,
 
     #[account(

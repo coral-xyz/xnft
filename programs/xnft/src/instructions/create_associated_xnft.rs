@@ -31,8 +31,8 @@ pub struct CreateAssociatedXnft<'info> {
     pub master_mint: Account<'info, Mint>,
 
     #[account(
-        associated_token::authority = publisher,
-        associated_token::mint = master_mint,
+        constraint = master_token.mint == master_mint.key(),
+        constraint = master_token.amount == master_mint.supply,
     )]
     pub master_token: Account<'info, TokenAccount>,
 

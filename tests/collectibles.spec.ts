@@ -1,5 +1,6 @@
 import { type CreateNftOutput, Metaplex, keypairIdentity } from "@metaplex-foundation/js";
 import * as anchor from "@project-serum/anchor";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { assert } from "chai";
 import { program, wait } from "./common";
 
@@ -112,7 +113,47 @@ describe("Digital collectible xNFTs", () => {
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
-        assert.strictEqual(e.error.errorCode.code, "InstallingNonApp");
+        assert.strictEqual(e.error.errorCode.code, "MustBeApp");
+      }
+    });
+
+    it("and a collectible xNFT cannot be suspended", async () => {
+      try {
+        await program.methods
+          .setSuspended(true)
+          .accounts({
+            masterToken: validNft.tokenAddress,
+            xnft,
+          })
+          .rpc();
+
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, "MustBeApp");
+      }
+    });
+
+    it("and a collectible xNFT cannot be transferred through the protocol", async () => {
+      const recipient = anchor.web3.Keypair.generate().publicKey;
+      const destination = await getAssociatedTokenAddress(validNft.mintAddress, recipient);
+
+      try {
+        await program.methods
+          .transfer()
+          .accounts({
+            destination,
+            masterMint: validNft.mintAddress,
+            recipient,
+            source: validNft.tokenAddress,
+            xnft,
+          })
+          .rpc();
+
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, "MustBeApp");
       }
     });
   });
