@@ -10,7 +10,7 @@ The current authority that is signing for the instruction will pay for the initi
 
 | Name                 | Signer | Writable | Description                                                                                      |
 | :------------------- | :----: | :------: | :----------------------------------------------------------------------------------------------- |
-| xNFT                 |   ❌   |    ❌    | The `Xnft` program account of the master token being transferred                                 |
+| xNFT                 |   ❌   |    ❌    | The `Xnft` program account of the master token being transferred (must be `Kind::App`)           |
 | Source               |   ❌   |    ✅    | The associated token account that currently holds the xNFT master token                          |
 | Destination          |   ❌   |    ✅    | The associated token account that the master token should be transferred into                    |
 | Master Mint          |   ❌   |    ❌    | The master mint of the xNFT token account                                                        |

@@ -255,7 +255,9 @@ mod tests {
             num_ratings: 0,
             suspended: false,
             bump: [0],
-            _reserved: [0; 64],
+            _reserved0: [0; 64],
+            _reserved1: [0; 24],
+            _reserved2: [0; 9],
         }
     }
 

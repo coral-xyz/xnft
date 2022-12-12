@@ -15,7 +15,6 @@
 
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use anchor_client::solana_sdk::system_program;
-use anchor_client::solana_sdk::sysvar::rent;
 use anyhow::Result;
 use clap::{Parser, Subcommand, ValueEnum};
 use spl_associated_token_account::get_associated_token_address;
@@ -265,7 +264,6 @@ fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> 
             destination,
             master_mint: account.master_mint,
             recipient,
-            rent: rent::ID,
             source,
             system_program: system_program::ID,
             token_program: spl_token::ID,

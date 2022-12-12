@@ -350,7 +350,7 @@ describe("Account Updates", () => {
         xnft,
         masterMetadata,
         masterToken,
-        xnftAuthority: authority.publicKey,
+        updater: authority.publicKey,
         curationAuthority: curatorAuthority.publicKey,
         metadataProgram,
       })

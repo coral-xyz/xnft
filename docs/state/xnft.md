@@ -2,7 +2,7 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/state/xnft.rs)
 
-**Total Size**: `565` (with reserved space)
+**Total Size**: `598` (with reserved space)
 
 | Name              | Type                    | Offset | Size         | Description                                                         |
 | :---------------- | :---------------------- | :----- | :----------- | :------------------------------------------------------------------ |
@@ -25,4 +25,4 @@
 | Number of Ratings | `u32`                   | 495    | 4            | The total number of ratings that exist on-chain for the xNFT        |
 | Suspended         | `bool`                  | 499    | 1            | Flag for whether new installations of the xNFT are suspended        |
 | Bump              | `[u8]`                  | 500    | 1            | The nonce of the program account PDA                                |
-| _Reserved_        | `[u8;64]`               | 501    | 64           | Reserved byte space for additive changes                            |
+| _Reserved_        | `[u8;97]`               | 501    | 97           | Reserved byte space for additive changes                            |

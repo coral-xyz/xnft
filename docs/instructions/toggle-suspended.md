@@ -8,11 +8,11 @@ If set to `true`, no further installations of the xNFT can be created until it i
 
 ## Accounts
 
-| Name         | Signer | Writable | Description                                                                 |
-| :----------- | :----: | :------: | :-------------------------------------------------------------------------- |
-| xNFT         |   ❌   |    ✅    | The `Xnft` program account being suspended or unsuspended                   |
-| Master Token |   ❌   |    ❌    | The master token account of the xNFT to verify ownership with the authority |
-| Authority    |   ✅   |    ❌    | The owner of the xNFT and master token account                              |
+| Name         | Signer | Writable | Description                                                                     |
+| :----------- | :----: | :------: | :------------------------------------------------------------------------------ |
+| xNFT         |   ❌   |    ✅    | The `Xnft` program account being suspended or unsuspended (must be `Kind::App`) |
+| Master Token |   ❌   |    ❌    | The master token account of the xNFT to verify ownership with the authority     |
+| Authority    |   ✅   |    ❌    | The owner of the xNFT and master token account                                  |
 
 ## Arguments
 

@@ -31,8 +31,7 @@ pub struct UpdateXnft<'info> {
     pub xnft: Account<'info, Xnft>,
 
     #[account(
-        associated_token::mint = xnft.master_mint,
-        associated_token::authority = xnft_authority,
+        constraint = master_token.mint == xnft.master_mint,
         constraint = master_token.amount == 1,
     )]
     pub master_token: Account<'info, TokenAccount>,
@@ -44,8 +43,8 @@ pub struct UpdateXnft<'info> {
     pub master_metadata: Account<'info, MetadataAccount>,
 
     /// CHECK: is validated in the associated token constraint on `master_token`.
-    pub curation_authority: UncheckedAccount<'info>, // TODO: reverse for curator approval enforcement
-    pub xnft_authority: Signer<'info>,
+    pub curation_authority: UncheckedAccount<'info>,
+    pub updater: Signer<'info>, // TODO: reverse to enable curation
 
     pub metadata_program: Program<'info, Metadata>,
 }
@@ -66,6 +65,24 @@ impl<'info> UpdateXnft<'info> {
 pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
     let clock = Clock::get()?;
     let md = &ctx.accounts.master_metadata;
+
+    // Validate the owner or update authority of the xNFT metadata.
+    match ctx.accounts.xnft.kind {
+        Kind::App => {
+            require_keys_eq!(
+                ctx.accounts.master_token.owner,
+                *ctx.accounts.updater.key,
+                CustomError::UpdateAuthorityMismatch,
+            );
+        }
+        Kind::Collection | Kind::Nft => {
+            require_keys_eq!(
+                md.update_authority,
+                *ctx.accounts.updater.key,
+                CustomError::UpdateAuthorityMismatch,
+            );
+        }
+    }
 
     // Gates the processing of an xNFT update if there is a set update authority
     // on the account that does not match the signer of the transaction.

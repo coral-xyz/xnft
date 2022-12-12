@@ -19,12 +19,14 @@ use anchor_spl::token::{
     self, CloseAccount, FreezeAccount, ThawAccount, Token, TokenAccount, Transfer as TokenTransfer,
 };
 
-use crate::state::Xnft;
+use crate::state::{Kind, Xnft};
+use crate::CustomError;
 
 #[derive(Accounts)]
 pub struct Transfer<'info> {
     #[account(
         has_one = master_mint,
+        constraint = xnft.kind == Kind::App @ CustomError::MustBeApp,
     )]
     pub xnft: Account<'info, Xnft>,
 
@@ -55,7 +57,6 @@ pub struct Transfer<'info> {
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
-    pub rent: Sysvar<'info, Rent>,
 }
 
 impl<'info> Transfer<'info> {
