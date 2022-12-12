@@ -96,17 +96,21 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         }
     }
 
-    if let Some(u) = updates.uri.as_ref() {
-        if ctx.accounts.xnft.kind == Kind::App {
+    if updates.uri.is_some() || updates.name.is_some() {
+        let xnft = &mut ctx.accounts.xnft;
+        let uri = updates.uri.unwrap_or_else(|| xnft.uri.clone());
+        xnft.uri = uri.clone();
+
+        if xnft.kind == Kind::App {
             metadata::update_metadata_accounts_v2(
                 ctx.accounts
                     .update_metadata_accounts_ctx()
                     .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
                 Some(md.update_authority),
                 Some(DataV2 {
-                    name: md.data.name.clone(),
+                    name: updates.name.unwrap_or_else(|| md.data.name.clone()),
                     symbol: md.data.symbol.clone(),
-                    uri: u.clone(),
+                    uri,
                     seller_fee_basis_points: md.data.seller_fee_basis_points,
                     creators: md.data.creators.clone(),
                     collection: md.collection.clone(),
@@ -116,9 +120,6 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                 Some(md.is_mutable),
             )?;
         }
-
-        let xnft = &mut ctx.accounts.xnft;
-        xnft.uri = u.clone();
     }
 
     let xnft = &mut ctx.accounts.xnft;

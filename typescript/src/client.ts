@@ -505,6 +505,7 @@ export class xNFT {
         installAuthority: opts.installAuthority ?? null,
         installPrice: opts.installPrice,
         installVault: opts.installVault,
+        name: opts.name ?? null,
         supply: opts.supply ?? null,
         tag: { [opts.tag]: {} } as never,
         uri: opts.uri ?? null,

@@ -1091,6 +1091,12 @@ export type Xnft = {
             type: "publicKey";
           },
           {
+            name: "name";
+            type: {
+              option: "string";
+            };
+          },
+          {
             name: "supply";
             type: {
               option: "u64";
@@ -2409,6 +2415,12 @@ export const IDL: Xnft = {
           {
             name: "installVault",
             type: "publicKey",
+          },
+          {
+            name: "name",
+            type: {
+              option: "string",
+            },
           },
           {
             name: "supply",
