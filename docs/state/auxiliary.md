@@ -51,6 +51,7 @@ pub struct UpdateParams {
     pub install_authority: Option<Pubkey>,
     pub install_price: u64,
     pub install_vault: Pubkey,
+    pub name: Option<String>, // Some("...") values are only relevant for Kind::App xNFTs
     pub supply: Option<u64>,
     pub tag: Tag,
     pub uri: Option<String>,

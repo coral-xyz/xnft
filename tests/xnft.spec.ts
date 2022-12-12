@@ -342,6 +342,7 @@ describe("Account Updates", () => {
         installAuthority: null,
         installPrice: new anchor.BN(100),
         installVault,
+        name: null,
         supply: new anchor.BN(200),
         tag: { none: {} } as never,
         uri: "new uri update",

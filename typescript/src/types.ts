@@ -101,6 +101,7 @@ export type UpdateXnftOptions = {
   installAuthority?: PublicKey;
   installPrice: BN;
   installVault: PublicKey;
+  name?: string;
   supply?: BN;
   tag: Tag;
   uri?: string;
