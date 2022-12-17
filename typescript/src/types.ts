@@ -77,8 +77,10 @@ export type Screenshot = {
   uri: string;
 };
 
+export type ManifestEntrypointPlatforms = Partial<Record<"android" | "ios" | "web", string>>;
 export type ManifestEntrypoints = {
-  [id: string]: Record<"android" | "ios" | "web", string>;
+  default: ManifestEntrypointPlatforms;
+  [id: string]: ManifestEntrypointPlatforms;
 };
 
 export type Manifest = {
