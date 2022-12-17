@@ -41,7 +41,7 @@ export function buildAnonymousProgram(connection: Connection): Program<Xnft> {
   return new Program(IDL, PROGRAM_ID, provider);
 }
 
-export function enumsEqual<T extends string>(variant: Record<T, never>, other: T): boolean {
+export function enumsEqual<T extends string>(variant: { [t in T]?: unknown }, other: T): boolean {
   return Object.keys(variant)[0] === other;
 }
 

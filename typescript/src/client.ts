@@ -163,13 +163,12 @@ export class xNFT {
   /**
    * Delete a review for an xNFT that the provider wallet had created.
    * @param {PublicKey} review
-   * @param {PublicKey} xnft
    * @param {PublicKey} [receiver]
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async deleteReview(review: PublicKey, xnft: PublicKey, receiver?: PublicKey): Promise<string> {
-    const tx = await createDeleteReviewTransaction(this.#program, review, xnft, receiver);
+  async deleteReview(review: PublicKey, receiver?: PublicKey): Promise<string> {
+    const tx = await createDeleteReviewTransaction(this.#program, review, receiver);
     return await this.#provider.sendAndConfirm!(tx);
   }
 
@@ -483,19 +482,13 @@ export class xNFT {
    * Attempts to update the xNFT's metadata with option signing requirements
    * from a curation entity. All values provided to the options parameter are
    * binding and should be populated with the previous values to be unchanged.
-   * @param {PublicKey} masterMetadata
    * @param {PublicKey} masterMint
    * @param {UpdateXnftOptions} opts
    * @param {PublicKey} [curator]
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async update(
-    masterMetadata: PublicKey,
-    masterMint: PublicKey,
-    opts: UpdateXnftOptions,
-    curator?: PublicKey
-  ): Promise<string> {
+  async update(masterMint: PublicKey, opts: UpdateXnftOptions, curator?: PublicKey): Promise<string> {
     const [xnft] = await deriveXnftAddress(masterMint);
     const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
 
@@ -511,7 +504,6 @@ export class xNFT {
         uri: opts.uri ?? null,
       },
       xnft,
-      masterMetadata,
       masterToken,
       curator
     );

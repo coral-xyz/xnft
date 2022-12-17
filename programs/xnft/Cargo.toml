@@ -18,8 +18,8 @@ cpi = ["no-entrypoint"]
 cli = ["no-entrypoint", "serde"]
 
 [dependencies]
-anchor-lang = { git = "https://github.com/coral-xyz/anchor" }
-anchor-spl = { git = "https://github.com/coral-xyz/anchor", features = ["metadata"] }
+anchor-lang = "0.26.0"
+anchor-spl = { version = "0.26.0", features = ["metadata"] }
 mpl-token-metadata = { version = "1.4.3", features = ["no-entrypoint"] }
 serde = { version = "1.0", optional = true }
 solana-security-txt = "1.0"
