@@ -349,7 +349,6 @@ describe("Account Updates", () => {
       })
       .accounts({
         xnft,
-        masterMetadata,
         masterToken,
         updater: authority.publicKey,
         curationAuthority: curatorAuthority.publicKey,
@@ -372,7 +371,6 @@ describe("Account Updates", () => {
       .transfer()
       .accounts({
         xnft,
-        masterMint,
         source: masterToken,
         destination,
         recipient: newAuthority.publicKey,
@@ -413,7 +411,6 @@ describe("Account Closure", () => {
       .deleteReview()
       .accounts({
         review,
-        xnft,
         receiver: author.publicKey,
         author: author.publicKey,
       })

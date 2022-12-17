@@ -242,21 +242,18 @@ export async function createDeleteReviewTransaction(
  * @export
  * @param {Program<Xnft>} program
  * @param {PublicKey} review
- * @param {PublicKey} xnft
  * @param {PublicKey} [receiver]
  * @returns {Promise<TransactionInstruction>}
  */
 export async function createDeleteReviewInstruction(
   program: Program<Xnft>,
   review: PublicKey,
-  xnft: PublicKey,
   receiver?: PublicKey
 ): Promise<TransactionInstruction> {
   return await program.methods
     .deleteReview()
     .accounts({
       review,
-      xnft,
       receiver: receiver ?? program.provider.publicKey,
     })
     .instruction();
@@ -455,7 +452,6 @@ export async function createUpdateXnftTransaction(
  * @param {Program<Xnft>} program
  * @param {IdlUpdateXnftParameters} params
  * @param {PublicKey} xnft
- * @param {PublicKey} masterMetadata
  * @param {PublicKey} masterToken
  * @param {PublicKey} [curator]
  * @returns {Promise<TransactionInstruction>}
@@ -464,14 +460,12 @@ export async function createUpdateXnftInstruction(
   program: Program<Xnft>,
   params: IdlUpdateXnftParameters,
   xnft: PublicKey,
-  masterMetadata: PublicKey,
   masterToken: PublicKey,
   curator?: PublicKey
 ): Promise<TransactionInstruction> {
   return await program.methods
     .updateXnft(params)
     .accounts({
-      masterMetadata,
       masterToken,
       curationAuthority: curator ?? program.provider.publicKey,
       xnft,
