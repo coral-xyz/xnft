@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft",
-  "version": "0.2.17",
+  "version": "0.2.18",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
   "repository": {

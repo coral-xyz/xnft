@@ -19,25 +19,19 @@ describe("Digital collectible xNFTs", () => {
 
     await wait(500);
 
-    invalidNft = await metaplex
-      .nfts()
-      .create({
-        name: "My Invalid Digital Collectible",
-        sellerFeeBasisPoints: 0,
-        uri: "https://arweave.net/my-invalid-content-hash",
-        isMutable: false,
-      })
-      .run();
+    invalidNft = await metaplex.nfts().create({
+      name: "My Invalid Digital Collectible",
+      sellerFeeBasisPoints: 0,
+      uri: "https://arweave.net/my-invalid-content-hash",
+      isMutable: false,
+    });
 
-    validNft = await metaplex
-      .nfts()
-      .create({
-        name: "My Digital Collectible",
-        sellerFeeBasisPoints: 0,
-        uri: "https://arweave.net/my-content-hash",
-        isMutable: true,
-      })
-      .run();
+    validNft = await metaplex.nfts().create({
+      name: "My Digital Collectible",
+      sellerFeeBasisPoints: 0,
+      uri: "https://arweave.net/my-content-hash",
+      isMutable: true,
+    });
   });
 
   describe("an associated xNFT can be created", () => {

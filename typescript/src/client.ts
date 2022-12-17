@@ -139,19 +139,6 @@ export class xNFT {
   }
 
   /**
-   * Install an xNFT for the wallet on the provider.
-   * @param {PublicKey} xnft
-   * @param {PublicKey} installVault
-   * @param {boolean} [permissioned]
-   * @returns {Promise<string>}
-   * @memberof xNFT
-   */
-  async install(xnft: PublicKey, installVault: PublicKey, permissioned?: boolean): Promise<string> {
-    const tx = await createCreateInstallTransaction(this.#program, xnft, installVault, permissioned);
-    return await this.#provider.sendAndConfirm!(tx);
-  }
-
-  /**
    * Create a standalone application xNFT.
    * @param {CreateXnftAppOptions} opts
    * @returns {Promise<string>}
@@ -405,6 +392,19 @@ export class xNFT {
    */
   async grantAccess(xnft: PublicKey, wallet: PublicKey): Promise<string> {
     const tx = await createGrantAccessTransaction(this.#program, xnft, wallet);
+    return await this.#provider.sendAndConfirm!(tx);
+  }
+
+  /**
+   * Install an xNFT for the wallet on the provider.
+   * @param {PublicKey} xnft
+   * @param {PublicKey} installVault
+   * @param {boolean} [permissioned]
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  async install(xnft: PublicKey, installVault: PublicKey, permissioned?: boolean): Promise<string> {
+    const tx = await createCreateInstallTransaction(this.#program, xnft, installVault, permissioned);
     return await this.#provider.sendAndConfirm!(tx);
   }
 

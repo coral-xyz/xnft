@@ -87,16 +87,6 @@ pub struct CreateXnft<'info> {
 }
 
 impl<'info> CreateXnft<'info> {
-    pub fn mint_to_ctx(&self) -> CpiContext<'_, '_, '_, 'info, MintTo<'info>> {
-        let program = self.token_program.to_account_info();
-        let accounts = MintTo {
-            mint: self.master_mint.to_account_info(),
-            to: self.master_token.to_account_info(),
-            authority: self.xnft.to_account_info(),
-        };
-        CpiContext::new(program, accounts)
-    }
-
     pub fn create_metadata_accounts_ctx(
         &self,
     ) -> CpiContext<'_, '_, '_, 'info, CreateMetadataAccountsV3<'info>> {
@@ -123,14 +113,12 @@ impl<'info> CreateXnft<'info> {
         CpiContext::new(program, accounts)
     }
 
-    pub fn update_primary_sale_happened_ctx(
-        &self,
-    ) -> CpiContext<'_, '_, '_, 'info, UpdatePrimarySaleHappenedViaToken<'info>> {
-        let program = self.metadata_program.to_account_info();
-        let accounts = UpdatePrimarySaleHappenedViaToken {
-            metadata: self.master_metadata.to_account_info(),
-            owner: self.publisher.to_account_info(),
-            token: self.master_token.to_account_info(),
+    pub fn mint_to_ctx(&self) -> CpiContext<'_, '_, '_, 'info, MintTo<'info>> {
+        let program = self.token_program.to_account_info();
+        let accounts = MintTo {
+            mint: self.master_mint.to_account_info(),
+            to: self.master_token.to_account_info(),
+            authority: self.xnft.to_account_info(),
         };
         CpiContext::new(program, accounts)
     }
@@ -140,6 +128,18 @@ impl<'info> CreateXnft<'info> {
         let accounts = SignMetadata {
             creator: self.publisher.to_account_info(),
             metadata: self.master_metadata.to_account_info(),
+        };
+        CpiContext::new(program, accounts)
+    }
+
+    pub fn update_primary_sale_happened_ctx(
+        &self,
+    ) -> CpiContext<'_, '_, '_, 'info, UpdatePrimarySaleHappenedViaToken<'info>> {
+        let program = self.metadata_program.to_account_info();
+        let accounts = UpdatePrimarySaleHappenedViaToken {
+            metadata: self.master_metadata.to_account_info(),
+            owner: self.publisher.to_account_info(),
+            token: self.master_token.to_account_info(),
         };
         CpiContext::new(program, accounts)
     }
