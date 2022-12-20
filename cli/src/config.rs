@@ -53,7 +53,7 @@ impl TryFrom<GlobalArgs> for Config {
         )?;
 
         let keypair = {
-            let data = read_to_string(&n_keypair)?;
+            let data = read_to_string(n_keypair)?;
             let bytes: Vec<u8> = serde_json::from_str(&data)?;
             Keypair::from_bytes(&bytes)
         }?;
