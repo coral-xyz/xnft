@@ -77,6 +77,8 @@ export type Screenshot = {
   uri: string;
 };
 
+export type ImageSizeOptions = Partial<Record<"sm" | "md" | "lg", string>>;
+
 export type ManifestEntrypointPlatforms = Partial<Record<"android" | "ios" | "web", string>>;
 export type ManifestEntrypoints = {
   default: ManifestEntrypointPlatforms;
@@ -85,7 +87,9 @@ export type ManifestEntrypoints = {
 
 export type Manifest = {
   entrypoints: ManifestEntrypoints;
-  screenshots: Screenshot[];
+  iconSizes?: ImageSizeOptions;
+  screenshots?: Screenshot[];
+  splash?: ImageSizeOptions;
 };
 
 export type XnftMetadataProperties = {
