@@ -14,7 +14,7 @@
 | Curator           | `Option<CuratorStatus>` | 169    | 34           | The optional curator entity status                                  |
 | URI               | `String`                | 203    | (4 + 200)    | The URI of the xNFT specific metadata                               |
 | Mint Seed Name    | `Option<String>`        | 407    | (1 + 4 + 32) | If `Kind::App`, the original name used to seed the master mint      |
-| Kind              | `Kind (Enum)`           | 444    | 1            | The enum variant representing the type of xNFt                      |
+| Kind              | `Kind (Enum)`           | 444    | 1            | The enum variant representing the type of xNFT                      |
 | Tag               | `Tag (Enum)`            | 445    | 1            | The enum variant categorizing the xNFT                              |
 | Supply            | `Option<u64>`           | 446    | 9            | The optional fixed supply/installation amount                       |
 | Total Installs    | `u64`                   | 455    | 8            | The amount of installs of the xNFT that have been created           |
