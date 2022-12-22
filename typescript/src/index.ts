@@ -19,3 +19,4 @@ export * from "./addresses";
 export * from "./client";
 export * from "./instructions";
 export * from "./types";
+export { IDL, type Xnft as IDLTypeDef } from "./xnft";

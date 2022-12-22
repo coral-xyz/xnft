@@ -179,7 +179,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async getAccount(publicKey: PublicKey): Promise<XnftAccount> {
-    const account = (await this.#program.account.xnft.fetch(publicKey)) as unknown as IdlXnftAccount;
+    const account = (await this.#program.account.xnft.fetch(publicKey)) as IdlXnftAccount;
 
     const [tokenAccount, xnftBlob, metadatas] = await Promise.all([
       getNftTokenAccountForMint(this.#provider.connection, account.masterMint),
@@ -321,7 +321,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async getMultipleAccounts(filters?: GetProgramAccountsFilter[]): Promise<XnftAccount[]> {
-    const xnfts = (await this.#program.account.xnft.all(filters)) as unknown as ProgramAccount<IdlXnftAccount>[];
+    const xnfts = (await this.#program.account.xnft.all(filters)) as ProgramAccount<IdlXnftAccount>[];
     const metadatas = (await this.#mpl
       .nfts()
       .findAllByMintList({ mints: xnfts.map(x => x.account.masterMint) })) as Metadata[];
