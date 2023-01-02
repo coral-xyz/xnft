@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Program } from "@project-serum/anchor";
+import { Program } from "@coral-xyz/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { deriveInstallAddress, deriveMasterMintAddress, TOKEN_METADATA_PROGRAM_ID } from "./addresses";

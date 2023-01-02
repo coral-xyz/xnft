@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Program, type ProgramAccount, type Provider } from "@coral-xyz/anchor";
 import { Metaplex, type JsonMetadata, type Metadata } from "@metaplex-foundation/js";
-import { Program, type ProgramAccount, type Provider } from "@project-serum/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { type GetProgramAccountsFilter, PublicKey, Connection } from "@solana/web3.js";
 import { deriveInstallAddress, deriveXnftAddress, PROGRAM_ID } from "./addresses";

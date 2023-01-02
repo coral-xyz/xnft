@@ -1,4 +1,4 @@
-import * as anchor from "@project-serum/anchor";
+import * as anchor from "@coral-xyz/anchor";
 import type { Xnft } from "../target/types/xnft";
 
 export const program = anchor.workspace.Xnft as anchor.Program<Xnft>;

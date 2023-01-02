@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { BN, type IdlAccounts, type IdlTypes } from "@coral-xyz/anchor";
 import type { JsonMetadata, Metadata } from "@metaplex-foundation/js";
-import { BN, type IdlAccounts, type IdlTypes } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { IDL, type Xnft } from "./xnft";
 
@@ -88,7 +88,7 @@ export type ManifestEntrypoints = {
 export type Manifest = {
   entrypoints: ManifestEntrypoints;
   iconSizes?: ImageSizeOptions;
-  props?: any;
+  props?: unknown;
   screenshots?: Screenshot[];
   splash?: ImageSizeOptions;
 };

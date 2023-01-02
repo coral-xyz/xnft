@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ProgramAccount } from "@project-serum/anchor";
+import type { ProgramAccount } from "@coral-xyz/anchor";
 import { AccountLayout, ACCOUNT_SIZE, TOKEN_PROGRAM_ID, type RawAccount as TokenAccount } from "@solana/spl-token";
 import { Connection, PublicKey } from "@solana/web3.js";
 
