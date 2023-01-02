@@ -1,5 +1,5 @@
+import * as anchor from "@coral-xyz/anchor";
 import { type CreateNftOutput, Metaplex, keypairIdentity } from "@metaplex-foundation/js";
-import * as anchor from "@project-serum/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { assert } from "chai";
 import { program, wait } from "./common";

@@ -1,3 +1,4 @@
+import * as anchor from "@coral-xyz/anchor";
 import {
   keypairIdentity,
   Metaplex,
@@ -5,7 +6,6 @@ import {
   type UnparsedAccount,
   type MetadataAccount,
 } from "@metaplex-foundation/js";
-import * as anchor from "@project-serum/anchor";
 import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
 import { assert } from "chai";
 import type { Xnft } from "../target/types/xnft";
