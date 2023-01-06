@@ -87,9 +87,9 @@ export type ManifestEntrypoints = {
 
 export type Manifest = {
   entrypoints: ManifestEntrypoints;
-  iconSizes?: ImageSizeOptions;
+  icon: ImageSizeOptions;
   props?: unknown;
-  screenshots?: Screenshot[];
+  screenshots: Screenshot[];
   splash?: ImageSizeOptions;
 };
 
