@@ -154,8 +154,7 @@ pub struct CuratorStatus {
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, Eq)]
 pub enum Kind {
     App,
-    Collection,
-    Nft,
+    Collectible,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]

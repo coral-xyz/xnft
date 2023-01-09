@@ -1144,10 +1144,7 @@ export type Xnft = {
             name: "App";
           },
           {
-            name: "Collection";
-          },
-          {
-            name: "Nft";
+            name: "Collectible";
           }
         ];
       };
@@ -2470,10 +2467,7 @@ export const IDL: Xnft = {
             name: "App",
           },
           {
-            name: "Collection",
-          },
-          {
-            name: "Nft",
+            name: "Collectible",
           },
         ],
       },

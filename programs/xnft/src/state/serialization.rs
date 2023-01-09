@@ -155,8 +155,7 @@ impl Serialize for Kind {
     {
         match *self {
             Kind::App => serializer.serialize_unit_variant("Kind", 0, "App"),
-            Kind::Collection => serializer.serialize_unit_variant("Kind", 1, "Collection"),
-            Kind::Nft => serializer.serialize_unit_variant("Kind", 2, "Nft"),
+            Kind::Collectible => serializer.serialize_unit_variant("Kind", 1, "Collectible"),
         }
     }
 }
