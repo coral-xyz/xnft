@@ -38,7 +38,7 @@ describe("Digital collectible xNFTs", () => {
     it("unless the digital collectible metadata is immutable", async () => {
       try {
         await program.methods
-          .createAssociatedXnft({ nft: { pubkey: invalidNft.metadataAddress } } as never, {
+          .createAssociatedXnft({ collectible: {} } as never, {
             creators: [{ address: program.provider.publicKey, share: 100 }],
             curator: null,
             installAuthority: null,
@@ -66,7 +66,7 @@ describe("Digital collectible xNFTs", () => {
 
     it("when there is an existing valid NFT or Collection to link it to", async () => {
       const method = program.methods
-        .createAssociatedXnft({ nft: {} } as never, {
+        .createAssociatedXnft({ collectible: {} } as never, {
           creators: [{ address: program.provider.publicKey, share: 100 }],
           curator: null,
           installAuthority: null,

@@ -3,8 +3,7 @@
 ```rust
 pub enum Kind {
     App,
-    Collection,
-    Nft,
+    Collectible,
 }
 
 pub enum L1 {

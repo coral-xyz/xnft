@@ -75,7 +75,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                 CustomError::UpdateAuthorityMismatch,
             );
         }
-        Kind::Collection | Kind::Nft => {
+        Kind::Collectible => {
             require_keys_eq!(
                 md.update_authority,
                 *ctx.accounts.updater.key,
