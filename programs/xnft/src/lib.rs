@@ -47,13 +47,22 @@ pub const MAX_RATING: u8 = 5;
 pub mod xnft {
     use super::*;
 
-    /// Creates an xNFT instance on top of an existing digital collectible that is MPL compliant.
-    pub fn create_associated_xnft(
-        ctx: Context<CreateAssociatedXnft>,
-        kind: Kind,
+    /// Creates all parts of an xNFT instance.
+    /// Once this is invoked, an xNFT exists and can be "installed" by users.
+    pub fn create_app_xnft(
+        ctx: Context<CreateAppXnft>,
+        name: String,
         params: CreateXnftParams,
     ) -> Result<()> {
-        instructions::create_associated_xnft_handler(ctx, kind, params)
+        instructions::create_app_xnft_handler(ctx, name, params)
+    }
+
+    /// Creates an xNFT instance on top of an existing digital collectible that is MPL compliant.
+    pub fn create_collectible_xnft(
+        ctx: Context<CreateCollectibleXnft>,
+        params: CreateXnftParams,
+    ) -> Result<()> {
+        instructions::create_collectible_xnft_handler(ctx, params)
     }
 
     /// Creates an "installation" of an xNFT.
@@ -72,16 +81,6 @@ pub mod xnft {
     /// Creates a "review" of an xNFT containing a URI to a comment and a 0-5 rating.
     pub fn create_review(ctx: Context<CreateReview>, uri: String, rating: u8) -> Result<()> {
         instructions::create_review_handler(ctx, uri, rating)
-    }
-
-    /// Creates all parts of an xNFT instance.
-    /// Once this is invoked, an xNFT exists and can be "installed" by users.
-    pub fn create_xnft(
-        ctx: Context<CreateXnft>,
-        name: String,
-        params: CreateXnftParams,
-    ) -> Result<()> {
-        instructions::create_xnft_handler(ctx, name, params)
     }
 
     /// Closes the install account.

@@ -28,7 +28,7 @@ describe("Private xNFTs", () => {
       const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
 
       const method = program.methods
-        .createXnft(name, {
+        .createAppXnft(name, {
           creators: [{ address: program.provider.publicKey, share: 100 }],
           curator: null,
           installAuthority: installAuthority.publicKey,

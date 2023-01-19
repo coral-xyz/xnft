@@ -19,35 +19,76 @@ import { Program } from "@coral-xyz/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { deriveInstallAddress, deriveMasterMintAddress, TOKEN_METADATA_PROGRAM_ID } from "./addresses";
-import type { IdlCreateXnftParameters, IdlUpdateXnftParameters, Kind } from "./types";
+import type { IdlCreateXnftParameters, IdlUpdateXnftParameters } from "./types";
 import type { Xnft } from "./xnft";
 
 /**
- * Create a full transaction for `create_associated_xnft`.
+ * Create a full transaction for `create_app_xnft`.
  * @export
- * @param {...Parameters<typeof createCreateXnftInstruction>} args
+ * @param {...Parameters<typeof createCreateAppXnftInstruction>} args
  * @returns {Promise<Transaction>}
  */
-export async function createCreateAssociatedXnftTransaction(
-  ...args: Parameters<typeof createCreateAssociatedXnftInstruction>
+export async function createCreateAppXnftTransaction(
+  ...args: Parameters<typeof createCreateAppXnftInstruction>
 ): Promise<Transaction> {
-  const ix = await createCreateAssociatedXnftInstruction(...args);
+  const ix = await createCreateAppXnftInstruction(...args);
   return new Transaction().add(ix);
 }
 
 /**
- * Create the ix instance for the `create_associated_xnft` instruction.
+ * Create the ix instance for the `create_app_xnft` instruction.
  * @export
  * @param {Program<Xnft>} program
- * @param {Kind} kind
+ * @param {string} name
+ * @param {IdlCreateXnftParameters} params
+ * @returns {Promise<TransactionInstruction>}
+ */
+export async function createCreateAppXnftInstruction(
+  program: Program<Xnft>,
+  name: string,
+  params: IdlCreateXnftParameters
+): Promise<TransactionInstruction> {
+  if (!program.provider.publicKey) {
+    throw new Error("no public key found on the program provider");
+  }
+
+  const [masterMint] = await deriveMasterMintAddress(name, program.provider.publicKey);
+  const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
+
+  return await program.methods
+    .createAppXnft(name, params)
+    .accounts({
+      masterMint,
+      masterToken,
+      metadataProgram: TOKEN_METADATA_PROGRAM_ID,
+    })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for `create_collectible_xnft`.
+ * @export
+ * @param {...Parameters<typeof createCreateCollectibleXnftInstruction>} args
+ * @returns {Promise<Transaction>}
+ */
+export async function createCreateCollectibleXnftTransaction(
+  ...args: Parameters<typeof createCreateCollectibleXnftInstruction>
+): Promise<Transaction> {
+  const ix = await createCreateCollectibleXnftInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create the ix instance for the `create_collectible_xnft` instruction.
+ * @export
+ * @param {Program<Xnft>} program
  * @param {IdlCreateXnftParameters} params
  * @param {PublicKey} metadata
  * @param {PublicKey} mint
  * @returns {Promise<TransactionInstruction>}
  */
-export async function createCreateAssociatedXnftInstruction(
+export async function createCreateCollectibleXnftInstruction(
   program: Program<Xnft>,
-  kind: Kind,
   metadata: PublicKey,
   mint: PublicKey,
   params: IdlCreateXnftParameters
@@ -59,7 +100,7 @@ export async function createCreateAssociatedXnftInstruction(
   const masterToken = await getAssociatedTokenAddress(mint, program.provider.publicKey);
 
   return await program.methods
-    .createAssociatedXnft({ [kind.toLowerCase()]: {} }, params)
+    .createCollectibleXnft(params)
     .accounts({
       masterMint: mint,
       masterToken,
@@ -141,49 +182,6 @@ export async function createCreateReviewInstruction(
       install,
       masterToken,
       xnft,
-    })
-    .instruction();
-}
-
-/**
- * Create a full transaction for `create_xnft`.
- * @export
- * @param {...Parameters<typeof createCreateXnftInstruction>} args
- * @returns {Promise<Transaction>}
- */
-export async function createCreateXnftTransaction(
-  ...args: Parameters<typeof createCreateXnftInstruction>
-): Promise<Transaction> {
-  const ix = await createCreateXnftInstruction(...args);
-  return new Transaction().add(ix);
-}
-
-/**
- * Create the ix instance for the `create_xnft` instruction.
- * @export
- * @param {Program<Xnft>} program
- * @param {string} name
- * @param {IdlCreateXnftParameters} params
- * @returns {Promise<TransactionInstruction>}
- */
-export async function createCreateXnftInstruction(
-  program: Program<Xnft>,
-  name: string,
-  params: IdlCreateXnftParameters
-): Promise<TransactionInstruction> {
-  if (!program.provider.publicKey) {
-    throw new Error("no public key found on the program provider");
-  }
-
-  const [masterMint] = await deriveMasterMintAddress(name, program.provider.publicKey);
-  const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
-
-  return await program.methods
-    .createXnft(name, params)
-    .accounts({
-      masterMint,
-      masterToken,
-      metadataProgram: TOKEN_METADATA_PROGRAM_ID,
     })
     .instruction();
 }

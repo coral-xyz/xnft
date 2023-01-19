@@ -6,7 +6,7 @@ Invoked by a curator account in order to verified their assignment to an xNFT.
 
 This process is initiated by the authority of the xNFT through the [`set_curator`](/instructions/set-curator.md) instruction to set the _unverified_ curator public key in the xNFT program account data.
 
-!> The association with a curator on an xNFT should only be respected if the `verified` subfield of the `CuratorStatus` xNFT account field is `true` and has protocol-enforced implications on xNFT updates as defined in the the [Update an xNFT](/instructions/update-an-xnft.md) section.
+!> The association with a curator on an xNFT should only be respected if the `verified` subfield of the `CuratorStatus` xNFT account field is `true` and has protocol-enforced implications on xNFT updates as defined in the the [Update an xNFT](/instructions/update-xnft.md) section.
 
 ## Additional Constraints
 

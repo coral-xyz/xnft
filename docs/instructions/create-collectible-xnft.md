@@ -1,8 +1,8 @@
 # Create an Associated xNFT
 
-[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_associated_xnft.rs)
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_collectible_xnft.rs)
 
-Unlike the standard [`create_xnft`](/instructions/create-an-xnft.md) instruction, this allows a user to create an xNFT that is soul-bound to an existing digital collectible (an NFT that is either an individual item or the collection entity itself).
+Unlike the standard [`create_app_xnft`](/instructions/create-app-xnft.md) instruction, this allows a user to create an xNFT that is soul-bound to an existing digital collectible (an NFT that is either an individual item or the collection entity itself).
 
 ## Additional Constraints
 
@@ -24,7 +24,6 @@ Unlike the standard [`create_xnft`](/instructions/create-an-xnft.md) instruction
 
 ## Arguments
 
-| Name   | Type     | Description                                                                  |
-| :----- | :------- | :--------------------------------------------------------------------------- |
-| Kind   | `Kind`   | The variant of the `Kind` enum that describes the digital collectible target |
-| Params | `struct` | Schema defined in the [auxiliary state section](/state/auxiliary.md)         |
+| Name   | Type     | Description                                                          |
+| :----- | :------- | :------------------------------------------------------------------- |
+| Params | `struct` | Schema defined in the [auxiliary state section](/state/auxiliary.md) |

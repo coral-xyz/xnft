@@ -1,5 +1,5 @@
 import { Metaplex, type Nft, type Sft } from "@metaplex-foundation/js";
-import { Program, AnchorProvider, Wallet, type IdlAccounts, ProgramAccount } from "@project-serum/anchor";
+import { Program, AnchorProvider, Wallet, type IdlAccounts, ProgramAccount } from "@coral-xyz/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import fs from "fs/promises";
