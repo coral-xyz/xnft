@@ -15,16 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Program, type ProgramAccount, type Provider } from "@coral-xyz/anchor";
+import { BN, Program, type ProgramAccount, type Provider } from "@coral-xyz/anchor";
 import { Metaplex, type JsonMetadata, type Metadata } from "@metaplex-foundation/js";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
-import { type GetProgramAccountsFilter, PublicKey, Connection } from "@solana/web3.js";
+import { PublicKey, Connection, type GetProgramAccountsFilter } from "@solana/web3.js";
 import { deriveInstallAddress, deriveXnftAddress, PROGRAM_ID } from "./addresses";
 import {
-  createCreateAssociatedXnftTransaction,
+  createCreateAppXnftTransaction,
+  createCreateCollectibleXnftTransaction,
   createCreateInstallTransaction,
   createCreateReviewTransaction,
-  createCreateXnftTransaction,
   createDeleteInstallTransaction,
   createDeleteReviewTransaction,
   createGrantAccessTransaction,
@@ -37,13 +37,12 @@ import {
 } from "./instructions";
 import { getNftTokenAccountForMint } from "./tokens";
 import type {
-  CreateAssociatedXnftOptions,
   CreateXnftAppOptions,
+  CreateXnftCollectibleOptions,
   CustomJsonMetadata,
   IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
-  Kind,
   UpdateXnftOptions,
   XnftAccount,
 } from "./types";
@@ -114,20 +113,17 @@ export class xNFT {
   }
 
   /**
-   * Create a digital collectible associated xNFT.
-   * @param {PublicKey} metadata
-   * @param {PublicKey} mint
-   * @param {CreateAssociatedXnftOptions} opts
+   * Create a standalone application xNFT.
+   * @param {CreateXnftAppOptions} opts
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async createAssociatedXnft(metadata: PublicKey, mint: PublicKey, opts: CreateAssociatedXnftOptions): Promise<string> {
-    const kindVariant = { [opts.kind]: {} } as never;
-    const tx = await createCreateAssociatedXnftTransaction(this.#program, kindVariant, metadata, mint, {
+  async createAppXnft(opts: CreateXnftAppOptions): Promise<string> {
+    const tx = await createCreateAppXnftTransaction(this.#program, opts.name, {
       creators: opts.creators,
       curator: opts.curator ?? null,
       installAuthority: opts.installAuthority ?? null,
-      installPrice: opts.installPrice,
+      installPrice: opts.installPrice ?? new BN(0),
       installVault: opts.installVault ?? this.#provider.publicKey!,
       sellerFeeBasisPoints: opts.sellerFeeBasisPoints ?? 0,
       supply: opts.supply ?? null,
@@ -139,20 +135,20 @@ export class xNFT {
   }
 
   /**
-   * Create a standalone application xNFT.
-   * @param {CreateXnftAppOptions} opts
+   * Create a digital collectible associated xNFT.
+   * @param {CreateXnftCollectibleOptions} opts
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async createXnft(opts: CreateXnftAppOptions): Promise<string> {
-    const tx = await createCreateXnftTransaction(this.#program, opts.name, {
-      creators: opts.creators,
-      curator: opts.curator ?? null,
-      installAuthority: opts.installAuthority ?? null,
-      installPrice: opts.installPrice,
-      installVault: opts.installVault ?? this.#provider.publicKey!,
-      sellerFeeBasisPoints: opts.sellerFeeBasisPoints ?? 0,
-      supply: opts.supply ?? null,
+  async createCollectibleXnft(opts: CreateXnftCollectibleOptions): Promise<string> {
+    const tx = await createCreateCollectibleXnftTransaction(this.#program, opts.metadata, opts.mint, {
+      creators: [],
+      curator: null,
+      installAuthority: null,
+      installPrice: new BN(0),
+      installVault: this.#provider.publicKey!,
+      sellerFeeBasisPoints: 0,
+      supply: null,
       symbol: "",
       tag: { [opts.tag]: {} } as never,
       uri: opts.uri,
@@ -190,7 +186,7 @@ export class xNFT {
     const md = metadatas[0];
     let mplBlob: JsonMetadata<string> = {};
 
-    if (!enumsEqual<Kind>(account.kind, "app")) {
+    if (!enumsEqual(account.kind, "app")) {
       mplBlob = await this.#mpl.storage().downloadJson(gatewayUri(md.uri));
     }
 
@@ -252,7 +248,7 @@ export class xNFT {
 
     const mplBlobs = await Promise.all(
       validXnfts.map(x =>
-        enumsEqual<Kind>(x.account.kind, "app")
+        enumsEqual(x.account.kind, "app")
           ? Promise.resolve({})
           : (this.#mpl.storage().downloadJson(gatewayUri(x.metadata.uri)) as Promise<JsonMetadata<string>>)
       )
@@ -332,7 +328,7 @@ export class xNFT {
 
     const mplBlobs = await Promise.all(
       xnfts.map((acc, idx) =>
-        enumsEqual<Kind>(acc.account.kind, "app")
+        enumsEqual(acc.account.kind, "app")
           ? Promise.resolve({})
           : (this.#mpl.storage().downloadJson(gatewayUri(metadatas[idx].uri)) as Promise<JsonMetadata<string>>)
       )

@@ -1,6 +1,6 @@
 # Create an xNFT
 
-[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_xnft.rs)
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/create_app_xnft.rs)
 
 Create the xNFT and the supporting accounts required for meeting the MPL standard:
 

@@ -23,7 +23,7 @@ use crate::CustomError;
 
 #[derive(Accounts)]
 
-pub struct CreateAssociatedXnft<'info> {
+pub struct CreateCollectibleXnft<'info> {
     #[account(
         constraint = master_mint.decimals == 0,
         constraint = master_mint.supply == 1,
@@ -61,9 +61,8 @@ pub struct CreateAssociatedXnft<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_associated_xnft_handler(
-    ctx: Context<CreateAssociatedXnft>,
-    kind: Kind,
+pub fn create_collectible_xnft_handler(
+    ctx: Context<CreateCollectibleXnft>,
     params: CreateXnftParams,
 ) -> Result<()> {
     // Check the length of the metadata uri provided.
@@ -75,7 +74,7 @@ pub fn create_associated_xnft_handler(
     // Instantiate and populate the xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;
     ***xnft = Xnft::try_new(
-        kind,
+        Kind::Collectible,
         *ctx.bumps.get("xnft").unwrap(),
         *ctx.accounts.publisher.key,
         ctx.accounts.master_metadata.key(),

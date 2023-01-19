@@ -54,7 +54,7 @@ describe("A standard xNFT", () => {
 
       try {
         await program.methods
-          .createXnft(name, {
+          .createAppXnft(name, {
             symbol,
             tag,
             uri: "this sample uri is too long according to metaplex and should break the serialization of the accounts + this sample uri is too long according to metaplex and should break the serialization of the accounts",
@@ -85,7 +85,7 @@ describe("A standard xNFT", () => {
       masterToken = await getAssociatedTokenAddress(masterMint, authority.publicKey);
 
       const ix = program.methods
-        .createXnft(name, {
+        .createAppXnft(name, {
           symbol,
           tag,
           uri,

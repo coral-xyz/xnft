@@ -26,7 +26,7 @@ use crate::CustomError;
 
 #[derive(Accounts)]
 #[instruction(name: String)]
-pub struct CreateXnft<'info> {
+pub struct CreateAppXnft<'info> {
     #[account(
         init,
         payer = payer,
@@ -86,7 +86,7 @@ pub struct CreateXnft<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-impl<'info> CreateXnft<'info> {
+impl<'info> CreateAppXnft<'info> {
     pub fn create_metadata_accounts_ctx(
         &self,
     ) -> CpiContext<'_, '_, '_, 'info, CreateMetadataAccountsV3<'info>> {
@@ -145,8 +145,8 @@ impl<'info> CreateXnft<'info> {
     }
 }
 
-pub fn create_xnft_handler(
-    ctx: Context<CreateXnft>,
+pub fn create_app_xnft_handler(
+    ctx: Context<CreateAppXnft>,
     name: String,
     params: CreateXnftParams,
 ) -> Result<()> {

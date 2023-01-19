@@ -44,29 +44,30 @@ export type Tag = Lowercase<typeof IDL.types[5]["type"]["variants"][number]["nam
 export const TagOptions = IDL.types[5].type.variants.map(v => v.name);
 console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));
 
-type CreateXnftCommonParameters = {
-  creators: CreatorsParam[];
-  curator?: PublicKey;
-  installAuthority?: PublicKey;
-  installPrice: BN;
-  installVault?: PublicKey;
-  sellerFeeBasisPoints?: number;
-  supply?: BN;
-  tag: Tag;
-  uri: string;
-};
-
-export type CreatorsParam = {
+export type CreatorParam = {
   address: PublicKey;
   share: number;
 };
 
-export type CreateAssociatedXnftOptions = CreateXnftCommonParameters & {
-  kind: Kind;
+type CreateXnftCommonParameters = {
+  tag: Tag;
+  uri: string;
+};
+
+export type CreateXnftCollectibleOptions = CreateXnftCommonParameters & {
+  metadata: PublicKey;
+  mint: PublicKey;
 };
 
 export type CreateXnftAppOptions = CreateXnftCommonParameters & {
+  creators: CreatorParam[];
+  curator?: PublicKey;
+  installAuthority?: PublicKey;
+  installPrice?: BN;
+  installVault?: PublicKey;
   name: string;
+  sellerFeeBasisPoints?: number;
+  supply?: BN;
 };
 
 export type UpdateXnftOptions = {
