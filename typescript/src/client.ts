@@ -43,6 +43,7 @@ import type {
   IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
+  Kind,
   UpdateXnftOptions,
   XnftAccount,
 } from "./types";
@@ -312,22 +313,24 @@ export class xNFT {
   /**
    * Get multiple xNFT program accounts and peripheral data based on the optionally
    * provided program account filters.
+   * @param {Kind | null} [kind]
    * @param {GetProgramAccountsFilter[]} [filters]
    * @returns {Promise<XnftAccount[]>}
    * @memberof xNFT
    */
-  async getMultipleAccounts(filters?: GetProgramAccountsFilter[]): Promise<XnftAccount[]> {
+  async getMultipleAccounts(kind?: Kind | null, filters?: GetProgramAccountsFilter[]): Promise<XnftAccount[]> {
     const xnfts = (await this.#program.account.xnft.all(filters)) as ProgramAccount<IdlXnftAccount>[];
+    const filteredXnfts = kind ? xnfts.filter(x => enumsEqual(x.account.kind, kind)) : xnfts;
     const metadatas = (await this.#mpl
       .nfts()
-      .findAllByMintList({ mints: xnfts.map(x => x.account.masterMint) })) as Metadata[];
+      .findAllByMintList({ mints: filteredXnfts.map(x => x.account.masterMint) })) as Metadata[];
 
     const xnftBlobs = await Promise.all(
-      xnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
+      filteredXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
     );
 
     const mplBlobs = await Promise.all(
-      xnfts.map((acc, idx) =>
+      filteredXnfts.map((acc, idx) =>
         enumsEqual(acc.account.kind, "app")
           ? Promise.resolve({})
           : (this.#mpl.storage().downloadJson(gatewayUri(metadatas[idx].uri)) as Promise<JsonMetadata<string>>)
@@ -339,7 +342,7 @@ export class xNFT {
     );
 
     const response: XnftAccount[] = [];
-    xnfts.forEach((acc, idx) => {
+    filteredXnfts.forEach((acc, idx) => {
       response.push({
         data: acc.account,
         metadata: {
