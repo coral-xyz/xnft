@@ -19,7 +19,7 @@ import { BN, type IdlAccounts, type IdlTypes } from "@coral-xyz/anchor";
 import type { JsonMetadata, Metadata } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import semver from "semver";
-import { z } from "zod";
+import { z, ZodLiteral, ZodUnion } from "zod";
 import { IDL, type Xnft } from "./xnft";
 
 // ================
@@ -36,11 +36,9 @@ export type IdlUpdateXnftParameters = IdlTypes<Xnft>["UpdateParams"];
 // =================
 // ABSTRACTION TYPES
 // =================
-export type Kind = Lowercase<typeof IDL.types[4]["type"]["variants"][number]["name"]>;
 export const KindOptions = IDL.types[4].type.variants.map(v => v.name);
 console.assert(IDL.types[4].type.variants.map(v => v.name).includes("App"));
 
-export type Tag = Lowercase<typeof IDL.types[5]["type"]["variants"][number]["name"]>;
 export const TagOptions = IDL.types[5].type.variants.map(v => v.name);
 console.assert(IDL.types[5].type.variants.map(v => v.name).includes("Defi"));
 
@@ -142,6 +140,18 @@ export const PublicKeySchema = z.string().refine(
   }
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const KindSchema = z.union(KindOptions.map(k => z.literal(k.toLowerCase())) as any) as ZodUnion<
+  readonly [ZodLiteral<Lowercase<typeof KindOptions[number]>>, ...ZodLiteral<Lowercase<typeof KindOptions[number]>>[]]
+>;
+export type Kind = z.infer<typeof KindSchema>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const TagSchema = z.union(TagOptions.map(t => z.literal(t.toLowerCase())) as any) as ZodUnion<
+  readonly [ZodLiteral<Lowercase<typeof TagOptions[number]>>, ...ZodLiteral<Lowercase<typeof TagOptions[number]>>[]]
+>;
+export type Tag = z.infer<typeof TagSchema>;
+
 export const EntrypointPlatformsSchema = z
   .object({
     android: z.string(),
@@ -179,3 +189,45 @@ export const XnftMetadataPropertiesSchema = z.object({
   history: ManifestHistorySchema,
 });
 export type XnftMetadataPropertiesType = z.infer<typeof XnftMetadataPropertiesSchema>;
+
+export const AppBuildJsonManifestSchema = z.object({
+  description: z.string().min(5),
+  entrypoints: EntrypointsSchema,
+  icon: ImageSizeOptionsSchema,
+  installAuthority: PublicKeySchema.optional(),
+  installVault: PublicKeySchema.optional(),
+  kind: z.literal("app"),
+  name: z.string().min(1).max(32),
+  price: z.number().nonnegative().optional(),
+  programIds: PublicKeySchema.array().optional(),
+  props: z.any().optional(),
+  royalitesPercentage: z.number().nonnegative().max(100).optional(),
+  screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
+  splash: ImageSizeOptionsSchema.optional(),
+  supply: z.number().min(1).optional(),
+  tag: TagSchema.optional(),
+  version: VersionSchema,
+  website: z.string().url(),
+});
+
+export type AppBuildJsonManifestType = z.infer<typeof AppBuildJsonManifestSchema>;
+
+export const CollectibleJsonManifestSchema = z.object({
+  collectibleMint: PublicKeySchema,
+  entrypoints: EntrypointsSchema,
+  kind: z.literal("collectible"),
+  programIds: PublicKeySchema.array().optional(),
+  props: z.any().optional(),
+  screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
+  splash: ImageSizeOptionsSchema.optional(),
+  version: VersionSchema,
+});
+
+export type CollectibleBuildJsonManifestType = z.infer<typeof CollectibleJsonManifestSchema>;
+
+export const BuildJsonManifestSchema = z.discriminatedUnion("kind", [
+  AppBuildJsonManifestSchema,
+  CollectibleJsonManifestSchema,
+]);
+
+export type BuildJsonManifestType = z.infer<typeof BuildJsonManifestSchema>;
