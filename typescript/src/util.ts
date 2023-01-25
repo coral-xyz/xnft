@@ -17,7 +17,7 @@
 
 import { Program, AnchorProvider, type Provider } from "@coral-xyz/anchor";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { PROGRAM_ID } from ".";
+import { PROGRAM_ID } from "./addresses";
 import { type Xnft, IDL } from "./xnft";
 
 export function buildAnonymousProvider(connection: Connection): Provider {
