@@ -198,7 +198,7 @@ fn process_grant_access(
         )?,
     };
 
-    println!("Signature: {}", sig);
+    println!("Signature: {sig}");
     Ok(())
 }
 
@@ -220,7 +220,7 @@ fn process_set_curator(cfg: Config, address: Pubkey, curator: Pubkey) -> Result<
         xnft::instruction::SetCurator {}
     )?;
 
-    println!("Signature: {}", sig);
+    println!("Signature: {sig}");
     Ok(())
 }
 
@@ -243,7 +243,7 @@ fn process_toggle_suspend(cfg: Config, address: Pubkey) -> Result<()> {
         }
     )?;
 
-    println!("Signature: {}", sig);
+    println!("Signature: {sig}");
     Ok(())
 }
 
@@ -272,7 +272,7 @@ fn process_transfer(cfg: Config, xnft: Pubkey, recipient: Pubkey) -> Result<()> 
         xnft::instruction::Transfer {}
     )?;
 
-    println!("Signature: {}", sig);
+    println!("Signature: {sig}");
     Ok(())
 }
 
@@ -297,7 +297,7 @@ fn process_uninstall(cfg: Config, address: Pubkey) -> Result<()> {
         xnft::instruction::DeleteInstall {}
     )?;
 
-    println!("Signature: {}", sig);
+    println!("Signature: {sig}");
     Ok(())
 }
 
@@ -314,6 +314,6 @@ fn process_verify(cfg: Config, address: Pubkey) -> Result<()> {
         xnft::instruction::VerifyCurator {}
     )?;
 
-    println!("Signature: {}", sig);
+    println!("Signature: {sig}");
     Ok(())
 }

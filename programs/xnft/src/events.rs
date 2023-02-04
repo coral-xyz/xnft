@@ -15,6 +15,8 @@
 
 use anchor_lang::prelude::*;
 
+use crate::state::Tag;
+
 #[event]
 pub struct AccessGranted {
     pub wallet: Pubkey,
@@ -31,6 +33,12 @@ pub struct InstallationCreated {
 pub struct ReviewCreated {
     pub author: Pubkey,
     pub rating: u8,
+    pub xnft: Pubkey,
+}
+
+#[event]
+pub struct XnftCreated {
+    pub tag: Tag,
     pub xnft: Pubkey,
 }
 

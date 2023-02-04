@@ -24,6 +24,13 @@
 | `rating` |   `u8`   | A 0-5 numerical rating associated with the review     |
 | `xnft`   | `Pubkey` | The public key of the xNFT that was reviewed          |
 
+## `XnftCreated`
+
+| Field  |   Type   | Description                      |
+| :----- | :------: | :------------------------------- |
+| `tag`  |  `Tag`   | The tag assigned to the new xNFT |
+| `xnft` | `Pubkey` | The public key of the new xNFT   |
+
 ## `XnftUpdated`
 
 | Field  |   Type   | Description                                             |
