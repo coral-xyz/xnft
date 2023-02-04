@@ -21,6 +21,7 @@ use anchor_spl::metadata::{
 use anchor_spl::token::{self, FreezeAccount, Mint, MintTo, Token, TokenAccount};
 use mpl_token_metadata::state::{Creator, DataV2, MAX_URI_LENGTH};
 
+use crate::events::XnftCreated;
 use crate::state::{CreateXnftParams, Kind, Xnft};
 use crate::CustomError;
 
@@ -230,6 +231,11 @@ pub fn create_app_xnft_handler(
     metadata::update_primary_sale_happened_via_token(
         ctx.accounts.update_primary_sale_happened_ctx(),
     )?;
+
+    emit!(XnftCreated {
+        tag: params.tag,
+        xnft: ctx.accounts.xnft.key(),
+    });
 
     Ok(())
 }

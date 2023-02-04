@@ -1216,6 +1216,23 @@ export type Xnft = {
       ];
     },
     {
+      name: "XnftCreated";
+      fields: [
+        {
+          name: "tag";
+          type: {
+            defined: "Tag";
+          };
+          index: false;
+        },
+        {
+          name: "xnft";
+          type: "publicKey";
+          index: false;
+        }
+      ];
+    },
+    {
       name: "XnftUpdated";
       fields: [
         {
@@ -2523,6 +2540,23 @@ export const IDL: Xnft = {
         {
           name: "rating",
           type: "u8",
+          index: false,
+        },
+        {
+          name: "xnft",
+          type: "publicKey",
+          index: false,
+        },
+      ],
+    },
+    {
+      name: "XnftCreated",
+      fields: [
+        {
+          name: "tag",
+          type: {
+            defined: "Tag",
+          },
           index: false,
         },
         {

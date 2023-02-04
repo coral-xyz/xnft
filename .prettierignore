@@ -1,6 +1,7 @@
 .anchor/
 .DS_Store
 .next/
+.rollup.cache/
 build/
 deps/
 dist/

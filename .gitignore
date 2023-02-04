@@ -1,6 +1,7 @@
 **/*.rs.bk
 .anchor/
 .DS_Store
+.rollup.cache/
 build/
 dist/
 node_modules/
