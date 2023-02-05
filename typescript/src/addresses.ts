@@ -26,10 +26,10 @@ export const TOKEN_METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkY
  * @export
  * @param {PublicKey} wallet
  * @param {PublicKey} xnft
- * @returns {Promise<[PublicKey, number]>}
+ * @returns {[PublicKey, number]}
  */
-export async function deriveAccessAddress(wallet: PublicKey, xnft: PublicKey): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from("access"), wallet.toBytes(), xnft.toBytes()], PROGRAM_ID);
+export function deriveAccessAddress(wallet: PublicKey, xnft: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from("access"), wallet.toBytes(), xnft.toBytes()], PROGRAM_ID);
 }
 
 /**
@@ -37,10 +37,10 @@ export async function deriveAccessAddress(wallet: PublicKey, xnft: PublicKey): P
  * @export
  * @param {PublicKey} authority
  * @param {PublicKey} xnft
- * @returns {Promise<[PublicKey, number]>}
+ * @returns {[PublicKey, number]}
  */
-export async function deriveInstallAddress(authority: PublicKey, xnft: PublicKey): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from("install"), authority.toBytes(), xnft.toBytes()], PROGRAM_ID);
+export function deriveInstallAddress(authority: PublicKey, xnft: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from("install"), authority.toBytes(), xnft.toBytes()], PROGRAM_ID);
 }
 
 /**
@@ -48,10 +48,10 @@ export async function deriveInstallAddress(authority: PublicKey, xnft: PublicKey
  * @export
  * @param {string} name
  * @param {PublicKey} publisher
- * @returns {Promise<[PublicKey, number]>}
+ * @returns {[PublicKey, number]}
  */
-export async function deriveMasterMintAddress(name: string, publisher: PublicKey): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from("mint"), publisher.toBytes(), Buffer.from(name)], PROGRAM_ID);
+export function deriveMasterMintAddress(name: string, publisher: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from("mint"), publisher.toBytes(), Buffer.from(name)], PROGRAM_ID);
 }
 
 /**
@@ -59,18 +59,18 @@ export async function deriveMasterMintAddress(name: string, publisher: PublicKey
  * @export
  * @param {PublicKey} xnft
  * @param {PublicKey} author
- * @returns {Promise<[PublicKey, number]>}
+ * @returns {[PublicKey, number]}
  */
-export async function deriveReviewAddress(xnft: PublicKey, author: PublicKey): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from("review"), xnft.toBytes(), author.toBytes()], PROGRAM_ID);
+export function deriveReviewAddress(xnft: PublicKey, author: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from("review"), xnft.toBytes(), author.toBytes()], PROGRAM_ID);
 }
 
 /**
  * Derive the PDA of the associated xNFT program account.
  * @export
  * @param {PublicKey} masterMint
- * @returns {Promise<[PublicKey, number]>}
+ * @returns {[PublicKey, number]}
  */
-export async function deriveXnftAddress(masterMint: PublicKey): Promise<[PublicKey, number]> {
-  return PublicKey.findProgramAddress([Buffer.from("xnft"), masterMint.toBytes()], PROGRAM_ID);
+export function deriveXnftAddress(masterMint: PublicKey): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync([Buffer.from("xnft"), masterMint.toBytes()], PROGRAM_ID);
 }

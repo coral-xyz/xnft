@@ -10,7 +10,7 @@ import {
 
 describe("Program account public keys should be derivable for", () => {
   test("access accounts", async () => {
-    const [pk] = await deriveAccessAddress(
+    const [pk] = deriveAccessAddress(
       new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd"),
       new PublicKey("BZ6YRowFVJ69gQRF5nbP4F4uUxukCKS2Lvez5pP6eA75")
     );
@@ -18,7 +18,7 @@ describe("Program account public keys should be derivable for", () => {
   });
 
   test("install accounts", async () => {
-    const [pk] = await deriveInstallAddress(
+    const [pk] = deriveInstallAddress(
       new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd"),
       new PublicKey("BZ6YRowFVJ69gQRF5nbP4F4uUxukCKS2Lvez5pP6eA75")
     );
@@ -26,15 +26,12 @@ describe("Program account public keys should be derivable for", () => {
   });
 
   test("master mint accounts", async () => {
-    const [pk] = await deriveMasterMintAddress(
-      "Sample xNFT",
-      new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd")
-    );
+    const [pk] = deriveMasterMintAddress("Sample xNFT", new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd"));
     expect(pk.toBase58()).toStrictEqual("6D3F4cbYj7RK3s6JiLMwBdozz7Jfna8zNKFjdjEqGDd9");
   });
 
   test("review accounts", async () => {
-    const [pk] = await deriveReviewAddress(
+    const [pk] = deriveReviewAddress(
       new PublicKey("BZ6YRowFVJ69gQRF5nbP4F4uUxukCKS2Lvez5pP6eA75"),
       new PublicKey("FSHi6odnoRvHDvMpHXXLNBwrBgJFvFH5zBqDbHpwepnd")
     );
@@ -42,7 +39,7 @@ describe("Program account public keys should be derivable for", () => {
   });
 
   test("xnft accounts", async () => {
-    const [pk] = await deriveXnftAddress(new PublicKey("3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P"));
+    const [pk] = deriveXnftAddress(new PublicKey("3xoP7A2fQAiwYzeDNw9wrVQxBZQqsBDnGYWcp7Bv415P"));
     expect(pk.toBase58()).toStrictEqual("BEu8zcBFcSgj48rgwzXyPEmuKq9sBXhARSLtAeFiUc3g");
   });
 });

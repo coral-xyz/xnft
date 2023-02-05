@@ -6,14 +6,15 @@ import {
   type UnparsedAccount,
   type MetadataAccount,
 } from "@metaplex-foundation/js";
-import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync, getAccount } from "@solana/spl-token";
 import { assert } from "chai";
 import type { Xnft } from "../target/types/xnft";
-import { metadataProgram, program, wait } from "./common";
+import { deriveInstallAddress, deriveReviewAddress, deriveXnftAddress, PROGRAM_ID, xNFT } from "../typescript/src";
+import { client, metadataProgram, wait } from "./common";
 
 const curatorAuthority = anchor.web3.Keypair.generate();
-const authority = ((program.provider as anchor.AnchorProvider).wallet as anchor.Wallet).payer;
-const metaplex = new Metaplex(program.provider.connection).use(keypairIdentity(authority));
+const authority = ((client.provider as anchor.AnchorProvider).wallet as anchor.Wallet).payer;
+const metaplex = new Metaplex(client.provider.connection).use(keypairIdentity(authority));
 
 const installVault = authority.publicKey;
 const author = anchor.web3.Keypair.generate();
@@ -29,45 +30,25 @@ let authorInstallation: anchor.web3.PublicKey;
 
 describe("A standard xNFT", () => {
   before(async () => {
-    await program.provider.connection.requestAirdrop(curatorAuthority.publicKey, 2 * anchor.web3.LAMPORTS_PER_SOL);
+    await client.provider.connection.requestAirdrop(curatorAuthority.publicKey, 2 * anchor.web3.LAMPORTS_PER_SOL);
   });
 
   describe("can be created", () => {
-    const installPrice = new anchor.BN(0);
     const name = "test xnft";
-    const symbol = "";
-    const tag = { defi: {} } as never;
+    const tag = "defi";
     const uri = "https://arweave.net/abc123";
-    const sellerFeeBasisPoints = 0;
-    const supply = null;
 
     let xnftData: anchor.IdlAccounts<Xnft>["xnft"];
     let meta: MetadataAccount;
 
     it("unless the uri is too long", async () => {
-      const [mint] = await anchor.web3.PublicKey.findProgramAddress(
-        [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
-        program.programId
-      );
-
-      const masterToken = await getAssociatedTokenAddress(mint, authority.publicKey);
-
       try {
-        await program.methods
-          .createAppXnft(name, {
-            symbol,
-            tag,
-            uri: "this sample uri is too long according to metaplex and should break the serialization of the accounts + this sample uri is too long according to metaplex and should break the serialization of the accounts",
-            sellerFeeBasisPoints,
-            installAuthority: null,
-            installPrice,
-            installVault,
-            supply,
-            creators: [{ address: authority.publicKey, share: 100 }],
-            curator: null,
-          })
-          .accounts({ masterMint: mint, masterToken, metadataProgram })
-          .rpc();
+        await client.createAppXnft({
+          creators: [{ address: authority.publicKey, share: 100 }],
+          name,
+          tag,
+          uri: "this uri is obviously too long to fit into the metadata account...this uri is obviously too long to fit into the metadata account...this uri is obviously too long to fit into the metadata account...this uri is obviously too long to fit into the metadata account...",
+        });
 
         assert.ok(false);
       } catch (err) {
@@ -77,43 +58,29 @@ describe("A standard xNFT", () => {
     });
 
     it("when the arguments are within the bounds", async () => {
-      [masterMint] = await anchor.web3.PublicKey.findProgramAddress(
+      [masterMint] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from("mint"), authority.publicKey.toBytes(), Buffer.from(name)],
-        program.programId
+        PROGRAM_ID
       );
 
-      masterToken = await getAssociatedTokenAddress(masterMint, authority.publicKey);
+      masterToken = getAssociatedTokenAddressSync(masterMint, authority.publicKey);
+      [xnft] = deriveXnftAddress(masterMint);
+      [masterMetadata] = anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from("metadata"), metadataProgram.toBytes(), masterMint.toBytes()],
+        metadataProgram
+      );
 
-      const ix = program.methods
-        .createAppXnft(name, {
-          symbol,
-          tag,
-          uri,
-          sellerFeeBasisPoints,
-          installAuthority: null,
-          installPrice,
-          installVault,
-          supply,
-          creators: [
-            { address: authority.publicKey, share: 50 },
-            { address: otherCreator.publicKey, share: 50 },
-          ],
-          curator: null,
-        })
-        .accounts({
-          masterMint,
-          payer: authority.publicKey,
-          publisher: authority.publicKey,
-          masterToken,
-          metadataProgram,
-        });
+      await client.createAppXnft({
+        creators: [
+          { address: authority.publicKey, share: 50 },
+          { address: otherCreator.publicKey, share: 50 },
+        ],
+        name,
+        tag,
+        uri,
+      });
 
-      const pubkeys = await ix.pubkeys();
-      await ix.rpc();
-
-      xnft = pubkeys.xnft;
-      xnftData = (await program.account.xnft.fetch(xnft)) as any;
-      masterMetadata = pubkeys.masterMetadata;
+      xnftData = (await client.program.account.xnft.fetch(xnft)) as any;
 
       const acc = (await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount;
       meta = parseMetadataAccount(acc);
@@ -141,25 +108,18 @@ describe("A standard xNFT", () => {
     });
 
     it("and the token account is frozen after the mint", async () => {
-      const acc = await getAccount(program.provider.connection, masterToken);
+      const acc = await getAccount(client.provider.connection, masterToken);
       assert.isTrue(acc.isFrozen);
     });
   });
 
   describe("a curator can be set on an xNFT", () => {
     it("when the user provides a valid curator account", async () => {
-      await program.methods
-        .setCurator()
-        .accounts({
-          xnft,
-          masterToken,
-          curator: curatorAuthority.publicKey,
-        })
-        .rpc();
+      await client.setCurator(xnft, masterToken, curatorAuthority.publicKey);
     });
 
     it("and the curator account is set but unverified", async () => {
-      const data = await program.account.xnft.fetch(xnft);
+      const data = await client.program.account.xnft.fetch(xnft);
       assert.strictEqual(data.curator.pubkey.toBase58(), curatorAuthority.publicKey.toBase58());
       assert.isFalse(data.curator.verified);
     });
@@ -168,98 +128,66 @@ describe("A standard xNFT", () => {
   describe("the curator on an xNFT can be verified", () => {
     it("unless the signer does not match the curator authority", async () => {
       try {
-        await program.methods
-          .verifyCurator()
-          .accounts({
-            xnft,
-            curator: curatorAuthority.publicKey,
-          })
-          .rpc();
+        await client.verify(xnft);
         assert.ok(false);
       } catch (_err) {}
     });
 
     it("if the curator authority signs the transaction", async () => {
-      await program.methods
-        .verifyCurator()
-        .accounts({
-          xnft,
-          curator: curatorAuthority.publicKey,
-        })
-        .signers([curatorAuthority])
-        .rpc();
+      const c = new xNFT(
+        new anchor.AnchorProvider(client.provider.connection, new anchor.Wallet(curatorAuthority), {})
+      );
+
+      await c.verify(xnft);
     });
 
     it("and the xNFT curator data will show verified", async () => {
-      const acc = await program.account.xnft.fetch(xnft);
+      const acc = await client.program.account.xnft.fetch(xnft);
       assert.isTrue(acc.curator.verified);
     });
   });
 
   describe("an Install can be created", () => {
     it("unless the xNFT is suspended", async () => {
-      await program.methods.setSuspended(true).accounts({ xnft, masterToken }).rpc();
+      await client.setSuspended(xnft, masterMint, true);
 
       try {
-        await program.methods
-          .createInstall()
-          .accounts({
-            xnft,
-            installVault,
-          })
-          .rpc();
-
+        await client.install(xnft, installVault);
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
         assert.strictEqual(e.error.errorCode.code, "SuspendedInstallation");
       } finally {
-        await program.methods.setSuspended(false).accounts({ xnft, masterToken }).rpc();
+        await client.setSuspended(xnft, masterMint, false);
       }
     });
 
     it("when the xNFT is not currently suspended", async () => {
-      const tx = program.methods.createInstall().accounts({
-        xnft,
-        installVault,
-      });
-
-      const pubkeys = await tx.pubkeys();
-      await tx.rpc();
-
-      install = pubkeys.install;
+      [install] = deriveInstallAddress(client.provider.publicKey, xnft);
+      await client.install(xnft, installVault);
     });
 
     it("and the total installs for the xNFT will be incremented", async () => {
-      const acc = await program.account.xnft.fetch(xnft);
+      const acc = await client.program.account.xnft.fetch(xnft);
       assert.strictEqual(acc.totalInstalls.toNumber(), 1);
     });
   });
 
   describe("a Review can be created", () => {
+    const c = new xNFT(new anchor.AnchorProvider(client.provider.connection, new anchor.Wallet(author), {}));
+
     before(async () => {
-      await program.provider.connection.requestAirdrop(author.publicKey, anchor.web3.LAMPORTS_PER_SOL);
+      await client.program.provider.connection.requestAirdrop(author.publicKey, anchor.web3.LAMPORTS_PER_SOL);
 
       await wait(500);
 
-      const installTx = program.methods
-        .createInstall()
-        .accounts({
-          xnft,
-          installVault,
-          target: author.publicKey,
-          authority: author.publicKey,
-        })
-        .signers([author]);
-      const installKeys = await installTx.pubkeys();
-      await installTx.rpc();
-      authorInstallation = installKeys.install;
+      [authorInstallation] = deriveInstallAddress(c.provider.publicKey, xnft);
+      await c.install(xnft, installVault);
     });
 
     it("unless the signing wallet owns the xNFT", async () => {
       try {
-        await program.methods.createReview("https://google.com", 4).accounts({ install, xnft, masterToken }).rpc();
-
+        await client.review("https://google.com", 4, xnft, masterToken);
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
@@ -269,14 +197,13 @@ describe("A standard xNFT", () => {
 
     // TODO: test install authority and xnft mismatches
 
-    it("unless the Install account authority does not match", async () => {
+    it("unless the install account authority does not match", async () => {
       try {
-        await program.methods
+        await client.program.methods
           .createReview("https://google.com", 4)
           .accounts({ install, xnft, author: author.publicKey, masterToken })
           .signers([author])
           .rpc();
-
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
@@ -286,17 +213,7 @@ describe("A standard xNFT", () => {
 
     it("unless the provided rating is greater than 5", async () => {
       try {
-        await program.methods
-          .createReview("https://google.com", 6)
-          .accounts({
-            install: authorInstallation,
-            xnft,
-            author: author.publicKey,
-            masterToken,
-          })
-          .signers([author])
-          .rpc();
-
+        await c.review("https://google.com", 6, xnft, masterToken);
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
@@ -305,24 +222,12 @@ describe("A standard xNFT", () => {
     });
 
     it("when appropriate accounts and arguments", async () => {
-      await program.methods
-        .createReview("https://google.com", 4)
-        .accounts({
-          install: authorInstallation,
-          xnft,
-          author: author.publicKey,
-          masterToken,
-        })
-        .signers([author])
-        .rpc();
-
-      const accs = await program.account.review.all();
-      assert.lengthOf(accs, 1);
-      review = accs[0].publicKey;
+      [review] = deriveReviewAddress(xnft, author.publicKey);
+      await c.review("https://google.com", 4, xnft, masterToken);
     });
 
     it("and the xNFTs total rating and number of ratings should reflect it", async () => {
-      const acc = await program.account.xnft.fetch(xnft);
+      const acc = await client.program.account.xnft.fetch(xnft);
       assert.strictEqual(acc.numRatings, 1);
       assert.strictEqual(acc.totalRating.toNumber(), 4);
     });
@@ -333,30 +238,23 @@ describe("Account Updates", () => {
   const newAuthority = anchor.web3.Keypair.generate();
 
   before(async () => {
-    await program.provider.connection.requestAirdrop(newAuthority.publicKey, anchor.web3.LAMPORTS_PER_SOL);
+    await client.provider.connection.requestAirdrop(newAuthority.publicKey, anchor.web3.LAMPORTS_PER_SOL);
   });
 
   it("the data in an xNFT account can be updated by the owner", async () => {
-    await program.methods
-      .updateXnft({
-        installAuthority: null,
+    await client.update(
+      masterMint,
+      {
         installPrice: new anchor.BN(100),
         installVault,
-        name: null,
+        tag: "none",
         supply: new anchor.BN(200),
-        tag: { none: {} } as never,
         uri: "new uri update",
-      })
-      .accounts({
-        xnft,
-        masterToken,
-        updater: authority.publicKey,
-        curationAuthority: curatorAuthority.publicKey,
-        metadataProgram,
-      })
-      .rpc();
+      },
+      curatorAuthority.publicKey
+    );
 
-    const acc = await program.account.xnft.fetch(xnft);
+    const acc = await client.program.account.xnft.fetch(xnft);
 
     assert.strictEqual(acc.installPrice.toNumber(), 100);
     assert.strictEqual(acc.supply.toNumber(), 200);
@@ -365,25 +263,17 @@ describe("Account Updates", () => {
   });
 
   it("an xNFT can be transferred to another authority", async () => {
-    const destination = await getAssociatedTokenAddress(masterMint, newAuthority.publicKey);
+    const destination = getAssociatedTokenAddressSync(masterMint, newAuthority.publicKey);
 
-    await program.methods
-      .transfer()
-      .accounts({
-        xnft,
-        source: masterToken,
-        destination,
-        recipient: newAuthority.publicKey,
-      })
-      .rpc();
+    await client.transfer(xnft, masterMint, newAuthority.publicKey);
 
-    const ata = await getAccount(program.provider.connection, destination);
+    const ata = await getAccount(client.provider.connection, destination);
     assert.strictEqual(ata.amount.toString(), "1");
     assert.isTrue(ata.isFrozen);
     assert.strictEqual(ata.mint.toBase58(), masterMint.toBase58());
     assert.strictEqual(ata.owner.toBase58(), newAuthority.publicKey.toBase58());
 
-    const oldAta = await program.provider.connection.getAccountInfo(masterToken);
+    const oldAta = await client.provider.connection.getAccountInfo(masterToken);
     assert.isNull(oldAta);
   });
 
@@ -391,33 +281,17 @@ describe("Account Updates", () => {
 });
 
 describe("Account Closure", () => {
-  it("an Install can be deleted by the authority", async () => {
-    await program.methods
-      .deleteInstall()
-      .accounts({
-        install: authorInstallation,
-        receiver: author.publicKey,
-        authority: author.publicKey,
-      })
-      .signers([author])
-      .rpc();
+  const c = new xNFT(new anchor.AnchorProvider(client.provider.connection, new anchor.Wallet(author), {}));
 
-    const acc = await program.account.install.fetchNullable(authorInstallation);
+  it("an Install can be deleted by the authority", async () => {
+    await c.uninstall(xnft, author.publicKey);
+    const acc = await client.program.account.install.fetchNullable(authorInstallation);
     assert.isNull(acc);
   });
 
   it("a Review can be delete by the author", async () => {
-    await program.methods
-      .deleteReview()
-      .accounts({
-        review,
-        receiver: author.publicKey,
-        author: author.publicKey,
-      })
-      .signers([author])
-      .rpc();
-
-    const acc = await program.account.review.fetchNullable(review);
+    await c.deleteReview(review, author.publicKey);
+    const acc = await client.program.account.review.fetchNullable(review);
     assert.isNull(acc);
   });
 });

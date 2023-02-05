@@ -1,13 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
-import { type CreateNftOutput, Metaplex, keypairIdentity } from "@metaplex-foundation/js";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
+import { type CreateNftOutput, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
 import { assert } from "chai";
-import { program, wait } from "./common";
+import { deriveXnftAddress } from "../typescript/src";
+import { client, wait } from "./common";
 
-const metaplex = new Metaplex(program.provider.connection).use(
-  // @ts-ignore
-  keypairIdentity(program.provider.wallet.payer)
-);
+// @ts-ignore
+const metaplex = new Metaplex(client.provider.connection).use(keypairIdentity(client.provider.wallet.payer));
 
 describe("Digital collectible xNFTs", () => {
   let xnft: anchor.web3.PublicKey;
@@ -15,7 +13,7 @@ describe("Digital collectible xNFTs", () => {
   let validNft: CreateNftOutput;
 
   before(async () => {
-    await program.provider.connection.requestAirdrop(program.provider.publicKey, 5 * anchor.web3.LAMPORTS_PER_SOL);
+    await client.provider.connection.requestAirdrop(client.provider.publicKey, 5 * anchor.web3.LAMPORTS_PER_SOL);
 
     await wait(500);
 
@@ -37,25 +35,12 @@ describe("Digital collectible xNFTs", () => {
   describe("an associated xNFT can be created", () => {
     it("unless the digital collectible metadata is immutable", async () => {
       try {
-        await program.methods
-          .createCollectibleXnft({
-            creators: [{ address: program.provider.publicKey, share: 100 }],
-            curator: null,
-            installAuthority: null,
-            installPrice: new anchor.BN(0),
-            installVault: program.provider.publicKey,
-            sellerFeeBasisPoints: 0,
-            supply: null,
-            symbol: "",
-            tag: { none: {} } as never,
-            uri: "https://arweave.net/abc123",
-          })
-          .accounts({
-            masterMint: invalidNft.mintAddress,
-            masterToken: invalidNft.tokenAddress,
-            masterMetadata: invalidNft.metadataAddress,
-          })
-          .rpc();
+        await client.createCollectibleXnft({
+          metadata: invalidNft.metadataAddress,
+          mint: invalidNft.mintAddress,
+          tag: "none",
+          uri: "https://arweave.net/abc123",
+        });
 
         assert.ok(false);
       } catch (err) {
@@ -65,45 +50,25 @@ describe("Digital collectible xNFTs", () => {
     });
 
     it("when there is an existing valid NFT or Collection to link it to", async () => {
-      const method = program.methods
-        .createCollectibleXnft({
-          creators: [{ address: program.provider.publicKey, share: 100 }],
-          curator: null,
-          installAuthority: null,
-          installPrice: new anchor.BN(0),
-          installVault: program.provider.publicKey,
-          sellerFeeBasisPoints: 0,
-          supply: null,
-          symbol: "",
-          tag: { none: {} } as never,
-          uri: "https://arweave.net/abc123",
-        })
-        .accounts({
-          masterMint: validNft.mintAddress,
-          masterToken: validNft.tokenAddress,
-          masterMetadata: validNft.metadataAddress,
-        });
+      [xnft] = deriveXnftAddress(validNft.mintAddress);
 
-      xnft = (await method.pubkeys()).xnft;
-      await method.rpc();
+      await client.createCollectibleXnft({
+        metadata: validNft.metadataAddress,
+        mint: validNft.mintAddress,
+        tag: "none",
+        uri: "https://arweave.net/abc123",
+      });
     });
 
     it("and the NFT pubkeys on the xNFT account match the collectible", async () => {
-      const acc = await program.account.xnft.fetch(xnft);
+      const acc = await client.program.account.xnft.fetch(xnft);
       assert.strictEqual(acc.masterMetadata.toBase58(), validNft.metadataAddress.toBase58());
       assert.strictEqual(acc.masterMint.toBase58(), validNft.mintAddress.toBase58());
     });
 
     it("and installation cannot be created against a collectibles xNFT", async () => {
       try {
-        await program.methods
-          .createInstall()
-          .accounts({
-            xnft,
-            installVault: program.provider.publicKey,
-          })
-          .rpc();
-
+        await client.install(xnft, client.provider.publicKey);
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
@@ -113,14 +78,7 @@ describe("Digital collectible xNFTs", () => {
 
     it("and a collectible xNFT cannot be suspended", async () => {
       try {
-        await program.methods
-          .setSuspended(true)
-          .accounts({
-            masterToken: validNft.tokenAddress,
-            xnft,
-          })
-          .rpc();
-
+        await client.setSuspended(xnft, validNft.mintAddress, true);
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;
@@ -130,20 +88,9 @@ describe("Digital collectible xNFTs", () => {
 
     it("and a collectible xNFT cannot be transferred through the protocol", async () => {
       const recipient = anchor.web3.Keypair.generate().publicKey;
-      const destination = await getAssociatedTokenAddress(validNft.mintAddress, recipient);
 
       try {
-        await program.methods
-          .transfer()
-          .accounts({
-            destination,
-            masterMint: validNft.mintAddress,
-            recipient,
-            source: validNft.tokenAddress,
-            xnft,
-          })
-          .rpc();
-
+        await client.transfer(xnft, validNft.mintAddress, recipient);
         assert.ok(false);
       } catch (err) {
         const e = err as anchor.AnchorError;

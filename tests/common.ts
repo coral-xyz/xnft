@@ -1,7 +1,9 @@
 import * as anchor from "@coral-xyz/anchor";
 import type { Xnft } from "../target/types/xnft";
+import { xNFT } from "../typescript/src";
 
-export const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+const program = anchor.workspace.Xnft as anchor.Program<Xnft>;
+export const client = new xNFT(program.provider);
 
 export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
