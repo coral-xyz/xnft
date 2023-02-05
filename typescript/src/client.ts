@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BN, Program, type ProgramAccount, type Provider } from "@coral-xyz/anchor";
+import { BN, parseIdlErrors, Program, translateError, type ProgramAccount, type Provider } from "@coral-xyz/anchor";
 import { Metaplex, type JsonMetadata, type Metadata } from "@metaplex-foundation/js";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
-import { PublicKey, Connection, type GetProgramAccountsFilter } from "@solana/web3.js";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { PublicKey, Connection, type GetProgramAccountsFilter, Transaction } from "@solana/web3.js";
 import { deriveInstallAddress, deriveXnftAddress, PROGRAM_ID } from "./addresses";
 import {
   createCreateAppXnftTransaction,
@@ -49,6 +49,8 @@ import type {
 } from "./types";
 import { buildAnonymousProvider, enumsEqual, gatewayUri } from "./util";
 import { IDL, type Xnft } from "./xnft";
+
+const idlErrors = parseIdlErrors(IDL);
 
 export class xNFT {
   #mpl: Metaplex;
@@ -132,7 +134,7 @@ export class xNFT {
       tag: { [opts.tag]: {} } as never,
       uri: opts.uri,
     });
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -154,7 +156,7 @@ export class xNFT {
       tag: { [opts.tag]: {} } as never,
       uri: opts.uri,
     });
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -166,7 +168,7 @@ export class xNFT {
    */
   async deleteReview(review: PublicKey, receiver?: PublicKey): Promise<string> {
     const tx = await createDeleteReviewTransaction(this.#program, review, receiver);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -222,7 +224,7 @@ export class xNFT {
       return [];
     }
 
-    const possibleXnftPdas = await Promise.all(metadatas.map(m => deriveXnftAddress(m.mintAddress)));
+    const possibleXnftPdas = metadatas.map(m => deriveXnftAddress(m.mintAddress));
     const possibleXnftAddresses = possibleXnftPdas.map(a => a[0]);
     const results = (await this.#program.account.xnft.fetchMultiple(
       possibleXnftAddresses
@@ -255,9 +257,7 @@ export class xNFT {
       )
     );
 
-    const tokenAccounts = await Promise.all(
-      validXnfts.map(x => getAssociatedTokenAddress(x.account.masterMint, owner))
-    );
+    const tokenAccounts = validXnfts.map(x => getAssociatedTokenAddressSync(x.account.masterMint, owner));
 
     const owned: XnftAccount[] = [];
     validXnfts.forEach((x, idx) => {
@@ -370,7 +370,7 @@ export class xNFT {
    * @memberof xNFT
    */
   async getReviews(xnft: PublicKey): Promise<ProgramAccount<IdlReviewAccount>[]> {
-    return await this.#program.account.review.all([
+    return this.#program.account.review.all([
       {
         memcmp: {
           offset: 40,
@@ -390,7 +390,7 @@ export class xNFT {
    */
   async grantAccess(xnft: PublicKey, wallet: PublicKey): Promise<string> {
     const tx = await createGrantAccessTransaction(this.#program, xnft, wallet);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -403,7 +403,7 @@ export class xNFT {
    */
   async install(xnft: PublicKey, installVault: PublicKey, permissioned?: boolean): Promise<string> {
     const tx = await createCreateInstallTransaction(this.#program, xnft, installVault, permissioned);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -413,15 +413,14 @@ export class xNFT {
    * @param {string} uri
    * @param {number} rating
    * @param {PublicKey} xnft
-   * @param {PublicKey} masterMint
+   * @param {PublicKey} masterToken
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async review(uri: string, rating: number, xnft: PublicKey, masterMint: PublicKey): Promise<string> {
-    const [install] = await deriveInstallAddress(this.#provider.publicKey!, xnft);
-    const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
+  async review(uri: string, rating: number, xnft: PublicKey, masterToken: PublicKey): Promise<string> {
+    const [install] = deriveInstallAddress(this.#provider.publicKey!, xnft);
     const tx = await createCreateReviewTransaction(this.#program, uri, rating, install, masterToken, xnft);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -434,7 +433,7 @@ export class xNFT {
    */
   async revokeAccess(xnft: PublicKey, wallet: PublicKey): Promise<string> {
     const tx = await createRevokeAccessTransaction(this.#program, xnft, wallet);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -447,7 +446,7 @@ export class xNFT {
    */
   async setCurator(xnft: PublicKey, masterToken: PublicKey, curator: PublicKey): Promise<string> {
     const tx = await createSetCuratorTransaction(this.#program, xnft, masterToken, curator);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -459,9 +458,9 @@ export class xNFT {
    * @memberof xNFT
    */
   async setSuspended(xnft: PublicKey, masterMint: PublicKey, value: boolean): Promise<string> {
-    const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
+    const masterToken = getAssociatedTokenAddressSync(masterMint, this.#provider.publicKey!);
     const tx = await createSetSuspendedTransaction(this.#program, xnft, masterToken, value);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -474,7 +473,7 @@ export class xNFT {
    */
   async transfer(xnft: PublicKey, masterMint: PublicKey, recipient: PublicKey): Promise<string> {
     const tx = await createTransferTransaction(this.#program, xnft, masterMint, recipient);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -488,8 +487,8 @@ export class xNFT {
    * @memberof xNFT
    */
   async update(masterMint: PublicKey, opts: UpdateXnftOptions, curator?: PublicKey): Promise<string> {
-    const [xnft] = await deriveXnftAddress(masterMint);
-    const masterToken = await getAssociatedTokenAddress(masterMint, this.#provider.publicKey!);
+    const [xnft] = deriveXnftAddress(masterMint);
+    const masterToken = getAssociatedTokenAddressSync(masterMint, this.#provider.publicKey!);
 
     const tx = await createUpdateXnftTransaction(
       this.#program,
@@ -507,7 +506,7 @@ export class xNFT {
       curator
     );
 
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -520,9 +519,8 @@ export class xNFT {
    * @memberof xNFT
    */
   async uninstall(xnft: PublicKey, receiver?: PublicKey): Promise<string> {
-    const [install] = await deriveInstallAddress(this.#provider.publicKey!, xnft);
-    const tx = await createDeleteInstallTransaction(this.#program, install, receiver);
-    return await this.#provider.sendAndConfirm!(tx);
+    const tx = await createDeleteInstallTransaction(this.#program, xnft, receiver);
+    return this._withParsedTransactionError(tx);
   }
 
   /**
@@ -533,6 +531,22 @@ export class xNFT {
    */
   async verify(xnft: PublicKey): Promise<string> {
     const tx = await createVerifyCuratorTransaction(this.#program, xnft);
-    return await this.#provider.sendAndConfirm!(tx);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Utility function to wrap a transaction execution and parse
+   * the resulting logs for any errors.
+   * @private
+   * @param {Transaction} tx
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  private async _withParsedTransactionError(tx: Transaction): Promise<string> {
+    try {
+      return await this.#provider.sendAndConfirm!(tx);
+    } catch (err) {
+      throw translateError(err, idlErrors);
+    }
   }
 }

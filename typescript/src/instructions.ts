@@ -16,7 +16,7 @@
  */
 
 import { Program } from "@coral-xyz/anchor";
-import { getAssociatedTokenAddress } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { deriveInstallAddress, deriveMasterMintAddress, TOKEN_METADATA_PROGRAM_ID } from "./addresses";
 import type { IdlCreateXnftParameters, IdlUpdateXnftParameters } from "./types";
@@ -52,10 +52,10 @@ export async function createCreateAppXnftInstruction(
     throw new Error("no public key found on the program provider");
   }
 
-  const [masterMint] = await deriveMasterMintAddress(name, program.provider.publicKey);
-  const masterToken = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
+  const [masterMint] = deriveMasterMintAddress(name, program.provider.publicKey);
+  const masterToken = getAssociatedTokenAddressSync(masterMint, program.provider.publicKey);
 
-  return await program.methods
+  return program.methods
     .createAppXnft(name, params)
     .accounts({
       masterMint,
@@ -97,9 +97,9 @@ export async function createCreateCollectibleXnftInstruction(
     throw new Error("no public key found on the program provider");
   }
 
-  const masterToken = await getAssociatedTokenAddress(mint, program.provider.publicKey);
+  const masterToken = getAssociatedTokenAddressSync(mint, program.provider.publicKey);
 
-  return await program.methods
+  return program.methods
     .createCollectibleXnft(params)
     .accounts({
       masterMint: mint,
@@ -176,7 +176,7 @@ export async function createCreateReviewInstruction(
   masterToken: PublicKey,
   xnft: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods
+  return program.methods
     .createReview(uri, rating)
     .accounts({
       install,
@@ -212,8 +212,8 @@ export async function createDeleteInstallInstruction(
   xnft: PublicKey,
   receiver?: PublicKey
 ): Promise<TransactionInstruction> {
-  const [install] = await deriveInstallAddress(program.provider.publicKey!, xnft);
-  return await program.methods
+  const [install] = deriveInstallAddress(program.provider.publicKey!, xnft);
+  return program.methods
     .deleteInstall()
     .accounts({
       install,
@@ -248,7 +248,7 @@ export async function createDeleteReviewInstruction(
   review: PublicKey,
   receiver?: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods
+  return program.methods
     .deleteReview()
     .accounts({
       review,
@@ -283,7 +283,7 @@ export async function createGrantAccessInstruction(
   xnft: PublicKey,
   wallet: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods.grantAccess().accounts({ xnft, wallet }).instruction();
+  return program.methods.grantAccess().accounts({ xnft, wallet }).instruction();
 }
 
 /**
@@ -312,7 +312,7 @@ export async function createRevokeAccessInstruction(
   xnft: PublicKey,
   wallet: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods.revokeAccess().accounts({ xnft, wallet }).instruction();
+  return program.methods.revokeAccess().accounts({ xnft, wallet }).instruction();
 }
 
 /**
@@ -343,7 +343,7 @@ export async function createSetCuratorInstruction(
   masterToken: PublicKey,
   curator: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods
+  return program.methods
     .setCurator()
     .accounts({
       xnft,
@@ -381,7 +381,7 @@ export async function createSetSuspendedInstruction(
   masterToken: PublicKey,
   value: boolean
 ): Promise<TransactionInstruction> {
-  return await program.methods.setSuspended(value).accounts({ masterToken, xnft }).instruction();
+  return program.methods.setSuspended(value).accounts({ masterToken, xnft }).instruction();
 }
 
 /**
@@ -416,10 +416,10 @@ export async function createTransferInstruction(
     throw new Error("no public key found on the program provider");
   }
 
-  const destination = await getAssociatedTokenAddress(masterMint, recipient);
-  const source = await getAssociatedTokenAddress(masterMint, program.provider.publicKey);
+  const destination = getAssociatedTokenAddressSync(masterMint, recipient);
+  const source = getAssociatedTokenAddressSync(masterMint, program.provider.publicKey);
 
-  return await program.methods
+  return program.methods
     .transfer()
     .accounts({
       xnft,
@@ -461,7 +461,7 @@ export async function createUpdateXnftInstruction(
   masterToken: PublicKey,
   curator?: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods
+  return program.methods
     .updateXnft(params)
     .accounts({
       masterToken,
@@ -496,5 +496,5 @@ export async function createVerifyCuratorInstruction(
   program: Program<Xnft>,
   xnft: PublicKey
 ): Promise<TransactionInstruction> {
-  return await program.methods.verifyCurator().accounts({ xnft }).instruction();
+  return program.methods.verifyCurator().accounts({ xnft }).instruction();
 }
