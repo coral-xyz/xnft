@@ -126,6 +126,16 @@ export const ImageSizeOptionsSchema = z
   });
 export type ImageSizeOptionsType = z.infer<typeof ImageSizeOptionsSchema>;
 
+export const SplashSizeOptionsSchema = z
+  .object({
+    src: z.string(),
+    height: z.number(),
+    width: z.number(),
+  })
+  .strict()
+  .array();
+export type SplashSizeOptionsType = z.infer<typeof SplashSizeOptionsSchema>;
+
 export const PublicKeySchema = z.string().refine(
   val => {
     try {
@@ -178,7 +188,7 @@ export const ManifestSchema = z.object({
   icon: ImageSizeOptionsSchema,
   props: PropsSchema.optional(),
   screenshots: ScreenshotsSchema.optional(),
-  splash: ImageSizeOptionsSchema.optional(),
+  splash: SplashSizeOptionsSchema.optional(),
 });
 export type ManifestType = z.infer<typeof ManifestSchema>;
 
@@ -203,7 +213,7 @@ export const AppBuildJsonManifestSchema = z.object({
   props: z.any().optional(),
   royalitesPercentage: z.number().nonnegative().max(100).optional(),
   screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
-  splash: ImageSizeOptionsSchema.optional(),
+  splash: SplashSizeOptionsSchema.optional(),
   supply: z.number().min(1).optional(),
   tag: TagSchema.optional(),
   version: VersionSchema,
@@ -219,7 +229,7 @@ export const CollectibleJsonManifestSchema = z.object({
   programIds: PublicKeySchema.array().optional(),
   props: z.any().optional(),
   screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
-  splash: ImageSizeOptionsSchema.optional(),
+  splash: SplashSizeOptionsSchema.optional(),
   version: VersionSchema,
 });
 
