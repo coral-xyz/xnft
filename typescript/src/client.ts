@@ -52,37 +52,53 @@ import { IDL, type Xnft } from "./xnft";
 
 const idlErrors = parseIdlErrors(IDL);
 
+export type ClientOptions = {
+  gatewayReplacements?: Record<string, string>;
+};
+
 export class xNFT {
   #mpl: Metaplex;
   #program: Program<Xnft>;
   #provider: Provider;
+  #gatewayReplacements: Record<string, string>;
 
   /**
    * Creates an instance of xNFT.
    * @param {Provider} provider
+   * @param {ClientOptions} [options]
    * @memberof xNFT
    */
-  constructor(provider: Provider) {
+  constructor(provider: Provider, options?: ClientOptions) {
     if (!provider.publicKey) {
       throw new Error("no public key found on the argued provider");
     } else if (!provider.sendAndConfirm) {
       throw new Error("no sendAndConfirm function found on the argued provider");
     }
 
+    const defaultReplacements = {
+      "ar://": "https://arweave.net/",
+      "ipfs://": "https://nftstorage.link/ipfs/",
+    };
+
     this.#mpl = Metaplex.make(provider.connection);
     this.#program = new Program(IDL, PROGRAM_ID, provider);
     this.#provider = provider;
+    this.#gatewayReplacements = {
+      ...defaultReplacements,
+      ...(options?.gatewayReplacements ?? {}),
+    };
   }
 
   /**
    * Create an instance of the client without a full provider.
    * @static
    * @param {Connection} connection
+   * @param {ClientOptions} [options]
    * @returns {xNFT}
    * @memberof xNFT
    */
-  static anonymous(connection: Connection): xNFT {
-    return new xNFT(buildAnonymousProvider(connection));
+  static anonymous(connection: Connection, options?: ClientOptions): xNFT {
+    return new xNFT(buildAnonymousProvider(connection), options);
   }
 
   /**
@@ -182,7 +198,9 @@ export class xNFT {
 
     const [tokenAccount, xnftBlob, metadatas] = await Promise.all([
       getNftTokenAccountForMint(this.#provider.connection, account.masterMint),
-      this.#mpl.storage().downloadJson(gatewayUri(account.uri)) as Promise<CustomJsonMetadata>,
+      this.#mpl
+        .storage()
+        .downloadJson(gatewayUri(this.#gatewayReplacements, account.uri)) as Promise<CustomJsonMetadata>,
       this.#mpl.nfts().findAllByMintList({ mints: [account.masterMint] }) as Promise<Metadata[]>,
     ]);
 
@@ -190,7 +208,7 @@ export class xNFT {
     let mplBlob: JsonMetadata<string> = {};
 
     if (!enumsEqual(account.kind, "app")) {
-      mplBlob = await this.#mpl.storage().downloadJson(gatewayUri(md.uri));
+      mplBlob = await this.#mpl.storage().downloadJson(gatewayUri(this.#gatewayReplacements, md.uri));
     }
 
     return {
@@ -246,14 +264,21 @@ export class xNFT {
     );
 
     const xnftBlobs = await Promise.all(
-      validXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
+      validXnfts.map(
+        x =>
+          this.#mpl
+            .storage()
+            .downloadJson(gatewayUri(this.#gatewayReplacements, x.account.uri)) as Promise<CustomJsonMetadata>
+      )
     );
 
     const mplBlobs = await Promise.all(
       validXnfts.map(x =>
         enumsEqual(x.account.kind, "app")
           ? Promise.resolve({})
-          : (this.#mpl.storage().downloadJson(gatewayUri(x.metadata.uri)) as Promise<JsonMetadata<string>>)
+          : (this.#mpl.storage().downloadJson(gatewayUri(this.#gatewayReplacements, x.metadata.uri)) as Promise<
+              JsonMetadata<string>
+            >)
       )
     );
 
@@ -326,14 +351,21 @@ export class xNFT {
       .findAllByMintList({ mints: filteredXnfts.map(x => x.account.masterMint) })) as Metadata[];
 
     const xnftBlobs = await Promise.all(
-      filteredXnfts.map(x => this.#mpl.storage().downloadJson(gatewayUri(x.account.uri)) as Promise<CustomJsonMetadata>)
+      filteredXnfts.map(
+        x =>
+          this.#mpl
+            .storage()
+            .downloadJson(gatewayUri(this.#gatewayReplacements, x.account.uri)) as Promise<CustomJsonMetadata>
+      )
     );
 
     const mplBlobs = await Promise.all(
       filteredXnfts.map((acc, idx) =>
         enumsEqual(acc.account.kind, "app")
           ? Promise.resolve({})
-          : (this.#mpl.storage().downloadJson(gatewayUri(metadatas[idx].uri)) as Promise<JsonMetadata<string>>)
+          : (this.#mpl.storage().downloadJson(gatewayUri(this.#gatewayReplacements, metadatas[idx].uri)) as Promise<
+              JsonMetadata<string>
+            >)
       )
     );
 

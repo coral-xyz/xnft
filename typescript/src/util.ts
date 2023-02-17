@@ -45,6 +45,10 @@ export function enumsEqual<T extends string>(variant: { [t in T]?: unknown }, ot
   return Object.keys(variant)[0] === other;
 }
 
-export function gatewayUri(uri: string): string {
-  return uri.replace("ipfs://", "https://nftstorage.link/ipfs/");
+export function gatewayUri(replacements: Record<string, string>, uri: string): string {
+  let sanitized = uri;
+  for (const [find, replace] of Object.entries(replacements)) {
+    sanitized = sanitized.replace(find, replace);
+  }
+  return sanitized;
 }
