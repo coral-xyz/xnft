@@ -28,7 +28,7 @@ pub fn create_program_client(config: &Config) -> (Program, Rc<Keypair>) {
             config.keypair.clone(),
             CommitmentConfig::confirmed(),
         )
-        .program(Pubkey::new(&[
+        .program(Pubkey::new_from_array([
             157, 27, 158, 173, 41, 154, 191, 73, 36, 1, 30, 183, 61, 240, 32, 120, 43, 111, 171,
             57, 66, 118, 214, 8, 115, 206, 129, 138, 58, 41, 87, 194,
         ])),
