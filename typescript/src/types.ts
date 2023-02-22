@@ -152,13 +152,16 @@ export const PublicKeySchema = z.string().refine(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const KindSchema = z.union(KindOptions.map(k => z.literal(k.toLowerCase())) as any) as ZodUnion<
-  readonly [ZodLiteral<Lowercase<typeof KindOptions[number]>>, ...ZodLiteral<Lowercase<typeof KindOptions[number]>>[]]
+  readonly [
+    ZodLiteral<Lowercase<(typeof KindOptions)[number]>>,
+    ...ZodLiteral<Lowercase<(typeof KindOptions)[number]>>[]
+  ]
 >;
 export type Kind = z.infer<typeof KindSchema>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TagSchema = z.union(TagOptions.map(t => z.literal(t.toLowerCase())) as any) as ZodUnion<
-  readonly [ZodLiteral<Lowercase<typeof TagOptions[number]>>, ...ZodLiteral<Lowercase<typeof TagOptions[number]>>[]]
+  readonly [ZodLiteral<Lowercase<(typeof TagOptions)[number]>>, ...ZodLiteral<Lowercase<(typeof TagOptions)[number]>>[]]
 >;
 export type Tag = z.infer<typeof TagSchema>;
 
