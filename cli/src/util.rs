@@ -14,7 +14,6 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anchor_client::solana_sdk::commitment_config::CommitmentConfig;
-use anchor_client::solana_sdk::pubkey::Pubkey;
 use anchor_client::solana_sdk::signature::Keypair;
 use anchor_client::{Client, Program};
 use std::rc::Rc;
@@ -28,10 +27,7 @@ pub fn create_program_client(config: &Config) -> (Program, Rc<Keypair>) {
             config.keypair.clone(),
             CommitmentConfig::confirmed(),
         )
-        .program(Pubkey::new_from_array([
-            157, 27, 158, 173, 41, 154, 191, 73, 36, 1, 30, 183, 61, 240, 32, 120, 43, 111, 171,
-            57, 66, 118, 214, 8, 115, 206, 129, 138, 58, 41, 87, 194,
-        ])),
+        .program(xnft::ID),
         config.keypair.clone(),
     )
 }
