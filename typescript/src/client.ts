@@ -43,10 +43,10 @@ import type {
   IdlInstallAccount,
   IdlReviewAccount,
   IdlXnftAccount,
-  Kind,
   UpdateXnftOptions,
   XnftAccount,
 } from "./types";
+import type { Kind } from "./schema";
 import { buildAnonymousProvider, enumsEqual, gatewayUri } from "./util";
 import { IDL, type Xnft } from "./xnft";
 
