@@ -7,6 +7,7 @@
   - [Create Permissioned Install](/instructions/create-permissioned-install.md)
   - [Create Review](/instructions/create-review.md)
   - [Create Install](/instructions/create-install.md)
+  - [Donate](/instructions/donate.md)
   - [Delete Install](/instructions/delete-install.md)
   - [Grant Access](/instructions/grant-access.md)
   - [Revoke Access](/instructions/revoke-access.md)

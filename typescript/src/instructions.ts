@@ -15,9 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Program } from "@coral-xyz/anchor";
+import { BN, Program } from "@coral-xyz/anchor";
+import type { Creator } from "@metaplex-foundation/js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
+import { type AccountMeta, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { deriveInstallAddress, deriveMasterMintAddress, TOKEN_METADATA_PROGRAM_ID } from "./addresses";
 import type { IdlCreateXnftParameters, IdlUpdateXnftParameters } from "./types";
 import type { Xnft } from "./xnft";
@@ -254,6 +255,52 @@ export async function createDeleteReviewInstruction(
       review,
       receiver: receiver ?? program.provider.publicKey,
     })
+    .instruction();
+}
+
+/**
+ * Create a full transaction for `donate`.
+ * @export
+ * @param {...Parameters<typeof createDonateInstruction>} args
+ * @returns {Promise<Transaction>}
+ */
+export async function createDonateTransaction(
+  ...args: Parameters<typeof createDonateInstruction>
+): Promise<Transaction> {
+  const ix = await createDonateInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create an ix instance for the `donate` instruction.
+ * @export
+ * @param {Program<Xnft>} program
+ * @param {PublicKey} xnft
+ * @param {PublicKey} masterMetadata
+ * @param {Creator[]} creators
+ * @param {BN} amount
+ * @returns {Promise<TransactionInstruction>}
+ */
+export async function createDonateInstruction(
+  program: Program<Xnft>,
+  xnft: PublicKey,
+  masterMetadata: PublicKey,
+  creators: Creator[],
+  amount: BN
+): Promise<TransactionInstruction> {
+  const remainingAccounts: AccountMeta[] = creators.map(c => ({
+    pubkey: c.address,
+    isSigner: false,
+    isWritable: true,
+  }));
+
+  return program.methods
+    .donate(amount)
+    .accounts({
+      xnft,
+      masterMetadata,
+    })
+    .remainingAccounts(remainingAccounts)
     .instruction();
 }
 

@@ -471,6 +471,39 @@ export type Xnft = {
       args: [];
     },
     {
+      name: "donate";
+      docs: ["Donate funds to the creators listed in the metadata account of an xNFT."];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: false;
+          isSigner: false;
+          relations: ["master_metadata"];
+        },
+        {
+          name: "masterMetadata";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "donator";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "amount";
+          type: "u64";
+        }
+      ];
+    },
+    {
       name: "grantAccess";
       docs: [
         "Creates an access program account that indicates a wallet's",
@@ -1316,16 +1349,21 @@ export type Xnft = {
     },
     {
       code: 6014;
+      name: "UnknownCreator";
+      msg: "A provided creator was not found on the metadata account";
+    },
+    {
+      code: 6015;
       name: "UpdateAuthorityMismatch";
       msg: "The signer did not match the update authority of the metadata account or the owner";
     },
     {
-      code: 6015;
+      code: 6016;
       name: "UpdateReviewAuthorityMismatch";
       msg: "The signing authority for the xNFT update did not match the review authority";
     },
     {
-      code: 6016;
+      code: 6017;
       name: "UriExceedsMaxLength";
       msg: "The metadata URI provided exceeds the maximum length";
     }
@@ -1803,6 +1841,39 @@ export const IDL: Xnft = {
         },
       ],
       args: [],
+    },
+    {
+      name: "donate",
+      docs: ["Donate funds to the creators listed in the metadata account of an xNFT."],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: false,
+          isSigner: false,
+          relations: ["master_metadata"],
+        },
+        {
+          name: "masterMetadata",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "donator",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "amount",
+          type: "u64",
+        },
+      ],
     },
     {
       name: "grantAccess",
@@ -2650,16 +2721,21 @@ export const IDL: Xnft = {
     },
     {
       code: 6014,
+      name: "UnknownCreator",
+      msg: "A provided creator was not found on the metadata account",
+    },
+    {
+      code: 6015,
       name: "UpdateAuthorityMismatch",
       msg: "The signer did not match the update authority of the metadata account or the owner",
     },
     {
-      code: 6015,
+      code: 6016,
       name: "UpdateReviewAuthorityMismatch",
       msg: "The signing authority for the xNFT update did not match the review authority",
     },
     {
-      code: 6016,
+      code: 6017,
       name: "UriExceedsMaxLength",
       msg: "The metadata URI provided exceeds the maximum length",
     },

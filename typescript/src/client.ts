@@ -27,6 +27,7 @@ import {
   createCreateReviewTransaction,
   createDeleteInstallTransaction,
   createDeleteReviewTransaction,
+  createDonateTransaction,
   createGrantAccessTransaction,
   createRevokeAccessTransaction,
   createSetCuratorTransaction,
@@ -184,6 +185,24 @@ export class xNFT {
    */
   async deleteReview(review: PublicKey, receiver?: PublicKey): Promise<string> {
     const tx = await createDeleteReviewTransaction(this.#program, review, receiver);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Donate lamports to be shared by the creators of the argued xNFT.
+   * @param {PublicKey} xnft
+   * @param {BN} amount
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  async donate(xnft: PublicKey, amount: BN): Promise<string> {
+    const acc = await this.#program.account.xnft.fetchNullable(xnft);
+    if (!acc) {
+      throw new Error(`no xnft account found for ${xnft}`);
+    }
+
+    const metadata = await this.#mpl.nfts().findByMetadata({ metadata: acc.masterMetadata, loadJsonMetadata: false });
+    const tx = await createDonateTransaction(this.#program, xnft, acc.masterMetadata, metadata.creators, amount);
     return this._withParsedTransactionError(tx);
   }
 

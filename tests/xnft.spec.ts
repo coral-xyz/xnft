@@ -30,6 +30,7 @@ let authorInstallation: anchor.web3.PublicKey;
 
 describe("A standard xNFT", () => {
   before(async () => {
+    await client.provider.connection.requestAirdrop(otherCreator.publicKey, anchor.web3.LAMPORTS_PER_SOL);
     await client.provider.connection.requestAirdrop(curatorAuthority.publicKey, 2 * anchor.web3.LAMPORTS_PER_SOL);
   });
 
@@ -232,6 +233,38 @@ describe("A standard xNFT", () => {
       assert.strictEqual(acc.totalRating.toNumber(), 4);
     });
   });
+
+  describe("users can donate to the creators of an xNFT", () => {
+    const donator = anchor.web3.Keypair.generate();
+    const tempClient = new xNFT(new anchor.AnchorProvider(client.provider.connection, new anchor.Wallet(donator), {}));
+
+    let predonationAmount1: number;
+    let predonationAmount2: number;
+
+    before(async () => {
+      await tempClient.provider.connection.requestAirdrop(donator.publicKey, 10 * anchor.web3.LAMPORTS_PER_SOL);
+      await wait(500);
+    });
+
+    it("and the instruction will succeed", async () => {
+      predonationAmount1 = (await client.provider.connection.getAccountInfo(authority.publicKey)).lamports;
+      predonationAmount2 = (await client.provider.connection.getAccountInfo(otherCreator.publicKey)).lamports;
+      await tempClient.donate(xnft, new anchor.BN(5 * anchor.web3.LAMPORTS_PER_SOL));
+    });
+
+    it("and the amount will be removed from the signer", async () => {
+      const acc = await tempClient.provider.connection.getAccountInfo(donator.publicKey);
+      assert.strictEqual(acc.lamports, 5 * anchor.web3.LAMPORTS_PER_SOL - 5000);
+    });
+
+    it("and the creator will receive the donation", async () => {
+      const acc1 = await tempClient.provider.connection.getAccountInfo(authority.publicKey);
+      assert.strictEqual(acc1.lamports, predonationAmount1 + 2.5 * anchor.web3.LAMPORTS_PER_SOL);
+
+      const acc2 = await tempClient.provider.connection.getAccountInfo(otherCreator.publicKey);
+      assert.strictEqual(acc2.lamports, predonationAmount2 + 2.5 * anchor.web3.LAMPORTS_PER_SOL);
+    });
+  });
 });
 
 describe("Account Updates", () => {
@@ -276,8 +309,6 @@ describe("Account Updates", () => {
     const oldAta = await client.provider.connection.getAccountInfo(masterToken);
     assert.isNull(oldAta);
   });
-
-  after(async () => {});
 });
 
 describe("Account Closure", () => {
