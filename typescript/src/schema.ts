@@ -132,16 +132,6 @@ export const ManifestSchema = z
   .strict();
 export type ManifestType = z.infer<typeof ManifestSchema>;
 
-export const XnftMetadataPropertiesSchema = z
-  .object({
-    version: VersionSchema,
-    manifest: ManifestSchema,
-    programIds: PublicKeySchema.array().optional(),
-    history: ManifestHistorySchema,
-  })
-  .strict();
-export type XnftMetadataPropertiesType = z.infer<typeof XnftMetadataPropertiesSchema>;
-
 export const AppBuildJsonManifestSchema = z
   .object({
     contact: ContactSchema,
@@ -186,3 +176,14 @@ export const BuildJsonManifestSchema = z.discriminatedUnion("kind", [
   CollectibleJsonManifestSchema,
 ]);
 export type BuildJsonManifestType = z.infer<typeof BuildJsonManifestSchema>;
+
+export const XnftMetadataPropertiesSchema = z
+  .object({
+    version: VersionSchema,
+    manifest: ManifestSchema,
+    programIds: PublicKeySchema.array().optional(),
+    contact: ContactSchema,
+    history: ManifestHistorySchema,
+  })
+  .strict();
+export type XnftMetadataPropertiesType = z.infer<typeof XnftMetadataPropertiesSchema>;
