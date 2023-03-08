@@ -16,7 +16,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 use anchor_spl::metadata::MetadataAccount;
-use std::collections::BTreeSet;
 
 use crate::state::{Kind, Xnft};
 use crate::CustomError;
@@ -49,18 +48,20 @@ pub fn donate_handler<'info>(
     );
 
     let creators = metadata.data.creators.as_ref().unwrap();
-    require_eq!(creators.len(), ctx.remaining_accounts.len());
 
-    let mut processed = BTreeSet::<Pubkey>::new();
+    let mut available = amount;
 
-    for info in ctx.remaining_accounts {
-        match creators.iter().find(|c| c.address == *info.key) {
-            Some(c) => {
-                if processed.contains(info.key) {
-                    continue;
-                }
+    for c in creators {
+        match ctx
+            .remaining_accounts
+            .iter()
+            .find(|acc| *acc.key == c.address)
+        {
+            Some(info) => {
+                require_gte!(100, c.share);
 
                 let partition = amount * (c.share as u64) / 100u64;
+                require_gte!(available, partition);
 
                 system_program::transfer(
                     CpiContext::new(
@@ -73,13 +74,11 @@ pub fn donate_handler<'info>(
                     partition,
                 )?;
 
-                processed.insert(info.key());
+                available -= partition;
             }
             None => return Err(error!(CustomError::UnknownCreator)),
         }
     }
-
-    require_eq!(creators.len(), processed.len());
 
     Ok(())
 }
