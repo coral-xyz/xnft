@@ -48,36 +48,30 @@ pub fn donate_handler<'info>(
     );
 
     let creators = metadata.data.creators.as_ref().unwrap();
+    require_eq!(creators.len(), ctx.remaining_accounts.len());
 
     let mut available = amount;
 
-    for c in creators {
-        match ctx
-            .remaining_accounts
-            .iter()
-            .find(|acc| *acc.key == c.address)
-        {
-            Some(info) => {
-                require_gte!(100, c.share);
+    for (i, c) in creators.iter().enumerate() {
+        let info = &ctx.remaining_accounts[i];
+        require_keys_eq!(c.address, *info.key, CustomError::UnknownCreator);
+        require_gte!(100, c.share);
 
-                let partition = amount * (c.share as u64) / 100u64;
-                require_gte!(available, partition);
+        let portion = amount * (c.share as u64) / 100u64;
+        require_gte!(available, portion);
 
-                system_program::transfer(
-                    CpiContext::new(
-                        ctx.accounts.system_program.to_account_info(),
-                        system_program::Transfer {
-                            from: ctx.accounts.donator.to_account_info(),
-                            to: info.clone(),
-                        },
-                    ),
-                    partition,
-                )?;
+        system_program::transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                system_program::Transfer {
+                    from: ctx.accounts.donator.to_account_info(),
+                    to: info.clone(),
+                },
+            ),
+            portion,
+        )?;
 
-                available -= partition;
-            }
-            None => return Err(error!(CustomError::UnknownCreator)),
-        }
+        available -= portion;
     }
 
     Ok(())
