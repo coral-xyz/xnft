@@ -20,7 +20,7 @@ use std::rc::Rc;
 
 use crate::config::Config;
 
-pub fn create_program_client(config: &Config) -> (Program, Rc<Keypair>) {
+pub fn create_program_client(config: &Config) -> (Program<Rc<Keypair>>, Rc<Keypair>) {
     (
         Client::new_with_options(
             config.cluster.clone(),
