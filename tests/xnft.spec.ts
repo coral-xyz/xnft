@@ -246,7 +246,30 @@ describe("A standard xNFT", () => {
       await wait(500);
     });
 
-    it("and the instruction will succeed", async () => {
+    it("unless the accounts provided do not match the on-chain creators", async () => {
+      try {
+        const acc = await tempClient.program.account.xnft.fetch(xnft);
+
+        await tempClient.program.methods
+          .donate(new anchor.BN(10))
+          .accounts({
+            masterMetadata: acc.masterMetadata,
+            xnft,
+          })
+          .remainingAccounts([
+            { pubkey: anchor.web3.PublicKey.default, isSigner: false, isWritable: true },
+            { pubkey: anchor.web3.PublicKey.default, isSigner: false, isWritable: true },
+          ])
+          .rpc();
+
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, "UnknownCreator");
+      }
+    });
+
+    it("when the accounts are the same as the metadata creators and in the same order", async () => {
       predonationAmount1 = (await client.provider.connection.getAccountInfo(authority.publicKey)).lamports;
       predonationAmount2 = (await client.provider.connection.getAccountInfo(otherCreator.publicKey)).lamports;
       await tempClient.donate(xnft, new anchor.BN(5 * anchor.web3.LAMPORTS_PER_SOL));
