@@ -23,7 +23,6 @@ use solana_security_txt::security_txt;
 mod events;
 mod instructions;
 pub mod state;
-mod util;
 
 use instructions::*;
 use state::*;
@@ -91,6 +90,14 @@ pub mod xnft {
     /// Closes the review account and removes metrics from xNFT account.
     pub fn delete_review(ctx: Context<DeleteReview>) -> Result<()> {
         instructions::delete_review_handler(ctx)
+    }
+
+    /// Donate funds to the creators listed in the metadata account of an xNFT.
+    pub fn donate<'info>(
+        ctx: Context<'_, '_, '_, 'info, Donate<'info>>,
+        amount: u64,
+    ) -> Result<()> {
+        instructions::donate_handler(ctx, amount)
     }
 
     /// Creates an access program account that indicates a wallet's
@@ -175,6 +182,9 @@ pub enum CustomError {
 
     #[msg("The access account provided is not associated with the wallet")]
     UnauthorizedInstall,
+
+    #[msg("A provided creator was not found on the metadata account")]
+    UnknownCreator,
 
     #[msg("The signer did not match the update authority of the metadata account or the owner")]
     UpdateAuthorityMismatch,

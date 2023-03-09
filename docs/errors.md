@@ -18,6 +18,7 @@
 | SupplyReduction               | `0x177b` | `6011` | Updated supply is less than the original supply set on creation                    |
 | SuspendedInstallation         | `0x177c` | `6012` | Attempting to install a currently suspended xNFT                                   |
 | UnauthorizedInstall           | `0x177d` | `6013` | The access account provided is not associated with the wallet                      |
-| UpdateAuthorityMismatch       | `0x177e` | `6014` | The signer did not match the update authority of the metadata account or the owner |
-| UpdateReviewAuthorityMismatch | `0x177f` | `6015` | The signing authority for the xNFT update did not match the review authority       |
-| UriExceedsMaxLength           | `0x1780` | `6016` | The metadata URI provided exceeds the maximum length                               |
+| UnknownCreator                | `0x177e` | `6014` | A provided creator was not found on the metadata account                           |
+| UpdateAuthorityMismatch       | `0x177f` | `6015` | The signer did not match the update authority of the metadata account or the owner |
+| UpdateReviewAuthorityMismatch | `0x1780` | `6016` | The signing authority for the xNFT update did not match the review authority       |
+| UriExceedsMaxLength           | `0x1781` | `6017` | The metadata URI provided exceeds the maximum length                               |

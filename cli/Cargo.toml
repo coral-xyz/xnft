@@ -16,7 +16,7 @@ default = []
 opt-level = "s"
 
 [dependencies]
-anchor-client = "0.26.0"
+anchor-client = "0.27.0"
 anyhow = "1.0"
 clap = { version = "4.0", features = ["derive"] }
 dialoguer = "0.10"

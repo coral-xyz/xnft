@@ -5,13 +5,16 @@
     "typescript"
   ],
   "scripts": {
+    "build": "yarn idl && cargo build && cd ./typescript && yarn build",
     "docs": "docsify serve ./docs",
     "fmt:fix": "prettier \"*/**/*{.js,.cjs,.ts,.tsx,.json,.yaml,.md}\" -w",
     "fmt": "prettier \"*/**/*{.js,.cjs,.ts,.tsx,.json,.yaml,.md}\" --check",
-    "idl": "cp ./target/types/xnft.ts ./typescript/src && yarn fmt:fix"
+    "idl": "anchor build && cp ./target/types/xnft.ts ./typescript/src && yarn fmt:fix",
+    "lint": "yarn fmt && cargo fmt --all --check && cargo clippy --all-targets -- -D warnings && cd ./typescript && yarn lint",
+    "test": "yarn idl && anchor test && cargo test && cd ./typescript && yarn test"
   },
   "devDependencies": {
-    "@coral-xyz/anchor": "^0.26.0",
+    "@coral-xyz/anchor": "^0.27.0",
     "@metaplex-foundation/js": "^0.17.10",
     "@solana/spl-token": "^0.3.6",
     "@types/chai": "^4.3.1",

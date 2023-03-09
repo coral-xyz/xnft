@@ -14,10 +14,10 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anchor_lang::prelude::*;
+use anchor_lang::system_program;
 
 use crate::events::InstallationCreated;
 use crate::state::{Access, Install, Kind, Xnft};
-use crate::util::send_payment;
 use crate::CustomError;
 
 #[derive(Accounts)]
@@ -80,11 +80,15 @@ pub fn create_permissioned_install_handler(ctx: Context<CreatePermissionedInstal
 
     // Pay to install the xNFT, if needed.
     if xnft.install_price > 0 {
-        send_payment(
+        system_program::transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                system_program::Transfer {
+                    from: ctx.accounts.authority.to_account_info(),
+                    to: ctx.accounts.install_vault.to_account_info(),
+                },
+            ),
             xnft.install_price,
-            ctx.accounts.authority.to_account_info(),
-            ctx.accounts.install_vault.to_account_info(),
-            ctx.accounts.system_program.to_account_info(),
         )?;
     }
 
