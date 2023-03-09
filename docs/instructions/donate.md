@@ -20,7 +20,7 @@ This instruction allows users to make a donation to the creators of an xNFT and 
 
 ### Remaining Accounts
 
-!> The addresses of all creators listed on the Metaplex metadata account should also be provided as `writable` so that they can be used in CPI calls.
+!> The addresses of all creators listed on the Metaplex metadata account should be provided _in order_ as `writable` so that they can be used in CPI calls.
 
 ## Arguments
 
