@@ -20,7 +20,7 @@ cli = ["no-entrypoint", "serde"]
 [dependencies]
 anchor-lang = "0.27.0"
 anchor-spl = { version = "0.27.0", features = ["metadata"] }
-mpl-token-metadata = { version = "1.4.3", features = ["no-entrypoint"] }
+mpl-token-metadata = { version = "1.9.0", features = ["no-entrypoint"] }
 serde = { version = "1.0", optional = true }
 solana-security-txt = "1.0"
 
