@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
@@ -60,13 +60,10 @@ jobs:
       # - run: solana config set --url localhost
 
       - name: Install Dependencies
-        run: yarn install #&& yarn global add @project-serum/anchor-cli
+        run: yarn #&& yarn global add @project-serum/anchor-cli
 
-      - name: Format Check
-        run: yarn fmt && cargo fmt -- --check
-
-      - name: Clippy Check
-        run: cargo clippy --all-targets -- -D warnings
+      - name: Lint
+        run: yarn lint
 
       - name: Cargo Tests
         run: cargo test
