@@ -22,7 +22,6 @@ use crate::state::{CreateXnftParams, Kind, Xnft};
 use crate::CustomError;
 
 #[derive(Accounts)]
-
 pub struct CreateCollectibleXnft<'info> {
     #[account(
         constraint = master_mint.decimals == 0,
