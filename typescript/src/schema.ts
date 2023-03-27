@@ -111,64 +111,59 @@ export const EntrypointsDefaultSchema = z.object({
 export const EntrypointsSchema = EntrypointsDefaultSchema.and(EntrypointsCustomSchema);
 export type EntrypointsType = z.infer<typeof EntrypointsSchema>;
 
-export const ContactSchema = z
-  .object({
-    repository: z.string(),
-  })
-  .strict();
+export const ContactSchema = z.string().nonempty();
 export type ContactType = z.infer<typeof ContactSchema>;
 
 export const PropsSchema = z.any();
 export type PropsType = z.infer<typeof PropsSchema>;
 
-export const ManifestSchema = z
-  .object({
-    entrypoints: EntrypointsSchema,
-    icon: ImageSizeOptionsSchema,
-    props: PropsSchema.optional(),
-    screenshots: ScreenshotsSchema.optional(),
-    splash: SplashSizeOptionsSchema.optional(),
-  })
-  .strict();
+export const StorageSchema = z.union([z.literal("arweave"), z.literal("aws"), z.literal("ipfs")]);
+export type StorageType = z.infer<typeof StorageSchema>;
+
+export const ManifestSchema = z.object({
+  entrypoints: EntrypointsSchema,
+  icon: ImageSizeOptionsSchema,
+  props: PropsSchema.optional(),
+  screenshots: ScreenshotsSchema.optional(),
+  splash: SplashSizeOptionsSchema.optional(),
+});
 export type ManifestType = z.infer<typeof ManifestSchema>;
 
-export const AppBuildJsonManifestSchema = z
-  .object({
-    contact: ContactSchema,
-    description: z.string().min(5),
-    entrypoints: EntrypointsSchema,
-    icon: ImageSizeOptionsSchema,
-    installAuthority: PublicKeySchema.optional(),
-    installVault: PublicKeySchema.optional(),
-    kind: z.literal("app"),
-    name: z.string().min(1).max(32),
-    price: z.number().nonnegative().optional(),
-    programIds: PublicKeySchema.array().optional(),
-    props: z.any().optional(),
-    royalitesPercentage: z.number().nonnegative().max(100).optional(),
-    screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
-    splash: SplashSizeOptionsSchema.optional(),
-    supply: z.number().min(1).optional(),
-    tag: TagSchema.optional(),
-    version: VersionSchema,
-    website: z.string().url(),
-  })
-  .strict();
+export const AppBuildJsonManifestSchema = z.object({
+  contact: ContactSchema,
+  description: z.string().min(5),
+  entrypoints: EntrypointsSchema,
+  icon: ImageSizeOptionsSchema,
+  installAuthority: PublicKeySchema.optional(),
+  installVault: PublicKeySchema.optional(),
+  kind: z.literal("app"),
+  name: z.string().min(1).max(32),
+  price: z.number().nonnegative().optional(),
+  programIds: PublicKeySchema.array().optional(),
+  props: z.any().optional(),
+  royalitesPercentage: z.number().nonnegative().max(100).optional(),
+  screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
+  splash: SplashSizeOptionsSchema.optional(),
+  storage: StorageSchema,
+  supply: z.number().min(1).optional(),
+  tag: TagSchema.optional(),
+  version: VersionSchema,
+  website: z.string().url(),
+});
 export type AppBuildJsonManifestType = z.infer<typeof AppBuildJsonManifestSchema>;
 
-export const CollectibleJsonManifestSchema = z
-  .object({
-    collectibleMint: PublicKeySchema,
-    contact: ContactSchema,
-    entrypoints: EntrypointsSchema,
-    kind: z.literal("collectible"),
-    programIds: PublicKeySchema.array().optional(),
-    props: z.any().optional(),
-    screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
-    splash: SplashSizeOptionsSchema.optional(),
-    version: VersionSchema,
-  })
-  .strict();
+export const CollectibleJsonManifestSchema = z.object({
+  collectibleMint: PublicKeySchema,
+  contact: ContactSchema,
+  entrypoints: EntrypointsSchema,
+  kind: z.literal("collectible"),
+  programIds: PublicKeySchema.array().optional(),
+  props: z.any().optional(),
+  screenshots: z.union([ScreenshotsSchema, z.string().array()]).optional(),
+  splash: SplashSizeOptionsSchema.optional(),
+  storage: StorageSchema,
+  version: VersionSchema,
+});
 export type CollectibleBuildJsonManifestType = z.infer<typeof CollectibleJsonManifestSchema>;
 
 export const BuildJsonManifestSchema = z.discriminatedUnion("kind", [
@@ -177,13 +172,11 @@ export const BuildJsonManifestSchema = z.discriminatedUnion("kind", [
 ]);
 export type BuildJsonManifestType = z.infer<typeof BuildJsonManifestSchema>;
 
-export const XnftMetadataPropertiesSchema = z
-  .object({
-    version: VersionSchema,
-    manifest: ManifestSchema,
-    programIds: PublicKeySchema.array().optional(),
-    contact: ContactSchema,
-    history: ManifestHistorySchema,
-  })
-  .strict();
+export const XnftMetadataPropertiesSchema = z.object({
+  version: VersionSchema,
+  manifest: ManifestSchema,
+  programIds: PublicKeySchema.array().optional(),
+  contact: ContactSchema,
+  history: ManifestHistorySchema,
+});
 export type XnftMetadataPropertiesType = z.infer<typeof XnftMetadataPropertiesSchema>;
