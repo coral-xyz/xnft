@@ -4,7 +4,7 @@
 
 Toggles the `suspended` field of the xNFT program account based on the provided flag argument value.
 
-If set to `true`, no further installations of the xNFT can be created until it is set back to `false`.
+If set to `true` (and the xNFT is `Kind::App`), no further installations of the xNFT can be created until it is set back to `false`.
 
 ## Accounts
 

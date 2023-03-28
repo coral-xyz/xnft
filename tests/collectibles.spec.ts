@@ -76,16 +76,6 @@ describe("Digital collectible xNFTs", () => {
       }
     });
 
-    it("and a collectible xNFT cannot be suspended", async () => {
-      try {
-        await client.setSuspended(xnft, validNft.mintAddress, true);
-        assert.ok(false);
-      } catch (err) {
-        const e = err as anchor.AnchorError;
-        assert.strictEqual(e.error.errorCode.code, "MustBeApp");
-      }
-    });
-
     it("and a collectible xNFT cannot be transferred through the protocol", async () => {
       const recipient = anchor.web3.Keypair.generate().publicKey;
 
