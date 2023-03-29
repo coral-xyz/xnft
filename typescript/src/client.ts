@@ -362,9 +362,70 @@ export class xNFT {
    * @returns {Promise<XnftAccount[]>}
    * @memberof xNFT
    */
-  async getMultipleAccounts(kind?: Kind | null, filters?: GetProgramAccountsFilter[]): Promise<XnftAccount[]> {
+  async getMultipleAccountsByFilter(kind?: Kind | null, filters?: GetProgramAccountsFilter[]): Promise<XnftAccount[]> {
     const xnfts = (await this.#program.account.xnft.all(filters)) as ProgramAccount<IdlXnftAccount>[];
     const filteredXnfts = kind ? xnfts.filter(x => enumsEqual(x.account.kind, kind)) : xnfts;
+    const metadatas = (await this.#mpl
+      .nfts()
+      .findAllByMintList({ mints: filteredXnfts.map(x => x.account.masterMint) })) as Metadata[];
+
+    const xnftBlobs = await Promise.all(
+      filteredXnfts.map(
+        x =>
+          this.#mpl
+            .storage()
+            .downloadJson(gatewayUri(this.#gatewayReplacements, x.account.uri)) as Promise<CustomJsonMetadata>
+      )
+    );
+
+    const mplBlobs = await Promise.all(
+      filteredXnfts.map((acc, idx) =>
+        enumsEqual(acc.account.kind, "app")
+          ? Promise.resolve({})
+          : (this.#mpl.storage().downloadJson(gatewayUri(this.#gatewayReplacements, metadatas[idx].uri)) as Promise<
+              JsonMetadata<string>
+            >)
+      )
+    );
+
+    const tokenAccounts = await Promise.all(
+      metadatas.map(m => getNftTokenAccountForMint(this.#provider.connection, m.mintAddress))
+    );
+
+    const response: XnftAccount[] = [];
+    filteredXnfts.forEach((acc, idx) => {
+      response.push({
+        data: acc.account,
+        metadata: {
+          ...metadatas[idx],
+          json: {
+            ...xnftBlobs[idx],
+            ...mplBlobs[idx],
+          },
+        },
+        publicKey: acc.publicKey,
+        token: {
+          address: tokenAccounts[idx].publicKey,
+          owner: tokenAccounts[idx].account.owner,
+        },
+      });
+    });
+
+    return response;
+  }
+
+  /**
+   * Get multiple xNFT program accounts and peripheral data by a public keys list.
+   * @param {PublicKey[]} pubkeys
+   * @returns {Promise<XnftAccount[]>}
+   * @memberof xNFT
+   */
+  async getMultipleAccountsByPublicKeys(pubkeys: PublicKey[]): Promise<XnftAccount[]> {
+    const xnfts = await this.#program.account.xnft.fetchMultiple(pubkeys);
+    const filteredXnfts = xnfts
+      .map((x, i) => (x ? { publicKey: pubkeys[i], account: x } : null))
+      .filter(x => x) as ProgramAccount<IdlXnftAccount>[];
+
     const metadatas = (await this.#mpl
       .nfts()
       .findAllByMintList({ mints: filteredXnfts.map(x => x.account.masterMint) })) as Metadata[];
