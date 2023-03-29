@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft",
-  "version": "0.2.43",
+  "version": "0.2.44",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
   "repository": {
@@ -31,7 +31,7 @@
   "main": "./dist/cjs/index.js",
   "types": "./dist/cjs/index.d.ts",
   "module": "./dist/esm/index.js",
-  "browser": "./dist/browser/index.js",
+  "browser": "./dist/browser/index.mjs",
   "scripts": {
     "build": "yarn clean && yarn build:node && yarn build:browser",
     "build:browser": "rollup --config",
