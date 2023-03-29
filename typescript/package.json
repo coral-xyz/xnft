@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft",
-  "version": "0.2.44",
+  "version": "0.2.46",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
   "repository": {
@@ -30,12 +30,8 @@
   ],
   "main": "./dist/cjs/index.js",
   "types": "./dist/cjs/index.d.ts",
-  "module": "./dist/esm/index.js",
-  "browser": "./dist/browser/index.mjs",
   "scripts": {
-    "build": "yarn clean && yarn build:node && yarn build:browser",
-    "build:browser": "rollup --config",
-    "build:node": "tsc && tsc -p ./tsconfig.cjs.json",
+    "build": "yarn clean && tsc -p ./tsconfig.cjs.json",
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
     "test": "jest",
@@ -53,15 +49,11 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",
-    "@rollup/plugin-commonjs": "^24.0.1",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-typescript": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
     "jest": "^29.3.1",
-    "rollup": "^3.10.1",
     "ts-jest": "^29.0.3",
     "typescript": "^5.0.2"
   }

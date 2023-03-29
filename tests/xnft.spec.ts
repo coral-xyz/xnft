@@ -180,7 +180,7 @@ describe("A standard xNFT", () => {
     before(async () => {
       await client.program.provider.connection.requestAirdrop(author.publicKey, anchor.web3.LAMPORTS_PER_SOL);
 
-      await wait(500);
+      await wait(750);
 
       [authorInstallation] = deriveInstallAddress(c.provider.publicKey, xnft);
       await c.install(xnft, installVault);
@@ -243,7 +243,7 @@ describe("A standard xNFT", () => {
 
     before(async () => {
       await tempClient.provider.connection.requestAirdrop(donator.publicKey, 10 * anchor.web3.LAMPORTS_PER_SOL);
-      await wait(500);
+      await wait(750);
     });
 
     it("unless the accounts provided do not match the on-chain creators", async () => {
