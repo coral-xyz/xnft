@@ -2,7 +2,8 @@
 .anchor/
 .DS_Store
 .rollup.cache/
-.yarn/
+.yarn/*
+!.yarn/releases
 build/
 dist/
 node_modules/
