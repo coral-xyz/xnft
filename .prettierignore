@@ -6,6 +6,7 @@
 build/
 deps/
 dist/
+lib/
 node_modules/
 target/
 test-ledger/

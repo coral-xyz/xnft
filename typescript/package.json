@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft",
-  "version": "0.2.46",
+  "version": "0.2.47",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
   "repository": {
@@ -23,16 +23,16 @@
     "registry": "https://registry.npmjs.org"
   },
   "engines": {
-    "node": ">=11"
+    "node": ">=16"
   },
   "files": [
-    "dist"
+    "lib"
   ],
-  "main": "./dist/cjs/index.js",
-  "types": "./dist/cjs/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
-    "build": "yarn clean && tsc -p ./tsconfig.cjs.json",
-    "clean": "rm -rf ./dist",
+    "build": "yarn clean && tsc",
+    "clean": "rm -rf ./lib",
     "lint": "eslint .",
     "test": "jest",
     "prepublishOnly": "yarn lint && yarn test",
