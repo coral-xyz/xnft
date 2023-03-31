@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft",
-  "version": "0.2.49",
+  "version": "0.2.50",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
   "repository": {
@@ -28,13 +28,6 @@
   "files": [
     "lib"
   ],
-  "exports": {
-    ".": {
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js",
-      "types": "./lib/cjs/index.d.ts"
-    }
-  },
   "browser": "./lib/browser/index.js",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
