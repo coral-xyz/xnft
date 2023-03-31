@@ -6,7 +6,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true
   },
   "include": ["./src/**/*.ts"]
 }
