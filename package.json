@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@coral-xyz/anchor": "^0.27.0",
-    "@metaplex-foundation/js": "^0.17.12",
+    "@metaplex-foundation/js": "^0.18.3",
     "@solana/spl-token": "^0.3.7",
     "@types/chai": "^4.3.1",
     "@types/mocha": "^10.0.0",

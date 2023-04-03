@@ -8,7 +8,6 @@ import { client, wait } from "./common";
 const metaplex = new Metaplex(client.provider.connection).use(keypairIdentity(client.provider.wallet.payer));
 
 describe("Digital collectible xNFTs", () => {
-  let xnft: anchor.web3.PublicKey;
   let invalidNft: CreateNftOutput;
   let validNft: CreateNftOutput;
 
@@ -33,6 +32,8 @@ describe("Digital collectible xNFTs", () => {
   });
 
   describe("an associated xNFT can be created", () => {
+    let xnft: anchor.web3.PublicKey;
+
     it("unless the digital collectible metadata is immutable", async () => {
       try {
         await client.createCollectibleXnft({
@@ -86,6 +87,42 @@ describe("Digital collectible xNFTs", () => {
         const e = err as anchor.AnchorError;
         assert.strictEqual(e.error.errorCode.code, "MustBeApp");
       }
+    });
+  });
+});
+
+describe("pNFTs", () => {
+  let xnft: anchor.web3.PublicKey;
+  let pnft: CreateNftOutput;
+
+  before(async () => {
+    pnft = await metaplex.nfts().create({
+      name: "Test pNFT",
+      sellerFeeBasisPoints: 0,
+      uri: "https://arweave.net/my-content-hash",
+      tokenStandard: 4, // Enum value for TokenStandard.ProgrammableNonFungible
+      isMutable: true,
+    });
+
+    assert.strictEqual(pnft.nft.tokenStandard, 4);
+  });
+
+  describe("can be wrapped as an xNFT", () => {
+    it("when the instruction is properly called", async () => {
+      [xnft] = deriveXnftAddress(pnft.mintAddress);
+
+      await client.createCollectibleXnft({
+        metadata: pnft.metadataAddress,
+        mint: pnft.mintAddress,
+        tag: "none",
+        uri: "https://arweave.net/my-content-hash",
+      });
+    });
+
+    it("and the pNFTs account addresses are properly maintained", async () => {
+      const acc = await client.program.account.xnft.fetch(xnft);
+      assert.strictEqual(acc.masterMetadata.toBase58(), pnft.metadataAddress.toBase58());
+      assert.strictEqual(acc.masterMint.toBase58(), pnft.mintAddress.toBase58());
     });
   });
 });
