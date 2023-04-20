@@ -1,6 +1,6 @@
 [package]
 name = "xnft"
-version = "0.2.0"
+version = "0.2.1"
 description = "Protocol for minting and managing xNFTs"
 license = "GPL-3.0-only"
 edition = "2021"

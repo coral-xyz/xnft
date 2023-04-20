@@ -34,9 +34,9 @@ pub struct Install {
 impl Install {
     pub const LEN: usize = 8 + (32 * 3) + 8 + 64;
 
-    pub fn new(xnft: &mut Account<'_, Xnft>, authority: &Pubkey) -> Self {
+    pub fn new(xnft: &mut Account<'_, Xnft>, owner: &Pubkey) -> Self {
         let i = Self {
-            authority: *authority,
+            authority: *owner,
             xnft: xnft.key(),
             master_metadata: xnft.master_metadata,
             edition: xnft.total_installs,

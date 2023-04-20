@@ -79,7 +79,7 @@ pub fn create_install_handler(ctx: Context<CreateInstall>) -> Result<()> {
     }
 
     // Initialize the install data.
-    **install = Install::new(xnft, ctx.accounts.authority.key);
+    **install = Install::new(xnft, ctx.accounts.target.key);
 
     emit!(InstallationCreated {
         installer: ctx.accounts.target.key(),
