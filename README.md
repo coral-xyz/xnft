@@ -1,5 +1,5 @@
 <div align="center">
-  <img style="margin-bottom:15px" src="./.github/logo.svg" height="80px" />
+  <img style="margin-bottom:15px" src="https://xnft.gg/logo.svg" height="80px" />
   <h1><strong>xNFT</strong></h1>
   <p>
     <strong>A protocol for minting and managing executable NFTs</strong>
