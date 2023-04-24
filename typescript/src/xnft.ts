@@ -1,5 +1,5 @@
 export type Xnft = {
-  version: "0.2.0";
+  version: "0.2.1";
   name: "xnft";
   constants: [
     {
@@ -1371,7 +1371,7 @@ export type Xnft = {
 };
 
 export const IDL: Xnft = {
-  version: "0.2.0",
+  version: "0.2.1",
   name: "xnft",
   constants: [
     {
