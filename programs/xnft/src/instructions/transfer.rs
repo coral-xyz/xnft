@@ -114,7 +114,7 @@ pub fn transfer_handler(ctx: Context<Transfer>) -> Result<()> {
     // Transfer the token in the source account to the recipient's destination token account.
     token::transfer(ctx.accounts.transfer_ctx(), ctx.accounts.source.amount)?;
 
-    // Freeze the new account if necessary
+    // Freeze the new account if necessary.
     token::freeze_account(
         ctx.accounts
             .freeze_account_ctx()

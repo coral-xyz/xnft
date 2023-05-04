@@ -259,6 +259,52 @@ export async function createDeleteReviewInstruction(
 }
 
 /**
+ * Create a full transaction for `delete_xnft`.
+ * @export
+ * @param {...Parameters<typeof createDeleteXnftInstruction>} args
+ * @returns {Promise<Transaction>}
+ */
+export async function createDeleteXnftTransaction(
+  ...args: Parameters<typeof createDeleteXnftInstruction>
+): Promise<Transaction> {
+  const ix = await createDeleteXnftInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create an ix instance for the `delete_xnft` instruction.
+ * @export
+ * @param {Program<Xnft>} program
+ * @param {PublicKey} xnft
+ * @param {PublicKey} masterMetadata
+ * @param {PublicKey} masterToken
+ * @param {PublicKey} masterMint
+ * @param {boolean} [burn]
+ * @param {PublicKey} [receiver]
+ * @returns {Promise<TransactionInstruction>}
+ */
+export async function createDeleteXnftInstruction(
+  program: Program<Xnft>,
+  xnft: PublicKey,
+  masterMetadata: PublicKey,
+  masterToken: PublicKey,
+  masterMint: PublicKey,
+  burn?: boolean,
+  receiver?: PublicKey
+): Promise<TransactionInstruction> {
+  return program.methods
+    .deleteXnft(burn ?? false)
+    .accounts({
+      xnft,
+      masterMetadata,
+      masterToken,
+      masterMint,
+      receiver: receiver ?? program.provider.publicKey,
+    })
+    .instruction();
+}
+
+/**
  * Create a full transaction for `donate`.
  * @export
  * @param {...Parameters<typeof createDonateInstruction>} args
