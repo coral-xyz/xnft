@@ -9,6 +9,7 @@
   - [Create Install](/instructions/create-install.md)
   - [Donate](/instructions/donate.md)
   - [Delete Install](/instructions/delete-install.md)
+  - [Delete xNFT](/instructions/delete-xnft.md)
   - [Grant Access](/instructions/grant-access.md)
   - [Revoke Access](/instructions/revoke-access.md)
   - [Set Curator](/instructions/set-curator.md)

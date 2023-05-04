@@ -27,6 +27,7 @@ import {
   createCreateReviewTransaction,
   createDeleteInstallTransaction,
   createDeleteReviewTransaction,
+  createDeleteXnftTransaction,
   createDonateTransaction,
   createGrantAccessTransaction,
   createRevokeAccessTransaction,
@@ -185,6 +186,33 @@ export class xNFT {
    */
   async deleteReview(review: PublicKey, receiver?: PublicKey): Promise<string> {
     const tx = await createDeleteReviewTransaction(this.#program, review, receiver);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Delete an xNFT program account and optionally burn the underlying SPL token or NFT.
+   * @param {PublicKey} xnft
+   * @param {boolean} [burn]
+   * @param {PublicKey} [receiver]
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
+  async deleteXnft(xnft: PublicKey, burn?: boolean, receiver?: PublicKey): Promise<string> {
+    const acc = await this.#program.account.xnft.fetchNullable(xnft);
+    if (!acc) {
+      throw new Error(`no xnft account found for ${xnft}`);
+    }
+
+    const masterToken = getAssociatedTokenAddressSync(acc.masterMint, this.#provider.publicKey!);
+    const tx = await createDeleteXnftTransaction(
+      this.#program,
+      xnft,
+      acc.masterMetadata,
+      masterToken,
+      acc.masterMint,
+      burn,
+      receiver
+    );
     return this._withParsedTransactionError(tx);
   }
 

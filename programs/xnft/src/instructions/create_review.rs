@@ -17,7 +17,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::TokenAccount;
 
 use crate::events::ReviewCreated;
-use crate::state::{Install, Review, Xnft};
+use crate::state::{Install, Kind, Review, Xnft};
 use crate::{CustomError, MAX_RATING};
 
 #[derive(Accounts)]
@@ -38,6 +38,7 @@ pub struct CreateReview<'info> {
 
     #[account(
         mut,
+        constraint = xnft.kind == Kind::App @ CustomError::MustBeApp,
         constraint = xnft.publisher != *author.key @ CustomError::CannotReviewOwned,
     )]
     pub xnft: Account<'info, Xnft>,

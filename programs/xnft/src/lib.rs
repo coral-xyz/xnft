@@ -92,6 +92,11 @@ pub mod xnft {
         instructions::delete_review_handler(ctx)
     }
 
+    /// Closes the xNFT and burns the NFT if it meets the criteria for being deletable and optionally burn.
+    pub fn delete_xnft(ctx: Context<DeleteXnft>, with_burn: bool) -> Result<()> {
+        instructions::delete_xnft_handler(ctx, with_burn)
+    }
+
     /// Donate funds to the creators listed in the metadata account of an xNFT.
     pub fn donate<'info>(
         ctx: Context<'_, '_, '_, 'info, Donate<'info>>,
@@ -194,4 +199,7 @@ pub enum CustomError {
 
     #[msg("The metadata URI provided exceeds the maximum length")]
     UriExceedsMaxLength,
+
+    #[msg("The xNFT is not deletable because its either an app with installations or has reviews")]
+    XnftNotDeletable,
 }

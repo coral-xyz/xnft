@@ -1,5 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { type CreateNftOutput, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
+import { getMint } from "@solana/spl-token";
 import { assert } from "chai";
 import { deriveXnftAddress } from "../typescript/src";
 import { client, wait } from "./common";
@@ -10,6 +11,7 @@ const metaplex = new Metaplex(client.provider.connection).use(keypairIdentity(cl
 describe("Digital collectible xNFTs", () => {
   let invalidNft: CreateNftOutput;
   let validNft: CreateNftOutput;
+  let xnft: anchor.web3.PublicKey;
 
   before(async () => {
     await client.provider.connection.requestAirdrop(client.provider.publicKey, 5 * anchor.web3.LAMPORTS_PER_SOL);
@@ -32,8 +34,6 @@ describe("Digital collectible xNFTs", () => {
   });
 
   describe("an associated xNFT can be created", () => {
-    let xnft: anchor.web3.PublicKey;
-
     it("unless the digital collectible metadata is immutable", async () => {
       try {
         await client.createCollectibleXnft({
@@ -87,6 +87,25 @@ describe("Digital collectible xNFTs", () => {
         const e = err as anchor.AnchorError;
         assert.strictEqual(e.error.errorCode.code, "MustBeApp");
       }
+    });
+  });
+
+  describe("a collectible xNFT can be deleted", () => {
+    it("when the pre-conditions are met", async () => {
+      await client.deleteXnft(xnft, true);
+    });
+
+    it("and the xNFT program account will be closed", async () => {
+      const acc = await client.provider.connection.getAccountInfo(xnft);
+      assert.isNull(acc);
+    });
+
+    it("and the underlying NFT token and account will be closed if burn is enabled", async () => {
+      const ata = await client.provider.connection.getAccountInfo(validNft.tokenAddress);
+      assert.isNull(ata);
+
+      const mint = await getMint(client.provider.connection, validNft.mintAddress);
+      assert.strictEqual(mint.supply.toString(), "0");
     });
   });
 });

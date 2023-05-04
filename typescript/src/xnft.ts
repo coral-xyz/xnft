@@ -1,5 +1,5 @@
 export type Xnft = {
-  version: "0.2.1";
+  version: "0.2.2";
   name: "xnft";
   constants: [
     {
@@ -469,6 +469,55 @@ export type Xnft = {
         }
       ];
       args: [];
+    },
+    {
+      name: "deleteXnft";
+      docs: ["Closes the xNFT and burns the NFT if it meets the criteria for being deletable and optionally burn."];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+          relations: ["master_metadata", "master_mint"];
+        },
+        {
+          name: "masterMetadata";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterToken";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "masterMint";
+          isMut: true;
+          isSigner: false;
+          docs: ["account and the token account mint check."];
+        },
+        {
+          name: "receiver";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "authority";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "withBurn";
+          type: "bool";
+        }
+      ];
     },
     {
       name: "donate";
@@ -1366,12 +1415,17 @@ export type Xnft = {
       code: 6017;
       name: "UriExceedsMaxLength";
       msg: "The metadata URI provided exceeds the maximum length";
+    },
+    {
+      code: 6018;
+      name: "XnftNotDeletable";
+      msg: "The xNFT is not deletable because its either an app with installations or has reviews";
     }
   ];
 };
 
 export const IDL: Xnft = {
-  version: "0.2.1",
+  version: "0.2.2",
   name: "xnft",
   constants: [
     {
@@ -1841,6 +1895,55 @@ export const IDL: Xnft = {
         },
       ],
       args: [],
+    },
+    {
+      name: "deleteXnft",
+      docs: ["Closes the xNFT and burns the NFT if it meets the criteria for being deletable and optionally burn."],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+          relations: ["master_metadata", "master_mint"],
+        },
+        {
+          name: "masterMetadata",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterToken",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "masterMint",
+          isMut: true,
+          isSigner: false,
+          docs: ["account and the token account mint check."],
+        },
+        {
+          name: "receiver",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "authority",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "withBurn",
+          type: "bool",
+        },
+      ],
     },
     {
       name: "donate",
@@ -2738,6 +2841,11 @@ export const IDL: Xnft = {
       code: 6017,
       name: "UriExceedsMaxLength",
       msg: "The metadata URI provided exceeds the maximum length",
+    },
+    {
+      code: 6018,
+      name: "XnftNotDeletable",
+      msg: "The xNFT is not deletable because its either an app with installations or has reviews",
     },
   ],
 };

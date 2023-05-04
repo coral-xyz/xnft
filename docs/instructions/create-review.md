@@ -12,6 +12,7 @@ Currently, if you want a comment associated with the `Review`, the comment shoul
 
 ## Additional Constraints
 
+- xNFT is of `Kind::App`
 - The provided `Install` account is owned by the author (signer)
 - The author does not own the xNFT/master token account being reviewed
 

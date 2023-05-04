@@ -62,6 +62,12 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Creates an installation of an xNFT for the wallet
+    Install {
+        /// The address of the xNFT to be installed
+        #[arg(value_parser)]
+        address: Pubkey,
+    },
     /// Grant or revoke access to a wallet for a private xNFT
     ManageAccess {
         /// The public key of the target wallet
@@ -121,6 +127,7 @@ pub fn run(args: Cli) -> Result<()> {
             account_type,
             json,
         } => process_get_account(cfg, account_type, address, json),
+        Command::Install { address } => process_install(cfg, address),
         Command::ManageAccess {
             wallet,
             operation,
@@ -197,6 +204,35 @@ fn process_grant_access(
             xnft::instruction::RevokeAccess {}
         )?,
     };
+
+    println!("Signature: {sig}");
+    Ok(())
+}
+
+fn process_install(cfg: Config, address: Pubkey) -> Result<()> {
+    let (program, signer) = create_program_client(&cfg);
+    let authority = program.payer();
+
+    let account: xnft::state::Xnft = program.account(address)?;
+    let (install, _) = Pubkey::find_program_address(
+        &["install".as_bytes(), authority.as_ref(), address.as_ref()],
+        &program.id(),
+    );
+
+    let sig = send_with_approval!(
+        program,
+        signer,
+        cfg.auto_approved,
+        xnft::accounts::CreateInstall {
+            authority,
+            install,
+            install_vault: account.install_vault,
+            system_program: system_program::ID,
+            target: authority,
+            xnft: address,
+        },
+        xnft::instruction::CreateInstall {}
+    )?;
 
     println!("Signature: {sig}");
     Ok(())
