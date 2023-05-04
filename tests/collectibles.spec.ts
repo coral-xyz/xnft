@@ -92,7 +92,7 @@ describe("Digital collectible xNFTs", () => {
 
   describe("a collectible xNFT can be deleted", () => {
     it("when the pre-conditions are met", async () => {
-      await client.deleteXnft(xnft, true);
+      await client.deleteXnft(xnft);
     });
 
     it("and the xNFT program account will be closed", async () => {
@@ -100,12 +100,12 @@ describe("Digital collectible xNFTs", () => {
       assert.isNull(acc);
     });
 
-    it("and the underlying NFT token and account will be closed if burn is enabled", async () => {
+    it("and the underlying NFT token and account will be left in tact since it was a collectible", async () => {
       const ata = await client.provider.connection.getAccountInfo(validNft.tokenAddress);
-      assert.isNull(ata);
+      assert.isNotNull(ata);
 
       const mint = await getMint(client.provider.connection, validNft.mintAddress);
-      assert.strictEqual(mint.supply.toString(), "0");
+      assert.strictEqual(mint.supply.toString(), "1");
     });
   });
 });

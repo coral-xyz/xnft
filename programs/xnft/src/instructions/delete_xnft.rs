@@ -81,7 +81,7 @@ impl<'info> DeleteXnft<'info> {
     }
 }
 
-pub fn delete_xnft_handler(ctx: Context<DeleteXnft>, with_burn: bool) -> Result<()> {
+pub fn delete_xnft_handler(ctx: Context<DeleteXnft>) -> Result<()> {
     let xnft = &ctx.accounts.xnft;
     let master_token = &ctx.accounts.master_token;
 
@@ -90,9 +90,7 @@ pub fn delete_xnft_handler(ctx: Context<DeleteXnft>, with_burn: bool) -> Result<
     if xnft.kind == Kind::App {
         require_eq!(xnft.total_installs, 0, CustomError::XnftNotDeletable);
         require_eq!(xnft.num_ratings, 0, CustomError::XnftNotDeletable);
-    }
 
-    if with_burn {
         // Burn the SPL token in the master token account.
         burn(ctx.accounts.burn_ctx(), master_token.amount)?;
 

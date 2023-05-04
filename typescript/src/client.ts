@@ -190,14 +190,13 @@ export class xNFT {
   }
 
   /**
-   * Delete an xNFT program account and optionally burn the underlying SPL token or NFT.
+   * Delete an xNFT program account and burn the underlying SPL token or NFT, if it was an app.
    * @param {PublicKey} xnft
-   * @param {boolean} [burn]
    * @param {PublicKey} [receiver]
    * @returns {Promise<string>}
    * @memberof xNFT
    */
-  async deleteXnft(xnft: PublicKey, burn?: boolean, receiver?: PublicKey): Promise<string> {
+  async deleteXnft(xnft: PublicKey, receiver?: PublicKey): Promise<string> {
     const acc = await this.#program.account.xnft.fetchNullable(xnft);
     if (!acc) {
       throw new Error(`no xnft account found for ${xnft}`);
@@ -210,7 +209,6 @@ export class xNFT {
       acc.masterMetadata,
       masterToken,
       acc.masterMint,
-      burn,
       receiver
     );
     return this._withParsedTransactionError(tx);

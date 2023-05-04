@@ -93,8 +93,8 @@ pub mod xnft {
     }
 
     /// Closes the xNFT and burns the NFT if it meets the criteria for being deletable and optionally burn.
-    pub fn delete_xnft(ctx: Context<DeleteXnft>, with_burn: bool) -> Result<()> {
-        instructions::delete_xnft_handler(ctx, with_burn)
+    pub fn delete_xnft(ctx: Context<DeleteXnft>) -> Result<()> {
+        instructions::delete_xnft_handler(ctx)
     }
 
     /// Donate funds to the creators listed in the metadata account of an xNFT.

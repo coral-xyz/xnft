@@ -279,7 +279,6 @@ export async function createDeleteXnftTransaction(
  * @param {PublicKey} masterMetadata
  * @param {PublicKey} masterToken
  * @param {PublicKey} masterMint
- * @param {boolean} [burn]
  * @param {PublicKey} [receiver]
  * @returns {Promise<TransactionInstruction>}
  */
@@ -289,11 +288,10 @@ export async function createDeleteXnftInstruction(
   masterMetadata: PublicKey,
   masterToken: PublicKey,
   masterMint: PublicKey,
-  burn?: boolean,
   receiver?: PublicKey
 ): Promise<TransactionInstruction> {
   return program.methods
-    .deleteXnft(burn ?? false)
+    .deleteXnft()
     .accounts({
       xnft,
       masterMetadata,

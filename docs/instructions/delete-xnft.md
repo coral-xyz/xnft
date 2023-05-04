@@ -2,7 +2,7 @@
 
 [Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/delete_xnft.rs)
 
-This allows the authority to delete the xNFT program account, and optionally burn the underlying NFT as well.
+This allows the authority to delete the xNFT program account and burn the underlying NFT as well if the xNFT is `Kind::App`.
 
 ## Additional Constraints
 
@@ -26,6 +26,4 @@ This allows the authority to delete the xNFT program account, and optionally bur
 
 ## Arguments
 
-| Name | Type      | Description                                              |
-| :--- | :-------- | :------------------------------------------------------- |
-| Burn | `boolean` | Whether or not to also burn the underlying SPL token/NFT |
+!> None

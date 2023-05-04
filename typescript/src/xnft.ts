@@ -512,12 +512,7 @@ export type Xnft = {
           isSigner: false;
         }
       ];
-      args: [
-        {
-          name: "withBurn";
-          type: "bool";
-        }
-      ];
+      args: [];
     },
     {
       name: "donate";
@@ -1945,12 +1940,7 @@ export const IDL: Xnft = {
           isSigner: false,
         },
       ],
-      args: [
-        {
-          name: "withBurn",
-          type: "bool",
-        },
-      ],
+      args: [],
     },
     {
       name: "donate",
