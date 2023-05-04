@@ -122,6 +122,14 @@ pub mod xnft {
         instructions::set_curator_handler(ctx)
     }
 
+    /// Sets the boolean flag for verification of the assigned curator to an xNFT, signed by the curator authority.
+    pub fn set_curator_verification(
+        ctx: Context<SetCuratorVerification>,
+        value: bool,
+    ) -> Result<()> {
+        instructions::set_curator_verification_handler(ctx, value)
+    }
+
     /// Sets the install suspension flag on the xnft.
     pub fn set_suspended(ctx: Context<SetSuspended>, flag: bool) -> Result<()> {
         instructions::set_suspended_handler(ctx, flag)
@@ -136,11 +144,6 @@ pub mod xnft {
     /// This is simply a token metadata update cpi.
     pub fn update_xnft(ctx: Context<UpdateXnft>, updates: UpdateParams) -> Result<()> {
         instructions::update_xnft_handler(ctx, updates)
-    }
-
-    /// Verifies the assignment of a curator to an xNFT, signed by the curator authority.
-    pub fn verify_curator(ctx: Context<VerifyCurator>) -> Result<()> {
-        instructions::verify_curator_handler(ctx)
     }
 }
 

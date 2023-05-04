@@ -138,13 +138,26 @@ describe("A standard xNFT", () => {
       const c = new xNFT(
         new anchor.AnchorProvider(client.provider.connection, new anchor.Wallet(curatorAuthority), {})
       );
-
       await c.verify(xnft);
     });
 
     it("and the xNFT curator data will show verified", async () => {
       const acc = await client.program.account.xnft.fetch(xnft);
       assert.isTrue(acc.curator.verified);
+    });
+  });
+
+  describe("the curator on an xNFT can be unverified", () => {
+    it("if the curator authority signs the transaction", async () => {
+      const c = new xNFT(
+        new anchor.AnchorProvider(client.provider.connection, new anchor.Wallet(curatorAuthority), {})
+      );
+      await c.unverify(xnft);
+    });
+
+    it("and the xNFT curator data will show unverified", async () => {
+      const acc = await client.program.account.xnft.fetch(xnft);
+      assert.isFalse(acc.curator.verified);
     });
   });
 

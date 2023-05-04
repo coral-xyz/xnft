@@ -32,10 +32,10 @@ import {
   createGrantAccessTransaction,
   createRevokeAccessTransaction,
   createSetCuratorTransaction,
+  createSetCuratorVerificationTransaction,
   createSetSuspendedTransaction,
   createTransferTransaction,
   createUpdateXnftTransaction,
-  createVerifyCuratorTransaction,
 } from "./instructions";
 import { getNftTokenAccountForMint } from "./tokens";
 import type {
@@ -669,8 +669,19 @@ export class xNFT {
    * @returns {Promise<string>}
    * @memberof xNFT
    */
+  async unverify(xnft: PublicKey): Promise<string> {
+    const tx = await createSetCuratorVerificationTransaction(this.#program, xnft, false);
+    return this._withParsedTransactionError(tx);
+  }
+
+  /**
+   * Allows a curation authority to verify their assignment on an xNFT.
+   * @param {PublicKey} xnft
+   * @returns {Promise<string>}
+   * @memberof xNFT
+   */
   async verify(xnft: PublicKey): Promise<string> {
-    const tx = await createVerifyCuratorTransaction(this.#program, xnft);
+    const tx = await createSetCuratorVerificationTransaction(this.#program, xnft, true);
     return this._withParsedTransactionError(tx);
   }
 

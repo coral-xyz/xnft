@@ -19,7 +19,7 @@ use crate::state::Xnft;
 use crate::CustomError;
 
 #[derive(Accounts)]
-pub struct VerifyCurator<'info> {
+pub struct SetCuratorVerification<'info> {
     #[account(
         mut,
         constraint = xnft.curator.as_ref().map(|c| c.pubkey) == Some(*curator.key) @ CustomError::CuratorMismatch,
@@ -29,9 +29,12 @@ pub struct VerifyCurator<'info> {
     pub curator: Signer<'info>,
 }
 
-pub fn verify_curator_handler(ctx: Context<VerifyCurator>) -> Result<()> {
+pub fn set_curator_verification_handler(
+    ctx: Context<SetCuratorVerification>,
+    value: bool,
+) -> Result<()> {
     if let Some(curator) = &mut ctx.accounts.xnft.curator {
-        curator.verified = true;
+        curator.verified = value;
     }
     Ok(())
 }

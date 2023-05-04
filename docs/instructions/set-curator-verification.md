@@ -1,8 +1,8 @@
-## Verify the Curator of an xNFT
+## Verify/Unverify the Curator of an xNFT
 
-[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/verify_curator.rs)
+[Source Code](https://github.com/coral-xyz/xnft/blob/master/programs/xnft/src/instructions/set_curator_verification.rs)
 
-Invoked by a curator account in order to verified their assignment to an xNFT.
+Invoked by a curator account in order to verify or unverify their assignment to an xNFT.
 
 This process is initiated by the authority of the xNFT through the [`set_curator`](/instructions/set-curator.md) instruction to set the _unverified_ curator public key in the xNFT program account data.
 
@@ -21,4 +21,6 @@ This process is initiated by the authority of the xNFT through the [`set_curator
 
 ### Arguments
 
-!> None
+| Name  | Type   | Description                                                              |
+| :---- | :----- | :----------------------------------------------------------------------- |
+| Value | `bool` | The boolean flag value for whether the curator should be verified or not |

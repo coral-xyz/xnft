@@ -13,10 +13,10 @@
   - [Grant Access](/instructions/grant-access.md)
   - [Revoke Access](/instructions/revoke-access.md)
   - [Set Curator](/instructions/set-curator.md)
+  - [Set Curator Verification](/instructions/set-curator-verification.md)
   - [Toggle Suspended](/instructions/toggle-suspended.md)
   - [Transfer Ownership](/instructions/transfer.md)
   - [Update xNFT](/instructions/update-xnft.md)
-  - [Verify Curator](/instructions/verify-curator.md)
 - **State**
   - [Access](/state/access.md)
   - [Install](/state/install.md)

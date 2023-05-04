@@ -447,6 +447,35 @@ export async function createSetCuratorInstruction(
 }
 
 /**
+ * Creates a full transaction for `set_curator_verification`.
+ * @export
+ * @param {...Parameters<typeof createSetCuratorVerificationInstruction>} args
+ * @returns {Promise<Transaction>}
+ */
+export async function createSetCuratorVerificationTransaction(
+  ...args: Parameters<typeof createSetCuratorVerificationInstruction>
+): Promise<Transaction> {
+  const ix = await createSetCuratorVerificationInstruction(...args);
+  return new Transaction().add(ix);
+}
+
+/**
+ * Create an ix instance for the `set_curator_verification` instruction.
+ * @export
+ * @param {Program<Xnft>} program
+ * @param {PublicKey} xnft
+ * @param {boolean} value
+ * @returns {Promise<TransactionInstruction>}
+ */
+export async function createSetCuratorVerificationInstruction(
+  program: Program<Xnft>,
+  xnft: PublicKey,
+  value: boolean
+): Promise<TransactionInstruction> {
+  return program.methods.setCuratorVerification(value).accounts({ xnft }).instruction();
+}
+
+/**
  * Create a full transaction for `set_suspended`.
  * @export
  * @param {...Parameters<typeof createSetSuspendedInstruction>} args
@@ -563,31 +592,4 @@ export async function createUpdateXnftInstruction(
       metadataProgram: TOKEN_METADATA_PROGRAM_ID,
     })
     .instruction();
-}
-
-/**
- * Creates a full transaction for `verify_curator`.
- * @export
- * @param {...Parameters<typeof createVerifyCuratorInstruction>} args
- * @returns {Promise<Transaction>}
- */
-export async function createVerifyCuratorTransaction(
-  ...args: Parameters<typeof createVerifyCuratorInstruction>
-): Promise<Transaction> {
-  const ix = await createVerifyCuratorInstruction(...args);
-  return new Transaction().add(ix);
-}
-
-/**
- * Create an ix instance for the `verify_curator` instruction.
- * @export
- * @param {Program<Xnft>} program
- * @param {PublicKey} xnft
- * @returns {Promise<TransactionInstruction>}
- */
-export async function createVerifyCuratorInstruction(
-  program: Program<Xnft>,
-  xnft: PublicKey
-): Promise<TransactionInstruction> {
-  return program.methods.verifyCurator().accounts({ xnft }).instruction();
 }

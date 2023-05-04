@@ -111,6 +111,12 @@ enum Command {
         xnft: Pubkey,
     },
     /// Verify a curator's assignment to an xNFT
+    Unverify {
+        /// The public key of the xNFT being verified
+        #[arg(value_parser)]
+        xnft: Pubkey,
+    },
+    /// Verify a curator's assignment to an xNFT
     Verify {
         /// The public key of the xNFT being verified
         #[arg(value_parser)]
@@ -137,6 +143,7 @@ pub fn run(args: Cli) -> Result<()> {
         Command::ToggleSuspended { xnft } => process_toggle_suspend(cfg, xnft),
         Command::Transfer { xnft, recipient } => process_transfer(cfg, xnft, recipient),
         Command::Uninstall { xnft } => process_uninstall(cfg, xnft),
+        Command::Unverify { xnft } => process_unverify(cfg, xnft),
         Command::Verify { xnft } => process_verify(cfg, xnft),
     }
 }
@@ -337,17 +344,34 @@ fn process_uninstall(cfg: Config, address: Pubkey) -> Result<()> {
     Ok(())
 }
 
+fn process_unverify(cfg: Config, address: Pubkey) -> Result<()> {
+    let (program, signer) = create_program_client(&cfg);
+    let sig = send_with_approval!(
+        program,
+        signer,
+        cfg.auto_approved,
+        xnft::accounts::SetCuratorVerification {
+            curator: program.payer(),
+            xnft: address,
+        },
+        xnft::instruction::SetCuratorVerification { value: false }
+    )?;
+
+    println!("Signature: {sig}");
+    Ok(())
+}
+
 fn process_verify(cfg: Config, address: Pubkey) -> Result<()> {
     let (program, signer) = create_program_client(&cfg);
     let sig = send_with_approval!(
         program,
         signer,
         cfg.auto_approved,
-        xnft::accounts::VerifyCurator {
+        xnft::accounts::SetCuratorVerification {
             curator: program.payer(),
             xnft: address,
         },
-        xnft::instruction::VerifyCurator {}
+        xnft::instruction::SetCuratorVerification { value: true }
     )?;
 
     println!("Signature: {sig}");

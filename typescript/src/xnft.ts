@@ -686,6 +686,30 @@ export type Xnft = {
       args: [];
     },
     {
+      name: "setCuratorVerification";
+      docs: [
+        "Sets the boolean flag for verification of the assigned curator to an xNFT, signed by the curator authority."
+      ];
+      accounts: [
+        {
+          name: "xnft";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "curator";
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [
+        {
+          name: "value";
+          type: "bool";
+        }
+      ];
+    },
+    {
       name: "setSuspended";
       docs: ["Sets the install suspension flag on the xnft."];
       accounts: [
@@ -809,23 +833,6 @@ export type Xnft = {
           };
         }
       ];
-    },
-    {
-      name: "verifyCurator";
-      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."];
-      accounts: [
-        {
-          name: "xnft";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "curator";
-          isMut: false;
-          isSigner: true;
-        }
-      ];
-      args: [];
     }
   ];
   accounts: [
@@ -2112,6 +2119,30 @@ export const IDL: Xnft = {
       args: [],
     },
     {
+      name: "setCuratorVerification",
+      docs: [
+        "Sets the boolean flag for verification of the assigned curator to an xNFT, signed by the curator authority.",
+      ],
+      accounts: [
+        {
+          name: "xnft",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "curator",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [
+        {
+          name: "value",
+          type: "bool",
+        },
+      ],
+    },
+    {
       name: "setSuspended",
       docs: ["Sets the install suspension flag on the xnft."],
       accounts: [
@@ -2235,23 +2266,6 @@ export const IDL: Xnft = {
           },
         },
       ],
-    },
-    {
-      name: "verifyCurator",
-      docs: ["Verifies the assignment of a curator to an xNFT, signed by the curator authority."],
-      accounts: [
-        {
-          name: "xnft",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "curator",
-          isMut: false,
-          isSigner: true,
-        },
-      ],
-      args: [],
     },
   ],
   accounts: [
