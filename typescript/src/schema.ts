@@ -123,6 +123,7 @@ export type StorageType = z.infer<typeof StorageSchema>;
 export const ManifestSchema = z.object({
   entrypoints: EntrypointsSchema,
   icon: ImageSizeOptionsSchema,
+  longDescription: z.string().min(5).optional(),
   props: PropsSchema.optional(),
   screenshots: ScreenshotsSchema.optional(),
   splash: SplashSizeOptionsSchema.optional(),
@@ -131,12 +132,13 @@ export type ManifestType = z.infer<typeof ManifestSchema>;
 
 export const AppBuildJsonManifestSchema = z.object({
   contact: ContactSchema,
-  description: z.string().min(5),
+  description: z.string().min(5).max(40),
   entrypoints: EntrypointsSchema,
   icon: ImageSizeOptionsSchema,
   installAuthority: PublicKeySchema.optional(),
   installVault: PublicKeySchema.optional(),
   kind: z.literal("app"),
+  longDescription: z.string().min(5).optional(),
   name: z.string().min(1).max(32),
   price: z.number().nonnegative().optional(),
   programIds: PublicKeySchema.array().optional(),
