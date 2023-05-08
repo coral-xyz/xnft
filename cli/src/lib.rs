@@ -62,6 +62,11 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Delete an xNFT and close the associated accounts.
+    Delete {
+        #[arg(value_parser)]
+        address: Pubkey,
+    },
     /// Creates an installation of an xNFT for the wallet
     Install {
         /// The address of the xNFT to be installed
@@ -133,6 +138,7 @@ pub fn run(args: Cli) -> Result<()> {
             account_type,
             json,
         } => process_get_account(cfg, account_type, address, json),
+        Command::Delete { address } => process_delete(cfg, address),
         Command::Install { address } => process_install(cfg, address),
         Command::ManageAccess {
             wallet,
@@ -146,6 +152,33 @@ pub fn run(args: Cli) -> Result<()> {
         Command::Unverify { xnft } => process_unverify(cfg, xnft),
         Command::Verify { xnft } => process_verify(cfg, xnft),
     }
+}
+
+fn process_delete(cfg: Config, address: Pubkey) -> Result<()> {
+    let (program, signer) = create_program_client(&cfg);
+    let authority = program.payer();
+
+    let acc: xnft::state::Xnft = program.account(address)?;
+    let master_token = get_associated_token_address(&authority, &acc.master_mint);
+
+    let sig = send_with_approval!(
+        program,
+        signer,
+        cfg.auto_approved,
+        xnft::accounts::DeleteXnft {
+            authority,
+            master_metadata: acc.master_metadata,
+            master_mint: acc.master_mint,
+            master_token,
+            receiver: authority,
+            xnft: address,
+            token_program: spl_token::ID,
+        },
+        xnft::instruction::DeleteXnft {}
+    )?;
+
+    println!("Signature: {sig}");
+    Ok(())
 }
 
 fn process_get_account(
