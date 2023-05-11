@@ -9,7 +9,7 @@ describe("xNFT publish manifest json schema validation", () => {
   test("minimal app", async () => {
     const json: AppBuildJsonManifestType = {
       contact: "tg:my_handler",
-      shortDescription: "test json for app publishing",
+      description: "test json for app publishing",
       longDescription: "long description version of the app description",
       entrypoints: {
         default: {
