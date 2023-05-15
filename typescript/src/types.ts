@@ -69,11 +69,11 @@ export type CreateXnftAppOptions = CreateXnftCommonParameters & {
 
 export type UpdateXnftOptions = {
   installAuthority?: PublicKey;
-  installPrice: BN;
-  installVault: PublicKey;
+  installPrice?: BN;
+  installVault?: PublicKey;
   name?: string;
   supply?: BN;
-  tag: Tag;
+  tag?: Tag;
   uri?: string;
 };
 

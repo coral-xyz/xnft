@@ -315,8 +315,8 @@ describe("Account Updates", () => {
       masterMint,
       {
         installPrice: new anchor.BN(100),
-        installVault,
         tag: "none",
+        name: "new name",
         supply: new anchor.BN(200),
         uri: "new uri update",
       },
@@ -324,11 +324,16 @@ describe("Account Updates", () => {
     );
 
     const acc = await client.program.account.xnft.fetch(xnft);
-
     assert.strictEqual(acc.installPrice.toNumber(), 100);
     assert.strictEqual(acc.supply.toNumber(), 200);
     assert.deepEqual(acc.tag, { none: {} });
     assert.strictEqual(acc.uri, "new uri update");
+
+    const metaAcc = (await metaplex.rpc().getAccount(masterMetadata)) as UnparsedAccount;
+    const meta = parseMetadataAccount(metaAcc);
+    assert.strictEqual(meta.data.data.name.replace(/\0/g, ""), "new name");
+    assert.strictEqual(meta.data.data.uri.replace(/\0/g, ""), "new uri update");
+    assert.isTrue(meta.data.primarySaleHappened);
   });
 
   it("an xNFT can be transferred to another authority", async () => {

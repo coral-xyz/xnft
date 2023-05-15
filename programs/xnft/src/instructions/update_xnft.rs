@@ -84,18 +84,22 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
         }
     }
 
-    // Gates the processing of an xNFT update if there is a set update authority
+    // Gates the processing of an xNFT update if there is a set curator update authority
     // on the account that does not match the signer of the transaction.
     if let Some(CuratorStatus {
         pubkey,
         verified: true,
     }) = ctx.accounts.xnft.curator
     {
-        if pubkey != *ctx.accounts.curation_authority.key {
-            return Err(error!(CustomError::CuratorAuthorityMismatch));
-        }
+        require_keys_eq!(
+            pubkey,
+            *ctx.accounts.curation_authority.key,
+            CustomError::CuratorAuthorityMismatch,
+        );
     }
 
+    // Handle update propagation to the Metaplex metadata account is the
+    // optional update parameters includes new values for the name or uri.
     if updates.uri.is_some() || updates.name.is_some() {
         let xnft = &mut ctx.accounts.xnft;
         let uri = updates.uri.unwrap_or_else(|| xnft.uri.clone());
@@ -116,7 +120,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                     collection: md.collection.clone(),
                     uses: md.uses.clone(),
                 }),
-                Some(md.primary_sale_happened),
+                Some(true),
                 Some(md.is_mutable),
             )?;
         }
@@ -124,9 +128,20 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
 
     let xnft = &mut ctx.accounts.xnft;
     xnft.install_authority = updates.install_authority;
-    xnft.install_price = updates.install_price;
-    xnft.install_vault = updates.install_vault;
-    xnft.tag = updates.tag;
+
+    // Set other xNFT program account data fields if alternatives
+    // were provided in the optional update parameters.
+    if let Some(price) = updates.install_price {
+        xnft.install_price = price;
+    }
+
+    if let Some(vault) = updates.install_vault {
+        xnft.install_vault = vault;
+    }
+
+    if let Some(tag) = updates.tag {
+        xnft.tag = tag;
+    }
 
     // Only update the supply if a new supply value was given and
     // its an additive change from the original value. If there was no

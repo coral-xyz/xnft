@@ -1,5 +1,5 @@
 export type Xnft = {
-  version: "0.2.2";
+  version: "0.2.3";
   name: "xnft";
   constants: [
     {
@@ -1162,11 +1162,15 @@ export type Xnft = {
           },
           {
             name: "installPrice";
-            type: "u64";
+            type: {
+              option: "u64";
+            };
           },
           {
             name: "installVault";
-            type: "publicKey";
+            type: {
+              option: "publicKey";
+            };
           },
           {
             name: "name";
@@ -1183,7 +1187,9 @@ export type Xnft = {
           {
             name: "tag";
             type: {
-              defined: "Tag";
+              option: {
+                defined: "Tag";
+              };
             };
           },
           {
@@ -1427,7 +1433,7 @@ export type Xnft = {
 };
 
 export const IDL: Xnft = {
-  version: "0.2.2",
+  version: "0.2.3",
   name: "xnft",
   constants: [
     {
@@ -2590,11 +2596,15 @@ export const IDL: Xnft = {
           },
           {
             name: "installPrice",
-            type: "u64",
+            type: {
+              option: "u64",
+            },
           },
           {
             name: "installVault",
-            type: "publicKey",
+            type: {
+              option: "publicKey",
+            },
           },
           {
             name: "name",
@@ -2611,7 +2621,9 @@ export const IDL: Xnft = {
           {
             name: "tag",
             type: {
-              defined: "Tag",
+              option: {
+                defined: "Tag",
+              },
             },
           },
           {
