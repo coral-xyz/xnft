@@ -120,16 +120,6 @@ export type PropsType = z.infer<typeof PropsSchema>;
 export const StorageSchema = z.union([z.literal("arweave"), z.literal("aws"), z.literal("ipfs")]);
 export type StorageType = z.infer<typeof StorageSchema>;
 
-export const ManifestSchema = z.object({
-  entrypoints: EntrypointsSchema,
-  icon: ImageSizeOptionsSchema,
-  longDescription: z.string().min(5).optional(),
-  props: PropsSchema.optional(),
-  screenshots: ScreenshotsSchema.optional(),
-  splash: SplashSizeOptionsSchema.optional(),
-});
-export type ManifestType = z.infer<typeof ManifestSchema>;
-
 export const AppBuildJsonManifestSchema = z.object({
   contact: ContactSchema,
   description: z.string().min(5).max(40),
@@ -173,6 +163,17 @@ export const BuildJsonManifestSchema = z.discriminatedUnion("kind", [
   CollectibleJsonManifestSchema,
 ]);
 export type BuildJsonManifestType = z.infer<typeof BuildJsonManifestSchema>;
+
+export const ManifestSchema = z.object({
+  entrypoints: EntrypointsSchema,
+  icon: ImageSizeOptionsSchema,
+  longDescription: z.string().min(5).optional(),
+  props: PropsSchema.optional(),
+  screenshots: ScreenshotsSchema.optional(),
+  splash: SplashSizeOptionsSchema.optional(),
+  storage: StorageSchema,
+});
+export type ManifestType = z.infer<typeof ManifestSchema>;
 
 export const XnftMetadataPropertiesSchema = z.object({
   version: VersionSchema,
