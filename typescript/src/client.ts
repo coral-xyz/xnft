@@ -17,7 +17,7 @@
 
 import { BN, parseIdlErrors, Program, translateError, type ProgramAccount, type Provider } from "@coral-xyz/anchor";
 import { Metaplex, type JsonMetadata, type Metadata } from "@metaplex-foundation/js";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { type RawAccount, getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey, Connection, type GetProgramAccountsFilter, Transaction } from "@solana/web3.js";
 import { deriveInstallAddress, deriveXnftAddress, PROGRAM_ID } from "./addresses";
 import {
@@ -395,7 +395,7 @@ export class xNFT {
       .nfts()
       .findAllByMintList({ mints: filteredXnfts.map(x => x.account.masterMint) })) as Metadata[];
 
-    const xnftBlobs = await Promise.all(
+    const xnftBlobs = await Promise.allSettled(
       filteredXnfts.map(
         x =>
           this.#mpl
@@ -404,7 +404,7 @@ export class xNFT {
       )
     );
 
-    const mplBlobs = await Promise.all(
+    const mplBlobs = await Promise.allSettled(
       filteredXnfts.map((acc, idx) =>
         enumsEqual(acc.account.kind, "app")
           ? Promise.resolve({})
@@ -414,30 +414,44 @@ export class xNFT {
       )
     );
 
-    const tokenAccounts = await Promise.all(
+    const tokenAccounts = await Promise.allSettled(
       metadatas.map(m => getNftTokenAccountForMint(this.#provider.connection, m.mintAddress))
     );
 
-    const response: XnftAccount[] = [];
-    filteredXnfts.forEach((acc, idx) => {
-      response.push({
-        data: acc.account,
+    return filteredXnfts.reduce<XnftAccount[]>((acc, curr, idx) => {
+      if (xnftBlobs[idx].status === "rejected") {
+        console.error(`Failed to fetch the xNFT metadata blob for ${curr.publicKey.toBase58()}`);
+        return acc;
+      } else if (mplBlobs[idx].status === "rejected") {
+        console.error(`Failed to fetch the MPL metadata blob for ${curr.publicKey.toBase58()}`);
+        return acc;
+      } else if (tokenAccounts[idx].status === "rejected") {
+        console.error(`Failed to fetch the associated token account data for ${curr.publicKey.toBase58()}`);
+        return acc;
+      }
+
+      const xnftBlobValue = (xnftBlobs[idx] as PromiseFulfilledResult<CustomJsonMetadata>).value;
+      const mplBlobValue = (mplBlobs[idx] as PromiseFulfilledResult<JsonMetadata<string>>).value;
+      const tokenAccountValue = (tokenAccounts[idx] as PromiseFulfilledResult<ProgramAccount<RawAccount>>).value;
+
+      const item: XnftAccount = {
+        data: curr.account,
         metadata: {
           ...metadatas[idx],
           json: {
-            ...xnftBlobs[idx],
-            ...mplBlobs[idx],
+            ...xnftBlobValue,
+            ...mplBlobValue,
           },
         },
-        publicKey: acc.publicKey,
+        publicKey: curr.publicKey,
         token: {
-          address: tokenAccounts[idx].publicKey,
-          owner: tokenAccounts[idx].account.owner,
+          address: tokenAccountValue.publicKey,
+          owner: tokenAccountValue.account.owner,
         },
-      });
-    });
+      };
 
-    return response;
+      return [...acc, item];
+    }, []);
   }
 
   /**
@@ -456,7 +470,7 @@ export class xNFT {
       .nfts()
       .findAllByMintList({ mints: filteredXnfts.map(x => x.account.masterMint) })) as Metadata[];
 
-    const xnftBlobs = await Promise.all(
+    const xnftBlobs = await Promise.allSettled(
       filteredXnfts.map(
         x =>
           this.#mpl
@@ -465,7 +479,7 @@ export class xNFT {
       )
     );
 
-    const mplBlobs = await Promise.all(
+    const mplBlobs = await Promise.allSettled(
       filteredXnfts.map((acc, idx) =>
         enumsEqual(acc.account.kind, "app")
           ? Promise.resolve({})
@@ -475,30 +489,44 @@ export class xNFT {
       )
     );
 
-    const tokenAccounts = await Promise.all(
+    const tokenAccounts = await Promise.allSettled(
       metadatas.map(m => getNftTokenAccountForMint(this.#provider.connection, m.mintAddress))
     );
 
-    const response: XnftAccount[] = [];
-    filteredXnfts.forEach((acc, idx) => {
-      response.push({
-        data: acc.account,
+    return filteredXnfts.reduce<XnftAccount[]>((acc, curr, idx) => {
+      if (xnftBlobs[idx].status === "rejected") {
+        console.error(`Failed to fetch the xNFT metadata blob for ${curr.publicKey.toBase58()}`);
+        return acc;
+      } else if (mplBlobs[idx].status === "rejected") {
+        console.error(`Failed to fetch the MPL metadata blob for ${curr.publicKey.toBase58()}`);
+        return acc;
+      } else if (tokenAccounts[idx].status === "rejected") {
+        console.error(`Failed to fetch the associated token account data for ${curr.publicKey.toBase58()}`);
+        return acc;
+      }
+
+      const xnftBlobValue = (xnftBlobs[idx] as PromiseFulfilledResult<CustomJsonMetadata>).value;
+      const mplBlobValue = (mplBlobs[idx] as PromiseFulfilledResult<JsonMetadata<string>>).value;
+      const tokenAccountValue = (tokenAccounts[idx] as PromiseFulfilledResult<ProgramAccount<RawAccount>>).value;
+
+      const item: XnftAccount = {
+        data: curr.account,
         metadata: {
           ...metadatas[idx],
           json: {
-            ...xnftBlobs[idx],
-            ...mplBlobs[idx],
+            ...xnftBlobValue,
+            ...mplBlobValue,
           },
         },
-        publicKey: acc.publicKey,
+        publicKey: curr.publicKey,
         token: {
-          address: tokenAccounts[idx].publicKey,
-          owner: tokenAccounts[idx].account.owner,
+          address: tokenAccountValue.publicKey,
+          owner: tokenAccountValue.account.owner,
         },
-      });
-    });
+      };
 
-    return response;
+      return [...acc, item];
+    }, []);
   }
 
   /**
