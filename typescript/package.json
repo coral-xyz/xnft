@@ -1,6 +1,6 @@
 {
   "name": "@coral-xyz/xnft",
-  "version": "0.2.56",
+  "version": "0.2.57",
   "license": "GPL-3.0-only",
   "description": "Node.js client for the xNFT protocol",
   "repository": {
@@ -42,10 +42,10 @@
     "postpack": "rm LICENSE README.md"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.27.0",
+    "@coral-xyz/anchor": "^0.28.0",
     "@metaplex-foundation/js": "^0.18.3",
     "@solana/spl-token": "^0.3.7",
-    "@solana/web3.js": "^1.74.0",
+    "@solana/web3.js": "^1.77.3",
     "semver": "^7.3.8",
     "zod": "^3.21.4"
   },

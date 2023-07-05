@@ -27,7 +27,8 @@ pub fn create_program_client(config: &Config) -> (Program<Rc<Keypair>>, Rc<Keypa
             config.keypair.clone(),
             CommitmentConfig::confirmed(),
         )
-        .program(xnft::ID),
+        .program(xnft::ID)
+        .unwrap(),
         config.keypair.clone(),
     )
 }
