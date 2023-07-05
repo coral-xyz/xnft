@@ -420,12 +420,15 @@ export class xNFT {
 
     return filteredXnfts.reduce<XnftAccount[]>((acc, curr, idx) => {
       if (xnftBlobs[idx].status === "rejected") {
+        console.error((xnftBlobs[idx] as PromiseRejectedResult).reason);
         console.error(`Failed to fetch the xNFT metadata blob for ${curr.publicKey.toBase58()}`);
         return acc;
       } else if (mplBlobs[idx].status === "rejected") {
+        console.error((mplBlobs[idx] as PromiseRejectedResult).reason);
         console.error(`Failed to fetch the MPL metadata blob for ${curr.publicKey.toBase58()}`);
         return acc;
       } else if (tokenAccounts[idx].status === "rejected") {
+        console.error((tokenAccounts[idx] as PromiseRejectedResult).reason);
         console.error(`Failed to fetch the associated token account data for ${curr.publicKey.toBase58()}`);
         return acc;
       }
@@ -495,12 +498,15 @@ export class xNFT {
 
     return filteredXnfts.reduce<XnftAccount[]>((acc, curr, idx) => {
       if (xnftBlobs[idx].status === "rejected") {
+        console.error((xnftBlobs[idx] as PromiseRejectedResult).reason);
         console.error(`Failed to fetch the xNFT metadata blob for ${curr.publicKey.toBase58()}`);
         return acc;
       } else if (mplBlobs[idx].status === "rejected") {
+        console.error((mplBlobs[idx] as PromiseRejectedResult).reason);
         console.error(`Failed to fetch the MPL metadata blob for ${curr.publicKey.toBase58()}`);
         return acc;
       } else if (tokenAccounts[idx].status === "rejected") {
+        console.error((tokenAccounts[idx] as PromiseRejectedResult).reason);
         console.error(`Failed to fetch the associated token account data for ${curr.publicKey.toBase58()}`);
         return acc;
       }
