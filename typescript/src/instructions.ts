@@ -140,9 +140,19 @@ export async function createCreateInstallInstruction(
   installVault: PublicKey,
   permissioned?: boolean
 ): Promise<TransactionInstruction> {
-  return permissioned
-    ? await program.methods.createPermissionedInstall().accounts({ xnft, installVault }).instruction()
-    : await program.methods.createInstall().accounts({ xnft, installVault }).instruction();
+  if (permissioned) {
+    const data = await program.account.xnft.fetch(xnft);
+
+    if (!data.installAuthority) {
+      throw new Error("attempting a permissioned installation when no install authority is set");
+    }
+
+    return program.methods
+      .createPermissionedInstall()
+      .accounts({ xnft, installVault, installAuthority: data.installAuthority })
+      .instruction();
+  }
+  return program.methods.createInstall().accounts({ xnft, installVault }).instruction();
 }
 
 /**

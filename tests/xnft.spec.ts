@@ -235,6 +235,16 @@ describe("A standard xNFT", () => {
       }
     });
 
+    it("unless the provided rating is less than 1", async () => {
+      try {
+        await c.review("https://google.com", 0, xnft, masterToken);
+        assert.ok(false);
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, "RatingOutOfBounds");
+      }
+    });
+
     it("when appropriate accounts and arguments", async () => {
       [review] = deriveReviewAddress(xnft, author.publicKey);
       await c.review("https://google.com", 4, xnft, masterToken);

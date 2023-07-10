@@ -135,7 +135,7 @@ impl Xnft {
 
     pub fn verify_supply(&self) -> anchor_lang::Result<()> {
         if let Some(supply) = self.supply {
-            if supply > 0 && self.total_installs >= supply {
+            if supply == 0 || (supply > 0 && self.total_installs >= supply) {
                 return Err(error!(CustomError::InstallExceedsSupply));
             }
         }

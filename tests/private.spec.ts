@@ -63,6 +63,10 @@ describe("Private xNFTs", () => {
   });
 
   describe("access can be revoked by the install authority", () => {
+    before(async () => {
+      await c.grantAccess(privateXnft, grantee.publicKey);
+    });
+
     it("using the revoke_access instruction", async () => {
       await c.revokeAccess(privateXnft, grantee.publicKey);
     });
