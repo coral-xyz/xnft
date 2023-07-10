@@ -27,6 +27,7 @@ pub struct CreatePermissionedInstall<'info> {
         has_one = install_vault,
         constraint = xnft.kind == Kind::App @ CustomError::MustBeApp,
         constraint = !xnft.suspended @ CustomError::SuspendedInstallation,
+        constraint = xnft.install_authority == Some(*install_authority.key) @ CustomError::InstallAuthorityMismatch,
     )]
     pub xnft: Account<'info, Xnft>,
 
@@ -51,6 +52,8 @@ pub struct CreatePermissionedInstall<'info> {
     pub install: Account<'info, Install>,
 
     #[account(
+        mut,
+        close = install_authority,
         seeds = [
             "access".as_bytes(),
             authority.key().as_ref(),
@@ -61,6 +64,10 @@ pub struct CreatePermissionedInstall<'info> {
         constraint = access.wallet == *authority.key @ CustomError::UnauthorizedInstall,
     )]
     pub access: Account<'info, Access>,
+
+    /// CHECK: account matching constraint on the `xnft` account.
+    #[account(mut)]
+    pub install_authority: UncheckedAccount<'info>,
 
     #[account(mut)]
     pub authority: Signer<'info>,

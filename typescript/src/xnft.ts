@@ -1,11 +1,16 @@
 export type Xnft = {
-  version: "0.2.4";
+  version: "0.2.5";
   name: "xnft";
   constants: [
     {
       name: "MAX_RATING";
       type: "u8";
       value: "5";
+    },
+    {
+      name: "MIN_RATING";
+      type: "u8";
+      value: "1";
     }
   ];
   instructions: [
@@ -253,12 +258,12 @@ export type Xnft = {
           };
         },
         {
-          name: "authority";
+          name: "target";
           isMut: true;
           isSigner: true;
         },
         {
-          name: "target";
+          name: "authority";
           isMut: false;
           isSigner: true;
         },
@@ -315,7 +320,7 @@ export type Xnft = {
         },
         {
           name: "access";
-          isMut: false;
+          isMut: true;
           isSigner: false;
           pda: {
             seeds: [
@@ -338,6 +343,11 @@ export type Xnft = {
             ];
           };
           relations: ["xnft"];
+        },
+        {
+          name: "installAuthority";
+          isMut: true;
+          isSigner: false;
         },
         {
           name: "authority";
@@ -1433,13 +1443,18 @@ export type Xnft = {
 };
 
 export const IDL: Xnft = {
-  version: "0.2.4",
+  version: "0.2.5",
   name: "xnft",
   constants: [
     {
       name: "MAX_RATING",
       type: "u8",
       value: "5",
+    },
+    {
+      name: "MIN_RATING",
+      type: "u8",
+      value: "1",
     },
   ],
   instructions: [
@@ -1687,12 +1702,12 @@ export const IDL: Xnft = {
           },
         },
         {
-          name: "authority",
+          name: "target",
           isMut: true,
           isSigner: true,
         },
         {
-          name: "target",
+          name: "authority",
           isMut: false,
           isSigner: true,
         },
@@ -1749,7 +1764,7 @@ export const IDL: Xnft = {
         },
         {
           name: "access",
-          isMut: false,
+          isMut: true,
           isSigner: false,
           pda: {
             seeds: [
@@ -1772,6 +1787,11 @@ export const IDL: Xnft = {
             ],
           },
           relations: ["xnft"],
+        },
+        {
+          name: "installAuthority",
+          isMut: true,
+          isSigner: false,
         },
         {
           name: "authority",

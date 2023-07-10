@@ -18,7 +18,7 @@ use anchor_spl::token::TokenAccount;
 
 use crate::events::ReviewCreated;
 use crate::state::{Install, Kind, Review, Xnft};
-use crate::{CustomError, MAX_RATING};
+use crate::{CustomError, MAX_RATING, MIN_RATING};
 
 #[derive(Accounts)]
 #[instruction(uri: String)]
@@ -69,7 +69,7 @@ pub fn create_review_handler(ctx: Context<CreateReview>, uri: String, rating: u8
     let xnft = &mut ctx.accounts.xnft;
     let review = &mut ctx.accounts.review;
 
-    if rating > MAX_RATING {
+    if !(MIN_RATING..=MAX_RATING).contains(&rating) {
         return Err(error!(CustomError::RatingOutOfBounds));
     }
 

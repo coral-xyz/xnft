@@ -41,6 +41,8 @@ security_txt! {
 
 #[constant]
 pub const MAX_RATING: u8 = 5;
+#[constant]
+pub const MIN_RATING: u8 = 1;
 
 #[program]
 pub mod xnft {

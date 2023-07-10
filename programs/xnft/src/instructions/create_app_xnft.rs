@@ -152,10 +152,19 @@ pub fn create_app_xnft_handler(
     params: CreateXnftParams,
 ) -> Result<()> {
     // Check the length of the metadata uri provided.
+    //
+    // The argued name does not need to be validated since the maximum
+    // length is the same as the max seed length, meaning the instruction
+    // will already fail if the name exceeds that.
     require!(
         params.uri.len() <= MAX_URI_LENGTH,
         CustomError::UriExceedsMaxLength,
     );
+
+    // Check that if a supply was provided it is greater than 0.
+    if let Some(s) = params.supply {
+        require_gt!(s, 0);
+    }
 
     // Initialize and populate the new xNFT program account data.
     let xnft = &mut ctx.accounts.xnft;

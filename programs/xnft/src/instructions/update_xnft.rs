@@ -110,7 +110,7 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                 ctx.accounts
                     .update_metadata_accounts_ctx()
                     .with_signer(&[&ctx.accounts.xnft.as_seeds()]),
-                Some(md.update_authority),
+                None,
                 Some(DataV2 {
                     name: updates.name.unwrap_or_else(|| md.data.name.clone()),
                     symbol: md.data.symbol.clone(),
@@ -120,8 +120,8 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
                     collection: md.collection.clone(),
                     uses: md.uses.clone(),
                 }),
-                Some(true),
-                Some(md.is_mutable),
+                None,
+                None,
             )?;
         }
     }
@@ -155,6 +155,8 @@ pub fn update_xnft_handler(ctx: Context<UpdateXnft>, updates: UpdateParams) -> R
             {
                 return Err(error!(CustomError::SupplyReduction));
             }
+
+            require_gt!(new_supply, 0);
             xnft.supply = Some(new_supply);
         }
         None => {

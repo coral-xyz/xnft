@@ -39,7 +39,7 @@ pub struct CreateInstall<'info> {
     ////////////////////////////////////////////////////////////////////////////
     #[account(
         init,
-        payer = authority,
+        payer = target,
         space = Install::LEN,
         seeds = [
             "install".as_bytes(),
@@ -51,8 +51,8 @@ pub struct CreateInstall<'info> {
     pub install: Account<'info, Install>,
 
     #[account(mut)]
-    pub authority: Signer<'info>,
     pub target: Signer<'info>,
+    pub authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }

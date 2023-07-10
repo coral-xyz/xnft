@@ -35,6 +35,8 @@ pub fn set_curator_verification_handler(
 ) -> Result<()> {
     if let Some(curator) = &mut ctx.accounts.xnft.curator {
         curator.verified = value;
+    } else {
+        return Err(error!(CustomError::CuratorMismatch));
     }
     Ok(())
 }
