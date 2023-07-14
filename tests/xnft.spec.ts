@@ -131,7 +131,10 @@ describe("A standard xNFT", () => {
       try {
         await client.verify(xnft);
         assert.ok(false);
-      } catch (_err) {}
+      } catch (err) {
+        const e = err as anchor.AnchorError;
+        assert.strictEqual(e.error.errorCode.code, "CuratorMismatch");
+      }
     });
 
     it("if the curator authority signs the transaction", async () => {
