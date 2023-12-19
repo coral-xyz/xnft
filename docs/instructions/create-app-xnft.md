@@ -16,7 +16,7 @@ The uploading of the metadata JSON blob and associated files (bundle code, icons
 - The master mint will mint a total supply of `1` to the master token account with the xNFT PDA being the authority of the mint
 - The metadata account will be populated with the relevant values as providing in the instruction arguments and primary sale happened
 
-!> Instead of creating a master edition and reliquishing freeze and mint authority, the freeze and mint authority of the master mint is given to the xNFT PDA. This accomplishes the same effect of ensuring a supply of `1` with programmatic signing requirements without surrendering the authority to an external program.
+!> Instead of creating a master edition and relinquishing freeze and mint authority, the freeze and mint authority of the master mint is given to the xNFT PDA. This accomplishes the same effect of ensuring a supply of `1` with programmatic signing requirements without surrendering the authority to an external program.
 
 ## Accounts
 
